@@ -131,7 +131,7 @@ def wait_thumbnails(window, timeout=60):
     while time.time() - t0 < timeout:
         QApplication.processEvents()
         j = window._thumb_job
-        if j is None or (j.finished and not window.thumb_progress.isVisible()):
+        if j is None or (j.finished and not window.photo_progress.isVisible()):
             break
         time.sleep(0.01)
     QApplication.processEvents()

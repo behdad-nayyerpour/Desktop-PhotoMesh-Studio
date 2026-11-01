@@ -19,7 +19,7 @@ reference and for the test that they do not come back).
 
 MENUS = [
     ("&File", [
-        "New", "Open...", "Append...", "-",
+        "New", "Open...", "-",
         "Save", "Save As...", "-",
         ("Export", [
             "Export Point Cloud...", "Export Model...", "Export Mesh Contours...", "Export Tiled Model...",
@@ -49,8 +49,7 @@ MENUS = [
         "Add Photos...", "Add Folder...", "-",
         "Align Photos...", "-",
         "Build Point Cloud...", "Build Model...", "Build Texture...",
-        "Build Tiled Model...", "Build DEM...", "Build Orthomosaic...", "-",
-        "Merge Chunks...",
+        "Build Tiled Model...", "Build DEM...", "Build Orthomosaic...",
     ]),
     ("&Model", [
         "Gradual Selection...", "-",

@@ -49,6 +49,7 @@ class Camera:
     label: str = ""
     enabled: bool = True
     aligned: bool = False
+    use_reference: bool = True
     # source reference (from EXIF GPS), degrees / metres
     lon: Optional[float] = None
     lat: Optional[float] = None

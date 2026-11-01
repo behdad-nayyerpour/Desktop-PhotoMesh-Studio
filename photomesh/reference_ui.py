@@ -260,7 +260,7 @@ class ReferenceMixin:
         nproj = sum(len(m.projections) for m in new)
         self.log(f"Imported {len(new)} markers ({nproj} photo projections) from {path}; "
                  f"coordinate system: {crs.name if crs else 'unknown'}")
-        self.docks["Markers"].raise_()
+        self.docks["Reference"].raise_()
 
     def export_markers(self):
         rows = (self.chunk.georef or {}).get("rows")
@@ -292,7 +292,10 @@ class ReferenceMixin:
         ch = self.chunk
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
-        dlg = OptimizeCamerasDialog(self, ch.reference_settings)
+        defaults = dict(ch.reference_settings)
+        defaults.setdefault("use_cameras", any(c.enabled and c.use_reference and c.lat is not None and c.lon is not None
+                                             for c in ch.cameras))
+        dlg = OptimizeCamerasDialog(self, defaults)
         if not dlg.exec():
             return
         s = dlg.settings()
@@ -301,7 +304,7 @@ class ReferenceMixin:
         cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
                "camera_gps": {c.label: [c.lon, c.lat, c.alt] for c in ch.cameras
-                              if c.lat is not None and c.lon is not None},
+                              if c.enabled and c.use_reference and c.lat is not None and c.lon is not None},
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
                "fit_intrinsics": s["fit_intrinsics"], "offset": (ch.georef or {}).get("offset"),
                "report": os.path.join(wd, "georef_report.txt"),

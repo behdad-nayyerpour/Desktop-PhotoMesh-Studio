@@ -76,7 +76,7 @@ def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
 
 
 
-@pytest.mark.parametrize("transition", ["new", "open", "chunk"])
+@pytest.mark.parametrize("transition", ["new", "open"])
 def test_project_switch_clears_photo_and_ortho_views(window, image_dir, tmp_path, transition):
     from photomesh.project import Chunk, Project
 
@@ -134,16 +134,14 @@ def test_project_roundtrip(window, image_dir, tmp_path, monkeypatch):
     assert window.windowTitle() == f"{APP_NAME} {APP_VERSION} - test"
 
 
-def test_workspace_chunk_actions(window, no_dialogs):
-    window._workspace_action("Add Chunk", -1)
-    assert len(window.project.chunks) == 2 and window.project.active == 1
-    window._workspace_action("Duplicate Chunk", 1)
-    assert len(window.project.chunks) == 3
-    window._workspace_action("Remove Chunk", 2)
-    window._workspace_action("Remove Chunk", 1)
+def test_workspace_has_one_project_without_chunk_actions(window):
     assert len(window.project.chunks) == 1
-    window.merge_chunks()  # < 2 chunks: just an info box
-    assert no_dialogs == []
+    assert not hasattr(window, "merge_chunks")
+    assert "Merge Chunks..." not in window.actions and "Append..." not in window.actions
+    assert "add_chunk" not in window.ws_actions
+    with pytest.raises(ValueError):
+        window._workspace_action("Add Chunk", -1)
+    assert len(window.project.chunks) == 1
 
 
 def test_import_mesh_and_modes(window, tmp_path):

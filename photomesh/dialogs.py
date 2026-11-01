@@ -27,8 +27,6 @@ class _SettingsDialog(QDialog):
         self.general = QGroupBox("General")
         self.gform = QFormLayout(self.general)
         self.advanced = QGroupBox("Advanced")
-        self.advanced.setCheckable(True)
-        self.advanced.setChecked(True)
         self.aform = QFormLayout(self.advanced)
         lay.addWidget(self.general)
         lay.addWidget(self.advanced)
@@ -44,8 +42,8 @@ class AlignPhotosDialog(_SettingsDialog):
         self.accuracy = _combo(cm.ACCURACY, "High")
         self.generic = QCheckBox("Generic preselection")
         self.generic.setChecked(True)
-        self.reference = QCheckBox("Reference preselection")
-        self.ref_mode = _combo(["Source", "Estimated", "Sequential"], "Sequential")
+        self.reference = QCheckBox("GPS pair preselection")
+        self.reference.setChecked(True)
         self.reset = QCheckBox("Reset current alignment")
         self.mode = _combo(["Fast", "Exhaustive", "Sequential"], "Fast")
         self.mode.setToolTip("Fast: fastpipe pair preselection (GPS + global descriptor + sequence)\n"
@@ -66,25 +64,21 @@ class AlignPhotosDialog(_SettingsDialog):
         self.gform.addRow(self.generic)
         row = QHBoxLayout()
         row.addWidget(self.reference)
-        row.addWidget(self.ref_mode)
         self.gform.addRow(row)
         self.gform.addRow(self.reset)
         self.key_limit = QSpinBox(); self.key_limit.setRange(0, 1_000_000); self.key_limit.setValue(40000)
-        self.tie_limit = QSpinBox(); self.tie_limit.setRange(0, 1_000_000); self.tie_limit.setValue(4000)
-        self.exclude_stationary = QCheckBox("Exclude stationary tie points")
-        self.exclude_stationary.setChecked(True)
         self.guided = QCheckBox("Guided image matching")
-        self.adaptive = QCheckBox("Adaptive camera model fitting")
         self.single_camera = QCheckBox("Share one camera model per physical camera (lens + image size)")
         self.single_camera.setChecked(True)
         self.aform.addRow("Key point limit:", self.key_limit)
-        self.aform.addRow("Tie point limit:", self.tie_limit)
-        for w in (self.exclude_stationary, self.guided, self.adaptive, self.single_camera):
+        for w in (self.guided, self.single_camera):
             self.aform.addRow(w)
-        note = QLabel("<small>0 = no limit. Tie point limit and stationary-point "
-                      "exclusion are informational only (no COLMAP equivalent).</small>")
-        note.setWordWrap(True)
-        self.aform.addRow(note)
+        self.key_limit.setToolTip("Maximum extracted features per image; 0 means no limit.")
+        def pair_mode(text):
+            self.generic.setEnabled(text == "Fast")
+            self.reference.setEnabled(text == "Fast")
+        self.mode.currentTextChanged.connect(pair_mode)
+        pair_mode(self.mode.currentText())
 
     def settings(self):
         return {"accuracy": self.accuracy.currentText(),
@@ -92,13 +86,11 @@ class AlignPhotosDialog(_SettingsDialog):
                 "mode": self.mode.currentText(),
                 "mapper": self.mapper.currentText(),
                 "coarse_to_fine": self.c2f.isChecked(),
-                "reference": True,
-                "sequential": self.reference.isChecked() and self.ref_mode.currentText() == "Sequential",
+                "reference": self.reference.isChecked(),
+                "sequential": self.mode.currentText() == "Sequential",
                 "reset": self.reset.isChecked(),
                 "key_point_limit": self.key_limit.value(),
-                "tie_point_limit": self.tie_limit.value(),
                 "guided_matching": self.guided.isChecked(),
-                "adaptive_fitting": self.adaptive.isChecked(),
                 "single_camera": self.single_camera.isChecked(),
                 "use_gpu": QSettings().value("gpu/use_gpu", True, bool) and _gpu_ok()}
 
@@ -112,15 +104,14 @@ class BuildPointCloudDialog(_SettingsDialog):
         self.gform.addRow("Source data:", self.source)
         self.gform.addRow("Quality:", self.quality)
         self.filtering = _combo(cm.DEPTH_FILTERING, "Mild")
-        self.colors = QCheckBox("Calculate point colors"); self.colors.setChecked(True)
-        self.confidence = QCheckBox("Calculate point confidence"); self.confidence.setChecked(True)
+        self.confidence = QCheckBox("Filter by minimum confidence"); self.confidence.setChecked(True)
         self.reuse = QCheckBox("Reuse depth maps")
         self.keep_depth = QCheckBox("Keep depth maps")
         self.keep_depth.setToolTip("Keep the depth maps after the point cloud is built (needed for 'Reuse "
                                    "depth maps'). They are large: at Ultra high about 16 bytes per photo "
                                    "pixel, e.g. ~200 GB for 640 photos of 20 MPix.")
         self.aform.addRow("Depth filtering:", self.filtering)
-        for w in (self.colors, self.confidence, self.reuse, self.keep_depth):
+        for w in (self.confidence, self.reuse, self.keep_depth):
             self.aform.addRow(w)
         self.sources = QSpinBox(); self.sources.setRange(2, 30); self.sources.setValue(8)
         self.step = _combo(["1 (slow, finest)", "2 (fast, default)"], "2 (fast, default)")
@@ -141,7 +132,6 @@ class BuildPointCloudDialog(_SettingsDialog):
     def settings(self):
         return {"quality": self.quality.currentText(),
                 "depth_filtering": self.filtering.currentText(),
-                "colors": self.colors.isChecked(),
                 "reuse": self.reuse.isChecked(),
                 "keep_depth_maps": self.keep_depth.isChecked(),
                 "max_sources": self.sources.value(),
@@ -157,16 +147,15 @@ class BuildModelDialog(_SettingsDialog):
         super().__init__("Build Model", parent)
         from PySide6.QtWidgets import QDoubleSpinBox
         self.source = _combo(["Point cloud", "Depth maps"], "Point cloud")
-        self.surface = _combo(["Arbitrary (3D)", "Height field (2.5D)"])
         self.face_count = _combo(["High", "Medium", "Low", "Custom"], "Medium")
         self.custom = QSpinBox(); self.custom.setRange(1000, 200_000_000); self.custom.setValue(1_000_000)
         self.custom.setSingleStep(100000)
         self.gform.addRow("Source data:", self.source)
-        self.gform.addRow("Surface type:", self.surface)
         self.gform.addRow("Face count:", self.face_count)
         self.gform.addRow("Custom face count:", self.custom)
+        self.custom.setEnabled(False)
+        self.face_count.currentTextChanged.connect(lambda text: self.custom.setEnabled(text == "Custom"))
         self.interp = _combo(["Disabled", "Enabled (default)", "Extrapolated"], "Enabled (default)")
-        self.vcolors = QCheckBox("Calculate vertex colors"); self.vcolors.setChecked(True)
         self.voxel = QDoubleSpinBox(); self.voxel.setDecimals(3); self.voxel.setRange(0, 1000)
         self.voxel.setSpecialValueText("Auto (fit memory)")
         self.max_pts = QSpinBox(); self.max_pts.setRange(100_000, 100_000_000); self.max_pts.setValue(12_000_000)
@@ -175,7 +164,6 @@ class BuildModelDialog(_SettingsDialog):
         self.long_edge = QDoubleSpinBox(); self.long_edge.setRange(0, 100); self.long_edge.setValue(8.0)
         self.long_edge.setSuffix(" x median edge"); self.long_edge.setSpecialValueText("Off")
         self.aform.addRow("Interpolation:", self.interp)
-        self.aform.addRow(self.vcolors)
         self.aform.addRow("Voxel downsample:", self.voxel)
         self.aform.addRow("Max points for meshing:", self.max_pts)
         self.aform.addRow("Remove components smaller than:", self.small)
@@ -183,7 +171,6 @@ class BuildModelDialog(_SettingsDialog):
 
     def settings(self):
         return {"source": self.source.currentText(),
-                "surface": self.surface.currentText(),
                 "face_count": self.face_count.currentText(),
                 "custom_faces": self.custom.value(),
                 "interpolation": ["Disabled", "Enabled", "Extrapolated"][self.interp.currentIndex()],
@@ -398,6 +385,7 @@ class ProgressDialog(QDialog):
         self._meter = WorkProgress()
         self._stage_text = ""
         self.stage_bar = QProgressBar(); self.stage_bar.setRange(0, 0)
+        self.stage_bar.setFormat("Current task: %p%")
         self.timing = QLabel("Estimating remaining time..."); self.timing.setWordWrap(True)
         self._timer = QTimer(self); self._timer.setInterval(1000)
         self._timer.timeout.connect(self._refresh_timing)
@@ -442,7 +430,7 @@ class ProgressDialog(QDialog):
             event.accept()
 
     def _show(self):
-        txt = f"{self._label}...  {self._pct:.1f}%"
+        txt = self._label or "Starting..."
         if self._detail:
             txt += f"\n{self._detail}"
         self.stage.setText(txt)
@@ -534,6 +522,9 @@ class PreferencesDialog(QDialog):
         from .mainwindow import apply_dialog_setting
         apply_dialog_setting()
         s.setValue("colmap/path", self.colmap.text().strip())
+        from .theme import apply_theme
+        from PySide6.QtWidgets import QApplication
+        apply_theme(QApplication.instance(), self.theme.currentText())
         self.accept()
 
 

@@ -35,3 +35,26 @@ def apply_dark_theme(app: QApplication) -> None:
         QStatusBar { background: #3a3a3d; }
         QHeaderView::section { background: #3a3a3d; padding: 3px; border: 1px solid #2a2a2a; }
     """)
+
+
+def apply_theme(app, name=None):
+    """Apply a persisted palette and refresh custom viewports immediately."""
+    from PySide6.QtCore import QSettings
+    from PySide6.QtGui import QPalette
+    name = name or QSettings().value("ui/theme", "Dark", str)
+    if name == "Light":
+        app.setStyle("Fusion")
+        app.setStyleSheet("")
+        app.setPalette(app.style().standardPalette())
+    else:
+        apply_dark_theme(app)
+    light = name == "Light"
+    for widget in app.allWidgets():
+        if hasattr(widget, "apply_theme"):
+            widget.apply_theme(light)
+        widget.update()
+
+
+def viewport_color():
+    from PySide6.QtCore import QSettings
+    return QColor(228, 230, 234) if QSettings().value("ui/theme", "Dark") == "Light" else QColor(74, 74, 80)

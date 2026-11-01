@@ -101,10 +101,10 @@ def test_busy_indicator_nested_and_restored():
     b = BusyIndicator()
     assert QApplication.overrideCursor() is None
     b.begin("Build Point Cloud")
-    assert QApplication.overrideCursor() is not None and b.label.text() == "Working: Build Point Cloud..."
+    assert QApplication.overrideCursor() is not None and b.label.text() == "Busy"
     with pytest.raises(ValueError):
         with b("Export"):
-            assert b.label.text() == "Working: Export..."
+            assert b.label.text() == "Busy"
             raise ValueError("boom")
     assert b.titles == ["Build Point Cloud"] and QApplication.overrideCursor() is not None
     b.end(); b.end()                                   # extra end is harmless
@@ -146,7 +146,7 @@ def test_run_shows_busy_and_always_restores_cursor(window, no_dialogs, monkeypat
             window._run("Build Point Cloud", [], lambda: None)
     else:
         window._run("Build Point Cloud", [], lambda: None)
-    assert R.cursor_while_running and R.label == "Working: Build Point Cloud..."
+    assert R.cursor_while_running and R.label == "Busy"
     assert QApplication.overrideCursor() is None
     assert not window.busy_indicator.active and not window.busy_indicator.label.isVisible()
 
@@ -221,7 +221,7 @@ def test_monitor_samples_off_gui_thread_and_updates_status(window, qtbot):
     qtbot.waitUntil(lambda: len(got) >= 2, timeout=5000)
     mon.stop()
     assert Cpu.thread == "resource-monitor" and got[0]["cpu"] == 42.0 and got[0]["gpu"] is None
-    assert window.cpu_label.text() == "CPU  42%" and not window.gpu_label.isVisible()
+    assert window.cpu_label.text() == "CPU  42%" and window.gpu_label.text() == "GPU unavailable"
     window._show_resources({"cpu": 5.0, "gpu": 80.0, "gpu_mem": (1024, 4096), "gpu_name": "NVIDIA X"})
     assert window.gpu_label.isVisible() and window.gpu_label.text().startswith("GPU  80%")
     # the window's own monitor runs in the background (never nvidia-smi)

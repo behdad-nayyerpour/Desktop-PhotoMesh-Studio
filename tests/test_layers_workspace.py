@@ -124,12 +124,12 @@ def test_layer_state_persists_in_qsettings(qtbot, no_dialogs):
 def test_workspace_rows_metashape_style(window, tmp_path):
     from PySide6.QtCore import Qt
     rows = [it.text(0) for it in window.workspace._iter()]
-    assert rows[0].startswith("Workspace (1 chunks")
+    assert rows[0].startswith("Untitled (0 images")
     assert not any(r.startswith(("Tie Points", "Point Cloud", "3D Model", "Depth Maps")) for r in rows)
     _populate(window, tmp_path)
     rows = [it.text(0) for it in window.workspace._iter()]
-    chunk = next(r for r in rows if r.startswith("Chunk 1"))
-    assert chunk.endswith("[R]") and "8 images" in chunk and "3 markers" in chunk and "500 tie points" in chunk
+    chunk = rows[0]
+    assert "8 images" in chunk and not any(r.startswith("Chunk ") for r in rows)
     assert "Images (7/8 aligned)" in rows
     assert "Markers (3)" in rows
     assert any(r.startswith("Tie Points (500 points") for r in rows)

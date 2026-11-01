@@ -100,48 +100,45 @@ class BackgroundJob(QObject):
 
 
 def run_modal(parent, title, label, fn, total, min_duration_ms=0):
-    """Run fn(report, cancelled) in a thread behind a cancellable progress
-    dialog. Returns (result, cancelled, error)."""
-    from PySide6.QtWidgets import QProgressDialog, QApplication
-    from .progress import WorkProgress
-    meter = WorkProgress()
+    """A single task window, with overall and current-task progress."""
+    from PySide6.QtWidgets import QApplication
+    from .dialogs import ProgressDialog
     job = BackgroundJob(fn, name=title)
-    dlg = QProgressDialog(label, "Cancel", 0, max(1, total), parent)
-    dlg.setWindowTitle(title)
+    dlg = ProgressDialog(title, parent)
+    dlg.log.hide()
+    dlg.stage.setText(label)
     dlg.setWindowModality(Qt.WindowModal)
-    dlg.setMinimumDuration(0)
-    dlg.setAutoClose(False); dlg.setAutoReset(False)
-    dlg.canceled.connect(job.cancel)
+    dlg.cancel_btn.clicked.connect(job.cancel)
     loop = QEventLoop()
 
-    def prog(d, n, text):
-        meter.update(d, n)
-        dlg.setRange(0, n if n > 0 else 0)
-        if n > 0:
-            dlg.setValue(min(d, n))
-        dlg._work_text = text
-        refresh()
-    def refresh():
-        dlg.setLabelText(f"{label}\n{getattr(dlg, '_work_text', '')}\n{meter.text()}")
-    timer = QTimer(dlg); timer.setInterval(1000); timer.timeout.connect(refresh)
+    def prog(done, count, text):
+        if count > 0:
+            fraction = min(1.0, max(0.0, done / count))
+            dlg.bar.setRange(0, 1000)
+            dlg.set_progress(100 * fraction, text or label)
+            dlg.set_stage_progress(fraction, text or label)
+        else:
+            dlg.bar.setRange(0, 0)
+            dlg.set_stage_progress(-1, text or label)
     job.progress.connect(prog)
-    job.done.connect(lambda *_: loop.quit())
-    busy = getattr(parent, "busy_indicator", None)       # wait cursor + 'Working: ...' in the status bar
+    job.done.connect(loop.quit)
+    busy = getattr(parent, "busy_indicator", None)
     if busy is not None:
         busy.begin(title)
     try:
-        dlg.setRange(0, total if total > 0 else 0)
-        refresh(); dlg.show(); QApplication.processEvents()
-        timer.start()
+        prog(0, total, label)
+        dlg.show()
+        QApplication.processEvents()
         job.start()
         if not job.finished:
             loop.exec()
+        job.wait()
         QApplication.processEvents()
     finally:
-        timer.stop()
+        dlg.running = False
+        dlg._timer.stop()
+        dlg.close()
+        dlg.deleteLater()
         if busy is not None:
             busy.end()
-    cancelled = job.cancelled()
-    dlg.canceled.disconnect(job.cancel)      # QProgressDialog emits canceled() when closed
-    dlg.close(); dlg.deleteLater()
-    return job.result, cancelled, job.error
+    return job.result, job.cancelled(), job.error

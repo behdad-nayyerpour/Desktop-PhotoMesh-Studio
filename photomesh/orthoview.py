@@ -464,7 +464,8 @@ class OrthoView(QWidget):
                 p.end()
 
     def _paint(self, p):
-        p.fillRect(self.rect(), QColor(26, 26, 32))
+        from .theme import viewport_color
+        p.fillRect(self.rect(), viewport_color())
         if self.center is None:
             self.fit()
         if self.center is None:
@@ -496,9 +497,8 @@ class OrthoView(QWidget):
                 if -20 < x < self.width() + 20 and -20 < y < self.height_px() + 20:
                     from .marker_style import color
                     col = color(self.marker_states.get(lab, "predicted"))
-                    p.setPen(QPen(col, 3.0)); p.setBrush(Qt.NoBrush)
-                    p.drawLine(QPointF(x - 6, y), QPointF(x + 6, y)); p.drawLine(QPointF(x, y - 6), QPointF(x, y + 6))
-                    p.drawEllipse(QPointF(x, y), 6, 6)
+                    from .marker_style import draw_flag
+                    draw_flag(p, x, y, col, lab == self.active_marker)
                     if self.vis.get("marker_labels", True):
                         rect = p.fontMetrics().boundingRect(str(lab)).adjusted(-4, -2, 4, 2)
                         rect.moveBottomLeft(QPointF(x + 10, y - 8).toPoint())

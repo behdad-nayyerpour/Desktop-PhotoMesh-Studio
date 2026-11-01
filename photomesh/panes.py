@@ -6,7 +6,7 @@ import contextlib
 import io
 import os
 
-from PySide6.QtCore import Qt, Signal, QSize
+from PySide6.QtCore import Qt, Signal, QSize, QItemSelectionModel
 from PySide6.QtGui import QIcon, QPixmap, QImageReader, QColor, QBrush
 from PySide6.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QTableWidget, QTableWidgetItem, QListWidget,
@@ -119,10 +119,10 @@ class WorkspacePane(QTreeWidget):
         self.setUpdatesEnabled(False)
         try:
             self.clear(); self._layer_items = {}
-            n_img = sum(len(c.cameras) for c in project.chunks)
-            root = self._item(self, f"Workspace ({len(project.chunks)} chunks, {n_img:,} images)", ("workspace",),
-                              "workspace")
-            for ci, ch in enumerate(project.chunks):
+            n_img = len(project.chunk.cameras)
+            name = os.path.splitext(os.path.basename(project.path))[0] if project.path else "Untitled"
+            root = self._item(self, f"{name} ({n_img:,} images)", ("project", project.active), "workspace", bold=True)
+            for ci, ch in [(project.active, project.chunk)]:
                 active = ci == project.active
                 parts = [f"{len(ch.cameras):,} images"]
                 if ch.markers:
@@ -131,8 +131,8 @@ class WorkspacePane(QTreeWidget):
                     parts.append(f"{ch.tie_point_count:,} tie points")
                 geo = " [R]" if ch.georef else ""
                 crs = (ch.georef or {}).get("crs") or ch.crs
-                it = self._item(root, f"{ch.name} ({', '.join(parts)}){geo}", ("chunk", ci), "chunk", bold=active,
-                                tip=("Georeferenced: " + crs) if ch.georef else "Not georeferenced (local frame)")
+                it = root
+                it.setToolTip(0, ("Georeferenced: " + crs) if ch.georef else "Not georeferenced (local frame)")
                 lay = (lambda k: k) if active else (lambda k: None)
                 al = ch.aligned_count()
                 imgs = self._item(it, f"Images ({al:,}/{len(ch.cameras):,} aligned)", ("cameras", ci), "folder",
@@ -167,6 +167,8 @@ class WorkspacePane(QTreeWidget):
                         ctl = m.get("enabled", True)
                         r = self._item(mk, m["label"] + ("" if ctl else "  (check)"), ("marker", ci, m["label"]),
                                        "markers")
+                        from .marker_style import flag_icon, marker_state
+                        r.setIcon(0, flag_icon(marker_state(m)))
                         if not ctl:
                             r.setForeground(0, QBrush(QColor(120, 210, 240)))
                 if ch.tie_point_count:
@@ -281,8 +283,6 @@ class WorkspacePane(QTreeWidget):
             return
         if d[0] == "camera":
             self.cameraActivated.emit(d[1], d[2])
-        elif d[0] == "chunk":
-            self.chunkActivated.emit(d[1])
         elif d[0] == "marker":
             self.markerActivated.emit(d[2])
         elif d[0] in ("tie", "cloud", "model", "markers", "cameras", "depth", "tiled", "ortho", "dem", "shapes"):
@@ -308,12 +308,9 @@ class WorkspacePane(QTreeWidget):
         d = item.data(0, ROLE) if item else None
         ci = d[1] if d and len(d) > 1 else -1
         m = QMenu(self)
-        for name in ("Add Chunk", "Set as Active Chunk", "Rename Chunk...", "Duplicate Chunk", "Remove Chunk"):
-            a = m.addAction(name)
-            a.setEnabled(name == "Add Chunk" or ci >= 0)
         if d and d[0] == "camera":
             m.addSeparator(); m.addAction("Open Photo"); m.addAction("Enable/Disable Camera")
-        if d and d[0] in ("camera", "cameras", "group", "chunk"):
+        if d and d[0] in ("camera", "cameras", "group", "project"):
             m.addSeparator(); m.addAction("Change Image Paths...")
         if d and d[0] in ("tie", "cloud", "model", "tiled", "ortho", "dem", "shapes"):
             m.addSeparator(); m.addAction("Show")
@@ -378,27 +375,83 @@ def workspace_panel(tree, actions):
 
 
 class ReferencePane(QTableWidget):
-    COLS = ["Cameras", "Longitude", "Latitude", "Altitude (m)", "Accuracy (m)",
-            "X est", "Y est", "Z est", "Aligned"]
+    """Camera references; checkbox usage is independent of photo selection."""
+    COLS = ["Cameras", "X / Longitude", "Y / Latitude", "Z / Altitude", "Accuracy (m)",
+            "Error (m)", "X estimated", "Y estimated", "Z estimated"]
+    cameraReferenceToggled = Signal(int, bool)
+    cameraActivated = Signal(int)
 
     def __init__(self, parent=None):
         super().__init__(0, len(self.COLS), parent)
         self.setHorizontalHeaderLabels(self.COLS)
-        self.verticalHeader().setVisible(False)
+        self.verticalHeader().hide()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setAlternatingRowColors(True)
+        self._filling = False
+        self.itemChanged.connect(self._changed)
+        self.cellDoubleClicked.connect(lambda row, col: self.cameraActivated.emit(row))
+
+    def _changed(self, item):
+        if not self._filling and item.column() == 0:
+            self.cameraReferenceToggled.emit(item.data(ROLE), item.checkState() == Qt.Checked)
 
     def refresh(self, chunk):
-        with bulk_fill(self):
-            self.clearContents()
-            self.setRowCount(len(chunk.cameras))
-            for r, c in enumerate(chunk.cameras):
-                est = c.est or [None, None, None]
-                vals = [c.label, _fmt(c.lon), _fmt(c.lat), _fmt(c.alt, 3),
-                        "10.000" if c.lat is not None else "", _fmt(est[0], 4),
-                        _fmt(est[1], 4), _fmt(est[2], 4), "yes" if c.aligned else "no"]
-                for k, v in enumerate(vals):
-                    self.setItem(r, k, QTableWidgetItem(v))
+        import math
+        import numpy as np
+        from .georef import CRS
+        selected = {self.item(r, 0).data(ROLE) for r in {i.row() for i in self.selectedIndexes()}
+                    if self.item(r, 0)}
+        scroll = self.verticalScrollBar().value()
+        errors = []
+        self._filling = True
+        try:
+            with bulk_fill(self):
+                self.clearContents()
+                self.setRowCount(len(chunk.cameras))
+                geo = chunk.georef or {}
+                crs = CRS.parse(geo.get("crs") or chunk.crs)
+                for row, camera in enumerate(chunk.cameras):
+                    est = list(camera.est) if camera.est is not None else [None] * 3
+                    ref = [camera.lon, camera.lat, camera.alt]
+                    err = None
+                    has_gps = all(v is not None and math.isfinite(v) for v in ref)
+                    if geo.get("offset") is not None and est[0] is not None:
+                        est = (np.asarray(est) + np.asarray(geo["offset"])).tolist()
+                        if has_gps and crs.kind in ("utm", "wgs84"):
+                            try:
+                                gps = CRS.parse("EPSG:4326").to_metric(np.asarray([ref]), (crs.zone, crs.south) if crs.kind == "utm" else geo.get("zone"))[0]
+                                if crs.kind == "utm":
+                                    ref = gps.tolist()
+                                err = float(np.linalg.norm(np.asarray(est) - gps))
+                            except (ValueError, TypeError):
+                                pass
+                    if err is not None and camera.use_reference and camera.enabled:
+                        errors.append(err)
+                    values = [camera.label, _fmt(ref[0]), _fmt(ref[1]), _fmt(ref[2], 3),
+                              _fmt((chunk.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
+                              _fmt(err, 3), *[_fmt(v, 3) for v in est]]
+                    for col, value in enumerate(values):
+                        item = QTableWidgetItem(value)
+                        item.setData(ROLE, row)
+                        if col == 0:
+                            from .icons import icon
+                            item.setIcon(icon("photo"))
+                            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+                            item.setCheckState(Qt.Checked if camera.use_reference else Qt.Unchecked)
+                            item.setToolTip("Use GPS as a reference in camera optimization; selecting a row only selects the photo.")
+                            if not has_gps:
+                                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                                item.setToolTip("No complete GPS position; reference use is unavailable.")
+                        self.setItem(row, col, item)
+                    if row in selected:
+                        self.selectRow(row)
+        finally:
+            self._filling = False
+            self.verticalScrollBar().setValue(scroll)
+        if hasattr(self, "_summary_label"):
+            text = f"{math.sqrt(sum(x*x for x in errors)/len(errors)):.3f} m" if errors else "—"
+            self._summary_label.setText(f"Total Error (camera RMSE): {text} ({len(errors)} measured references)")
 
 
 class MarkersPane(QTableWidget):
@@ -474,6 +527,8 @@ class MarkersPane(QTableWidget):
                     it.setToolTip(("Control point" if m.get("enabled", True) else "Check point") +
                                   (" - ignored" if m.get("disabled", False) else "") +
                                   "; checkbox changes Control/Check; double-click to rename")
+                    from .marker_style import flag_icon, marker_state
+                    it.setIcon(flag_icon(marker_state(m)))
                     if m.get("disabled"):
                         it.setForeground(QBrush(QColor(150, 150, 150)))
                     it.setData(ROLE + 1, bool(m.get("enabled", True)))
@@ -654,17 +709,36 @@ class PhotosPane(QListWidget):
         return [self.item(r).data(ROLE) for r in range(self.count()) if not self.item(r).isHidden()]
 
     def refresh(self, chunk):
-        self.clear()
-        for k, c in enumerate(chunk.cameras):
-            it = QListWidgetItem(self._icon(c), c.label)
-            it.setData(ROLE, k)
-            tip = c.path + ("\naligned" if c.aligned else "\nnot aligned")
-            if not c.enabled:
-                it.setForeground(QBrush(QColor(120, 120, 120))); tip += "\n(disabled)"
-            it.setToolTip(tip)
-            self.addItem(it)
-            if self.filter is not None and k not in self.filter:
-                it.setHidden(True)
+        """Marker edits leave existing items, selection and scroll position intact."""
+        identity = tuple(c.path for c in chunk.cameras)
+        same = getattr(self, "_photo_identity", None) == identity
+        selected = {it.data(ROLE) for it in self.selectedItems()}
+        current = self.currentRow()
+        scroll = self.verticalScrollBar().value()
+        self.setUpdatesEnabled(False)
+        blocked = self.blockSignals(True)
+        try:
+            if not same:
+                self.clear()
+            for k, camera in enumerate(chunk.cameras):
+                item = self.item(k) if same else QListWidgetItem()
+                if not same:
+                    item.setData(ROLE, k)
+                    self.addItem(item)
+                item.setText(camera.label)
+                item.setIcon(self._icon(camera))
+                item.setToolTip(camera.path + ("\nAligned" if camera.aligned else "\nNot aligned"))
+                item.setForeground(self.palette().text() if camera.enabled else QBrush(QColor(130, 130, 130)))
+                item.setHidden(self.filter is not None and k not in self.filter)
+                if not same:
+                    item.setSelected(k in selected)
+            if not same and 0 <= current < self.count():
+                self.setCurrentRow(current, QItemSelectionModel.NoUpdate)
+            self._photo_identity = identity
+            self.verticalScrollBar().setValue(scroll)
+        finally:
+            self.blockSignals(blocked)
+            self.setUpdatesEnabled(True)
 
 
 class ConsolePane(QWidget):

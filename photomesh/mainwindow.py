@@ -13,7 +13,7 @@ from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
     QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QStyle,
-    QToolBar, QInputDialog, QProgressDialog, QApplication, QLabel, QProgressBar)
+    QToolBar, QInputDialog, QApplication, QLabel)
 
 from . import APP_NAME, APP_VERSION, PROJECT_EXT
 from . import colmap as cm
@@ -66,6 +66,9 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
     def __init__(self):
         super().__init__()
+        from .activity import ActivityStatusBar
+        self.setStatusBar(ActivityStatusBar(self))
+        self._opening = False
         self._view_gen = 0
         self._view_thread = None
         self.view_loading = False
@@ -81,10 +84,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self._build_menus()
         self._build_toolbar()
         self.statusBar().showMessage("Ready")
-        self.view_progress = QProgressBar(); self.view_progress.setRange(0, 0)
-        self.view_progress.setMaximumWidth(260); self.view_progress.setTextVisible(True)
-        self.view_progress.hide()
-        self.statusBar().addPermanentWidget(self.view_progress)
         self._viewData.connect(self._apply_view_data)
         self._texData.connect(self._apply_texture)
         self._viewProgress.connect(self._show_view_progress)
@@ -97,27 +96,19 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             lambda label, X, Y, Z: self.add_marker_at_ortho(X, Y, Z, label=label, replace_pins=True))
         self.ortho_view.placeMarkerRequested.connect(
             lambda label, X, Y, Z: self.add_marker_at_ortho(X, Y, Z, label=label))
-        self.ortho_view.coordinatesChanged.connect(lambda t: self.statusBar().showMessage(t) if t else
-                                                   self.statusBar().clearMessage())
-        from PySide6.QtWidgets import QToolButton
-        self.thumb_progress = QProgressBar(); self.thumb_progress.setMaximumWidth(220)
-        self.thumb_progress.setFormat("Thumbnails %v/%m"); self.thumb_progress.hide()
-        self.thumb_cancel = QToolButton(); self.thumb_cancel.setText("\u2715"); self.thumb_cancel.setAutoRaise(True)
-        self.thumb_cancel.setToolTip("Stop creating thumbnails (they are made again when needed)")
-        self.thumb_cancel.clicked.connect(self.cancel_thumbnails); self.thumb_cancel.hide()
-        self.statusBar().addPermanentWidget(self.thumb_progress)
-        self.statusBar().addPermanentWidget(self.thumb_cancel)
         self._thumb_job = None
         apply_dialog_setting()
         from .busy import BusyIndicator
         self.busy_indicator = BusyIndicator(self.statusBar())
         self.ortho_view.workChanged.connect(lambda name, done, total, active: self.busy_indicator.background(
             name, name if active else None, done, total))
-        self.colmap_label = QLabel()
-        self.statusBar().addPermanentWidget(self.colmap_label)
+        self.colmap_label = QLabel(self)
+        self.colmap_label.hide()
         self._update_colmap_label()
         self._start_resource_monitor()
         self.refresh_all()
+        from .theme import apply_theme
+        apply_theme(QApplication.instance())
         self.log(f"{APP_NAME} {APP_VERSION} started. COLMAP: {cm.find_colmap() or 'not found'}")
 
     # ------------------------------------------------------------------ UI
@@ -131,6 +122,10 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.tabs.addTab(self.ortho_view, "Ortho")
         self.tabs.addTab(self.photo_view, "Photo")
         self.setCentralWidget(self.tabs)
+        from .activity import ProgressPanel
+        self.model_progress = ProgressPanel()
+        self.model_view.layout().insertWidget(0, self.model_progress)
+        self.model_progress.cancelled.connect(self._cancel_view_load)
 
     def _dock(self, title, widget, area, name):
         d = QDockWidget(title, self)
@@ -148,22 +143,35 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                                     "project": self.project, "np": np})
         self.properties = PropertiesPane()
         self.jobs = JobsPane()
+        from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
+        self.reference._summary_label = QLabel()
+        camera_panel = QWidget(); camera_layout = QVBoxLayout(camera_panel)
+        camera_layout.setContentsMargins(0, 0, 0, 0)
+        camera_layout.addWidget(self.reference); camera_layout.addWidget(self.reference._summary_label)
+        self.reference_panel = QSplitter(Qt.Vertical)
+        self.reference_panel.addWidget(camera_panel)
+        self.reference_panel.addWidget(markers_panel(self.markers_pane))
+        self.reference_panel.setSizes([300, 350])
+        from .activity import ProgressPanel
+        self.photo_progress = ProgressPanel()
+        photos_panel = QWidget(); photos_layout = QVBoxLayout(photos_panel)
+        photos_layout.setContentsMargins(0, 0, 0, 0)
+        photos_layout.addWidget(self.photo_progress); photos_layout.addWidget(self.photos)
+        self.photo_progress.cancelled.connect(self.cancel_thumbnails)
         from .report_ui import ErrorReporter
         self.reporter = ErrorReporter(self)
         L, B = Qt.LeftDockWidgetArea, Qt.BottomDockWidgetArea
         self.docks = {
             "Workspace": self._dock("Workspace", self._workspace_panel(), L, "ws"),
-            "Reference": self._dock("Reference", self.reference, L, "ref"),
-            "Markers": self._dock("Markers", markers_panel(self.markers_pane), L, "markers"),
+            "Reference": self._dock("Reference", self.reference_panel, L, "ref"),
             "Properties": self._dock("Properties", self.properties, L, "props"),
-            "Photos": self._dock("Photos", self.photos, B, "photos"),
+            "Photos": self._dock("Photos", photos_panel, B, "photos"),
             "Console": self._dock("Console", self.console, B, "console"),
             "Jobs": self._dock("Jobs", self.jobs, B, "jobs"),
         }
         # Properties below the Workspace tree (Metashape layout), Reference/Markers tabbed with Workspace
         self.splitDockWidget(self.docks["Workspace"], self.docks["Properties"], Qt.Vertical)
         self.tabifyDockWidget(self.docks["Workspace"], self.docks["Reference"])
-        self.tabifyDockWidget(self.docks["Reference"], self.docks["Markers"])
         self.docks["Workspace"].raise_()
         self.tabifyDockWidget(self.docks["Photos"], self.docks["Console"])
         self.tabifyDockWidget(self.docks["Console"], self.docks["Jobs"])
@@ -173,7 +181,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.resizeDocks([self.docks["Workspace"], self.docks["Properties"]], [420, 220], Qt.Vertical)
         self.resizeDocks([self.docks["Photos"]], [230], Qt.Vertical)
         self.workspace.cameraActivated.connect(lambda ci, k: (self.set_active(ci), self.open_photo(k)))
-        self.workspace.chunkActivated.connect(self.set_active)
         self.workspace.contextAction.connect(self._workspace_action)
         self.workspace.selectionInfo.connect(self._show_properties)
         self.workspace.layerToggled.connect(self.set_layer_visible)
@@ -181,6 +188,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.workspace.markerActivated.connect(self._goto_marker)
         self.markers_pane.markerActivated.connect(self._goto_marker)
         self.photos.photoActivated.connect(self.open_photo)
+        self.reference.cameraActivated.connect(self.open_photo)
+        self.reference.cameraReferenceToggled.connect(self._camera_reference_changed)
         self.markers_pane.markerToggled.connect(self.toggle_marker)
         self.markers_pane.itemSelectionChanged.connect(self._marker_selection_changed)
         self.photo_view.placeMarker.connect(self.place_marker)
@@ -191,20 +200,24 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.markers_pane.markerAction.connect(self._marker_pane_action)
         self.model_view.addMarkerRay.connect(lambda o, d: self.add_marker_at_ray(o, d))
 
+    def _camera_reference_changed(self, index, on):
+        if 0 <= index < len(self.chunk.cameras):
+            self.chunk.cameras[index].use_reference = bool(on)
+            self.set_modified()
+
     def _workspace_panel(self):
         def mk(text, icon, fn):
             a = QAction(layer_icon(icon), text, self)
             a.setToolTip(text); a.triggered.connect(lambda _=False: self._safe(text, fn)())
             return a
         self.ws_actions = {
-            "add_chunk": mk("Add Chunk", "add_chunk", lambda: self._workspace_action("Add Chunk", -1)),
             "add_photos": mk("Add Photos", "add_photos", lambda: self.add_photos()),
             "add_folder": mk("Add Folder", "add_folder", lambda: self.add_folder()),
             "enable": mk("Enable/Disable selected cameras", "enable", self._ws_toggle_selected),
             "remove": mk("Remove selected items", "remove", self._ws_remove_selected),
         }
         a = self.ws_actions
-        self.workspace_widget = workspace_panel(self.workspace, [a["add_chunk"], a["add_photos"], a["add_folder"],
+        self.workspace_widget = workspace_panel(self.workspace, [a["add_photos"], a["add_folder"],
                                                                  None, a["enable"], a["remove"]])
         return self.workspace_widget
 
@@ -217,20 +230,14 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.set_modified()
 
     def _ws_remove_selected(self):
-        roles = self.workspace.selected_roles()
-        cams = sorted(((r[1], r[2]) for r in roles if r[0] == "camera"), reverse=True)
-        chunks = sorted({r[1] for r in roles if r[0] == "chunk"}, reverse=True)
-        if not cams and not chunks:
-            self.statusBar().showMessage("Select cameras or a chunk to remove", 4000); return
-        what = f"{len(cams)} camera(s)" if cams else f"{len(chunks)} chunk(s)"
-        if QMessageBox.question(self, "Remove", f"Remove {what} from the project?") != QMessageBox.Yes:
+        indices = sorted({r[2] for r in self.workspace.selected_roles() if r[0] == "camera"}, reverse=True)
+        if not indices:
+            QMessageBox.information(self, "Remove Photos", "Select photos in Workspace first.")
             return
-        for ci, k in cams:
-            del self.project.chunks[ci].cameras[k]
-        for ci in chunks:
-            if len(self.project.chunks) > 1:
-                del self.project.chunks[ci]
-        self.project.active = max(0, min(self.project.active, len(self.project.chunks) - 1))
+        if QMessageBox.question(self, "Remove Photos", f"Remove {len(indices)} photo(s) from this project?") != QMessageBox.Yes:
+            return
+        for index in indices:
+            del self.chunk.cameras[index]
         self.set_modified(); self.reload_view()
 
     def _show_requested(self, kind, ci):
@@ -274,7 +281,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
     def _handlers(self):
         h = {
-            "New": self.new_project, "Open...": self.open_project, "Append...": self.append_project,
+            "New": self.new_project, "Open...": self.open_project,
             "Save": self.save_project, "Save As...": self.save_project_as, "Exit": self.close,
             "Export Point Cloud...": lambda: self.export_ply("cloud"),
             "Export Model...": self.export_model,
@@ -304,7 +311,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             "Add Photos...": self.add_photos, "Add Folder...": self.add_folder,
             "Align Photos...": self.align_photos, "Build Point Cloud...": self.build_point_cloud,
             "Build Model...": self.build_model, "Build Texture...": self.build_texture,
-            "Merge Chunks...": self.merge_chunks,
             "Import Markers...": self.import_markers,
             "Import Shapes...": lambda: self.import_shapes(), "Export Shapes...": lambda: self.export_shapes(),
             "Remove Shapes": lambda: self.remove_shapes(), "Measure Shape...": lambda: self.measure_shape(),
@@ -530,7 +536,9 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         """Wrap a command so an exception is reported instead of crashing."""
         def wrapper(*args):
             try:
-                return fn(*args)
+                with self.busy_indicator(name):
+                    QApplication.processEvents()
+                    return fn(*args)
             except Exception as e:  # noqa: BLE001
                 import traceback
                 self.log(f"Error in '{name}': {e}\n{traceback.format_exc()}")
@@ -566,7 +574,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def _start_resource_monitor(self):
         """CPU / GPU load in the status bar (background thread, ~1.5 s; GPU hidden without NVIDIA NVML)."""
         from .statusmon import ResourceMonitor
-        self.cpu_label = QLabel("CPU  --"); self.gpu_label = QLabel(); self.gpu_label.hide()
+        self.cpu_label = QLabel("CPU  --"); self.gpu_label = QLabel("GPU unavailable")
         for lab in (self.cpu_label, self.gpu_label):
             lab.setToolTip("System load (updated every 1.5 s)")
             self.statusBar().addPermanentWidget(lab)
@@ -580,9 +588,9 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         from .statusmon import format_cpu, format_gpu
         self.cpu_label.setText(format_cpu(d.get("cpu")))
         if d.get("gpu") is None:
-            self.gpu_label.hide()
+            self.gpu_label.setText("GPU unavailable")
         else:
-            self.gpu_label.setText(format_gpu(d["gpu"], d.get("gpu_mem")))
+            self.gpu_label.setText(format_gpu(d["gpu"]))
             if d.get("gpu_name"):
                 self.gpu_label.setToolTip(f"{d['gpu_name']}: GPU load and memory (NVIDIA NVML)")
             self.gpu_label.show()
@@ -595,8 +603,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
     def _update_colmap_label(self):
         exe = cm.find_colmap()
-        self.colmap_label.setText(f"COLMAP: {'found' if exe else 'not found'}"
-                                  + (f" ({cm.gpu_status()})" if exe else ""))
+        self.colmap_label.setText("COLMAP: found" if exe else "COLMAP: not found")
         self.colmap_label.setToolTip(exe or "Install COLMAP and add it to PATH, or set it in Tools > Preferences")
 
     @property
@@ -611,6 +618,12 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.photos.refresh(self.chunk)
         self._update_title()
         self._update_stale_banners()
+
+    def _apply_default_view(self):
+        choice = QSettings().value("ui/default_view", "Point cloud", str)
+        key = {"Tie points": "tie", "Point cloud": "cloud", "Model": "mesh"}.get(choice, "cloud")
+        if self.model_view.has_layer(key):
+            self._solo(key)
 
     def _update_title(self):
         self.setWindowTitle(window_title(self.project.path, self.project.modified))
@@ -641,11 +654,15 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         gen = self._view_gen
         jobs = [(key, path) for key, path in (("tie", ch.tie_points_ply), ("cloud", ch.point_cloud_ply),
                                               ("mesh", ch.model_ply)) if path and os.path.exists(path)]
+        from .reference_ui import ReferenceMixin
+        context = ReferenceMixin(); context.project = self.project; context.chunk = ch
+        context._model_cache = getattr(self, "_model_cache", (None,))
+        context._marker_xyz_cache = getattr(self, "_marker_xyz_cache", None)
         want_markers = bool(ch.markers)
         want_stats = bool(ch.tie_point_count) and "sparse_stats" not in (ch.meta or {}) and \
             os.path.exists(os.path.join(self._model_dir(ch), "points3D.bin"))
         if not jobs and not want_markers and not want_stats:
-            self.view_loading = False; self.view_progress.hide()
+            self.view_loading = False; self.model_progress.reset()
             self.busy_indicator.background("view-loader")
             return
         self.view_loading = True
@@ -676,7 +693,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             if want_stats:
                 emit(self._viewProgress, gen, f"[{len(jobs)}/{len(jobs) + int(want_stats) + int(want_markers)}] Tie point statistics...")
                 try:
-                    model = self._sparse_model()
+                    model = context._sparse_model()
                     if model is not None:
                         out["sparse_stats"] = procmeta.sparse_stats(model)
                 except Exception as e:  # noqa: BLE001
@@ -684,32 +701,36 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             if want_markers:
                 emit(self._viewProgress, gen, f"[{len(jobs) + int(want_stats)}/{len(jobs) + int(want_stats) + int(want_markers)}] Locating markers...")
                 try:
-                    out["markers"] = self._marker_positions()
+                    out["markers"] = context._marker_positions()
                 except Exception as e:  # noqa: BLE001
                     out["errors"].append(f"Markers: {e}")
+            out["model_cache"] = getattr(context, "_model_cache", (None,))
+            out["marker_cache"] = getattr(context, "_marker_xyz_cache", None)
             emit(self._viewData, gen, out)
 
         self._view_thread = threading.Thread(target=work, name="view-loader", daemon=True)
         self._view_thread.start()
 
     def _show_view_progress(self, gen, text):
-        if gen == self._view_gen:
-            import re
-            count = re.search(r"\[(\d+)/(\d+)\]", text)
-            if count:
-                done, total = map(int, count.groups())
-                self.view_progress.setRange(0, total)
-                self.view_progress.setValue(done)
-                self.busy_indicator.background("view-loader", "Loading 3D view", done, total, text)
-            else:
-                self.view_progress.setRange(0, 0)
-                self.busy_indicator.background("view-loader", "Loading 3D view", text=text)
-            self.view_progress.setFormat(text); self.view_progress.show()
-            self.statusBar().showMessage(text)
+        if gen != self._view_gen:
+            return
+        import re
+        count = re.search(r"\[(\d+)/(\d+)\]", text)
+        done, total = map(int, count.groups()) if count else (0, 0)
+        self.model_progress.update_progress(done, total, text)
+
+    def _cancel_view_load(self):
+        self._view_gen += 1
+        self.view_loading = False
+        self.model_progress.reset()
+        self.busy_indicator.background("view-loader")
 
     def _apply_view_data(self, gen, out):
         if gen != self._view_gen:
             return
+        if "model_cache" in out:
+            self._model_cache = out["model_cache"]
+            self._marker_xyz_cache = out.get("marker_cache")
         for e in out["errors"]:
             self.log(e)
         pts = None
@@ -731,6 +752,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.ortho_view.set_data(pts, [c.est for c in ch.cameras if c.est])
         if "markers" in out:
             self._show_markers_3d(out["markers"])
+            self._update_ortho_markers()
         if out.get("sparse_stats"):
             # derived data (recomputable from the sparse model): kept with the
             # project on the next save, but opening a project doesn't make it "modified"
@@ -741,8 +763,9 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             self.load_texture_view()
         if ch.tiled_model:
             self.load_tiled_view()
+        self._apply_default_view()
         self.view_loading = False
-        self.view_progress.hide()
+        self.model_progress.reset()
         self.busy_indicator.background("view-loader")
         self.statusBar().showMessage("Ready", 2000)
 
@@ -843,7 +866,10 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def _show_properties(self, info):
         ch = self.project.chunks[info["chunk"]]
         kind = info["kind"]
-        if kind == "camera":
+        if kind == "project":
+            rows = [("Project", self.project.path or "Untitled"), ("Images", len(ch.cameras)),
+                    ("Markers", len(ch.markers)), ("CRS", ch.crs or "Local"), ("Version", APP_VERSION)]
+        elif kind == "camera":
             c = ch.cameras[info["index"]]
             rows = [("Label", c.label), ("Path", c.path), ("Size", f"{c.width} x {c.height}"),
                     ("Enabled", c.enabled), ("Aligned", c.aligned), ("Longitude", c.lon),
@@ -887,25 +913,10 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                           if self.chunk is chunk and self._view_gen == generation else None)
 
     def _workspace_action(self, action, ci):
-        previous_chunk = self.chunk
-        if action == "Add Chunk":
-            self.project.chunks.append(Chunk(name=f"Chunk {len(self.project.chunks) + 1}"))
-            self.project.active = len(self.project.chunks) - 1
-        elif action == "Set as Active Chunk":
-            self.set_active(ci)
-        elif action == "Rename Chunk...":
-            name, ok = QInputDialog.getText(self, "Rename Chunk", "Name:", text=self.project.chunks[ci].name)
-            if ok and name:
-                self.project.chunks[ci].name = name
-        elif action == "Duplicate Chunk":
-            import copy
-            c = copy.deepcopy(self.project.chunks[ci]); c.name += " (copy)"
-            self.project.chunks.insert(ci + 1, c)
-        elif action == "Remove Chunk":
-            del self.project.chunks[ci]
-            self.project.active = max(0, min(self.project.active, len(self.project.chunks) - 1))
-        elif action == "Change Image Paths...":
-            self.change_image_paths(ci); return
+        if action in ("Add Chunk", "Set as Active Chunk", "Rename Chunk...", "Duplicate Chunk", "Remove Chunk"):
+            raise ValueError("Chunk management is not supported; use one project per dataset.")
+        if action == "Change Image Paths...":
+            self.change_image_paths(); return
         elif action.startswith("marker:"):
             if ci != self.project.active:
                 self.set_active(ci)
@@ -952,8 +963,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         elif action.startswith("toggle_camera:"):
             cam = self.project.chunks[ci].cameras[int(action.split(":")[1])]
             cam.enabled = not cam.enabled
-        if self.chunk is not previous_chunk:
-            self._reset_project_views()
         self.set_modified(); self.reload_view()
 
     # ---------------------------------------------------------------- File
@@ -969,7 +978,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def _reset_project_views(self):
         """Discard view state belonging to the project or chunk being replaced."""
         self._view_gen += 1
-        self.view_loading = False; self.view_progress.hide()
+        self.view_loading = False; self.model_progress.reset()
         self.busy_indicator.background("view-loader")
         self.busy_indicator.background("texture-loader")
         self._marker_init()
@@ -989,29 +998,43 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             self._reset_project_views(); self.refresh_all(); self.reload_view()
 
     def open_project(self, path=None):
+        if self._opening or (self.runner is not None and getattr(self.runner, "busy", False)):
+            return
         if not self._confirm_discard():
             return
-        path = path or QFileDialog.getOpenFileName(self, "Open", "", PROJECT_FILTER)[0]
-        if path:
-            try:
-                self.project = Project.load(path)
-            except Exception as e:
-                import traceback
-                self.show_error("Open", f"Cannot open project:\n{e}", step="Open project",
-                                traceback_text=traceback.format_exc(), worker=False); return
+        path = path or QFileDialog.getOpenFileName(self, "Open Project", "", PROJECT_FILTER)[0]
+        if not path:
+            return
+        from .project_loader import prepare_project
+        self._opening = True
+        try:
+            result, cancelled, error = run_modal(self, "Open Project", "Preparing project...",
+                lambda report, stop: prepare_project(path, report, stop), 4)
+            if error:
+                self.show_error("Open Project", error, step="Open project")
+                return
+            if cancelled or result is None:
+                return
             self._reset_project_views()
+            self.project = result["project"]
             self.console.ns["project"] = self.project
+            self._model_cache = result["model_cache"]
+            self._marker_xyz_cache = result["marker_cache"]
+            for note in result["notes"]:
+                self.log(note)
             if self.project.relocated:
                 self.project.modified = True
-                for name, k, old, new in self.project.relocated:
-                    self.log(f"{name}: {k} moved: {old} -> {new}")
-                self.log("Project folder was moved: product paths updated (Save to keep them).")
-            self._backfill_meta()
-            self._check_photo_names()
-            self._report_missing_photos()
-            self.start_thumbnails([c for c in self.chunk.cameras if os.path.exists(c.path)])
-            self.refresh_all(); self.reload_view()
+                self.log("Project paths relocated. Save to retain the updated paths.")
+            missing = len(self.chunk.cameras) - len(result["found"])
+            if missing:
+                QMessageBox.information(self, "Missing Photos",
+                    f"{missing} photo(s) are unavailable. Use Tools > Change Image Paths to locate them.")
+            self.refresh_all()
+            self.reload_view()
+            self.start_thumbnails(result["found"])
             self.log(f"Opened {path}")
+        finally:
+            self._opening = False
 
     def _check_photo_names(self):
         """Projects from 0.1.9 and older do not record the COLMAP name of each
@@ -1093,11 +1116,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                 self.log(f"{ch.name}: processing metadata reconstructed from logs ({', '.join(added)}); "
                          f"values not in the logs are shown as 'unknown'. Save to keep it in the project.")
 
-    def append_project(self):
-        path = QFileDialog.getOpenFileName(self, "Append", "", PROJECT_FILTER)[0]
-        if path:
-            self.project.chunks += Project.load(path).chunks
-            self.set_modified()
 
     def save_project(self):
         if not self.project.path:
@@ -1521,14 +1539,12 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             if job is not self._thumb_job:
                 return
             thumb_meter.update(d, n)
-            self.thumb_progress.setRange(0, n); self.thumb_progress.setValue(d)
-            self.thumb_progress.setToolTip(thumb_meter.text())
+            self.photo_progress.update_progress(d, n, "Preparing photo previews")
             self.busy_indicator.background("thumbnails", "Thumbnails", d, n, text)
         job.progress.connect(thumbnail_progress)
         job.done.connect(lambda r, e, j=job: self._thumbs_done(j, r, e))
         self._thumb_job = job
-        self.thumb_progress.setRange(0, len(paths)); self.thumb_progress.setValue(0)
-        self.thumb_progress.show(); self.thumb_cancel.show()
+        self.photo_progress.update_progress(0, len(paths), "Preparing photo previews")
         self.busy_indicator.background("thumbnails", "Thumbnails", 0, len(paths))
         _log.info("thumbnails: %d photos -> %s", len(paths), cache)
         return job.start()
@@ -1537,6 +1553,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         j = self._thumb_job
         if j is not None and not j.finished:
             j.cancel()
+        self.photo_progress.reset()
+        self.busy_indicator.background("thumbnails")
 
     def _apply_thumbs(self, results):
         by_path = {}
@@ -1556,7 +1574,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def _thumbs_done(self, job, result, err):
         if job is not self._thumb_job:
             return
-        self.thumb_progress.hide(); self.thumb_cancel.hide()
+        self.photo_progress.reset()
         self.busy_indicator.background("thumbnails")
         bad = sum(1 for v in (result or {}).values() if "error" in v)
         _log.info("thumbnails finished: %d done, %d unreadable, cancelled=%s, error=%s",
@@ -2563,20 +2581,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                  f"in {time.perf_counter() - t0:.1f} s (real world coordinates; world file written)")
         return files
 
-    def merge_chunks(self):
-        if len(self.project.chunks) < 2:
-            QMessageBox.information(self, "Merge Chunks", "Need at least two chunks."); return
-        merged = Chunk(name="Merged Chunk")
-        for c in self.project.chunks:
-            merged.add_photos([cam.path for cam in c.cameras],
-                              {cam.path: {"lon": cam.lon, "lat": cam.lat, "alt": cam.alt, "thumb": cam.thumb,
-                                          "desc": cam.desc, "width": cam.width, "height": cam.height}
-                               for cam in c.cameras})
-        self.project.chunks.append(merged)
-        self.log("Merged photos of all chunks into a new chunk (re-align to reconstruct).")
-        self.set_modified()
 
-    # --------------------------------------------------------------- Tools
     def clean_up_data(self):
         """Tools > Clean Up Intermediate Data...: sizes per part, checkboxes,
         confirmation; finished products and photos are never deleted."""
@@ -2636,6 +2641,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def preferences(self):
         if PreferencesDialog(self).exec():
             self._update_colmap_label()
+            self._apply_default_view()
 
     # ---------------------------------------------------------------- Help
     def help_contents(self):

@@ -74,7 +74,7 @@ def test_view_loads_in_background(window, tmp_path):
     assert window.wait_view_loaded(60)
     assert window.ortho_view.pts is not None and len(window.ortho_view.pts) > 1000
     assert t_call < 1.0, f"load_result blocked {t_call:.2f} s"
-    assert not window.view_progress.isVisible()
+    assert not window.model_progress.isVisible()
 
 
 def test_vertex_normals_match_pyqtgraph():

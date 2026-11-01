@@ -24,8 +24,8 @@ def main():
     # splash first, then the heavy imports (NumPy, OpenGL / pyqtgraph, main window)
     from photomesh import splash as splash_mod
     splash = splash_mod.show()
-    from photomesh.theme import apply_dark_theme
-    apply_dark_theme(app)
+    from photomesh.theme import apply_theme
+    apply_theme(app)
     splash.step("Loading numerical libraries")
     import numpy  # noqa: F401
     diag.log_system_info()

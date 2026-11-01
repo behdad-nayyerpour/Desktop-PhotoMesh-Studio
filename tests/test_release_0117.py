@@ -165,7 +165,7 @@ def test_background_status_is_counted_independently(window):
     busy.background("tiles", "Loading tiles", 2, 10)
     busy.background("texture", "Loading texture")
     busy.background("tiles")
-    assert busy.active and "Loading texture" in busy.label.text()
+    assert busy.active and busy.label.text() == "Busy"
     busy.background("texture")
     assert not busy.active
 

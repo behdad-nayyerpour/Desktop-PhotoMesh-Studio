@@ -215,7 +215,8 @@ class ModelView(QWidget):
                 self.gl.overlay_cb = self._paint_overlay
                 self.gl.setContextMenuPolicy(Qt.CustomContextMenu)
                 self.gl.customContextMenuRequested.connect(self._context)
-                self.gl.setBackgroundColor(BACKGROUND)
+                from .theme import viewport_color
+                self.gl.setBackgroundColor(viewport_color())
                 self.gl.opts["fov"] = DEFAULT_FOV
                 self.grid = gl.GLGridItem(); self.grid.setSize(20, 20); self.grid.setSpacing(1, 1)
                 self.grid.setColor((150, 150, 158, 55))          # faint grid
@@ -236,11 +237,21 @@ class ModelView(QWidget):
         self._build_overlays()
 
     # ---- overlays: projection (top-left), axis gizmo (bottom-right)
+    def apply_theme(self, light):
+        from .theme import viewport_color
+        bg = viewport_color()
+        if self.gl is not None:
+            self.gl.setBackgroundColor(bg)
+        else:
+            pal = self.palette(); pal.setColor(self.backgroundRole(), bg); self.setPalette(pal)
+        self.proj_label.setStyleSheet("QLabel{color:" + ("#252525" if light else "#e6e6e6") + ";background:transparent;font-size:8pt;}")
+
     def _build_overlays(self):
         host = self.gl if self.gl is not None else self
         if self.gl is None:
             self.setAutoFillBackground(True)
-            pal = self.palette(); pal.setColor(self.backgroundRole(), BACKGROUND); self.setPalette(pal)
+            from .theme import viewport_color
+            pal = self.palette(); pal.setColor(self.backgroundRole(), viewport_color()); self.setPalette(pal)
         css = "QLabel{color:#e6e6e6;background:transparent;font-size:8pt;}"
         self.proj_label = QLabel(host); self.proj_label.setStyleSheet(css)
         self.stale_label = QLabel(host)
@@ -942,7 +953,8 @@ class _ZoomView(QGraphicsView):
         self.setScene(QGraphicsScene(self))
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setBackgroundBrush(QColor(26, 26, 32))
+        from .theme import viewport_color
+        self.setBackgroundBrush(viewport_color())
 
     def wheelEvent(self, e: QWheelEvent):
         f = 1.15 if e.angleDelta().y() > 0 else 1 / 1.15
@@ -982,6 +994,10 @@ class PhotoView(QWidget):
         self.view.customContextMenuRequested.connect(self._context)
         self.view.viewport().installEventFilter(self)
         self.view.installEventFilter(self)
+
+    def apply_theme(self, light):
+        from .theme import viewport_color
+        self.view.setBackgroundBrush(viewport_color())
 
     def eventFilter(self, obj, ev):
         """Ctrl+click: pin the active marker here (or add a new marker if none is active)."""
@@ -1144,50 +1160,36 @@ class PhotoView(QWidget):
                 _label_item(str(lab), a, ls, c, 0.0)
 
     def _draw_markers(self):
-        from PySide6.QtGui import QPen, QBrush
         from PySide6.QtWidgets import QGraphicsItem
-        sc = self.view.scene()
-        for it in self._overlay:
-            sc.removeItem(it)
+        from PySide6.QtCore import QRectF
+        from .marker_style import draw_flag, color
+        class FlagItem(QGraphicsItem):
+            def __init__(self, state, active):
+                super().__init__()
+                self.colour, self.active = color(state), active
+                self.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+            def boundingRect(self):
+                return QRectF(-5, -27, 23, 33)
+            def paint(self, painter, option, widget=None):
+                draw_flag(painter, 0, 0, self.colour, self.active)
+        scene = self.view.scene()
+        for item in self._overlay:
+            scene.removeItem(item)
         self._overlay = []
         if self.path is None or not self.vis.get("markers", True):
             return
-        labels = self.vis.get("marker_labels", True)
-        # Metashape-like flags: pinned green, placed but not pinned blue,
-        # predicted (computed, not stored) grey and dashed
-        from PySide6.QtGui import QPolygonF
-        col = {"pinned": QColor(40, 220, 60), "placed": QColor(60, 140, 255), "predicted": QColor(190, 190, 190)}
-        for label, u, v, kind in self.markers:
-            c = col.get(kind, col["predicted"])
-            pen = QPen(c, 3.5 if label == self.active_marker else 3); pen.setCosmetic(True)
-            if kind == "predicted":
-                pen.setStyle(Qt.DashLine)
-            halo = QPen(QColor(0, 0, 0, 170), pen.widthF() + 2); halo.setCosmetic(True)
-            r = 9
-            items = []
-            # pixel centre of the top-left pixel is (0.5, 0.5) in photo coordinates;
-            # the flag is drawn at constant screen size (ignores the zoom)
-            for pn, z in ((halo, 6), (pen, 7)):
-                parts = [sc.addEllipse(-r, -r, 2 * r, 2 * r, pn),
-                         sc.addLine(-2 * r, 0, -4, 0, pn), sc.addLine(4, 0, 2 * r, 0, pn),
-                         sc.addLine(0, -2 * r, 0, -4, pn), sc.addLine(0, 4, 0, 2 * r, pn),
-                         sc.addLine(0, -2 * r, 0, -2 * r - 14, pn)]                 # flag pole
-                for it in parts:
-                    it.setPos(u, v); it.setFlag(QGraphicsItem.ItemIgnoresTransformations, True); it.setZValue(z)
-                items += parts
-            flag = sc.addPolygon(QPolygonF([QPointF(0, -2 * r - 14), QPointF(11, -2 * r - 10), QPointF(0, -2 * r - 6)]),
-                                 pen, QBrush(c if kind != "predicted" else QColor(0, 0, 0, 0)))
-            flag.setPos(u, v); flag.setFlag(QGraphicsItem.ItemIgnoresTransformations, True); flag.setZValue(7)
-            self._overlay += items + [flag]
-            if not labels:
-                continue
-            txt = str(label) + {"pinned": "", "predicted": "  (predicted)"}.get(kind, "  (not pinned)")
-            t = sc.addSimpleText(txt)
-            f = t.font(); f.setBold(True); f.setPointSizeF(max(10.0, f.pointSizeF())); t.setFont(f)
-            t.setBrush(QBrush(c)); t.setPen(QPen(QColor(0, 0, 0, 200), 0.5))
-            t.setPos(u, v); t.setFlag(QGraphicsItem.ItemIgnoresTransformations, True); t.setZValue(8)
-            t.setTransform(t.transform().translate(14, -2 * r - 16))
-            self._overlay.append(t)
+        for label, u, v, state in self.markers:
+            item = FlagItem(state, label == self.active_marker)
+            item.setPos(u, v); item.setZValue(7); scene.addItem(item)
+            self._overlay.append(item)
+            if self.vis.get("marker_labels", True):
+                text = scene.addSimpleText(str(label))
+                font = text.font(); font.setBold(True); font.setPointSizeF(10); text.setFont(font)
+                text.setBrush(color(state))
+                text.setPen(QPen(QColor(0, 0, 0, 210), 0.5))
+                text.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+                text.setPos(u, v); text.setTransform(text.transform().translate(17, -27)); text.setZValue(8)
+                self._overlay.append(text)
 
     def _context(self, pos):
         from PySide6.QtWidgets import QMenu

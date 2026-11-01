@@ -203,12 +203,8 @@ class Overlay:
                 continue
             if kind == "marker":
                 n_markers += 1; n_hidden += occ
-                r = 7.0
-                painter.setPen(QPen(QColor(0, 0, 0, 200), 5.0)); painter.setBrush(Qt.NoBrush)
-                painter.drawEllipse(QPointF(x, y), r, r)
-                painter.setPen(QPen(col, 3.0))
-                painter.setBrush(Qt.NoBrush if occ else QBrush(col))
-                painter.drawEllipse(QPointF(x, y), r, r)
+                from .marker_style import draw_flag
+                draw_flag(painter, x, y, col)
             elif kind == "shape":
                 pass                                     # the GL pass draws the shape points
             if text:
@@ -223,7 +219,7 @@ class Overlay:
                         b = st["label_bg_color"]; bg = QColor(int(b[0]), int(b[1]), int(b[2]), 190)
                 painter.setFont(lf)
                 tw = lfm.horizontalAdvance(text); th = lfm.height()
-                box = label_rect((x, y), tw, th, width, height)
+                box = label_rect((x, y - 18 if kind == "marker" else y), tw, th, width, height)
                 tc = QColor(col); tc.setAlpha(255)
                 if bg is not None:
                     painter.setPen(Qt.NoPen); painter.setBrush(bg)
