@@ -253,3 +253,21 @@ def test_thumbnail_batches_from_previous_project_are_ignored(window, monkeypatch
     monkeypatch.setattr(window, "_apply_thumbs", lambda items: received.extend(items))
     job.batch.emit([{"path": "old.jpg"}])
     assert received == []
+
+
+def test_native_dialog_migration_resets_old_fallback_only_once():
+    from photomesh.mainwindow import migrate_ui_settings
+    settings = QSettings()
+    old_dialogs = settings.value("ui/qt_file_dialogs", False, bool)
+    old_migration = settings.value("ui/native_dialogs_initialized_v1", False, bool)
+    try:
+        settings.setValue("ui/qt_file_dialogs", True)
+        settings.remove("ui/native_dialogs_initialized_v1")
+        migrate_ui_settings()
+        assert not settings.value("ui/qt_file_dialogs", True, bool)
+        settings.setValue("ui/qt_file_dialogs", True)
+        migrate_ui_settings()
+        assert settings.value("ui/qt_file_dialogs", False, bool)
+    finally:
+        settings.setValue("ui/qt_file_dialogs", old_dialogs)
+        settings.setValue("ui/native_dialogs_initialized_v1", old_migration)

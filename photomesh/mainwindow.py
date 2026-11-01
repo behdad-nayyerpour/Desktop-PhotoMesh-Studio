@@ -59,6 +59,14 @@ def window_title(path, modified=False):
     name = os.path.splitext(path.replace("\\", "/").rsplit("/", 1)[-1])[0] if path else "Untitled"
     return f"{APP_NAME} {APP_VERSION} - {name}{'*' if modified else ''}"
 
+def migrate_ui_settings():
+    """1.0 starts with native dialogs; later explicit fallback choices are preserved."""
+    settings = QSettings()
+    if not settings.value("ui/native_dialogs_initialized_v1", False, bool):
+        settings.setValue("ui/qt_file_dialogs", False)
+        settings.setValue("ui/native_dialogs_initialized_v1", True)
+
+
 class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     _viewData = Signal(int, object)          # generation, loaded arrays (from the loader thread)
     _texData = Signal(int, object)           # generation, textured model display data (or the error)
@@ -68,6 +76,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         super().__init__()
         from .activity import ActivityStatusBar
         self.setStatusBar(ActivityStatusBar(self))
+        migrate_ui_settings()
         self._opening = False
         self._view_gen = 0
         self._view_thread = None
@@ -102,9 +111,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.busy_indicator = BusyIndicator(self.statusBar())
         self.ortho_view.workChanged.connect(lambda name, done, total, active: self.busy_indicator.background(
             name, name if active else None, done, total))
-        self.colmap_label = QLabel(self)
-        self.colmap_label.hide()
-        self._update_colmap_label()
         self._start_resource_monitor()
         self.refresh_all()
         from .theme import apply_theme
@@ -601,10 +607,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         else:
             self.busy_indicator.background("model-tiles")
 
-    def _update_colmap_label(self):
-        exe = cm.find_colmap()
-        self.colmap_label.setText("COLMAP: found" if exe else "COLMAP: not found")
-        self.colmap_label.setToolTip(exe or "Install COLMAP and add it to PATH, or set it in Tools > Preferences")
 
     @property
     def chunk(self) -> Chunk:
@@ -2673,7 +2675,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
     def preferences(self):
         if PreferencesDialog(self).exec():
-            self._update_colmap_label()
             self._apply_default_view()
 
     # ---------------------------------------------------------------- Help
@@ -2705,6 +2706,6 @@ def apply_dialog_setting():
     """Tools > Preferences > 'Use built-in file dialogs' (or PHOTOMESH_QT_DIALOGS=1):
     use Qt's own file dialogs instead of the Windows shell dialogs, which can hang
     on some systems (broken shell extensions, offline network/cloud drives)."""
-    on = QSettings().value("ui/qt_file_dialogs", False, bool) or bool(os.environ.get("PHOTOMESH_QT_DIALOGS"))
+    on = QSettings().value("ui/qt_file_dialogs", False, bool) or os.environ.get("PHOTOMESH_QT_DIALOGS", "").lower() in ("1", "true", "yes", "on")
     QApplication.instance().setAttribute(Qt.AA_DontUseNativeDialogs, on)
     return on

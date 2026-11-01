@@ -194,7 +194,8 @@ datasets in an older version; its original file is not modified.
 
 **Preferences > Theme** applies Dark/Light immediately and remembers the choice.
 **Default view** selects the requested product when it is available after loading.
-Windows native file dialogs are the default. The built-in dialog option remains
+On the first 1.0 launch the file-dialog preference is reset to Windows native
+dialogs. Subsequent explicit choices are preserved. The built-in dialog option remains
 an explicit fallback for Windows shell-dialog problems.
 
 Marker edits preserve the selected photo and Photos-panel scroll position.
