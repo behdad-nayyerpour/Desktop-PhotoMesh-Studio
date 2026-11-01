@@ -1159,7 +1159,7 @@ def read_info(folder_or_tif):
             info = json.load(f)
         info["dir"] = p
         info["dir"] = os.path.abspath(p)
-        for k in ("path", "height_path"):
+        for k in ("path", "height_path", "coverage_path"):
             v = info.get(k)
             if v:      # always the files of THIS folder (it may have been copied or moved)
                 cand = os.path.join(info["dir"], os.path.basename(v.replace("\\", "/")))

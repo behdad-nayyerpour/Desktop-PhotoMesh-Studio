@@ -422,6 +422,19 @@ def merge_identical_cameras(db, groups=None):
     camera. Returns {camera_id: number of photos}."""
     con = sqlite3.connect(db)
     try:
+        if groups:
+            # An extractor may already share calibration between photos.
+            # Split explicit partitions first so a manual group really takes effect.
+            partitions={}
+            for iid,name,cid in con.execute("SELECT image_id,name,camera_id FROM images"):
+                partitions.setdefault(cid,{}).setdefault(groups.get(name,""),[]).append(iid)
+            columns=[row[1] for row in con.execute("PRAGMA table_info(cameras)") if row[1]!="camera_id"]
+            fields=",".join('"'+name.replace('"','""')+'"' for name in columns)
+            for cid,parts in partitions.items():
+                for ids in list(parts.values())[1:]:
+                    cursor=con.execute(f"INSERT INTO cameras ({fields}) SELECT {fields} FROM cameras WHERE camera_id=?",(cid,))
+                    new=cursor.lastrowid
+                    con.executemany("UPDATE images SET camera_id=? WHERE image_id=?",[(new,iid) for iid in ids])
         cams = con.execute("SELECT camera_id, model, width, height, params FROM cameras ORDER BY camera_id").fetchall()
         first, remap = {}, {}
         names = {}
@@ -446,9 +459,9 @@ def merge_identical_cameras(db, groups=None):
 
 def camera_groups_step(db, label="Grouping cameras", groups=None):
     def run():
-        groups = merge_identical_cameras(db)
-        return [("log", f"{len(groups)} camera group(s): "
-                        + ", ".join(f"{n} photos" for n in sorted(groups.values(), reverse=True)), 0)]
+        result = merge_identical_cameras(db, groups=groups)
+        return [("log", f"{len(result)} camera group(s): "
+                        + ", ".join(f"{n} photos" for n in sorted(result.values(), reverse=True)), 0)]
     return (label, run, 0)
 
 

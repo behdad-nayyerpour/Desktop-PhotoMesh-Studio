@@ -333,3 +333,23 @@ def test_ortho_replenishes_views_lost_to_occlusion(tmp_path,monkeypatch):
     counts=[int(line.split("replenished ")[1].split()[0].replace(",",""))
             for line in log if "replenished " in line]
     assert counts and max(counts)>0
+
+
+def test_calibration_review_groups_reach_pipeline_and_split_shared_cameras(tmp_path):
+    import sqlite3
+    from photomesh.fastpipe import camera_groups_step
+    path=str(tmp_path/"database.db")
+    with sqlite3.connect(path) as db:
+        db.execute("CREATE TABLE cameras(camera_id INTEGER PRIMARY KEY,model INTEGER,width INTEGER,height INTEGER,params BLOB,prior_focal_length INTEGER)")
+        db.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY,name TEXT,camera_id INTEGER)")
+        params=np.array([800.,500.,400.,0.]).tobytes()
+        for cid in (1,2):
+            db.execute("INSERT INTO cameras VALUES(?,?,?,?,?,?)",(cid,2,1000,800,params,1))
+        db.executemany("INSERT INTO images VALUES(?,?,?)",[(1,"a.jpg",1),(2,"b.jpg",1),(3,"c.jpg",1),(4,"d.jpg",2)])
+    step=camera_groups_step(path,groups={"a.jpg":"A","b.jpg":"B","c.jpg":"A","d.jpg":"A"})
+    events=step[1]()
+    with sqlite3.connect(path) as db:
+        linked=dict(db.execute("SELECT name,camera_id FROM images"))
+        assert db.execute("SELECT COUNT(*) FROM cameras").fetchone()[0]==2
+    assert linked["a.jpg"]==linked["c.jpg"]==linked["d.jpg"] and linked["b.jpg"]!=linked["a.jpg"]
+    assert "2 camera group(s)" in events[0][1]
