@@ -1716,6 +1716,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         original_wd = self.project.default_workdir(ch)
         wd = original_wd
         if ch.aligned_count():
@@ -1746,8 +1748,18 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         names = [mapping[c.path] for c in enabled]
         s["calibration_groups"] = {mapping[path]: group for path,group in s.get("calibration_groups",{}).items()
                                    if path in mapping}
-        steps = [("Preparing alignment", lambda: cm.align_steps(exe, ch, wd, s, names=names,
-                                                               infos=[c.info() for c in enabled]), 1)]
+        previous_poses = {mapping[c.path]: {"center":c.est,"rotation":c.rot}
+                          for c in enabled if c.aligned and c.est is not None and c.rot is not None}
+        def prepare_alignment():
+            planned = cm.align_steps(exe, ch, wd, s, names=names, infos=[c.info() for c in enabled])
+            if previous_poses:
+                path=os.path.join(wd,"preserve_frame.json")
+                with open(path,"w",encoding="utf-8") as fh:
+                    json.dump({"model":os.path.join(wd,"sparse","0"),"cameras":previous_poses},fh)
+                index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
+                planned.insert(index,("Preserving project frame",[cm.PYTHON,"preserve_frame",path],2))
+            return planned
+        steps = [("Preparing alignment", prepare_alignment, 1)]
         self.log(f"Align Photos: mode={s['mode']}, accuracy={s['accuracy']}, workdir={wd}")
 
         def loaded():
@@ -1757,7 +1769,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             ch.workdir = wd
             if wd != original_wd:
                 self._invalidate_camera_products(ch)
-                ch.georef = {}
+                if ch.georef:
+                    ch.georef.update(rows=[], control_rmse=None, check_rmse=None)
             from .photonames import assign_names
             assign_names(ch, mapping)              # exact camera <-> model link, saved in the project
             for c in ch.cameras:
@@ -1825,6 +1838,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         from .dense import dense_steps
         wd = self.project.default_workdir(ch)
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         if ch.georef:
             s["filters"].setdefault("up", [0.0, 0.0, 1.0])
         steps = [("Preparing point cloud", lambda: dense_steps(exe, wd, s, cm.image_dir(wd)), 1)]
@@ -1869,6 +1884,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         if s["source"] == "Depth maps":
             cuda = self._cuda_available(exe)
             if cuda is None:
@@ -1956,6 +1973,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         wd = self.project.default_workdir(ch)
         out = os.path.join(wd, "texture")
         cfg = dict(s, mesh=ch.model_ply, model=mdir, photos=self._photo_map(ch), out_dir=out,
@@ -2137,6 +2156,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         wd = self.project.default_workdir(ch)
         tex = ch.texture or {}
         from .workflow import file_stamp
@@ -2414,6 +2435,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         wd = self.project.default_workdir(ch)
         os.makedirs(wd, exist_ok=True)
         cfg = dict(s, cloud=ch.point_cloud_ply, mesh=ch.model_ply, model=self._model_dir(ch),
@@ -2478,6 +2501,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         s = self._check_ortho_size(s, plan, gsd, "m" if ch.georef else "units")
         if s is None:
             return
@@ -2597,6 +2622,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        if hasattr(dlg, "workflow_status"):
+            s.update(dlg.workflow_status())
         ext = s["fmt"]
         filt = {"tif": "GeoTIFF (*.tif)", "jpg": "JPEG + world file (*.jpg)", "png": "PNG + world file (*.png)"}[ext]
         dst = QFileDialog.getSaveFileName(self, title, ("orthomosaic" if kind == "ortho" else "dem") + "." + ext, filt)[0]

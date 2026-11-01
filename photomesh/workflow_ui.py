@@ -34,7 +34,7 @@ def alignment_context(d, parent):
         d.reference.setEnabled(mode == "Fast" and gps >= 2)
         maximum = max([max(c.width, c.height) for c in cameras] or [0])
         from .colmap import ACCURACY_DOWNSCALE, find_glomap
-        side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentText()]) if maximum else 0
+        side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentData() or d.accuracy.currentText()]) if maximum else 0
         fine = mode == "Fast" and d.c2f.isChecked() and side > COARSE_MAX_SIZE * 1.25
         kind = d.mapper.currentText()
         if kind == "Auto":
@@ -148,6 +148,7 @@ def mesh_context(d, parent):
     d.custom.valueChanged.connect(lambda *_: summary.setText(
         f"Target: {d.custom.value():,} triangles; cleanup may reduce the final count."))
     update()
+    source_status(d,parent,kind="Point cloud")
 
 
 def texture_context(d, parent, has_uv):
@@ -180,6 +181,7 @@ def texture_context(d, parent, has_uv):
     d.ghost.setToolTip("Colour outlier rejection requires at least four valid views; coverage is reported.")
     d.mapping.setToolTip("Orthophoto can collapse vertical/overlapping surfaces. Adaptive mapping uses camera charts for steep faces.")
     update()
+    source_status(d,parent,kind="Model")
 
 
 def tiles_context(d, parent):
@@ -200,6 +202,7 @@ def tiles_context(d, parent):
     note(d, "Auto uses source texture resolution, or mesh-edge spacing if no texture is available. "
             "A manual value is the requested minimum texel size; effective values are reported.", True)
     update()
+    source_status(d,parent,d.source)
 
 
 def dem_context(d, parent):
@@ -238,6 +241,7 @@ def dem_context(d, parent):
         d.smooth_distance.setEnabled(enabled)
     d.source.currentTextChanged.connect(update); d.interp.currentTextChanged.connect(update)
     selected_source(); update()
+    source_status(d,parent,d.source)
 
 
 def ortho_context(d, parent):
@@ -261,13 +265,25 @@ def ortho_context(d, parent):
             d.plan = {"bounds": (b[0]-off[0], b[1]-off[1], b[2]-off[0], b[3]-off[1]), "off": off}
         elif hasattr(d, "_mesh_plan"):
             d.plan = d._mesh_plan
+        if d.plan:
+            off=d.plan["off"]; b=d.plan["bounds"]
+            for control,value in zip(d.region_box.spins,[b[0]+off[0],b[1]+off[1],b[2]+off[0],b[3]+off[1]]):
+                control.setValue(value)
         d._update_size()
     d._mesh_plan = d.plan
     d.surface.currentTextChanged.connect(surface)
-    d.res.currentTextChanged.connect(d._update_size)
+    d.native_gsd=d.gsd
+    def resolution(*_):
+        d.gsd=d.native_gsd*(2 if d.res.currentIndex()==1 else 1)
+        if hasattr(d,"gsd_label"):
+            d.gsd_label.setText(f"Effective photo GSD ~{d.gsd:.6g} {d.unit}/pix")
+        d._update_size()
+    d.res.currentTextChanged.connect(resolution)
+    resolution()
     d.holes.setToolTip("Fills short gaps with inferred heights/colours; does not create measured detail.")
     d.ghost.setToolTip("Coarse colour outlier detection requires four valid views. Coverage is reported.")
     surface(); update()
+    source_status(d,parent,d.surface)
 
 
 def prepare_source_plans(window, sources):
@@ -309,3 +325,32 @@ def prepare_source_plans(window, sources):
     if cancelled or result is None: return None
     window._workflow_plan_cache=cache
     return result
+
+
+def source_status(d,parent,selector=None,kind=None):
+    """Expose outdated inputs without silently treating them as current products."""
+    ch=getattr(parent,"chunk",None)
+    if ch is None: return
+    label=note(d,"",True)
+    acknowledgement=QCheckBox("Use this outdated source anyway (rebuilding it is recommended)")
+    d.aform.addRow(acknowledgement)
+    prior=getattr(d,"validate_settings",None)
+    state={"reason":""}
+    def update(*_):
+        selected=kind or (selector.currentText() if selector is not None else "")
+        key={"Model":"model","Mesh":"model","Point cloud":"point_cloud","DEM":"dem"}.get(selected,selected)
+        metadata=(ch.meta or {}).get(key) or {}
+        product=getattr(ch,key,{})
+        reason=metadata.get("stale") or (product.get("stale") if isinstance(product,dict) else None)
+        state["reason"]=str(reason or "")
+        label.setText(f"Outdated input: {reason}" if reason else "Input status: no recorded camera/source changes.")
+        label.setStyleSheet("color: #d04040;" if reason else "")
+        acknowledgement.setVisible(bool(reason)); acknowledgement.setChecked(False)
+    def validate():
+        if prior: prior()
+        if state["reason"] and not acknowledgement.isChecked():
+            raise ValueError("The selected source is outdated. Rebuild it or explicitly acknowledge using it.")
+    d.validate_settings=validate
+    d.workflow_status=lambda: {"input_warning":state["reason"],"allow_stale":acknowledgement.isChecked()}
+    if selector is not None: selector.currentTextChanged.connect(update)
+    update()

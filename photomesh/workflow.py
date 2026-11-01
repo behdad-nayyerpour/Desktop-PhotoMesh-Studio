@@ -73,6 +73,8 @@ def product_transaction(function):
     """Build all dependent files together; a failed/cancelled run keeps the old set."""
     @functools.wraps(function)
     def run(cfg, *args, **kwargs):
+        if cfg.get("input_warning") and not cfg.get("allow_stale"):
+            raise ValueError("Outdated input: " + str(cfg["input_warning"]))
         target = os.path.abspath(cfg["out_dir"])
         os.makedirs(os.path.dirname(target), exist_ok=True)
         previous = target + ".previous"
@@ -83,6 +85,8 @@ def product_transaction(function):
         trial = dict(cfg, out_dir=stage, previous_dir=target)
         try:
             result = function(trial, *args, **kwargs)
+            if cfg.get("input_warning"):
+                result["input_warning"] = cfg["input_warning"]
             result = remap_paths(result, stage, target)
             if result.get("path"):
                 from .geotiff import TiffReader

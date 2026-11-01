@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
     QVBoxLayout, QGroupBox, QLabel, QProgressBar, QPlainTextEdit, QPushButton,
-    QHBoxLayout, QLineEdit, QFileDialog, QTabWidget, QWidget, QMessageBox)
+    QHBoxLayout, QLineEdit, QFileDialog, QTabWidget, QWidget, QMessageBox, QScrollArea)
 
 from . import colmap as cm
 
@@ -23,7 +23,16 @@ class _SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setMinimumWidth(380)
-        lay = QVBoxLayout(self)
+        outer = QVBoxLayout(self)
+        body = QWidget()
+        self.content_layout = QVBoxLayout(body)
+        lay = self.content_layout
+        scroll = QScrollArea(); scroll.setWidgetResizable(True); scroll.setWidget(body)
+        outer.addWidget(scroll, 1)
+        self.setMinimumWidth(560)
+        screen = self.screen()
+        if screen is not None:
+            self.setMaximumHeight(int(screen.availableGeometry().height() * .9))
         self.general = QGroupBox("General")
         self.gform = QFormLayout(self.general)
         self.advanced = QGroupBox("Advanced")
@@ -33,7 +42,7 @@ class _SettingsDialog(QDialog):
         bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         bb.accepted.connect(self.accept)
         bb.rejected.connect(self.reject)
-        lay.addWidget(bb)
+        outer.addWidget(bb)
 
     def accept(self):
         try:
@@ -53,6 +62,8 @@ class AlignPhotosDialog(_SettingsDialog):
     def __init__(self, parent=None):
         super().__init__("Align Photos", parent)
         self.accuracy = _combo(["High", "Medium", "Low", "Lowest"], "High")
+        for index,(label,value) in enumerate((("Full","High"),("Half","Medium"),("Quarter","Low"),("One eighth","Lowest"))):
+            self.accuracy.setItemText(index,label); self.accuracy.setItemData(index,value)
         self.generic = QCheckBox("Generic preselection")
         self.generic.setChecked(True)
         self.reference = QCheckBox("GPS pair preselection")
@@ -99,7 +110,7 @@ class AlignPhotosDialog(_SettingsDialog):
         alignment_context(self, parent)
 
     def settings(self):
-        return {"accuracy": self.accuracy.currentText(),
+        return {"accuracy": self.accuracy.currentData() or self.accuracy.currentText(),
                 "generic": self.generic.isChecked(),
                 "mode": self.mode.currentText(),
                 "mapper": self.mapper.currentText(),
@@ -147,7 +158,7 @@ class BuildPointCloudDialog(_SettingsDialog):
         self.confidence.toggled.connect(self.min_conf.setEnabled)
         for w in (self.sor, self.radius, self.elev):
             f.addRow(w)
-        self.layout().insertWidget(2, self.outl)
+        self.content_layout.insertWidget(2, self.outl)
         from .workflow_ui import dense_context
         dense_context(self, parent)
 
@@ -622,7 +633,7 @@ class BuildDEMDialog(_SettingsDialog):
         self.gform.addRow("Interpolation:", self.interp)
         self.aform.addRow("Resolution:", self.pixel)
         self.region_box = _RegionBox(bounds, unit)
-        self.layout().insertWidget(2, self.region_box)
+        self.content_layout.insertWidget(2, self.region_box)
         from .workflow_ui import dem_context
         dem_context(self, parent)
 
@@ -662,7 +673,8 @@ class BuildOrthomosaicDialog(_SettingsDialog):
         self.gform.addRow(self.r_pix, self.pixel)
         self.gform.addRow(self.r_max, self.maxdim)
         if self.gsd:
-            self.gform.addRow("", QLabel(f"Default = estimated photo GSD ({self.gsd:.4g} {unit}/pix)"))
+            self.gsd_label = QLabel(f"Estimated photo GSD ({self.gsd:.4g} {unit}/pix)")
+            self.gform.addRow("", self.gsd_label)
         # Metashape-like "Total size (pix)" read-out, checked before the build starts
         self.plan, self.unit = plan, unit
         self.size_label = QLabel(""); self.size_label.setWordWrap(True)
@@ -675,7 +687,7 @@ class BuildOrthomosaicDialog(_SettingsDialog):
                           st.value("ortho/res", "Full resolution photos (best)", str))
         self.aform.addRow("Photo resolution:", self.res)
         self.region_box = _RegionBox(bounds, unit)
-        self.layout().insertWidget(2, self.region_box)
+        self.content_layout.insertWidget(2, self.region_box)
         self.region_box.toggled.connect(self._update_size)
         for sp in self.region_box.spins:
             sp.valueChanged.connect(self._update_size)
@@ -775,7 +787,7 @@ class ExportRasterDialog(_SettingsDialog):
                       "world file (.tfw / .jgw / .pgw)" + ("; a Rhino placement script and notes are written "
                                                           "next to the file." if kind != "dem" else "."))
         note.setWordWrap(True)
-        self.layout().insertWidget(2, note)
+        self.content_layout.insertWidget(2, note)
 
     def ext(self):
         t = self.fmt.currentText()
@@ -821,7 +833,7 @@ class ImportShapesDialog(_SettingsDialog):
         f = QLabel(f"<b>{os.path.basename(path)}</b> - {stats}<br>File coordinate system: {detected or 'not given'}"
                    f"<br>Project: {project_crs}")
         f.setWordWrap(True)
-        self.layout().insertWidget(0, f)
+        self.content_layout.insertWidget(0, f)
         self.gform.addRow("Layer name:", self.layer)
         self.gform.addRow("Coordinate system:", self.src)
         utm = QWidget(); h = QHBoxLayout(utm); h.setContentsMargins(0, 0, 0, 0); h.addWidget(self.zone)
@@ -834,7 +846,7 @@ class ImportShapesDialog(_SettingsDialog):
         self.aform.addRow(self.replace)
         if notes:
             n = QLabel("\n".join(notes[:6])); n.setWordWrap(True); n.setStyleSheet("color: gray")
-            self.layout().insertWidget(3, n)
+            self.content_layout.insertWidget(3, n)
 
     def settings(self):
         st = QSettings()
@@ -869,7 +881,7 @@ class ExportShapesDialog(_SettingsDialog):
                       "for georeferenced projects; mixed geometry types are split into _points / _lines / "
                       "_polygons files.")
         note.setWordWrap(True)
-        self.layout().insertWidget(2, note)
+        self.content_layout.insertWidget(2, note)
 
     def ext(self):
         t = self.fmt.currentText()

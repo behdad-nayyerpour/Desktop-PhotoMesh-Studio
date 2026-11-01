@@ -93,3 +93,30 @@ def register(cfg,log=print,progress=None,cancel=None):
             import shutil
             shutil.rmtree(temporary)
     return {"added":added,"model":destination}
+
+
+def preserve_frame(cfg, log=print):
+    """Keep a re-alignment in the previous project frame using common camera poses."""
+    from .georef import umeyama, transform_model
+    model=cio.read_model(cfg["model"])
+    known=cfg["cameras"]
+    pairs=[(im,known[im.name]) for im in model.images.values() if im.name in known]
+    if len(pairs)<2:
+        raise ValueError("Too few common cameras to preserve the project frame; previous alignment kept")
+    src=np.array([im.center() for im,_ in pairs])
+    dst=np.array([entry["center"] for _,entry in pairs])
+    if np.linalg.matrix_rank(src-src.mean(0))>=2:
+        scale,R,t=umeyama(src,dst)
+    else:
+        # A strip has collinear centres; existing orientations constrain its roll.
+        rotations=np.array([np.asarray(entry["rotation"]).T@im.R() for im,entry in pairs])
+        R=Rotation.from_matrix(rotations).mean().as_matrix()
+        u=(src-src.mean(0))@R.T; v=dst-dst.mean(0)
+        denominator=float((u*u).sum())
+        if denominator<1e-12: raise ValueError("Common camera baseline is too small to preserve scale")
+        scale=float((u*v).sum()/denominator)
+        t=dst.mean(0)-scale*R@src.mean(0)
+    if not np.isfinite(scale) or scale<=0: raise ValueError("Invalid alignment-frame scale")
+    transform_model(model,scale,R,t)
+    cio.write_model(cfg["model"],model)
+    log(f"Preserved project frame from {len(pairs)} common cameras; scale {scale:.8g}")

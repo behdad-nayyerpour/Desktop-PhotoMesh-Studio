@@ -481,6 +481,8 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         gsd = float(np.median(th[ok] / fx[ok]))
     else:
         gsd = float(np.median(np.abs(Cp[:, 2] - np.median(V[:, 2])) / fx))
+    native_gsd=gsd
+    gsd /= float(c.get("photo_scale",1))
     # pixels per metre of each view at the surface (for the resolution term)
     ppm_med = 1.0 / gsd
     # extent: the region, else the surface limited to what the photos cover
@@ -883,7 +885,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     secs = round(time.perf_counter() - t_all, 2)
     xw0, yw1 = x0 + off[0], y1 + off[1]
     info = {"format": "photomesh-ortho/1", "dir": out, "path": path, "height_path": hpath,
-            "width": W, "height": H, "pixel_size": px, "source_gsd": gsd,
+            "width": W, "height": H, "pixel_size": px, "source_gsd": native_gsd, "effective_photo_gsd": gsd,
             "origin": [xw0, yw1], "bounds": [xw0, yw1 - H * px, xw0 + W * px, yw1],
             "offset": off.tolist(), "rotation": R.tolist(), "georef": is_geo, "crs": crs or "",
             "surface": c["surface"], "blending": c["blending"], "hole_filling": bool(c["hole_filling"]),

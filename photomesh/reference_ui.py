@@ -29,6 +29,18 @@ def products_after_georef(ch, M, log=print):
     if not np.isfinite(s) or s <= 0:
         return 1.0
     t = ch.texture or {}
+    if t and ch.model_ply and os.path.isfile(ch.model_ply):
+        from .workflow import file_stamp
+        t["mesh_stamp"] = file_stamp(ch.model_ply)
+        path = os.path.join(t.get("dir") or "", "info.json")
+        if os.path.isfile(path):
+            try:
+                with open(path,encoding="utf-8") as fh: info=json.load(fh)
+                info["mesh_stamp"] = t["mesh_stamp"]
+                with open(path+".identity.tmp","w",encoding="utf-8") as fh: json.dump(info,fh)
+                os.replace(path+".identity.tmp",path)
+            except (OSError,ValueError) as error:
+                log(f"Could not refresh trusted transformed texture identity: {error}")
     if t and abs(s - 1.0) > 1e-9:
         for k in ("source_gsd", "texel_size"):
             if t.get(k):

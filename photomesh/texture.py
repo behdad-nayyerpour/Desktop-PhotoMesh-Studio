@@ -856,8 +856,8 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     med = float(np.median(sh)) or 1.0
     for v, s in zip(views, sh):
         v.sharp = float(np.clip(math.sqrt(s / med), 0.7, 1.3))
-    stage("read photos (1/8 scale)", t0); prog(8)
-    log(f"Texture: read {len(views)} photos at 1/8 scale in {stages['read photos (1/8 scale)']:.1f} s "
+    stage("read photos (660px previews)", t0); prog(8)
+    log(f"Texture: read {len(views)} photos at up to 660px in {stages['read photos (660px previews)']:.1f} s "
         f"({threads} threads); sharpness range {min(v.sharp for v in views):.2f}..{max(v.sharp for v in views):.2f}")
     up = up_vector(views, c.get("georef"))
     t0 = time.perf_counter()
