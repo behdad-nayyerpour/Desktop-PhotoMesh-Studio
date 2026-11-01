@@ -321,6 +321,12 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
 def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
     from .texture import read_mesh
     t0 = time.perf_counter()
+    from .plyio import ply_counts
+    from .memguard import available_bytes
+    vertices,faces=ply_counts(c["mesh"])
+    geometry_budget=vertices*200+faces*300
+    if geometry_budget>available_bytes()*.7:
+        raise ValueError("Mesh-tile working arrays exceed available RAM; simplify the source mesh")
     V, F = read_mesh(c["mesh"])
     from .workflow import require_mesh
     require_mesh(V,F)
@@ -334,7 +340,14 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         with open(os.path.join(tdir, "info.json"), encoding="utf-8") as fh:
             tinfo = json.load(fh)
         if len(z["uv"]) == len(F) and tinfo.get("mesh_stamp") == file_stamp(c["mesh"]):
-            pages = [np.asarray(Image.open(os.path.join(tdir, p)).convert("RGB")) for p in tinfo["pages"]]
+            pages=[]; page_bytes=0
+            for page_name in tinfo["pages"]:
+                with Image.open(os.path.join(tdir,page_name)) as image:
+                    page_bytes+=image.width*image.height*3
+                    if geometry_budget+page_bytes>available_bytes()*.7:
+                        z.close()
+                        raise ValueError("Source texture pages exceed available RAM; rebuild texture with fewer/smaller pages")
+                    pages.append(np.asarray(image.convert("RGB")))
             baker_args = dict(uvp=z["uv"].astype(np.float64), page=z["page"].astype(np.int64), pages=pages)
             src_texel = float(tinfo.get("texel_size") or 0)
             log(f"Tiled model: texture source {len(pages)} page(s), texel {src_texel:.4g}")
