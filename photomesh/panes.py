@@ -112,6 +112,8 @@ class WorkspacePane(QTreeWidget):
     def refresh(self, project):
         from . import procmeta as pm
         expanded = {self._key(i) for i in self._iter() if i.isExpanded()}
+        selected = set(self.selected_roles())
+        scroll = self.verticalScrollBar().value()
         first = not expanded
         self._filling = True
         self.setUpdatesEnabled(False)
@@ -198,6 +200,10 @@ class WorkspacePane(QTreeWidget):
                     self._shape_rows(it, ci, ch, sset, lay("shapes"))
                 it.setExpanded(True)
             root.setExpanded(True)
+            for row in self._iter():
+                if self._key(row) in selected:
+                    row.setSelected(True)
+            self.verticalScrollBar().setValue(scroll)
             if not first:
                 for i in self._iter():
                     if self._key(i) in expanded:

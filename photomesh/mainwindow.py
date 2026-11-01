@@ -846,7 +846,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self._sync_mode_button("Tie Points - Colors" if key == "tie" else
                                f"Point Cloud - {'Solid' if solid else 'Colors'}")
         if not self._has_layer(key):
-            self.statusBar().showMessage("Nothing to show - build it first", 4000); return
+            QMessageBox.information(self, "Show Product", "Build or import this product first."); return
         self.model_view.set_solid(key, solid)
         self._solo(key)
 
@@ -860,7 +860,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self._sync_mode_button(f"Model - {mode.capitalize()}")
         self.model_view.set_mesh_mode(mode)
         if not self._has_layer("mesh"):
-            self.statusBar().showMessage("No model - build it first", 4000); return
+            QMessageBox.information(self, "Show Model", "Build or import a model first."); return
         self._solo("mesh")
 
     def _show_properties(self, info):
@@ -1095,7 +1095,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         n_missing = sum(len(missing_cameras(ch)) for ch in chunks)
         n_all = sum(len(ch.cameras) for ch in chunks)
         if not n_all:
-            QMessageBox.information(self, "Change Image Paths", "The chunk has no photos."); return
+            QMessageBox.information(self, "Change Image Paths", "The project has no photos."); return
         only_missing = True
         if n_missing == 0:
             r = QMessageBox.question(self, "Change Image Paths",
@@ -1108,7 +1108,13 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Folder that contains the photos (subfolders are searched)")
         if not folder:
             return
-        idx = index_folder(folder)
+        idx, cancelled, error = run_modal(self, "Change Image Paths", "Searching photo folders...",
+            lambda report, stop: index_folder(folder, cancelled=stop), 0)
+        if cancelled:
+            return
+        if error:
+            self.show_error("Change Image Paths", error)
+            return
         done, nf = 0, []
         for ch in chunks:
             a, b = relink_chunk(ch, folder, only_missing=only_missing, idx=idx)
@@ -1461,8 +1467,11 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             self.open_photo((self.current_photo + d) % len(self.chunk.cameras))
 
     def rotate_photo(self, deg):
-        if self.tabs.currentWidget() is self.photo_view:
-            self.photo_view.view.rotate(deg)
+        if self.photo_view.path is None:
+            QMessageBox.information(self, "Rotate Photo", "Open a photo first.")
+            return
+        self.tabs.setCurrentWidget(self.photo_view)
+        self.photo_view.view.rotate(deg)
 
     # ------------------------------------------------------------ Workflow
     def add_photos(self, paths=None):
@@ -2161,7 +2170,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self._sync_mode_button(f"Tiled Model - {mode.capitalize()}")
         self.model_view.set_tiled_mode(mode)
         if not self._has_layer("tiled"):
-            self.statusBar().showMessage("No tiled model - build it first", 4000); return
+            QMessageBox.information(self, "Show Tiled Model", "Build or import a tiled model first."); return
         self._solo("tiled")
 
     def export_model(self):

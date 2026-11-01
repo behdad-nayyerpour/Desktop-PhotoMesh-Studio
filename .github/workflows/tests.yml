@@ -1,8 +1,9 @@
 # Non-GPU test suite. Lean on purpose (private repo: Actions minutes are limited,
 # Windows minutes count double):
-# - runs only on push to main and on version tags (v*), Linux only;
+# - main and version-tag pushes run Linux tests;
+# - release/1.0.0 validation runs Linux and Windows;
 # - main + tag pushed together (a release) share one run (same commit);
-# - Windows only when started by hand (Actions > Tests > Run workflow > windows).
+# - Windows can also be started by hand (Actions > Tests > Run workflow > windows).
 # COLMAP / GPU / local-data / OpenGL tests are marked and reported as skipped
 # (tests/conftest.py: CI_ONLY_LOCAL). The tests themselves run offline (no-network guard).
 name: Tests
@@ -56,7 +57,7 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          { echo '### Tests (Linux)'; echo '```'; grep -E '^(SKIPPED|FAILED|ERROR)|passed|failed' pytest.txt || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          { echo '### Tests (Linux)'; echo '```'; if [ -f pytest.txt ]; then grep -E '^(SKIPPED|FAILED|ERROR)|passed|failed' pytest.txt || true; fi; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
   windows:
     if: (github.event_name == 'workflow_dispatch' && inputs.windows) || github.ref == 'refs/heads/release/1.0.0'

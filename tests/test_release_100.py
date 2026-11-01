@@ -216,6 +216,8 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
         camera.lon, camera.lat, camera.alt = 44. + i * .001, 40., 100.
     ch.cameras[1].use_reference = False
     ch.cameras[2].enabled = False
+    from PySide6.QtWidgets import QMessageBox
+    monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **kw: QMessageBox.Yes))
     monkeypatch.setattr(OptimizeCamerasDialog, "exec", lambda self: True)
     ran = []
     monkeypatch.setattr(window, "_run", lambda *a, **kw: ran.append(a))

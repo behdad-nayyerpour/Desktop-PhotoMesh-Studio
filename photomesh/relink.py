@@ -37,10 +37,12 @@ def rebase_path(path, base, max_parts=8):
     return None
 
 
-def index_folder(folder):
+def index_folder(folder, cancelled=None):
     """{lowercase file name: [full paths]} of the images below folder."""
     idx = {}
     for root, _dirs, files in os.walk(folder):
+        if cancelled is not None and cancelled():
+            return {}
         for f in files:
             if os.path.splitext(f)[1].lower() in IMAGE_EXTS:
                 idx.setdefault(f.lower(), []).append(os.path.join(root, f))
