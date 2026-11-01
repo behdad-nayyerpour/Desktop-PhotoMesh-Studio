@@ -50,12 +50,15 @@ def apply_theme(app, name=None):
     from PySide6.QtCore import QSettings
     from PySide6.QtGui import QPalette
     name = name or QSettings().value("ui/theme", "Dark", str)
+    if app.property("photomesh_active_theme") == name:
+        return
     if name == "Light":
         _ensure_fusion(app)
         app.setStyleSheet("")
         app.setPalette(app.style().standardPalette())
     else:
         apply_dark_theme(app)
+    app.setProperty("photomesh_active_theme", name)
     light = name == "Light"
     for widget in app.allWidgets():
         if hasattr(widget, "apply_theme"):

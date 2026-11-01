@@ -82,7 +82,7 @@ class AlignPhotosDialog(_SettingsDialog):
         note = QLabel("A successful run replaces camera alignment and tie points. Failure keeps the previous result.")
         note.setWordWrap(True)
         self.gform.addRow(note)
-        self.key_limit = QSpinBox(); self.key_limit.setRange(0, 1_000_000); self.key_limit.setSpecialValueText("Engine default"); self.key_limit.setValue(40000)
+        self.key_limit = QSpinBox(); self.key_limit.setRange(0, 1_000_000); self.key_limit.setSpecialValueText("Engine default"); self.key_limit.setValue(24000)
         self.guided = QCheckBox("Guided image matching")
         self.single_camera = QCheckBox("Share calibration between compatible photos")
         self.single_camera.setChecked(True)

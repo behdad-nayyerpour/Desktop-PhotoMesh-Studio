@@ -950,7 +950,7 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
                         (("depth_filtering", "Mild"), ("window_step", 2), ("num_iterations", 3),
                          ("window_radius", 5), ("num_samples", 15))}
     cfg_marker = dict(cfg, model_sig=model_signature(cfg["model"]), depth_parameters=depth_parameters,
-                      photo_stamps=[file_stamp(os.path.join(image_root, name)) for name in photo_names])
+                      photo_stamps=[file_stamp(os.path.join(image_root, name)) if os.path.isfile(os.path.join(image_root,name)) else [os.path.join(image_root,name), None] for name in photo_names])
     reuse = bool(s.get("reuse"))
     notes = []
     if not reuse:

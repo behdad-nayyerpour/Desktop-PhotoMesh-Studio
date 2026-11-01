@@ -67,7 +67,10 @@ def migrate_ui_settings():
         settings.setValue("ui/native_dialogs_initialized_v1", True)
 
 
-class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
+from .registration_ui import RegistrationMixin
+
+
+class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     _viewData = Signal(int, object)          # generation, loaded arrays (from the loader thread)
     _texData = Signal(int, object)           # generation, textured model display data (or the error)
     _viewProgress = Signal(int, str)
@@ -189,6 +192,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.workspace.markerActivated.connect(self._goto_marker)
         self.markers_pane.markerActivated.connect(self._goto_marker)
         self.photos.photoActivated.connect(self._safe("Open Photo", self.open_photo))
+        self.photos.registerRequested.connect(self._safe("Align Selected Photos", self.register_selected_photos))
         self.reference.cameraActivated.connect(self._safe("Open Photo", self.open_photo))
         self.reference.cameraReferenceToggled.connect(self._camera_reference_changed)
         self.markers_pane.markerToggled.connect(self.toggle_marker)
@@ -920,6 +924,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     def _workspace_action(self, action, ci):
         if action in ("Add Chunk", "Set as Active Chunk", "Rename Chunk...", "Duplicate Chunk", "Remove Chunk"):
             raise ValueError("Chunk management is not supported; use one project per dataset.")
+        if action.startswith("register_camera:"):
+            self.register_selected_photos([int(action.split(":")[1])]); return
         if action == "Change Image Paths...":
             self.change_image_paths(); return
         elif action.startswith("marker:"):
@@ -1710,7 +1716,11 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         if not dlg.exec():
             return
         s = dlg.settings()
-        wd = self.project.default_workdir(ch)
+        original_wd = self.project.default_workdir(ch)
+        wd = original_wd
+        if ch.aligned_count():
+            import uuid
+            wd = os.path.join(original_wd, "alignment-" + uuid.uuid4().hex[:12])
         try:
             mapping = cm.prepare_images(ch, wd)
         except OSError as e:
@@ -1734,11 +1744,20 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                 i = infos.get(c.path, {})
                 c.desc, c.width, c.height = i.get("desc", ""), i.get("width", 0), i.get("height", 0)
         names = [mapping[c.path] for c in enabled]
-        steps = cm.align_steps(exe, ch, wd, s, names=names, infos=[c.info() for c in enabled])
+        s["calibration_groups"] = {mapping[path]: group for path,group in s.get("calibration_groups",{}).items()
+                                   if path in mapping}
+        steps = [("Preparing alignment", lambda: cm.align_steps(exe, ch, wd, s, names=names,
+                                                               infos=[c.info() for c in enabled]), 1)]
         self.log(f"Align Photos: mode={s['mode']}, accuracy={s['accuracy']}, workdir={wd}")
 
         def loaded():
             poses = cm.read_images_txt(os.path.join(wd, "sparse_txt", "images.txt"))
+            if not poses:
+                raise ValueError("No camera poses were produced; previous alignment was kept")
+            ch.workdir = wd
+            if wd != original_wd:
+                self._invalidate_camera_products(ch)
+                ch.georef = {}
             from .photonames import assign_names
             assign_names(ch, mapping)              # exact camera <-> model link, saved in the project
             for c in ch.cameras:
@@ -1929,7 +1948,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         if not os.path.exists(os.path.join(mdir, "images.bin")):
             QMessageBox.information(self, "Build Texture", "Align photos first (no camera model found)."); return
         old_uv = (ch.texture or {}).get("uv_npz")
-        has_uv = bool(old_uv and os.path.exists(old_uv) and (ch.texture or {}).get("faces") == ch.face_count)
+        from .workflow import file_stamp
+        has_uv = bool(old_uv and os.path.exists(old_uv) and (ch.texture or {}).get("mesh_stamp") == file_stamp(ch.model_ply))
         dlg = BuildTextureDialog(self, has_uv=has_uv)
         if not dlg.exec():
             return
@@ -2117,7 +2137,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         s = dlg.settings()
         wd = self.project.default_workdir(ch)
         tex = ch.texture or {}
-        tex_dir = tex.get("dir") if tex.get("faces") == ch.face_count and tex.get("dir") else None
+        from .workflow import file_stamp
+        tex_dir = tex.get("dir") if have_mesh and tex.get("mesh_stamp") == file_stamp(ch.model_ply) and tex.get("dir") else None
         cfg = dict(s, out_dir=os.path.join(wd, "tiled"), mesh=ch.model_ply, cloud=ch.point_cloud_ply,
                    texture_dir=tex_dir, model=self._model_dir(ch), georef=ch.georef or {},
                    result=os.path.join(wd, "tiled_result.json"))
@@ -2126,7 +2147,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         cfg_path = os.path.join(wd, "build_tiles.json")
         with open(cfg_path, "w", encoding="utf-8") as f:
             json.dump(cfg, f, indent=1)
-        self.model_view.set_tiled(None)          # release the tiles that are about to be replaced
+        self.model_view.set_tiled(None)          # release handles; failure reloads the previous generation
         steps = [("Building tiled model", [cm.PYTHON, "build_tiles", cfg_path], 1)]
         res = {}
 
@@ -2144,7 +2165,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         def meta(dt, stages):
             procmeta.record(ch, "tiled_model", params=dict(s), seconds=dt, stages=res.get("stages") or stages,
                             levels=res.get("levels"), tiles=res.get("tiles"))
-        self._run("Build Tiled Model", steps, loaded, meta, params=s)
+        self._run("Build Tiled Model", steps, loaded, meta, params=s, on_fail=self.load_tiled_view)
 
     def load_tiled_view(self):
         t = self.chunk.tiled_model or {}

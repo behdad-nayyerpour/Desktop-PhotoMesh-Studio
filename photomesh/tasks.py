@@ -196,7 +196,12 @@ def cmd_export_raster(cfg):
     _log("FILES " + json.dumps(files))
 
 
-COMMANDS = {"build_ortho": cmd_build_ortho, "build_dem": cmd_build_dem, "export_raster": cmd_export_raster,
+def cmd_register_photos(cfg):
+    from .registration import register
+    _result(cfg, register(cfg, log=_log, progress=_progress))
+
+
+COMMANDS = {"register_photos": cmd_register_photos,"build_ortho": cmd_build_ortho, "build_dem": cmd_build_dem, "export_raster": cmd_export_raster,
             "build_texture": cmd_build_texture, "build_tiles": cmd_build_tiles,
             "refine_markers": cmd_refine_markers, "dense_prepare": cmd_dense_prepare, "filter_cloud": cmd_filter_cloud,
             "build_mesh": cmd_build_mesh, "georef": cmd_georef}

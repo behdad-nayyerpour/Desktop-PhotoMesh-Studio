@@ -323,7 +323,7 @@ class WorkspacePane(QTreeWidget):
         ci = d[1] if d and len(d) > 1 else -1
         m = QMenu(self)
         if d and d[0] == "camera":
-            m.addSeparator(); m.addAction("Open Photo"); m.addAction("Enable/Disable Camera")
+            m.addSeparator(); m.addAction("Open Photo"); m.addAction("Enable/Disable Camera"); m.addAction("Align Selected Photos from GCPs")
         if d and d[0] in ("camera", "cameras", "group", "project"):
             m.addSeparator(); m.addAction("Change Image Paths...")
         if d and d[0] in ("tie", "cloud", "model", "tiled", "ortho", "dem", "shapes"):
@@ -345,6 +345,8 @@ class WorkspacePane(QTreeWidget):
         if a:
             if a.text() == "Open Photo":
                 self.cameraActivated.emit(d[1], d[2])
+            elif a.text() == "Align Selected Photos from GCPs":
+                self.contextAction.emit("register_camera:%d" % d[2], ci)
             elif a.text() == "Enable/Disable Camera":
                 self.contextAction.emit("toggle_camera:%d" % d[2], ci)
             elif a.text() == "Show":
@@ -682,6 +684,7 @@ def markers_panel(table):
 
 class PhotosPane(QListWidget):
     photoActivated = Signal(int)
+    registerRequested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -694,7 +697,19 @@ class PhotosPane(QListWidget):
         self.setWordWrap(True)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.itemDoubleClicked.connect(lambda it: self.photoActivated.emit(it.data(ROLE)))
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._photo_menu)
         self._cache = {}
+
+    def _photo_menu(self, pos):
+        item=self.itemAt(pos)
+        if item is not None and not item.isSelected():
+            self.clearSelection(); item.setSelected(True)
+        menu=QMenu(self)
+        action=menu.addAction("Align Selected Photos from GCPs")
+        action.setEnabled(bool(self.selectedItems()))
+        if menu.exec(self.viewport().mapToGlobal(pos)) is action:
+            self.registerRequested.emit()
 
     _placeholder = None
 
