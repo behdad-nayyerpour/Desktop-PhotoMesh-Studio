@@ -271,3 +271,20 @@ def test_native_dialog_migration_resets_old_fallback_only_once():
     finally:
         settings.setValue("ui/qt_file_dialogs", old_dialogs)
         settings.setValue("ui/native_dialogs_initialized_v1", old_migration)
+
+
+def test_point_cloud_engine_probe_does_not_block_gui_thread(window, tmp_path, monkeypatch):
+    from photomesh import colmap
+    seen = []
+    main = threading.get_ident()
+    window.project.path = str(tmp_path / "project.pmsx")
+    window.chunk.cameras = [Camera("a.jpg", aligned=True)]
+    monkeypatch.setattr(colmap, "find_colmap", lambda: "colmap")
+    def probe(exe):
+        seen.append(threading.get_ident())
+        time.sleep(.02)
+        return False
+    monkeypatch.setattr(colmap, "has_cuda", probe)
+    window.build_point_cloud()
+    assert seen and seen[0] != main
+    assert not window.busy_indicator.active

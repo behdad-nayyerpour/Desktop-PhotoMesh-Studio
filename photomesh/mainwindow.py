@@ -1764,6 +1764,15 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.statusBar().showMessage(f"{total - len(missing)}/{total} photos aligned - "
                                      f"{len(missing)} not aligned (see Console)", 15000)
 
+    def _cuda_available(self, executable):
+        result, cancelled, error = run_modal(self, "Check Reconstruction Engine",
+            "Checking COLMAP and CUDA support...",
+            lambda report, stop: cm.has_cuda(executable), 0)
+        if error:
+            self.show_error("Check Reconstruction Engine", error)
+            return None
+        return None if cancelled else bool(result)
+
     def build_point_cloud(self):
         if not self._require_saved("Build Point Cloud"):
             return None
@@ -1773,7 +1782,10 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         exe = self._need_colmap()
         if not exe:
             return
-        if not cm.has_cuda(exe):
+        cuda = self._cuda_available(exe)
+        if cuda is None:
+            return
+        if not cuda:
             QMessageBox.warning(self, "Build Point Cloud",
                 "Your COLMAP build has no CUDA support. COLMAP's dense reconstruction "
                 "(depth maps) needs an NVIDIA GPU and the CUDA build of COLMAP.\n\n"
@@ -1787,10 +1799,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         s = dlg.settings()
         if ch.georef:
             s["filters"]["up"] = [0.0, 0.0, 1.0]
-        try:
-            steps = dense_steps(exe, wd, s, cm.image_dir(wd))
-        except (OSError, ValueError) as e:
-            QMessageBox.critical(self, "Build Point Cloud", str(e)); return
+        steps = [("Preparing point cloud", lambda: dense_steps(exe, wd, s, cm.image_dir(wd)), 1)]
         self.log(f"Build Point Cloud: quality={s['quality']}, depth filtering={s['depth_filtering']}, "
                  f"{s['max_sources']} neighbour photos, workdir={wd}")
         def meta(dt, stages):
