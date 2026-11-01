@@ -130,7 +130,8 @@ def test_control_check_groups_and_rmse_are_independent_of_ignore(window):
     assert not pane.isRowHidden(0) and pane.isRowHidden(2)
     pane.filter_group(2)
     assert pane.isRowHidden(0) and not pane.isRowHidden(2)
-    assert "Total Error" in pane._summary_label.text()
+    assert pane.item(pane.summary_rows["Control points"], 5).text() == "3.536"
+    assert pane.item(pane.summary_rows["Check points"], 5).text() == "12.000"
 
 
 def test_camera_updates_mark_visible_products_stale_and_imports_stay_valid(window):

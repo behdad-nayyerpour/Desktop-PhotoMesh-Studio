@@ -33,7 +33,7 @@ def test_save_is_fast_on_large_project(window, tmp_path):
     _big_chunk(window)
     window.refresh_all()
     t = time.perf_counter(); window.refresh_all(); t_refresh = time.perf_counter() - t
-    assert window.reference.rowCount() == 641 and window.markers_pane.rowCount() == 98
+    assert window.reference.data_row_count == 641 and window.markers_pane.data_row_count == 98
     window.project.path = str(tmp_path / "big.pmsx")
     t = time.perf_counter()
     assert window.save_project()

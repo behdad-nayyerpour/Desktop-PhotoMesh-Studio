@@ -6,6 +6,8 @@ EXE. See [Updating](UPDATING.md).
 
 ### 1.0.0 (2026-11-01)
 
+- Follow-up fixes within 1.0.0: rasterized all 3D overlay labels and legend text before GL composition; integrated coordinate/pixel RMSE into the final table rows; embedded compact Properties inside Workspace; suspended the wait cursor while interactive settings are visible.
+
 - Applied and persisted Dark/Light themes and the preferred loaded-product view.
 - Removed ineffective alignment/mesh controls and unsupported chunk-management commands.
 - Unified camera GPS and ground-control/check tables in Reference. Camera reference checkboxes are independent of row selection and alignment enablement.

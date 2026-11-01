@@ -21,7 +21,7 @@ from PySide6.QtGui import QColor, QFont, QFontMetricsF, QPainter, QPen, QBrush
 CONTROL = QColor(40, 220, 60)        # enabled marker: used as control point
 CHECK = QColor(60, 140, 255)          # disabled marker: check point
 CAMERA = QColor(150, 190, 255)
-LEGEND = [(CONTROL, "Pinned"), (CHECK, "Placed / used prediction"), (QColor(190, 190, 190), "Unused prediction")]
+LEGEND = [(CONTROL, "Approved / used"), (CHECK, "Predicted / used"), (QColor(190, 190, 190), "Predicted / unused")]
 
 
 def project(mvp, pts, width, height):
@@ -209,7 +209,7 @@ class Overlay:
                 pass                                     # the GL pass draws the shape points
             if text:
                 lf, lfm = font, fm
-                bg = QColor(20, 20, 24, 190 if not occ else 150)
+                bg = QColor(20, 20, 24, 230)
                 if st:                                   # shape label style
                     if abs(float(st.get("label_size", 9.0)) - 9.0) > 1e-6:
                         lf = QFont(font); lf.setPointSizeF(float(st["label_size"])); lfm = QFontMetricsF(lf)
@@ -224,17 +224,13 @@ class Overlay:
                 if bg is not None:
                     painter.setPen(Qt.NoPen); painter.setBrush(bg)
                     painter.drawRoundedRect(box, 3, 3)
-                if lf is font and bg is not None:
-                    painter.setPen(tc)
-                    painter.drawText(box, Qt.AlignCenter, text)
-                else:
-                    # other sizes / halo text: rasterised once on the CPU and cached. The GL
-                    # paint engine draws glyphs it has no cache for as stencil paths, which
-                    # came out hatched / broken over the GL frame (12 pt shape labels)
-                    img = self._text_image(text, lf, tc, bg is None, painter.device().devicePixelRatioF()
-                                           if painter.device() is not None else 1.0)
-                    painter.drawImage(QPointF(box.center().x() - img.width() / img.devicePixelRatio() / 2,
-                                              box.center().y() - img.height() / img.devicePixelRatio() / 2), img)
+                # Never submit font glyphs to the OpenGL paint engine: some drivers
+                # corrupt its glyph/stencil cache after textured mesh drawing.
+                dpr = painter.device().devicePixelRatioF() if painter.device() is not None else 1.0
+                img = self._text_image(text, lf, tc, bg is None, dpr)
+                px = box.center().x() - img.width() / img.devicePixelRatio() / 2
+                py = box.center().y() - img.height() / img.devicePixelRatio() / 2
+                painter.drawImage(QPointF(round(px * dpr) / dpr, round(py * dpr) / dpr), img)
                 painter.setFont(font)
                 rects.append((kind, text, box))
         from .marker_style import draw_flag
@@ -271,22 +267,39 @@ class Overlay:
         return img
 
     def _legend(self, painter, fm, height):
+        """Rasterize the complete legend on the CPU, including all its text."""
+        from PySide6.QtGui import QImage
+        from .marker_style import draw_flag
+        font = label_font(painter.font())
+        metrics = QFontMetricsF(font)
         lines = list(LEGEND)
         if not self.show.get("marker_labels"):
-            lines.append((QColor(220, 220, 220), "Labels hidden: Model > Show/Hide Items > Show Marker Labels"))
-        lines.append((QColor(200, 200, 200), "hollow = hidden behind the surface"))
-        h = fm.height() + 4
-        w = max(fm.horizontalAdvance(t) for _c, t in lines) + 30
-        box = QRectF(8, height - 12 - h * len(lines), w, h * len(lines) + 4)
-        painter.setPen(Qt.NoPen); painter.setBrush(QColor(20, 20, 24, 170))
-        painter.drawRoundedRect(box, 4, 4)
-        for k, (c, t) in enumerate(lines):
-            cy = box.top() + 2 + h * k + h / 2
-            if k < 2:
-                painter.setPen(QPen(QColor(0, 0, 0), 1)); painter.setBrush(QBrush(c))
-                painter.drawEllipse(QPointF(box.left() + 12, cy), 4.5, 4.5)
-            elif "hollow" in t:
-                painter.setPen(QPen(CONTROL, 1.5)); painter.setBrush(Qt.NoBrush)
-                painter.drawEllipse(QPointF(box.left() + 12, cy), 4.5, 4.5)
-            painter.setPen(c if k >= 2 else QColor(235, 235, 235))
-            painter.drawText(QRectF(box.left() + 24, cy - h / 2, w - 24, h), Qt.AlignVCenter | Qt.AlignLeft, t)
+            lines.append((QColor(220, 220, 220), "Labels hidden"))
+        dpr = painter.device().devicePixelRatioF() if painter.device() is not None else 1.0
+        row_height = max(28.0, metrics.height() + 8)
+        width = max(metrics.horizontalAdvance(text) for _colour, text in lines) + 48
+        logical_height = row_height * len(lines) + 12
+        key = (font.toString(), round(dpr, 3), tuple(text for _colour, text in lines))
+        cached = getattr(self, "_legend_cache", None)
+        if cached is None or cached[0] != key:
+            image = QImage(int(np.ceil(width * dpr)), int(np.ceil(logical_height * dpr)),
+                           QImage.Format_ARGB32_Premultiplied)
+            image.setDevicePixelRatio(dpr); image.fill(Qt.transparent)
+            cpu = QPainter(image)
+            try:
+                cpu.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+                cpu.setFont(font)
+                cpu.setPen(Qt.NoPen); cpu.setBrush(QColor(20, 20, 24, 235))
+                cpu.drawRoundedRect(QRectF(0, 0, width, logical_height), 4, 4)
+                for index, (colour, text) in enumerate(lines):
+                    top = 6 + index * row_height
+                    if index < len(LEGEND):
+                        draw_flag(cpu, 13, top + row_height - 3, colour)
+                    cpu.setPen(QColor(245, 245, 245))
+                    cpu.drawText(QRectF(36, top, width - 42, row_height),
+                                 Qt.AlignVCenter | Qt.AlignLeft, text)
+            finally:
+                cpu.end()
+            self._legend_cache = (key, image)
+        image = self._legend_cache[1]
+        painter.drawImage(QPointF(8, max(4.0, height - logical_height - 12)), image)

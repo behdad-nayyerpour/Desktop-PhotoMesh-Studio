@@ -375,6 +375,7 @@ class ProgressDialog(QDialog):
 
     def __init__(self, title, parent=None):
         super().__init__(parent)
+        self.setProperty("task_progress", True)
         self.setWindowTitle(title)
         self.setMinimumSize(520, 320)
         lay = QVBoxLayout(self)

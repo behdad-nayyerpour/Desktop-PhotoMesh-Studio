@@ -42,7 +42,7 @@ MENUS = [
     ("&View", [
         "Zoom In", "Zoom Out", "Reset View", "-", "Capture View", "-",
         "Full Screen*", "-",
-        ("Panes", ["Workspace*", "Reference*", "Properties*", "Photos*", "Console*", "Jobs*"]),
+        ("Panes", ["Workspace*", "Reference*", "Photos*", "Console*", "Jobs*"]),
         "Toolbar*",
     ]),
     ("&Workflow", [

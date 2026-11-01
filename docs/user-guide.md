@@ -201,3 +201,18 @@ an explicit fallback for Windows shell-dialog problems.
 Marker edits preserve the selected photo and Photos-panel scroll position.
 Project preparation runs off the UI thread and is transactional: a failed or
 cancelled open leaves the current project in place.
+
+
+### Reference layout and interactive settings
+
+Camera RMSE occupies the last camera-table row under Error (m). Control-point
+and check-point RMSE occupy the last two marker-table rows under Error (m) and
+Error (pix). These footer rows cannot be selected or edited as cameras/markers.
+No separate error-summary section is shown.
+
+Properties is part of the Workspace tab and uses compact rows. It is not shown
+with Reference. Interactive settings use the normal pointer, including while
+background work continues; processing dialogs retain the wait cursor.
+
+3D marker labels and the legend are rasterized before GL composition to avoid
+driver-dependent glyph corruption over textured models.

@@ -53,7 +53,7 @@ def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
     window.add_photos(sorted(str(p) for p in image_dir.iterdir()))
     assert len(window.chunk.cameras) == 6
     assert window.photos.count() == 6
-    assert window.reference.rowCount() == 6
+    assert window.reference.data_row_count == 6
     cam = window.chunk.cameras[0]
     assert cam.lat == pytest.approx(40.18, abs=1e-3) and cam.lon == pytest.approx(44.51, abs=1e-3)
     from conftest import wait_thumbnails

@@ -150,12 +150,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.properties = PropertiesPane()
         self.jobs = JobsPane()
         from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
-        self.reference._summary_label = QLabel()
-        camera_panel = QWidget(); camera_layout = QVBoxLayout(camera_panel)
-        camera_layout.setContentsMargins(0, 0, 0, 0)
-        camera_layout.addWidget(self.reference); camera_layout.addWidget(self.reference._summary_label)
         self.reference_panel = QSplitter(Qt.Vertical)
-        self.reference_panel.addWidget(camera_panel)
+        self.reference_panel.addWidget(self.reference)
         self.reference_panel.addWidget(markers_panel(self.markers_pane))
         self.reference_panel.setSizes([300, 350])
         from .activity import ProgressPanel
@@ -170,13 +166,11 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.docks = {
             "Workspace": self._dock("Workspace", self._workspace_panel(), L, "ws"),
             "Reference": self._dock("Reference", self.reference_panel, L, "ref"),
-            "Properties": self._dock("Properties", self.properties, L, "props"),
             "Photos": self._dock("Photos", photos_panel, B, "photos"),
             "Console": self._dock("Console", self.console, B, "console"),
             "Jobs": self._dock("Jobs", self.jobs, B, "jobs"),
         }
-        # Properties below the Workspace tree (Metashape layout), Reference/Markers tabbed with Workspace
-        self.splitDockWidget(self.docks["Workspace"], self.docks["Properties"], Qt.Vertical)
+        # Properties belongs to Workspace, so switching to Reference hides it too.
         self.tabifyDockWidget(self.docks["Workspace"], self.docks["Reference"])
         self.docks["Workspace"].raise_()
         self.tabifyDockWidget(self.docks["Photos"], self.docks["Console"])
@@ -184,7 +178,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.docks["Photos"].raise_()
         self.docks["Jobs"].hide()
         self.resizeDocks([self.docks["Workspace"]], [330], Qt.Horizontal)
-        self.resizeDocks([self.docks["Workspace"], self.docks["Properties"]], [420, 220], Qt.Vertical)
         self.resizeDocks([self.docks["Photos"]], [230], Qt.Vertical)
         self.workspace.cameraActivated.connect(lambda ci, k: self._safe("Open Photo", self.open_photo)(k))
         self.workspace.contextAction.connect(self._workspace_action)
@@ -225,7 +218,21 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         a = self.ws_actions
         self.workspace_widget = workspace_panel(self.workspace, [a["add_photos"], a["add_folder"],
                                                                  None, a["enable"], a["remove"]])
-        return self.workspace_widget
+        from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
+        property_panel = QWidget()
+        layout = QVBoxLayout(property_panel); layout.setContentsMargins(0, 0, 0, 0); layout.setSpacing(0)
+        title = QLabel("Properties")
+        font = title.font(); font.setBold(True); title.setFont(font)
+        title.setMargin(4)
+        layout.addWidget(title); layout.addWidget(self.properties)
+        self.workspace_splitter = QSplitter(Qt.Vertical)
+        self.workspace_splitter.setChildrenCollapsible(False)
+        self.workspace_splitter.addWidget(self.workspace_widget)
+        self.workspace_splitter.addWidget(property_panel)
+        self.workspace_splitter.setSizes([420, 220])
+        self.workspace_splitter.setStretchFactor(0, 2)
+        self.workspace_splitter.setStretchFactor(1, 1)
+        return self.workspace_splitter
 
     def _ws_toggle_selected(self):
         sel = [r for r in self.workspace.selected_roles() if r[0] == "camera"]
@@ -274,7 +281,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         if not ms:
             return
         for r in range(self.markers_pane.rowCount()):
-            if self.markers_pane.item(r, 0) and self.markers_pane.item(r, 0).text() == label:
+            if self.markers_pane.item(r, 0) and self.markers_pane.item(r, 0).data(Qt.UserRole) == label:
                 self.markers_pane.selectRow(r); break
         proj = ms[0].get("projections") or {}
         order = sorted(proj, key=lambda n: not (len(proj[n]) < 3 or proj[n][2]))

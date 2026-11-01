@@ -20,6 +20,16 @@ def _fmt(v, nd=6):
     return "" if v is None else f"{v:.{nd}f}"
 
 
+def summary_item(text="", tooltip=""):
+    """Footer cells carry no entity identity and cannot be edited or selected."""
+    item = QTableWidgetItem(str(text))
+    item.setFlags(Qt.ItemIsEnabled)
+    item.setData(ROLE + 2, "summary")
+    font = item.font(); font.setBold(True); item.setFont(font)
+    item.setToolTip(tooltip)
+    return item
+
+
 @contextlib.contextmanager
 def bulk_fill(table):
     """Fill a QTableWidget fast. With QHeaderView.ResizeToContents every
@@ -394,10 +404,15 @@ class ReferencePane(QTableWidget):
         self.setAlternatingRowColors(True)
         self._filling = False
         self.itemChanged.connect(self._changed)
-        self.cellDoubleClicked.connect(lambda row, col: self.cameraActivated.emit(row))
+        self.cellDoubleClicked.connect(self._activate_camera)
+
+    def _activate_camera(self, row, column):
+        item = self.item(row, 0)
+        if item is not None and item.data(ROLE) is not None:
+            self.cameraActivated.emit(item.data(ROLE))
 
     def _changed(self, item):
-        if not self._filling and item.column() == 0:
+        if not self._filling and item.column() == 0 and item.data(ROLE) is not None:
             self.cameraReferenceToggled.emit(item.data(ROLE), item.checkState() == Qt.Checked)
 
     def refresh(self, chunk):
@@ -412,7 +427,8 @@ class ReferencePane(QTableWidget):
         try:
             with bulk_fill(self):
                 self.clearContents()
-                self.setRowCount(len(chunk.cameras))
+                self.data_row_count = len(chunk.cameras)
+                self.setRowCount(self.data_row_count + 1)
                 geo = chunk.georef or {}
                 try:
                     crs = CRS.parse(geo.get("crs") or chunk.crs)
@@ -453,12 +469,18 @@ class ReferencePane(QTableWidget):
                         self.setItem(row, col, item)
                     if row in selected:
                         self.selectRow(row)
+                self.summary_row = self.data_row_count
+                rmse = math.sqrt(sum(x * x for x in errors) / len(errors)) if errors else None
+                self.error_summary = {"error": rmse, "measured": len(errors)}
+                tip = f"Camera RMSE from {len(errors)} checked references with measured errors."
+                for column in range(self.columnCount()):
+                    self.setItem(self.summary_row, column, summary_item(tooltip=tip))
+                self.item(self.summary_row, 0).setText("Total Error")
+                self.item(self.summary_row, 5).setText(_fmt(rmse, 3) if rmse is not None else "—")
         finally:
             self._filling = False
             self.verticalScrollBar().setValue(scroll)
-        if hasattr(self, "_summary_label"):
-            text = f"{math.sqrt(sum(x*x for x in errors)/len(errors)):.3f} m" if errors else "—"
-            self._summary_label.setText(f"Total Error (camera RMSE): {text} ({len(errors)} measured references)")
+
 
 
 class MarkersPane(QTableWidget):
@@ -492,7 +514,7 @@ class MarkersPane(QTableWidget):
         self.customContextMenuRequested.connect(self._menu)
 
     def _dbl(self, r, c):
-        if c not in self.EDITABLE and self.item(r, 0):
+        if c not in self.EDITABLE and self.item(r, 0) and self.item(r, 0).data(ROLE) is not None:
             self.markerActivated.emit(self.item(r, 0).data(ROLE) or self.item(r, 0).text())
 
     def refresh(self, chunk):
@@ -508,11 +530,10 @@ class MarkersPane(QTableWidget):
         rows = {r.get("label"): r for r in (getattr(chunk, "georef", {}) or {}).get("rows", [])}
         selected = set(self.selected_labels())
         self.clearContents()
-        self.setRowCount(len(ms))
+        self.data_row_count = len(ms)
+        self.setRowCount(len(ms) + 2)
         self._marker_groups = [bool(m.get("enabled", True)) for m in ms]
         self.error_summary = marker_error_summary(ms, rows)
-        if hasattr(self, "_summary_label"):
-            self._summary_label.setText(marker_summary_html(self.error_summary))
         for r, m in enumerate(ms):
             pend = (self.pending or {}).get(m["label"])
             ref = pend or m.get("ref") or [None, None, None]
@@ -551,6 +572,19 @@ class MarkersPane(QTableWidget):
                 from PySide6.QtCore import QItemSelectionModel
                 self.selectionModel().select(self.model().index(r, 0),
                                              QItemSelectionModel.Select | QItemSelectionModel.Rows)
+        self.summary_rows = {}
+        for offset, group in enumerate(("Control points", "Check points")):
+            index = len(ms) + offset
+            self.summary_rows[group] = index
+            totals = self.error_summary[group]
+            tip = (f"RMSE: {totals['measured']} measured coordinate errors / {totals['count']} points. "
+                   "Pixel RMSE is weighted by observation count; ignored points are excluded.")
+            for column in range(self.columnCount()):
+                self.setItem(index, column, summary_item(tooltip=tip))
+            self.item(index, 0).setText(group)
+            self.item(index, 5).setText(_fmt(totals["error"], 3) if totals["error"] is not None else "—")
+            self.item(index, 7).setText(_fmt(totals["pixel"], 3) if totals["pixel"] is not None else "—")
+            self.setRowHidden(index, False)
         self.filter_group(getattr(self, "_group", 0))
 
     def filter_group(self, group):
@@ -562,9 +596,9 @@ class MarkersPane(QTableWidget):
             self.setRowHidden(row, (group == 1 and not control) or (group == 2 and control))
 
     def _changed(self, it):
-        if self._busy:
+        if self._busy or it.data(ROLE) is None:
             return
-        label = it.data(ROLE) or it.text()
+        label = it.data(ROLE)
         if it.column() == 0:
             on = it.checkState() == Qt.Checked
             if it.data(ROLE + 1) is not None and bool(it.data(ROLE + 1)) != on:
@@ -580,15 +614,15 @@ class MarkersPane(QTableWidget):
     def current_label(self):
         r = self.currentRow()
         it = self.item(r, 0) if r >= 0 else None
-        return (it.data(ROLE) or it.text()) if it else None
+        return it.data(ROLE) if it else None
 
     def selected_labels(self):
         rows = sorted({i.row() for i in self.selectedIndexes()})
         out = []
         for r in rows:
             it = self.item(r, 0)
-            if it:
-                out.append(it.data(ROLE) or it.text())
+            if it and it.data(ROLE) is not None:
+                out.append(it.data(ROLE))
         return out
 
     def _menu(self, pos):
@@ -634,15 +668,6 @@ def marker_error_summary(markers, rows):
     return summary
 
 
-def marker_summary_html(summary):
-    out = ["<b>Total Error (RMSE)</b><table><tr><th>Group</th><th>Measured / points</th><th>Error (m)</th><th>Error (pix)</th></tr>"]
-    for name, row in summary.items():
-        error = "—" if row["error"] is None else f'{row["error"]:.3f}'
-        pixel = "—" if row["pixel"] is None else f'{row["pixel"]:.3f}'
-        out.append(f'<tr><td>{name}</td><td>{row["measured"]}/{row["count"]}</td><td>{error}</td><td>{pixel}</td></tr>')
-    return "".join(out) + "</table>"
-
-
 def markers_panel(table):
     from PySide6.QtWidgets import QTabBar
     panel = QWidget()
@@ -651,12 +676,7 @@ def markers_panel(table):
     for text in ("All points", "Control points", "Check points"):
         groups.addTab(text)
     groups.currentChanged.connect(table.filter_group)
-    table._summary_label = QLabel()
-    table._summary_label.setTextFormat(Qt.RichText)
-    table._summary_label.setToolTip("Coordinate RMSE uses points with current measured errors. "
-                                   "Pixel RMSE is weighted by projection count. Ignored points are excluded; "
-                                   "a dash means no measured error is available.")
-    layout.addWidget(groups); layout.addWidget(table, 1); layout.addWidget(table._summary_label)
+    layout.addWidget(groups); layout.addWidget(table, 1)
     return panel
 
 
@@ -808,13 +828,19 @@ class PropertiesPane(QTableWidget):
         self.horizontalHeader().setStretchLastSection(True)
         self.verticalHeader().setVisible(False)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.setWordWrap(False)
+        self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.verticalHeader().setMinimumSectionSize(16)
+        self.verticalHeader().setDefaultSectionSize(max(18, self.fontMetrics().height() + 2))
+        self.setStyleSheet("QTableView::item { padding: 0px 3px; }")
 
     def show_props(self, props: dict):
         self.setUpdatesEnabled(False)
         self.setRowCount(len(props))
         for r, (k, v) in enumerate(props.items()):
             self.setItem(r, 0, QTableWidgetItem(str(k)))
-            self.setItem(r, 1, QTableWidgetItem(str(v)))
+            value = QTableWidgetItem(str(v)); value.setToolTip(str(v))
+            self.setItem(r, 1, value)
         self.setUpdatesEnabled(True)
 
 

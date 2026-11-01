@@ -82,7 +82,7 @@ def test_add_photos_many_stays_responsive(window, tmp_path):
     wait_thumbnails(window)
     t.stop()
     assert len(window.chunk.cameras) == 120
-    assert window.reference.rowCount() == 120
+    assert window.reference.data_row_count == 120
     gaps = [b - a for a, b in zip(ticks, ticks[1:])]
     assert gaps and max(gaps) < 1.0, max(gaps)
     assert dt < 10

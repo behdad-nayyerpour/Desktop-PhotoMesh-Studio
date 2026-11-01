@@ -14,6 +14,8 @@
 """
 from __future__ import annotations
 
+from PySide6.QtCore import Qt
+
 import copy
 import math
 import os
@@ -493,7 +495,7 @@ class MarkerEditMixin:
     def _select_marker_row(self, label):
         p = self.markers_pane
         for r in range(p.rowCount()):
-            if p.item(r, 0) and p.item(r, 0).text() == label:
+            if p.item(r, 0) and p.item(r, 0).data(Qt.UserRole) == label:
                 p.blockSignals(True); p.selectRow(r); p.blockSignals(False)
                 break
         self._marker_selection_changed()
