@@ -175,7 +175,8 @@ def filter_cloud(cloud, cfg, cam_centers=None, cam_dirs=None, up=None, log=print
         cloud = subset(cloud, keep); stats.append(("confidence", int((~keep).sum())))
     if cfg.get("elevation", False) and cam_centers is not None and len(cloud["xyz"]):
         u = up if up is not None else up_vector(cam_dirs)
-        keep = elevation_outliers(cloud["xyz"], cam_centers, u,\n                                  k=float(cfg.get("elevation_k", 6)), min_dev=cfg.get("elevation_min_dev"))
+        keep = elevation_outliers(cloud["xyz"], cam_centers, u,
+                                  k=float(cfg.get("elevation_k", 6)), min_dev=cfg.get("elevation_min_dev"))
         cloud = subset(cloud, keep); stats.append(("elevation", int((~keep).sum())))
     tree = None
     if cfg.get("outlier_mode", "local") == "local" and (cfg.get("statistical", True) or cfg.get("radius", True)) \

@@ -47,13 +47,14 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 from . import colmap_io as cio
+from .workflow import product_transaction, file_stamp
 
 MAPPING = ("Generic", "Adaptive orthophoto", "Orthophoto", "Keep uv")
 BLENDING = ("Mosaic", "Average", "Max intensity", "Min intensity", "Disabled")
 DEFAULTS = {"mapping": "Generic", "blending": "Mosaic", "size": 8192, "count": 1, "hole_filling": True,
             "ghosting": True, "max_res": 2640, "format": "jpg", "jpeg_quality": 92, "top_k": 10,
             "vis_samples": 4, "smooth": 1.5, "threads": 0, "padding": 2, "min_chart_faces": 40,
-            "ghost_threshold": 45.0}
+            "ghost_threshold": 45.0, "page_policy": "limit"}
 
 
 SAMPLE_CHUNK = 1_000_000   # texels projected at once per photo (bounds float64 temporaries)
@@ -71,7 +72,7 @@ def load_image(path, max_side=0):
             tw, th = max(1, int(round(W * s))), max(1, int(round(H * s)))
             im.draft("RGB", (tw, th))
             im = im.convert("RGB")
-            if im.size[0] > tw * 1.3:
+            if im.size != (tw, th):
                 im = im.resize((tw, th), Image.BILINEAR)
         else:
             im = im.convert("RGB")
@@ -701,11 +702,12 @@ def pack(uv, comp, size, count, pad, scale_max, log=print):
     return pg[cidx], uvp.astype(np.float32), s
 
 
-def pack_fit(uv, comp, size, count, pad, log=print):
+def pack_fit(uv, comp, size, count, pad, log=print, page_policy="auto"):
     """pack() that does not give up when the charts' fixed borders alone do not
     fit (many tiny charts, e.g. a rough drone mesh): retry with more pages (up to
     8x), then with a 1 px border."""
-    tries = [(c, pad) for c in (count, count * 2, count * 4, count * 8)] + [(count * 8, 1)]
+    counts = (count, count * 2, count * 4, count * 8) if page_policy == "auto" else (count,)
+    tries = [(c, pad) for c in counts] + [(counts[-1], 1)]
     for c, p in tries:
         try:
             r = pack(uv, comp, size, c, p, 1.0, log)
@@ -716,47 +718,79 @@ def pack_fit(uv, comp, size, count, pad, log=print):
                 f"using up to {c} page(s){', 1 px border' if p != pad else ''}")
         return r
     raise RuntimeError(f"texture atlas packing failed: {int(comp.max()) + 1:,} charts do not fit "
-                       f"in {count * 8} pages of {size}x{size} - use a larger texture size")
+                       f"within the {counts[-1]}-page limit of {size}x{size} - use a larger size or enable automatic page count")
 
 
 def rasterize(uvp, page, npages, size):
-    """Texels covered by each triangle: (page, y, x, face, b1, b2) arrays."""
+    """Bounded rasterization; large UV triangles are processed in strips, never dropped."""
+    import tempfile, atexit
+    from .memguard import available_bytes
+    lo = np.floor(uvp.min(1) - .5).astype(np.int64)
+    hi = np.ceil(uvp.max(1) + .5).astype(np.int64)
+    extent = hi - lo
+    estimate = float(np.minimum(extent[:, 0], size) @ np.minimum(extent[:, 1], size).astype(float))
+    disk = estimate * 26 > available_bytes() * .35
+    dtype = np.dtype([("page", "i2"), ("y", "i4"), ("x", "i4"), ("face", "i4"), ("b1", "f4"), ("b2", "f4")])
     out = []
-    lo = np.floor(uvp.min(1) - 0.5).astype(np.int64); hi = np.ceil(uvp.max(1) + 0.5).astype(np.int64)
-    ext = (hi - lo).max(1)
-    classes = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]
-    cls = np.searchsorted(classes, ext)
-    for ci, S in enumerate(classes):
-        fsel = np.flatnonzero(cls == ci)
-        if not len(fsel):
+    spool = tempfile.NamedTemporaryFile(prefix="photomesh-raster-", suffix=".bin", delete=False) if disk else None
+    count = 0
+    def emit(fs, X, Y):
+        nonlocal count
+        px, py = X + .5, Y + .5
+        a, b, c = uvp[fs, 0], uvp[fs, 1], uvp[fs, 2]
+        v0, v1 = b-a, c-a
+        den = v0[:, 0]*v1[:, 1] - v1[:, 0]*v0[:, 1]
+        good_face = np.abs(den) > 1e-12
+        safe = np.where(good_face, den, 1)
+        qx, qy = px-a[:, 0:1], py-a[:, 1:2]
+        u = (qx*v1[:, 1:2]-v1[:, 0:1]*qy)/safe[:, None]
+        v = (v0[:, 0:1]*qy-qx*v0[:, 1:2])/safe[:, None]
+        inside = good_face[:, None] & (u >= -1e-6) & (v >= -1e-6) & (u+v <= 1+1e-6)
+        inside &= (X >= 0) & (Y >= 0) & (X < size) & (Y < size)
+        r, k = np.nonzero(inside)
+        fields = (page[fs[r]].astype(np.int16), Y[r,k].astype(np.int32), X[r,k].astype(np.int32),
+                  fs[r].astype(np.int32), u[r,k].astype(np.float32), v[r,k].astype(np.float32))
+        count += len(r)
+        if spool:
+            data = np.empty(len(r), dtype)
+            for name, values in zip(dtype.names, fields):
+                data[name] = values
+            data.tofile(spool)
+        else:
+            out.append(fields)
+    classes = [2,4,8,16,32,64,128,256]
+    cls = np.searchsorted(classes, extent.max(1))
+    for ci, side in enumerate(classes):
+        sel = np.flatnonzero(cls == ci)
+        if not len(sel):
             continue
-        batch = max(1, int(8_000_000 // (S * S)))
-        gy, gx = np.mgrid[0:S, 0:S]
-        gx = gx.ravel(); gy = gy.ravel()
-        for s0 in range(0, len(fsel), batch):
-            fs = fsel[s0:s0 + batch]
-            X = lo[fs, 0][:, None] + gx[None]; Y = lo[fs, 1][:, None] + gy[None]
-            px = X + 0.5; py = Y + 0.5
-            a, b, c = uvp[fs, 0], uvp[fs, 1], uvp[fs, 2]
-            v0 = b - a; v1 = c - a
-            den = v0[:, 0] * v1[:, 1] - v1[:, 0] * v0[:, 1]
-            den = np.where(np.abs(den) < 1e-12, 1e-12, den)
-            qx = px - a[:, 0:1]; qy = py - a[:, 1:2]
-            b1 = (qx * v1[:, 1:2] - v1[:, 0:1] * qy) / den[:, None]
-            b2 = (v0[:, 0:1] * qy - qx * v0[:, 1:2]) / den[:, None]
-            eps = 1e-6
-            inside = (b1 >= -eps) & (b2 >= -eps) & (b1 + b2 <= 1 + eps) & (X >= 0) & (Y >= 0) & (X < size) & (Y < size)
-            r, k = np.nonzero(inside)
-            out.append((page[fs[r]].astype(np.int16), Y[r, k].astype(np.int32), X[r, k].astype(np.int32),
-                        fs[r].astype(np.int32), b1[r, k].astype(np.float32), b2[r, k].astype(np.float32)))
+        gy, gx = np.mgrid[:side,:side]
+        batch = max(1, 8_000_000//(side*side))
+        for start in range(0, len(sel), batch):
+            fs = sel[start:start+batch]
+            emit(fs, lo[fs,0,None]+gx.ravel()[None], lo[fs,1,None]+gy.ravel()[None])
+    for face in np.flatnonzero(cls == len(classes)):
+        x0, y0 = np.maximum(lo[face], 0); x1, y1 = np.minimum(hi[face], size)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        strip = max(1, 1_000_000//(x1-x0))
+        for y in range(y0, y1, strip):
+            yy, xx = np.mgrid[y:min(y+strip,y1),x0:x1]
+            emit(np.array([face]), xx.reshape(1,-1), yy.reshape(1,-1))
+    if spool:
+        path = spool.name; spool.close()
+        if count:
+            data = np.memmap(path, dtype=dtype, mode="r", shape=(count,))
+            def cleanup():
+                data._mmap.close()
+                try: os.remove(path)
+                except OSError: pass
+            atexit.register(cleanup)
+            return tuple(data[name] for name in dtype.names)
+        os.remove(path)
     if not out:
-        z = np.zeros(0)
-        return z.astype(np.int16), z.astype(np.int32), z.astype(np.int32), z.astype(np.int32), z.astype(np.float32), z.astype(np.float32)
-    cat = [np.concatenate([o[j] for o in out]) for j in range(6)]
-    # a texel on a shared edge belongs to one face only
-    key = (cat[0].astype(np.int64) * size + cat[1]) * size + cat[2]
-    _u, first = np.unique(key, return_index=True)
-    return tuple(c[first] for c in cat)
+        return tuple(np.empty(0, dtype=dt) for dt in ("i2","i4","i4","i4","f4","f4"))
+    return tuple(np.concatenate([entry[k] for entry in out]) for k in range(6))
 
 
 def dilate(img, mask, iters):
@@ -779,6 +813,7 @@ def dilate(img, mask, iters):
 
 
 # ------------------------------------------------------------------ main
+@product_transaction
 def build_texture(cfg, log=print, progress=None, cancel=None):
     """cfg: mesh, model, photos {image name: path}, out_dir, georef (bool) +
     DEFAULTS keys; uv_npz for 'Keep uv'. Returns info dict (also info.json)."""
@@ -819,11 +854,11 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     # visibility depends only on mesh + cameras: cached, so re-texturing with
     # other blending / size / mapping settings skips the ray casting
     def _sig(p):
-        st = os.stat(p); return [os.path.abspath(p), st.st_size, int(st.st_mtime)]
+        return file_stamp(p)
     key = json.dumps([_sig(c["mesh"]), _sig(os.path.join(c["model"], "images.bin")),
                       _sig(os.path.join(c["model"], "cameras.bin")), [v.name for v in views],
-                      c["max_res"], c["vis_samples"], c["top_k"]])
-    cache = os.path.join(out, "visibility_cache.npz")
+                      c["max_res"], c["vis_samples"], c["top_k"], [_sig(v.path) for v in views]])
+    cache = os.path.join(c.get("previous_dir") or out, "visibility_cache.npz")
     best_s = None
     if os.path.exists(cache):
         try:
@@ -837,7 +872,7 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
         best_s, best_v, sign = view_scores(vis, views, up, c, log,
                                            progress=lambda i, n: prog(8 + 37 * i / n), cancel=cancel)
         try:
-            np.savez(cache, key=key, best_s=best_s, best_v=best_v, sign=sign)
+            np.savez(os.path.join(out, "visibility_cache.npz"), key=key, best_s=best_s, best_v=best_v, sign=sign)
         except OSError:
             pass
     best_s = best_s.copy(); best_v = best_v.copy()
@@ -847,6 +882,7 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     gains = exposure_gains(best_v, col, len(views), log) if c["blending"] in ("Mosaic", "Average") \
         else np.zeros((len(views), 3))
     if c["ghosting"]:
+        log(f"Ghosting eligible: {int(((best_v >= 0).sum(1) >= 4).sum()):,}/{len(F):,} faces (four views required)")
         ghost_filter(best_s, best_v, col * np.exp(gains)[np.maximum(best_v, 0)].astype(np.float32), log,
                      float(c["ghost_threshold"]))
     stage("colour statistics", t0); prog(50)
@@ -876,7 +912,14 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
         px_per_unit, src_gsd = 1.0 / vis.edge, vis.edge
     size, count, pad = int(c["size"]), int(c["count"]), int(c["padding"])
     m = len(F)
+    if c["mapping"] == "Orthophoto" and np.any(np.abs(vis.N @ up) < .2):
+        log("Warning: Orthophoto mapping collapses near-vertical faces; Adaptive orthophoto is recommended.")
     if c["mapping"] == "Keep uv":
+        previous_info = os.path.join(os.path.dirname(c["uv_npz"]), "info.json")
+        with open(previous_info, encoding="utf-8") as fh:
+            previous = json.load(fh)
+        if previous.get("mesh_stamp") != file_stamp(c["mesh"]):
+            raise ValueError("Keep UV requires the exact same mesh geometry and face order; rebuild the atlas.")
         z = np.load(c["uv_npz"])
         uvp, page = z["uv"].astype(np.float32), z["page"].astype(np.int64)
         if len(uvp) != m:
@@ -924,7 +967,7 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
             comp[ort] = cc + nxt
         uv = orient_charts(uv, comp)
         comp = split_large(uv, comp, size * 0.9)
-        page, uvp, scale = pack_fit(uv, comp, size, count, pad, log)
+        page, uvp, scale = pack_fit(uv, comp, size, count, pad, log, c.get("page_policy", "limit"))
         count = int(page.max()) + 1
     stage("uv atlas", t0); prog(62)
     t0 = time.perf_counter()
@@ -933,8 +976,19 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     log(f"Texture: {len(tf) / 1e6:.1f} M texels cover the model ({stages['rasterize atlas']:.1f} s)")
     # ---- fill texels
     t0 = time.perf_counter()
-    pages = np.zeros((count, size, size, 3), np.float32)
-    filled = np.zeros((count, size, size), bool)
+    from .memguard import available_bytes
+    scratch = None
+    if count * size * size * 13 > available_bytes() * .4:
+        import tempfile
+        scratch = tempfile.TemporaryDirectory(prefix="texture-pages-", dir=out)
+        pages = np.memmap(os.path.join(scratch.name, "rgb.bin"), mode="w+", dtype=np.float32,
+                          shape=(count, size, size, 3))
+        filled = np.memmap(os.path.join(scratch.name, "mask.bin"), mode="w+", dtype=bool,
+                           shape=(count, size, size))
+        pages[:] = 0; filled[:] = False
+    else:
+        pages = np.zeros((count, size, size, 3), np.float32)
+        filled = np.zeros((count, size, size), bool)
     b0 = 1.0 - b1 - b2
     def texel_points(sel):
         f = F[tf[sel]]
@@ -1048,6 +1102,9 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
         else:
             im.save(os.path.join(out, name), compress_level=3)
         names.append(name)
+    if scratch is not None:
+        del pages, filled
+        scratch.cleanup()
     np.savez(os.path.join(out, "uv.npz"), uv=uvp, page=page.astype(np.int16), size=size, scale=scale)
     obj = os.path.join(out, "model_textured.obj")
     write_obj(obj, V, F, uvp, page, size, names)
@@ -1059,12 +1116,13 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     # texel size: model surface area / covered texels
     area_total = float(vis.area2.sum() / 2)
     texel = math.sqrt(area_total / max(len(tf), 1))
-    info = {"faces": int(m), "vertices": int(len(V)), "size": size, "count": int(count), "pages": names,
+    info = {"mesh_stamp": file_stamp(c["mesh"]), "model_stamp": [_sig(os.path.join(c["model"], p)) for p in ("cameras.bin", "images.bin")], "faces": int(m), "vertices": int(len(V)), "size": size, "count": int(count), "pages": names,
             "obj": obj, "glb": glb, "uv_npz": os.path.join(out, "uv.npz"), "dir": out,
             "mapping": c["mapping"], "blending": c["blending"], "hole_filling": bool(c["hole_filling"]),
             "ghosting": bool(c["ghosting"]), "max_res": mr, "photos_used": int(len(np.unique(L[L >= 0]))),
             "faces_untextured": int((L < 0).sum()), "texel_size": texel, "source_gsd": src_gsd,
             "scale_of_working_res": float(scale), "texels": int(len(tf)),
+            "inferred_faces": int((L < 0).sum()) if c["hole_filling"] else 0,
             "georef": bool(c.get("georef")), "seconds": round(time.perf_counter() - t_all, 2), "stages": stages}
     with open(os.path.join(out, "info.json"), "w", encoding="utf-8") as fh:
         json.dump(info, fh, indent=1)

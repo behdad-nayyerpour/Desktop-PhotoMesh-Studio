@@ -11,7 +11,7 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp", ".webp"}
 # path fields of a chunk (stored relative to the .pmsx when below its folder)
 CHUNK_PATHS = ("workdir", "tie_points_ply", "point_cloud_ply", "model_ply")
 PRODUCT_PATHS = (("texture", ("dir", "obj", "glb", "uv_npz")), ("tiled_model", ("dir", "tileset", "index", "zip")),
-                 ("orthomosaic", ("dir", "path", "height_path")), ("dem", ("dir", "path")), ("shapes", ("path",)))
+                 ("orthomosaic", ("dir", "path", "height_path")), ("dem", ("dir", "path", "coverage_path")), ("shapes", ("path",)))
 CAMERA_PATHS = ("path", "thumb", "desc")
 
 

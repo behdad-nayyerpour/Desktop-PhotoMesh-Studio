@@ -45,6 +45,7 @@ Build Orthomosaic
    resolution, float32) used for the cursor Z read-out, info.json.
 """
 from __future__ import annotations
+from .workflow import product_transaction, raster_budget, region_checked
 
 import json
 import math
@@ -295,9 +296,10 @@ def dem_mesh(dem, x0, y1, px, max_cells=3_000_000):
 class PhotoCache:
     """LRU cache of decoded photos (bounded by cache_mb); one decode per key."""
 
-    def __init__(self, max_mb, max_side=0):
+    def __init__(self, max_mb, max_side=0, photo_scale=1.0):
         self.max = max_mb * 1e6
         self.max_side = max_side
+        self.photo_scale = photo_scale
         self.data = OrderedDict()
         self.size = 0
         self.lock = threading.Lock()
@@ -316,7 +318,8 @@ class PhotoCache:
             with self.lock:
                 if k in self.data:
                     self.data.move_to_end(k); return self.data[k]
-            img = load_image(view.path, self.max_side)
+            side = int(max(view.W,view.H)*self.photo_scale) if self.photo_scale < 1 else self.max_side
+            img = load_image(view.path, side)
             with self.lock:
                 self.decodes += 1
                 self.data[k] = img; self.size += img.nbytes
@@ -396,6 +399,7 @@ def grid_labels(best_s, best_v, ny, nx, smooth=0.8, colg=None, beta=0.0, iters=1
 
 
 # ------------------------------------------------------------------ Build Orthomosaic
+@product_transaction
 def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     """cfg: mesh (PLY), dem (GeoTIFF from build_dem, for surface 'DEM'), model
     (COLMAP sparse dir), photos {name: path}, out_dir, georef (chunk.georef
@@ -439,28 +443,33 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     if c["surface"] == "DEM":
         if not c.get("dem") or not os.path.exists(c["dem"]):
             raise RuntimeError("Surface 'DEM' needs a DEM - run Workflow > Build DEM first")
-        with gt.TiffReader(c["dem"]) as r:
-            d = r.read_level(0)[..., 0].astype(np.float64)
-            dx0, dy1, dpx, _ = r.geo
-            nd = r.nodata
-        d[(d == nd) | ~np.isfinite(d)] = np.nan
-        d -= off[2]
-        V, F = dem_mesh(d, dx0 - off[0], dy1 - off[1], dpx)
-        lg(f"Ortho: surface = DEM {d.shape[1]}x{d.shape[0]} ({len(F):,} triangles)")
+        from .raster_surface import RasterSurface
+        surf = RasterSurface(c["dem"], off, R, (georef.get("crs") if is_geo else None))
+        V = np.array([surf.lo,surf.hi])
+        F = None
+        lg("Ortho: direct DEM sampling; no hidden grid decimation")
     else:
         V, F = read_mesh(c["mesh"])
         V = V @ R.T
         lg(f"Ortho: surface = mesh {len(V):,} vertices, {len(F):,} faces")
-    if not len(F):
-        raise RuntimeError("The surface is empty")
-    surf = Surface(V, F)
+    if F is not None:
+        if not len(F):
+            raise RuntimeError("The surface is empty")
+        surf = Surface(V, F)
     stage("load surface + cameras", t0); prog(2); check()
     # ---- extent + pixel size
     fx = np.array([v.cam.K()[0] for v in views])
     axis = np.array([R @ v.R[2] for v in views])          # optical axes in the projection frame
     t0 = time.perf_counter()
     rays = np.concatenate([Cp, axis], 1).astype(np.float32)
-    th = surf.scene.cast_rays(surf.o3d.core.Tensor(rays))["t_hit"].numpy()
+    if hasattr(surf, "scene"):
+        th = surf.scene.cast_rays(surf.o3d.core.Tensor(rays))["t_hit"].numpy()
+    else:
+        th = (float(np.mean(V[:,2]))-Cp[:,2]) / np.where(np.abs(axis[:,2])>1e-9,axis[:,2],np.nan)
+        for _ in range(6):
+            sample = Cp + axis*th[:,None]
+            z = surf.heights(sample[:,0],sample[:,1])
+            th = (z-Cp[:,2]) / np.where(np.abs(axis[:,2])>1e-9,axis[:,2],np.nan)
     ok = np.isfinite(th)
     if ok.any():
         gsd = float(np.median(th[ok] / fx[ok]))
@@ -485,6 +494,9 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     if W * H > float(c["max_pixels"]):
         raise RuntimeError(too_big_message(W, H, px, gsd, unit,
                                            suggest_pixel_size(xmin, ymin, xmax, ymax, float(c["max_pixels"]), gsd)))
+    region_checked(c.get("region"))
+    budget = raster_budget(W,H,12,out)
+    lg(f"Output budget: ~{budget['disk']/2**30:.2f} GiB disk; coarse arrays and height grid included in worker planning")
     lg(f"Ortho: photo GSD {gsd * 100 if is_geo else gsd:.3g} {'cm' if is_geo else unit}/pix, "
        f"pixel size {px:.4g} {unit}, {W:,} x {H:,} px ({W * H / 1e6:.1f} Mpx), {threads} threads")
     # ---- coarse cells
@@ -509,7 +521,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     cells = np.flatnonzero(near)
     m = len(cells)
     Xc = np.column_stack([cx[cells], cy[cells], cz[cells]])
-    K = int(c["top_k"])
+    K = int(c["top_k"]) * 2  # reserve candidates for occlusion fallback
     best_s = np.zeros((m, K), np.float32); best_v = np.full((m, K), -1, np.int32)
     zground = float(np.median(cz[hit]))
     lock = threading.Lock()
@@ -579,8 +591,9 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         bs = best_s.ravel(); bv = best_v.ravel()
         bs[flat[occ]] = 0; bv[flat[occ]] = -1
         lg(f"Ortho: {len(flat):,} cell/photo candidates, {occ.mean() * 100:.1f}% occluded")
-    order = np.argsort(-best_s, 1)
+    order = np.argsort(-best_s, 1)[:, :int(c["top_k"])]
     best_s = np.take_along_axis(best_s, order, 1); best_v = np.take_along_axis(best_v, order, 1)
+    K = int(c["top_k"])
     stage("view candidates + visibility", t0); prog(14); check()
     # ---- colour statistics on the 1/8 scale photos
     t0 = time.perf_counter()
@@ -617,6 +630,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     gmul = np.exp(gains).astype(np.float32)
     colg = col * np.where(best_v[..., None] >= 0, gmul[np.maximum(best_v, 0)], 0)
     if c["ghosting"]:
+        lg(f"Ghosting eligible: {int(((best_v>=0).sum(1)>=4).sum()):,}/{m:,} coarse cells (four views required)")
         ghost_filter(best_s, best_v, colg, lg)
         order = np.argsort(-best_s, 1)
         best_s = np.take_along_axis(best_s, order, 1); best_v = np.take_along_axis(best_v, order, 1)
@@ -630,7 +644,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     if c["blending"] == "Average":
         Lc = full_v[:, 0].copy()
     else:
-        Lc = grid_labels(full_s, full_v, ny, nx, smooth=float(c["smooth"]), colg=full_c,
+        Lc = grid_labels(full_s, full_v, ny, nx, smooth=0.0 if c["blending"] == "Disabled" else float(c["smooth"]), colg=full_c,
                          beta=float(c["seam_beta"]) if c["refine_seamlines"] else 0.0, log=lg)
     # low band: weighted average of the visible candidates per cell
     wv = np.where(full_v >= 0, full_s, 0)
@@ -649,18 +663,18 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     crs = (georef.get("crs") or c.get("crs") or "") if is_geo else ""
     world_geo = (x0 + off[0], y1 + off[1], px, px) if True else None
     writer = gt.TiledTiffWriter(path, levels, 4, np.uint8, tile, "Deflate", alpha=True, geo=world_geo,
-                                crs=crs or 'LOCAL_CS["Local Coordinates (m)"]',
+                                crs=crs or 'LOCAL_CS["Local coordinates (model units)"]',
                                 description="PhotoMesh Studio orthomosaic")
     hf = int(c["height_factor"])
     HW, HH = math.ceil(W / hf), math.ceil(H / hf)
     hgrid = np.full((HH, HW), np.nan, np.float32)
-    cache = PhotoCache(float(c["cache_mb"]), int(c["max_res"] or 0))
+    cache = PhotoCache(float(c["cache_mb"]), int(c["max_res"] or 0), float(c.get("photo_scale",1)))
     blocks = [(r0, c0) for r0 in range(0, H, B) for c0 in range(0, W, B)]
     # serpentine order keeps neighbouring blocks (same photos) together in the cache
     nbx = math.ceil(W / B)
     blocks = [b for k in range(math.ceil(H / B))
               for b in (blocks[k * nbx:(k + 1) * nbx] if k % 2 == 0 else blocks[k * nbx:(k + 1) * nbx][::-1])]
-    done = [0]; stat = {"pixels": 0, "holes": 0, "fallback": 0}
+    done = [0]; stat = {"pixels": 0, "holes": 0, "fallback": 0, "measured": 0, "inferred": 0}
     slock = threading.Lock()
     enc_pool = ThreadPoolExecutor(max(2, threads // 2))
     mr = int(c["max_res"] or 0)
@@ -676,30 +690,31 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     def render(blk):
         check()
         r0, c0 = blk
-        h, w = min(B, H - r0), min(B, W - c0)
-        jj, ii = np.meshgrid(np.arange(c0, c0 + w), np.arange(r0, r0 + h))
+        core_h, core_w = min(B,H-r0),min(B,W-c0)
+        halo = max(1,math.ceil(float(c.get("hole_distance") or (64*px))/px)) if c["hole_filling"] else 0
+        ar0,ac0=max(0,r0-halo),max(0,c0-halo)
+        ar1,ac1=min(H,r0+core_h+halo),min(W,c0+core_w+halo)
+        h,w=ar1-ar0,ac1-ac0
+        crop=(slice(r0-ar0,r0-ar0+core_h),slice(c0-ac0,c0-ac0+core_w))
+        jj, ii = np.meshgrid(np.arange(ac0, ac1), np.arange(ar0, ar1))
         X = x0 + (jj.ravel() + 0.5) * px
         Y = y1 - (ii.ravel() + 0.5) * px
         Z = surf.heights(X, Y)
         valid = np.isfinite(Z)
+        measured_geometry = valid.copy()
         if c["hole_filling"] and (~valid).any() and valid.any():
-            g2 = (~valid).reshape(h, w)
-            lab, n = ndimage.label(g2)
-            if n:
-                border = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
-                sizes = np.bincount(lab.ravel())
-                fill = np.zeros(n + 1, bool); fill[1:] = sizes[1:] < 0.05 * h * w
-                fill[border] = False
-                fm = fill[lab].ravel()
-                if fm.any():
-                    _d, (fy, fx_) = ndimage.distance_transform_edt(g2, return_indices=True)
-                    Z = np.where(fm, Z.reshape(h, w)[fy, fx_].ravel(), Z)
-                    valid = np.isfinite(Z)
+            g2=(~valid).reshape(h,w)
+            distance,(fy,fx_)=ndimage.distance_transform_edt(g2,return_indices=True)
+            limit=float(c.get("hole_distance") or (64*px))
+            fill=g2 & (distance*px<=limit)
+            zgrid=Z.reshape(h,w)
+            zgrid[fill]=zgrid[fy[fill],fx_[fill]]
+            valid=np.isfinite(Z)
         rgba = np.zeros((h * w, 4), np.uint8)
         # height grid (1/hf)
-        Zg = Z.reshape(h, w)
-        hh, ww = math.ceil(h / hf), math.ceil(w / hf)
-        pad = np.full((hh * hf, ww * hf), np.nan, np.float32); pad[:h, :w] = Zg
+        Zg = Z.reshape(h, w)[crop]
+        hh, ww = math.ceil(core_h / hf), math.ceil(core_w / hf)
+        pad = np.full((hh * hf, ww * hf), np.nan, np.float32); pad[:core_h, :core_w] = Zg
         # nan-aware block mean without np.nanmean (its "Mean of empty slice" warning
         # cannot be silenced reliably from worker threads: catch_warnings is process-global)
         pr = pad.reshape(hh, hf, ww, hf)
@@ -711,7 +726,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         hgrid[r0 // hf:r0 // hf + hh, c0 // hf:c0 // hf + ww] = hs + off[2]
         sel = np.flatnonzero(valid)
         if not len(sel):
-            writer.write_block(0, r0, c0, rgba.reshape(h, w, 4), enc_pool)
+            writer.write_block(0, r0, c0, rgba.reshape(h, w, 4)[crop], enc_pool)
             return
         Xp = np.column_stack([X[sel], Y[sel], Z[sel]])
         # cell coordinates (continuous) of the pixels
@@ -810,11 +825,17 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
             filled = img[..., 3] > 0
             if filled.any():
                 dd, (fy, fx_) = ndimage.distance_transform_edt(~filled, return_indices=True)
-                fillm = hole & (dd <= 64)
+                fillm = hole & (dd * px <= float(c.get("hole_distance") or (64*px)))
                 img[fillm] = img[fy[fillm], fx_[fillm]]
-        writer.write_block(0, r0, c0, img, enc_pool)
+        writer.write_block(0, r0, c0, img[crop], enc_pool)
         with slock:
-            stat["pixels"] += int(have.sum()); stat["holes"] += nh; stat["fallback"] += nfb
+            in_core = (ii.ravel()[sel]>=r0)&(ii.ravel()[sel]<r0+core_h)&(jj.ravel()[sel]>=c0)&(jj.ravel()[sel]<c0+core_w)
+            real = measured_geometry[sel] & have & in_core
+            stat["pixels"] += int((have & in_core).sum())
+            stat["holes"] += int((~have & in_core).sum())
+            stat["fallback"] += int(((final>=0)&(final!=lab_)&in_core).sum())
+            stat["measured"] += int(real.sum())
+            stat["inferred"] += int((img[crop][...,3]>0).sum())-int(real.sum())
             done[0] += 1
             prog(24 + 66 * done[0] / len(blocks))
 
@@ -822,7 +843,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     # each block worker holds ~ B^2 x (float64 X/Y/Z, projections, distance-transform
     # indices, candidates): cap by free RAM, keeping the photo cache's budget aside
     from .memguard import cap_workers, MB
-    capped = cap_workers(nworkers, ortho_block_bytes(B, K), base_bytes=int(float(c["cache_mb"]) * MB))
+    capped = cap_workers(nworkers, ortho_block_bytes(B, K), base_bytes=int(float(c["cache_mb"]) * MB) + hgrid.nbytes + full_c.nbytes + full_s.nbytes + full_v.nbytes)
     if capped < nworkers:
         lg(f"Ortho: {capped} block workers instead of {nworkers} (limited by free RAM)")
         nworkers = capped
@@ -841,6 +862,8 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         writer.abort(); enc_pool.shutdown(wait=False)
         raise
     enc_pool.shutdown()
+    if hasattr(surf, "close"):
+        surf.close()
     # height grid (world Z) for the cursor read-out and as a DSM by-product
     hpath = os.path.join(out, "height.tif")
     hg = np.where(np.isfinite(hgrid), hgrid, NODATA_DEM).astype(np.float32)
@@ -862,7 +885,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
             "region": c.get("region"), "photos_used": photos_used, "levels": len(levels),
             "z_range": [float(np.nanmin(hgrid)) if np.isfinite(hgrid).any() else None,
                         float(np.nanmax(hgrid)) if np.isfinite(hgrid).any() else None],
-            "covered_pixels": stat["pixels"], "bytes": os.path.getsize(path),
+            "covered_pixels": stat["pixels"], "measured_pixels": stat["measured"], "inferred_pixels": stat["inferred"], "bytes": os.path.getsize(path),
             "seconds": secs, "stages": stages, "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
             "settings": {k: c[k] for k in ("surface", "blending", "hole_filling", "ghosting", "refine_seamlines",
                                            "pixel_size", "max_dimension", "region", "max_res")}}
@@ -877,129 +900,8 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
 
 # ------------------------------------------------------------------ Build DEM
 def build_dem(cfg, log=print, progress=None, cancel=None):
-    """DEM (DSM) from the dense point cloud: mean height of the points in each
-    cell, holes interpolated (Enabled: up to max_fill metres from data;
-    Extrapolated: everywhere in the extent; Disabled: none).
-    cfg: cloud (PLY, local frame), model (for the up direction when not
-    georeferenced), georef, out_dir + DEM_DEFAULTS keys."""
-    c = dict(DEM_DEFAULTS); c.update({k: v for k, v in cfg.items() if v is not None})
-    t_all = time.perf_counter(); stages = {}
-    def prog(p):
-        if progress:
-            progress(int(p), 100)
-    def check():
-        if cancel and cancel():
-            raise Cancelled("cancelled")
-    georef = c.get("georef") or {}
-    off = georef_offset(georef); is_geo = bool(georef)
-    out = c["out_dir"]; os.makedirs(out, exist_ok=True)
-    t0 = time.perf_counter()
-    if c["source"] == "Mesh":
-        from .texture import read_mesh
-        P, _F = read_mesh(c["mesh"])
-    else:
-        from .plyio import read_fast
-        r = read_fast(c["cloud"])
-        if r is not None:
-            v = r["vertex"]; P = np.column_stack([v["x"], v["y"], v["z"]]).astype(np.float64)
-        else:
-            from .pcfilter import read_cloud
-            P = read_cloud(c["cloud"])["xyz"]
-    if not is_geo and c.get("model"):
-        from .texture import load_views
-        views = load_views(c["model"], c.get("photos") or {}, lambda m: None) if c.get("photos") else []
-        R = projection_rotation(views, False) if views else np.eye(3)
-    else:
-        R = np.eye(3)
-    if not np.allclose(R, np.eye(3)):
-        P = P @ R.T
-    stages["read points"] = round(time.perf_counter() - t0, 2)
-    log(f"DEM: {len(P):,} source points ({stages['read points']:.1f} s)"); prog(10); check()
-    t0 = time.perf_counter()
-    lo, hi = P.min(0), P.max(0)
-    if c.get("region"):
-        xmin, ymin, xmax, ymax = [float(v) for v in c["region"]]
-        xmin -= off[0]; xmax -= off[0]; ymin -= off[1]; ymax -= off[1]
-    else:
-        xmin, ymin, xmax, ymax = lo[0], lo[1], hi[0], hi[1]
-    px = float(c["pixel_size"] or 0)
-    if px <= 0:
-        # mean point spacing over the occupied area (coarse occupancy grid)
-        g = max(np.ptp(P[:, 0]), np.ptp(P[:, 1])) / 512 or 1.0
-        occ = np.unique(((P[:, 0] - lo[0]) // g).astype(np.int64) * 100000 + ((P[:, 1] - lo[1]) // g).astype(np.int64))
-        area = len(occ) * g * g
-        px = nice(2.0 * math.sqrt(area / max(len(P), 1)))
-    x0, y1, W, H = make_grid(xmin, ymin, xmax, ymax, px, off[:2])
-    if W * H > float(c["max_pixels"]):
-        raise RuntimeError(f"DEM would be {W}x{H} cells - increase the resolution value")
-    col = np.floor((P[:, 0] - x0) / px).astype(np.int64)
-    row = np.floor((y1 - P[:, 1]) / px).astype(np.int64)
-    ok = (col >= 0) & (col < W) & (row >= 0) & (row < H)
-    idx = row[ok] * W + col[ok]
-    cnt = np.bincount(idx, minlength=W * H)
-    s = np.bincount(idx, weights=P[ok, 2], minlength=W * H)
-    dem = np.full(W * H, np.nan, np.float64)
-    has = cnt > 0
-    dem[has] = s[has] / cnt[has]
-    dem = dem.reshape(H, W)
-    del P, col, row, idx, s
-    stages["rasterize"] = round(time.perf_counter() - t0, 2); prog(50); check()
-    t0 = time.perf_counter()
-    from scipy import ndimage
-    hole = ~np.isfinite(dem)
-    filled = 0
-    if c["interpolation"] != "Disabled" and hole.any() and (~hole).any():
-        dist, (iy, ix) = ndimage.distance_transform_edt(hole, return_indices=True)
-        if c["interpolation"] == "Extrapolated":
-            fm = hole
-        else:
-            # interior holes only (not connected to the outer border) or near the data
-            lab, n = ndimage.label(hole)
-            border = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
-            inner = np.ones(n + 1, bool); inner[0] = False; inner[border] = False
-            fm = (inner[lab] | (dist * px <= float(c["max_fill"]) * 0.25)) & (dist * px <= float(c["max_fill"]))
-        near = dem[iy, ix]
-        # smooth the nearest-neighbour fill (normalized convolution) so filled areas have no terraces
-        known = np.where(hole, 0.0, dem)
-        wk = (~hole).astype(np.float64)
-        sig = 3.0
-        num = ndimage.gaussian_filter(known, sig); den = ndimage.gaussian_filter(wk, sig)
-        sm = np.where(den > 1e-3, num / np.maximum(den, 1e-12), near)
-        dem = np.where(fm, sm, dem)
-        filled = int(fm.sum())
-    stages["interpolation"] = round(time.perf_counter() - t0, 2); prog(70); check()
-    t0 = time.perf_counter()
-    world = np.where(np.isfinite(dem), dem + off[2], NODATA_DEM).astype(np.float32)
-    path = os.path.join(out, "dem.tif")
-    crs = (georef.get("crs") or c.get("crs") or "") if is_geo else ""
-    w = gt.TiledTiffWriter(path, gt.overview_levels(W, H), 1, np.float32, int(c["tile"]), "Deflate",
-                           nodata=NODATA_DEM, geo=(x0 + off[0], y1 + off[1], px, px),
-                           crs=crs or 'LOCAL_CS["Local Coordinates (m)"]', description="PhotoMesh Studio DEM")
-    try:
-        with ThreadPoolExecutor(max(2, (os.cpu_count() or 4) // 2)) as ex:
-            for r0 in range(0, H, 2048):
-                w.write_block(0, r0, 0, world[r0:r0 + 2048, :, None], ex)
-            gt.build_overviews(w, nodata=NODATA_DEM, executor=ex)
-        w.close()
-    except BaseException:
-        w.abort(); raise
-    stages["write"] = round(time.perf_counter() - t0, 2)
-    v = world[world != NODATA_DEM]
-    xw0, yw1 = x0 + off[0], y1 + off[1]
-    info = {"format": "photomesh-dem/1", "dir": out, "path": path, "width": W, "height": H, "pixel_size": px,
-            "origin": [xw0, yw1], "bounds": [xw0, yw1 - H * px, xw0 + W * px, yw1], "offset": off.tolist(),
-            "rotation": R.tolist(), "georef": is_geo, "crs": crs, "source": c["source"],
-            "interpolation": c["interpolation"], "z_range": [float(v.min()), float(v.max())] if len(v) else None,
-            "filled_cells": filled, "valid_cells": int(len(v)), "bytes": os.path.getsize(path), "nodata": NODATA_DEM,
-            "seconds": round(time.perf_counter() - t_all, 2), "stages": stages,
-            "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "settings": {k: c[k] for k in ("source", "interpolation", "pixel_size", "region")}}
-    with open(os.path.join(out, "info.json"), "w", encoding="utf-8") as f:
-        json.dump(info, f, indent=1)
-    log(f"DEM done in {info['seconds']:.1f} s: {W:,} x {H:,} cells, {px * (100 if is_geo else 1):.4g} "
-        f"{'cm' if is_geo else 'units'}/pix, {filled:,} cells interpolated -> {path}")
-    prog(100)
-    return info
+    from .dem_engine import build_dem as implementation
+    return implementation(cfg, log=log, progress=progress, cancel=cancel)
 
 
 # ------------------------------------------------------------------ export

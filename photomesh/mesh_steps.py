@@ -36,7 +36,8 @@ def mesh_steps(exe, wd, s, cloud_path, cam_center=None):
            "interpolation": s.get("interpolation", "Enabled"), "voxel": s.get("voxel"),
            "max_points": s.get("max_points", 12_000_000), "cam_center": cam_center,
            "long_edge_factor": s.get("long_edge_factor", 8.0),
-           "min_component": s.get("min_component", 0.01), "min_component_faces": s.get("min_component_faces", 200),\n           "n_points": source_points}
+           "min_component": s.get("min_component", 0.01), "min_component_faces": s.get("min_component_faces", 200),
+           "n_points": source_points}
     steps = []
     if cfg["source"] == "Depth maps":
         raw = os.path.join(dense, "delaunay_raw.ply")

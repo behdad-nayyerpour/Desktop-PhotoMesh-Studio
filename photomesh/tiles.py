@@ -28,6 +28,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 from . import gltf
+from .workflow import product_transaction, file_stamp, publish_directory
 from .texture import (plane_basis, rasterize, pack, split_large, charts_from_labels, face_adjacency,
                       dilate, bilinear)
 
@@ -51,7 +52,14 @@ def quadtree(xy, limit, max_depth):
     stack = [root]
     while stack:
         n = stack.pop()
-        if len(n.items) <= limit or n.depth >= max_depth:
+        if len(n.items) <= limit:
+            continue
+        if n.depth >= max_depth or np.all(np.ptp(xy[n.items], axis=0) < 1e-12):
+            # Coincident centroids still obey the hard count bound.
+            for start in range(0, len(n.items), limit):
+                child = Node(n.key + "_" + str(start//limit), n.depth+1, n.lo, n.hi)
+                child.items = n.items[start:start+limit]; n.children.append(child)
+            n.items = None
             continue
         mid = (n.lo + n.hi) / 2
         p = xy[n.items]
@@ -180,8 +188,8 @@ def face_grid_atlas(px, size, texel):
     its cell with a half-pixel border. Returns (uvp (m,3,2), size, texel)."""
     m = len(px)
     cols = max(1, math.ceil(math.sqrt(m)))
-    while size // cols < 2:                     # at least 2 px per triangle
-        size *= 2
+    if size // cols < 2:
+        raise ValueError("Tile exceeds texture capacity; reduce triangles per tile")
     cell = size // cols
     lo = px.min(1); ext = np.maximum((px.max(1) - lo).max(1), 1e-12)
     sc = (cell - 1.0) / ext                     # uniform per triangle, keeps the shape
@@ -227,10 +235,11 @@ def _root_transform(georef, center_model):
     lat, lon = utm_inverse(E, N, int(z), bool(south))
     lat, lon = float(lat), float(lon)
     O = geodetic_to_ecef(lat, lon, float(h)); Bm = enu_basis(lat, lon)
-    M = np.eye(4); M[:3, 0] = Bm[0]; M[:3, 1] = Bm[1]; M[:3, 2] = Bm[2]; M[:3, 3] = O
+    M = np.eye(4); M[:3, 0] = Bm[0]; M[:3, 1] = Bm[1]; M[:3, 2] = Bm[2]; M[:3, 3] = O - M[:3, :3] @ np.asarray(center_model, float)
     return M.T.ravel().tolist(), (lat, lon, float(h))
 
 
+@product_transaction
 def build_tiles(cfg, log=print, progress=None, cancel=None):
     """cfg: out_dir, source ('Model'|'Point cloud'), mesh, texture_dir (optional),
     cloud (ply), up [3], georef (dict or {}), + DEFAULTS."""
@@ -247,6 +256,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
         if progress:
             progress(int(p), 100)
     if c["source"] == "Point cloud":
+        c["format"] = "pnts"
         info = _build_points(c, tmp, Rup, log, prog)
     else:
         info = _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages)
@@ -262,7 +272,9 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
         return d
     rj = tile_json(root)
     if rt:
-        rj["transform"] = rt[0]
+        transform = np.asarray(rt[0]).reshape(4, 4).T.copy()
+        transform[:3, :3] = transform[:3, :3] @ Rup.T
+        rj["transform"] = transform.T.ravel().tolist()
     ts = {"asset": {"version": "1.1" if c["format"] == "glb" else "1.0", "generator": "PhotoMesh Studio",
                     "tilesetVersion": time.strftime("%Y-%m-%dT%H:%M:%S")},
           "geometricError": float(root.error * 2 or 1.0), "root": rj,
@@ -287,8 +299,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
                       "children": [k.key for k in n.children]} for n in nodes]}
     with open(os.path.join(tmp, "photomesh_tiles.json"), "w", encoding="utf-8") as fh:
         json.dump(idx, fh)
-    shutil.rmtree(out, ignore_errors=True)
-    os.replace(tmp, out)
+    publish_directory(tmp, out)
     size = sum(os.path.getsize(os.path.join(dp, f)) for dp, _d, fs in os.walk(out) for f in fs)
     res = {"dir": out, "tileset": os.path.join(out, "tileset.json"), "index": os.path.join(out, "photomesh_tiles.json"),
            "levels": levels, "tiles": len(nodes), "pixel_size": leaf_texel, "georef": metric,
@@ -314,7 +325,7 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         z = np.load(os.path.join(tdir, "uv.npz"))
         with open(os.path.join(tdir, "info.json"), encoding="utf-8") as fh:
             tinfo = json.load(fh)
-        if len(z["uv"]) == len(F):
+        if len(z["uv"]) == len(F) and tinfo.get("mesh_stamp") == file_stamp(c["mesh"]):
             pages = [np.asarray(Image.open(os.path.join(tdir, p)).convert("RGB")) for p in tinfo["pages"]]
             baker_args = dict(uvp=z["uv"].astype(np.float64), page=z["page"].astype(np.int64), pages=pages)
             src_texel = float(tinfo.get("texel_size") or 0)
@@ -332,12 +343,16 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
     if not src_texel:
         src_texel = edge / 4
     if c.get("pixel_size"):
-        src_texel = max(src_texel, float(c["pixel_size"]))
+        requested = float(c["pixel_size"])
+        if requested < src_texel:
+            log(f"Requested texel {requested:.6g} is finer than source {src_texel:.6g}; preserving source resolution")
+        src_texel = max(src_texel, requested)
     stages["load"] = round(time.perf_counter() - t0, 2)
     log(f"Tiled model: source {len(V):,} vertices, {len(F):,} faces ({stages['load']:.1f} s)")
     Vu = V @ Rup.T                                     # up frame (x, y ground, z up)
     cent = Vu[F].mean(1)
-    root = quadtree(cent[:, :2], int(c["tile_faces"]), int(c["max_depth"]))
+    capacity = min(int(c["tile_faces"]), max(1, (int(c["max_tex"]) // 2) ** 2))
+    root = quadtree(cent[:, :2], capacity, int(c["max_depth"]))
     nodes = list(walk(root))
     leaves = [n for n in nodes if not n.children]
     height = {}
@@ -360,12 +375,15 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         prog(5 + 90 * done[0] / len(nodes))
         if cancel and cancel():
             raise KeyboardInterrupt
-    threads = max(2, min(8, (os.cpu_count() or 4) // 2))
+    from .memguard import cap_workers
+    threads = cap_workers(max(1, min(8, (os.cpu_count() or 4) // 2)),
+                          int(c["max_tex"]) ** 2 * 180 + capacity * 400)
     # leaves: original faces
     def leaf(n):
         Vt, Ft, _u = compact(V, F[n.items])
         n.mesh = (Vt, Ft); n.error = 0.0
         write_node(n, Vt, Ft, src_texel)
+        n.mesh = None  # reconstruct leaves from original arrays when their parent needs them
     with ThreadPoolExecutor(threads) as ex:
         list(ex.map(leaf, leaves))
     stages["leaf tiles"] = round(time.perf_counter() - t0, 2)
@@ -376,10 +394,13 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         def parent(n):
             Vs, Fs, off = [], [], 0
             for k in n.children:
-                Vk, Fk = k.mesh
+                if k.mesh is None:
+                    Vk, Fk, _ = compact(V, F[k.items])
+                else:
+                    Vk, Fk = k.mesh
                 Vs.append(Vk); Fs.append(Fk + off); off += len(Vk)
             Vc = np.concatenate(Vs); Fc = np.concatenate(Fs)
-            target = max(500, min(int(c["tile_faces"]), len(Fc) // 2))
+            target = max(500, min(capacity, len(Fc) // 2))
             Vd, Fd = decimate(Vc, Fc, target)
             n.mesh = (Vd, Fd)
             # decimation error: distance of a sample of the children's vertices to the parent mesh
@@ -391,12 +412,13 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
             texel = src_texel * 2 ** hh
             write_node(n, Vd, Fd, texel)
             n.error = float(max(16 * n.texel, np.percentile(dist, 95) if len(dist) else 0))
+            n.bmin = np.minimum(n.bmin, np.min([k.bmin for k in n.children], axis=0))
+            n.bmax = np.maximum(n.bmax, np.max([k.bmax for k in n.children], axis=0))
         with ThreadPoolExecutor(threads) as ex:
             list(ex.map(parent, level))
         for n in level:
             for k in n.children:
-                if k.children:
-                    k.mesh = None
+                k.mesh = None
     stages["parent tiles"] = round(time.perf_counter() - t0, 2)
     # parent error must exceed children's
     def fix(n):
@@ -449,6 +471,11 @@ def _build_points(c, tmp, Rup, log, prog):
                 idx = rng.choice(idx, lim, replace=False)
         sel[n.key] = idx
         write(n, idx)
+        if n.children:
+            n.bmin = np.minimum(n.bmin, np.min([k.bmin for k in n.children], axis=0))
+            n.bmax = np.maximum(n.bmax, np.max([k.bmax for k in n.children], axis=0))
+            for child in n.children:
+                sel.pop(child.key, None)
         area = float(np.prod(np.maximum(n.bmax[:2] - n.bmin[:2], 1e-9)))
         sp = math.sqrt(area / max(len(idx), 1))
         n.texel = sp
