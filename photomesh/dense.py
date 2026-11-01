@@ -339,7 +339,7 @@ def prepare_workspace(model_dir, image_root, dense_dir, quality="Medium", max_so
     with open(os.path.join(dense_dir, "stereo", "patch-match.cfg"), "w", encoding="utf-8") as f:
         for iid in sorted(src):
             f.write(names[iid] + "\n")
-            f.write(", ".join(names[j] for j in src[iid]) if src[iid] else "__auto__, 10")
+            f.write(", ".join(names[j] for j in src[iid]) if src[iid] else f"__auto__, {max_sources}")
             f.write("\n")
     with open(os.path.join(dense_dir, "stereo", "fusion.cfg"), "w", encoding="utf-8") as f:
         f.write("\n".join(names[i] for i in sorted(names)) + "\n")
@@ -943,7 +943,14 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
     cfg = {"model": os.path.join(wd, "sparse", "0"), "image_root": image_root, "dense": dense,
            "quality": quality, "max_sources": int(s.get("max_sources", 8))}
     marker = os.path.join(dense, "workspace.json")
-    cfg_marker = dict(cfg, model_sig=model_signature(cfg["model"]))
+    from .workflow import model_stamp, file_stamp
+    from .colmap_io import read_images
+    photo_names = [im.name for im in read_images(os.path.join(cfg["model"], "images.bin")).values()] if os.path.exists(os.path.join(cfg["model"], "images.bin")) else []
+    depth_parameters = {k: s.get(k, default) for k, default in
+                        (("depth_filtering", "Mild"), ("window_step", 2), ("num_iterations", 3),
+                         ("window_radius", 5), ("num_samples", 15))}
+    cfg_marker = dict(cfg, model_sig=model_signature(cfg["model"]), depth_parameters=depth_parameters,
+                      photo_stamps=[file_stamp(os.path.join(image_root, name)) for name in photo_names])
     reuse = bool(s.get("reuse"))
     notes = []
     if not reuse:
@@ -960,7 +967,7 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
     if not keep_images or not keep_depth:
         for sub in (("images", "sparse", "stereo") if not keep_images else ("stereo",)):
             shutil.rmtree(os.path.join(dense, sub), ignore_errors=True)
-        for fn in ("fused.ply", "fused.ply.vis", "point_cloud.ply"):
+        for fn in ("fused.ply", "fused.ply.vis"):
             if os.path.exists(os.path.join(dense, fn)):
                 os.remove(os.path.join(dense, fn))
     cfg_path = os.path.join(dense, "prepare.json")
@@ -968,7 +975,7 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
         json.dump(cfg, fh)
     pm = ["patch_match_stereo", "--workspace_path", dense,
           "--PatchMatchStereo.geom_consistency", "1",
-          "--PatchMatchStereo.filter", "1",
+          "--PatchMatchStereo.filter", "0" if mode == "Disabled" else "1",
           "--PatchMatchStereo.filter_min_num_consistent", str(f["filter_min_num_consistent"]),
           "--PatchMatchStereo.filter_min_ncc", str(f["filter_min_ncc"]),
           "--PatchMatchStereo.window_radius", str(s.get("window_radius", 5)),

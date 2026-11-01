@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
     QVBoxLayout, QGroupBox, QLabel, QProgressBar, QPlainTextEdit, QPushButton,
-    QHBoxLayout, QLineEdit, QFileDialog, QTabWidget, QWidget)
+    QHBoxLayout, QLineEdit, QFileDialog, QTabWidget, QWidget, QMessageBox)
 
 from . import colmap as cm
 
@@ -35,16 +35,30 @@ class _SettingsDialog(QDialog):
         bb.rejected.connect(self.reject)
         lay.addWidget(bb)
 
+    def accept(self):
+        try:
+            validator = getattr(self, "validate_settings", None)
+            if validator:
+                validator()
+            region = getattr(self, "region_box", None)
+            if region is not None and region.isChecked():
+                region.region()
+        except (ValueError, OSError) as error:
+            QMessageBox.warning(self, self.windowTitle(), str(error))
+            return
+        super().accept()
+
 
 class AlignPhotosDialog(_SettingsDialog):
     def __init__(self, parent=None):
         super().__init__("Align Photos", parent)
-        self.accuracy = _combo(cm.ACCURACY, "High")
+        self.accuracy = _combo(["High", "Medium", "Low", "Lowest"], "High")
         self.generic = QCheckBox("Generic preselection")
         self.generic.setChecked(True)
         self.reference = QCheckBox("GPS pair preselection")
         self.reference.setChecked(True)
-        self.reset = QCheckBox("Reset current alignment")
+        self.reset = QCheckBox("Rebuild alignment transactionally")
+        self.reset.hide()
         self.mode = _combo(["Fast", "Exhaustive", "Sequential"], "Fast")
         self.mode.setToolTip("Fast: fastpipe pair preselection (GPS + global descriptor + sequence)\n"
                              "with coarse-to-fine alignment. Exhaustive: match all pairs.")
@@ -60,25 +74,29 @@ class AlignPhotosDialog(_SettingsDialog):
                                "Hierarchical: COLMAP, splits the scene and solves parts in parallel")
         self.gform.addRow("Camera estimation:", self.mapper)
         self.gform.addRow(self.c2f)
-        self.gform.addRow("Accuracy:", self.accuracy)
+        self.gform.addRow("Image resolution:", self.accuracy)
         self.gform.addRow(self.generic)
         row = QHBoxLayout()
         row.addWidget(self.reference)
         self.gform.addRow(row)
-        self.gform.addRow(self.reset)
-        self.key_limit = QSpinBox(); self.key_limit.setRange(0, 1_000_000); self.key_limit.setValue(40000)
+        note = QLabel("A successful run replaces camera alignment and tie points. Failure keeps the previous result.")
+        note.setWordWrap(True)
+        self.gform.addRow(note)
+        self.key_limit = QSpinBox(); self.key_limit.setRange(0, 1_000_000); self.key_limit.setSpecialValueText("Engine default"); self.key_limit.setValue(40000)
         self.guided = QCheckBox("Guided image matching")
-        self.single_camera = QCheckBox("Share one camera model per physical camera (lens + image size)")
+        self.single_camera = QCheckBox("Share calibration between compatible photos")
         self.single_camera.setChecked(True)
         self.aform.addRow("Key point limit:", self.key_limit)
         for w in (self.guided, self.single_camera):
             self.aform.addRow(w)
-        self.key_limit.setToolTip("Maximum extracted features per image; 0 means no limit.")
+        self.key_limit.setToolTip("Maximum features per image. Engine default omits the override; no hidden fine-stage cap.")
         def pair_mode(text):
             self.generic.setEnabled(text == "Fast")
             self.reference.setEnabled(text == "Fast")
         self.mode.currentTextChanged.connect(pair_mode)
         pair_mode(self.mode.currentText())
+        from .workflow_ui import alignment_context
+        alignment_context(self, parent)
 
     def settings(self):
         return {"accuracy": self.accuracy.currentText(),
@@ -92,6 +110,7 @@ class AlignPhotosDialog(_SettingsDialog):
                 "key_point_limit": self.key_limit.value(),
                 "guided_matching": self.guided.isChecked(),
                 "single_camera": self.single_camera.isChecked(),
+                "calibration_groups": getattr(self, "calibration_groups", {}),
                 "use_gpu": QSettings().value("gpu/use_gpu", True, bool) and _gpu_ok()}
 
 
@@ -104,7 +123,7 @@ class BuildPointCloudDialog(_SettingsDialog):
         self.gform.addRow("Source data:", self.source)
         self.gform.addRow("Quality:", self.quality)
         self.filtering = _combo(cm.DEPTH_FILTERING, "Mild")
-        self.confidence = QCheckBox("Filter by minimum confidence"); self.confidence.setChecked(True)
+        self.confidence = QCheckBox("Filter by supporting-photo count"); self.confidence.setChecked(True)
         self.reuse = QCheckBox("Reuse depth maps")
         self.keep_depth = QCheckBox("Keep depth maps")
         self.keep_depth.setToolTip("Keep the depth maps after the point cloud is built (needed for 'Reuse "
@@ -123,12 +142,14 @@ class BuildPointCloudDialog(_SettingsDialog):
         self.min_conf = QSpinBox(); self.min_conf.setRange(0, 50); self.min_conf.setValue(3)
         self.sor = QCheckBox("Statistical outlier removal"); self.sor.setChecked(True)
         self.radius = QCheckBox("Radius outlier removal"); self.radius.setChecked(True)
-        self.elev = QCheckBox("Remove points far above/below the terrain"); self.elev.setChecked(True)
-        f.addRow("Minimum confidence (photos):", self.min_conf)
+        self.elev = QCheckBox("Remove points far above/below the terrain"); self.elev.setChecked(False)
+        f.addRow("Minimum supporting photos:", self.min_conf)
         self.confidence.toggled.connect(self.min_conf.setEnabled)
         for w in (self.sor, self.radius, self.elev):
             f.addRow(w)
         self.layout().insertWidget(2, self.outl)
+        from .workflow_ui import dense_context
+        dense_context(self, parent)
 
     def settings(self):
         return {"quality": self.quality.currentText(),
@@ -140,7 +161,9 @@ class BuildPointCloudDialog(_SettingsDialog):
                 "num_iterations": self.iters.value(),
                 "filters": {"min_confidence": self.min_conf.value() if self.confidence.isChecked() else 0,
                             "statistical": self.sor.isChecked(), "radius": self.radius.isChecked(),
-                            "elevation": self.elev.isChecked()}}
+                            "elevation": self.elev.isChecked(), "local_ratio": self.local_ratio.value(),
+                            "elevation_k": self.elevation_k.value(),
+                            "elevation_min_dev": self.elevation_dev.value() or None}}
 
 
 class BuildModelDialog(_SettingsDialog):
@@ -158,17 +181,19 @@ class BuildModelDialog(_SettingsDialog):
         self.face_count.currentTextChanged.connect(lambda text: self.custom.setEnabled(text == "Custom"))
         self.interp = _combo(["Disabled", "Enabled (default)", "Extrapolated"], "Enabled (default)")
         self.voxel = QDoubleSpinBox(); self.voxel.setDecimals(3); self.voxel.setRange(0, 1000)
-        self.voxel.setSpecialValueText("Auto (fit memory)")
+        self.voxel.setSpecialValueText("Auto (target point count)")
         self.max_pts = QSpinBox(); self.max_pts.setRange(100_000, 100_000_000); self.max_pts.setValue(12_000_000)
         self.max_pts.setSingleStep(1_000_000)
         self.small = QDoubleSpinBox(); self.small.setRange(0, 50); self.small.setValue(1.0); self.small.setSuffix(" % of largest")
         self.long_edge = QDoubleSpinBox(); self.long_edge.setRange(0, 100); self.long_edge.setValue(8.0)
         self.long_edge.setSuffix(" x median edge"); self.long_edge.setSpecialValueText("Off")
-        self.aform.addRow("Interpolation:", self.interp)
+        self.aform.addRow("Unsupported-surface trimming:", self.interp)
         self.aform.addRow("Voxel downsample:", self.voxel)
         self.aform.addRow("Max points for meshing:", self.max_pts)
         self.aform.addRow("Remove components smaller than:", self.small)
-        self.aform.addRow("Remove faces with edges longer than:", self.long_edge)
+        self.aform.addRow("Longest face-edge median multiplier:", self.long_edge)
+        from .workflow_ui import mesh_context
+        mesh_context(self, parent)
 
     def settings(self):
         return {"source": self.source.currentText(),
@@ -176,7 +201,8 @@ class BuildModelDialog(_SettingsDialog):
                 "custom_faces": self.custom.value(),
                 "interpolation": ["Disabled", "Enabled", "Extrapolated"][self.interp.currentIndex()],
                 "voxel": self.voxel.value() or None, "max_points": self.max_pts.value(),
-                "min_component": self.small.value() / 100.0, "long_edge_factor": self.long_edge.value()}
+                "min_component": self.small.value() / 100.0, "min_component_faces": self.component_faces.value(),
+                "long_edge_factor": self.long_edge.value(), "n_points": self.input_points}
 
 
 class FilterPointCloudDialog(_SettingsDialog):
@@ -301,7 +327,7 @@ class BuildTextureDialog(_SettingsDialog):
         self.source = QLabel("Images")
         self.mapping = _combo(["Generic", "Adaptive orthophoto", "Orthophoto"] + (["Keep uv"] if has_uv else []),
                               st.value("texture/mapping", "Generic", str))
-        self.blending = _combo(["Mosaic (default)", "Average", "Max intensity", "Min intensity", "Disabled"],
+        self.blending = _combo(["Mosaic (default)", "Average", "Max intensity", "Min intensity", "Single photo (no colour blending)"],
                                st.value("texture/blending", "Mosaic (default)", str))
         self.size = _combo(["1024", "2048", "4096", "8192", "16384"], st.value("texture/size", "8192", str))
         self.size.setEditable(True)
@@ -315,12 +341,14 @@ class BuildTextureDialog(_SettingsDialog):
         self.gform.addRow("Texture size/count:", row)
         self.holes = QCheckBox("Enable hole filling"); self.holes.setChecked(st.value("texture/holes", True, bool))
         self.ghost = QCheckBox("Enable ghosting filter"); self.ghost.setChecked(st.value("texture/ghost", True, bool))
-        self.res = _combo(["Working resolution (2640 px, fast)", "Full resolution (slow)"],
+        self.res = _combo(["Max side 2640 px (fast)", "Full resolution"],
                           st.value("texture/res", "Working resolution (2640 px, fast)", str))
         self.fmt = _combo(["JPEG", "PNG"], st.value("texture/format", "JPEG", str))
         self.aform.addRow(self.holes); self.aform.addRow(self.ghost)
         self.aform.addRow("Photo resolution:", self.res)
         self.aform.addRow("Texture file format:", self.fmt)
+        from .workflow_ui import texture_context
+        texture_context(self, parent, has_uv)
 
     def settings(self):
         st = QSettings()
@@ -330,12 +358,13 @@ class BuildTextureDialog(_SettingsDialog):
         st.setValue("texture/count", self.count.value())
         st.setValue("texture/holes", self.holes.isChecked()); st.setValue("texture/ghost", self.ghost.isChecked())
         try:
-            size = max(256, min(32768, int(self.size.currentText())))
+            size = int(self.size.currentText())
         except ValueError:
-            size = 8192
-        return {"mapping": self.mapping.currentText(), "blending": self.blending.currentText().replace(" (default)", ""),
+            raise ValueError("Texture size must be an integer between 256 and 32768")
+        return {"mapping": self.mapping.currentText(), "blending": self.blending.currentText().replace(" (default)", "").replace("Single photo (no colour blending)", "Disabled"),
                 "size": size, "count": self.count.value(), "hole_filling": self.holes.isChecked(),
                 "ghosting": self.ghost.isChecked(), "max_res": 0 if self.res.currentIndex() == 1 else 2640,
+                "page_policy": "auto" if self.auto_pages.isChecked() else "limit",
                 "format": "png" if self.fmt.currentText() == "PNG" else "jpg"}
 
 
@@ -359,15 +388,17 @@ class BuildTiledModelDialog(_SettingsDialog):
         self.gform.addRow("Tile format:", self.fmt)
         self.aform.addRow("Faces / points per tile:", self.tile_faces)
         self.aform.addRow("Max tile texture size:", self.max_tex)
+        from .workflow_ui import tiles_context
+        tiles_context(self, parent)
 
     def settings(self):
         st = QSettings()
         st.setValue("tiles/source", self.source.currentText()); st.setValue("tiles/tile_faces", self.tile_faces.value())
         st.setValue("tiles/max_tex", self.max_tex.currentText()); st.setValue("tiles/format", self.fmt.currentText())
         return {"source": self.source.currentText(), "pixel_size": self.pixel.value(),
-                "tile_faces": self.tile_faces.value(), "tile_points": self.tile_faces.value() * 4,
+                "tile_faces": self.tile_faces.value(), "tile_points": self.tile_faces.value(),
                 "max_tex": int(self.max_tex.currentText()),
-                "format": "glb" if "glb" in self.fmt.currentText() else "b3dm"}
+                "format": "pnts" if self.source.currentText() == "Point cloud" else ("glb" if "glb" in self.fmt.currentText() else "b3dm")}
 
 
 class ProgressDialog(QDialog):
@@ -565,7 +596,8 @@ class _RegionBox(QGroupBox):
         if not self.isChecked():
             return None
         v = [s.value() for s in self.spins]
-        return v if v[2] > v[0] and v[3] > v[1] else None
+        from .workflow import region_checked
+        return region_checked(v)
 
 
 class BuildDEMDialog(_SettingsDialog):
@@ -573,7 +605,7 @@ class BuildDEMDialog(_SettingsDialog):
     def __init__(self, parent=None, sources=("Point cloud",), crs="", unit="m", bounds=None):
         super().__init__("Build DEM", parent)
         st = QSettings()
-        self.proj = QLabel(crs or "Local Coordinates (m)"); self.proj.setWordWrap(True)
+        self.proj = QLabel(crs or "Local coordinates (model units)"); self.proj.setWordWrap(True)
         self.source = _combo(list(sources), st.value("dem/source", sources[0], str))
         self.interp = _combo(["Enabled (default)", "Disabled", "Extrapolated"],
                              st.value("dem/interp", "Enabled (default)", str))
@@ -584,12 +616,16 @@ class BuildDEMDialog(_SettingsDialog):
         self.aform.addRow("Resolution:", self.pixel)
         self.region_box = _RegionBox(bounds, unit)
         self.layout().insertWidget(2, self.region_box)
+        from .workflow_ui import dem_context
+        dem_context(self, parent)
 
     def settings(self):
         st = QSettings()
         st.setValue("dem/source", self.source.currentText()); st.setValue("dem/interp", self.interp.currentText())
         return {"source": self.source.currentText(), "interpolation": self.interp.currentText().replace(" (default)", ""),
-                "pixel_size": self.pixel.value(), "region": self.region_box.region()}
+                "pixel_size": self.pixel.value(), "region": self.region_box.region(),
+                "aggregation": self.aggregation.currentText().lower(), "max_fill": self.max_fill.value(),
+                "smooth_distance": self.smooth_distance.value()}
 
 
 class BuildOrthomosaicDialog(_SettingsDialog):
@@ -598,11 +634,11 @@ class BuildOrthomosaicDialog(_SettingsDialog):
         super().__init__("Build Orthomosaic", parent)
         from PySide6.QtWidgets import QRadioButton
         st = QSettings()
-        self.proj = QLabel((crs or "Local Coordinates (m)") + "  -  Top XY (planar)"); self.proj.setWordWrap(True)
+        self.proj = QLabel((crs or "Local coordinates (model units)") + "  -  Top XY (planar)"); self.proj.setWordWrap(True)
         self.surface = _combo(list(surfaces), st.value("ortho/surface", surfaces[0], str))
         if self.surface.currentText() not in surfaces:
             self.surface.setCurrentIndex(0)
-        self.blending = _combo(["Mosaic (default)", "Average", "Disabled"],
+        self.blending = _combo(["Mosaic (default)", "Average", "Single photo (no colour blending)"],
                                st.value("ortho/blending", "Mosaic (default)", str))
         self.holes = QCheckBox("Enable hole filling"); self.holes.setChecked(st.value("ortho/holes", True, bool))
         self.ghost = QCheckBox("Enable ghosting filter"); self.ghost.setChecked(st.value("ortho/ghost", True, bool))
@@ -628,7 +664,7 @@ class BuildOrthomosaicDialog(_SettingsDialog):
         for sig in (self.pixel.valueChanged, self.maxdim.valueChanged, self.r_pix.toggled):
             sig.connect(self._update_size)
         self.aform.addRow(self.holes); self.aform.addRow(self.ghost); self.aform.addRow(self.seams)
-        self.res = _combo(["Full resolution photos (best)", "Half resolution photos (faster)"],
+        self.res = _combo(["Full resolution photos", "Half resolution of each photo"],
                           st.value("ortho/res", "Full resolution photos (best)", str))
         self.aform.addRow("Photo resolution:", self.res)
         self.region_box = _RegionBox(bounds, unit)
@@ -637,6 +673,8 @@ class BuildOrthomosaicDialog(_SettingsDialog):
         for sp in self.region_box.spins:
             sp.valueChanged.connect(self._update_size)
         self._update_size()
+        from .workflow_ui import ortho_context
+        ortho_context(self, parent)
 
     def estimated_size(self):
         """(W, H, pixel size) of the result for the current settings, or None."""
@@ -681,12 +719,13 @@ class BuildOrthomosaicDialog(_SettingsDialog):
         st.setValue("ortho/holes", self.holes.isChecked()); st.setValue("ortho/ghost", self.ghost.isChecked())
         st.setValue("ortho/seams", self.seams.isChecked()); st.setValue("ortho/maxdim", self.maxdim.value())
         use_max = self.r_max.isChecked()
-        return {"surface": self.surface.currentText(), "blending": self.blending.currentText().replace(" (default)", ""),
+        return {"surface": self.surface.currentText(), "blending": self.blending.currentText().replace(" (default)", "").replace("Single photo (no colour blending)", "Disabled"),
                 "hole_filling": self.holes.isChecked(), "ghosting": self.ghost.isChecked(),
                 "refine_seamlines": self.seams.isChecked(),
                 "pixel_size": 0.0 if use_max else self.pixel.value(),
                 "max_dimension": self.maxdim.value() if use_max else 0,
-                "max_res": 2640 if self.res.currentIndex() == 1 else 0, "region": self.region_box.region()}
+                "max_res": 0, "photo_scale": .5 if self.res.currentIndex() == 1 else 1.0,
+                "hole_distance": self.hole_distance.value(), "region": self.region_box.region()}
 
 
 class ExportRasterDialog(_SettingsDialog):

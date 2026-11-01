@@ -14,6 +14,17 @@ def mesh_steps(exe, wd, s, cloud_path, cam_center=None):
     # prerequisites first: nothing is touched when the step cannot run
     if source == "Depth maps" and not os.path.exists(os.path.join(dense, "fused.ply.vis")):
         raise RuntimeError("Build the point cloud first: Delaunay meshing uses the fused depth maps")
+    if source == "Depth maps":
+        from .plyio import ply_counts
+        fused = os.path.join(dense, "fused.ply")
+        if not os.path.isfile(fused):
+            raise RuntimeError("Delaunay requires fused.ply and its visibility file; rebuild the point cloud.")
+        source_points = ply_counts(fused)[0]
+    else:
+        from .plyio import ply_counts
+        source_points = ply_counts(cloud_path)[0]
+    if not source_points:
+        raise ValueError("The meshing source is empty")
     # the new mesh is written to model.building.ply and replaces model.ply only when it
     # is complete and has faces (mesh.commit_mesh): a failed or cancelled build keeps
     # the previous model
@@ -25,7 +36,7 @@ def mesh_steps(exe, wd, s, cloud_path, cam_center=None):
            "interpolation": s.get("interpolation", "Enabled"), "voxel": s.get("voxel"),
            "max_points": s.get("max_points", 12_000_000), "cam_center": cam_center,
            "long_edge_factor": s.get("long_edge_factor", 8.0),
-           "min_component": s.get("min_component", 0.01)}
+           "min_component": s.get("min_component", 0.01), "min_component_faces": s.get("min_component_faces", 200),\n           "n_points": source_points}
     steps = []
     if cfg["source"] == "Depth maps":
         raw = os.path.join(dense, "delaunay_raw.ply")

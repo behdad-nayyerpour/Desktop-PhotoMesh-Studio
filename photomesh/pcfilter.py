@@ -166,6 +166,8 @@ def filter_cloud(cloud, cfg, cam_centers=None, cam_dirs=None, up=None, log=print
     """Apply the configured filters in order; returns (cloud, stats list)."""
     stats = []
     n0 = len(cloud["xyz"])
+    if cfg.get("min_confidence", 0) and cloud.get("confidence") is None:
+        raise ValueError("Supporting-photo counts are unavailable; disable this filter or rebuild fusion.")
     if cfg.get("min_confidence", 0) and cloud.get("confidence") is not None:
         keep = cloud["confidence"] >= int(cfg["min_confidence"])
         if cfg.get("max_confidence"):
@@ -173,7 +175,7 @@ def filter_cloud(cloud, cfg, cam_centers=None, cam_dirs=None, up=None, log=print
         cloud = subset(cloud, keep); stats.append(("confidence", int((~keep).sum())))
     if cfg.get("elevation", False) and cam_centers is not None and len(cloud["xyz"]):
         u = up if up is not None else up_vector(cam_dirs)
-        keep = elevation_outliers(cloud["xyz"], cam_centers, u)
+        keep = elevation_outliers(cloud["xyz"], cam_centers, u,\n                                  k=float(cfg.get("elevation_k", 6)), min_dev=cfg.get("elevation_min_dev"))
         cloud = subset(cloud, keep); stats.append(("elevation", int((~keep).sum())))
     tree = None
     if cfg.get("outlier_mode", "local") == "local" and (cfg.get("statistical", True) or cfg.get("radius", True)) \

@@ -414,7 +414,7 @@ def select_keypoints(db, keep, small_frac=0.8):
         con.close()
 
 
-def merge_identical_cameras(db):
+def merge_identical_cameras(db, groups=None):
     """Share one camera between photos with identical model, size and
     focal-length prior. Replaces COLMAP's --ImageReader.single_camera, which
     *rejects* every photo whose size differs from the first one ("Single
@@ -425,8 +425,13 @@ def merge_identical_cameras(db):
     try:
         cams = con.execute("SELECT camera_id, model, width, height, params FROM cameras ORDER BY camera_id").fetchall()
         first, remap = {}, {}
+        names = {}
+        if groups:
+            for name, cid in con.execute("SELECT name, camera_id FROM images"):
+                names.setdefault(cid, set()).add(groups.get(name, ""))
         for cid, model, w, h, params in cams:
-            key = (model, w, h, bytes(params))
+            group = tuple(sorted(names.get(cid, {""})))
+            key = (group, model, w, h, bytes(params))
             if key in first:
                 remap[cid] = first[key]
             else:
@@ -440,7 +445,7 @@ def merge_identical_cameras(db):
         con.close()
 
 
-def camera_groups_step(db, label="Grouping cameras"):
+def camera_groups_step(db, label="Grouping cameras", groups=None):
     def run():
         groups = merge_identical_cameras(db)
         return [("log", f"{len(groups)} camera group(s): "
@@ -809,7 +814,7 @@ def fast_align_steps(exe, wd, names, infos, s):
     work_f, work_c = os.path.join(wd, "_work_fine"), os.path.join(wd, "_work_coarse")
     dims = {}
     fine_kp = s["key_point_limit"]
-    fine_keep = FINE_KEEP.get(s["accuracy"], 18000) if s.get("fast_feature_cap", True) else 0
+    fine_keep = 0  # user feature limit is the sole limit; no hidden truncation
     if fine_kp > 0 and fine_keep >= fine_kp:
         fine_keep = 0
 
@@ -875,7 +880,7 @@ def fast_align_steps(exe, wd, names, infos, s):
          extract(first_db, coarse_size if do_fine else fine_size, coarse_kp if do_fine else fine_kp,
                  first_work if use_cache else None), 15)]
     if s.get("single_camera", True):
-        steps.append(camera_groups_step(first_db))
+        steps.append(camera_groups_step(first_db, groups=s.get("calibration_groups")))
     if use_cache:
         steps.append(("Rescaling key points", rescale(first_db, first_work), 1))
         if not do_fine:

@@ -10,7 +10,7 @@ name: Tests
 
 on:
   push:
-    branches: [main, "release/1.0.0"]
+    branches: [main, "release/1.0.0", "improve/workflow-review"]
     tags: ["v*"]
     paths-ignore: ["**.md", "screenshot*.png", "*.bat"]
   workflow_dispatch:
@@ -21,7 +21,7 @@ on:
         default: false
 
 concurrency:
-  group: tests-${{ github.sha }}
+  group: tests-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -66,7 +66,7 @@ jobs:
           { echo '### Tests (Linux)'; echo '```'; if [ -f pytest.txt ]; then grep -E '^(SKIPPED|FAILED|ERROR)|passed|failed' pytest.txt || true; fi; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
   windows:
-    if: (github.event_name == 'workflow_dispatch' && inputs.windows) || github.ref == 'refs/heads/release/1.0.0'
+    if: (github.event_name == 'workflow_dispatch' && inputs.windows) || (github.ref == 'refs/heads/release/1.0.0' || github.ref == 'refs/heads/improve/workflow-review')
     runs-on: windows-latest
     timeout-minutes: 25
     env:

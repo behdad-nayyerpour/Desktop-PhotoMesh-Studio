@@ -268,7 +268,7 @@ def align_steps(exe, chunk, wd, s, names=None, infos=None):
     os.makedirs(os.path.join(wd, "sparse_txt"), exist_ok=True)
     return [
         ("Detecting points", fe, 30),
-        *([camera_groups_step(db)] if s.get("single_camera") else []),
+        *([camera_groups_step(db, groups=s.get("calibration_groups"))] if s.get("single_camera") else []),
         ("Matching points", m, 30),
         *mapper_steps(exe, db, img_dir, sparse, s, n_img, image_list(wd)),
         ("Exporting tie points", ["model_converter", "--input_path",

@@ -8,6 +8,7 @@ Large clouds are voxel-downsampled first so Poisson stays within RAM.
 from __future__ import annotations
 
 import os
+import math
 
 import numpy as np
 
@@ -45,18 +46,51 @@ def _o3d():
 
 def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
     o3d = _o3d()
-    pcd = o3d.io.read_point_cloud(path)
-    n = len(pcd.points)
-    if voxel:
-        pcd = pcd.voxel_down_sample(float(voxel))
-        log(f"Voxel downsample ({voxel}): {n:,} -> {len(pcd.points):,} points")
-    elif n > max_points:
-        # choose the voxel size from the bounding box so ~max_points remain
-        ext = pcd.get_max_bound() - pcd.get_min_bound()
-        area = np.sort(ext)[-2:].prod()          # surveys are ~2.5D
-        v = float(np.sqrt(area / max_points))
+    from .workflow import point_count, vertex_blocks, bounds_from_ply
+    from .memguard import available_bytes
+    n = point_count(path)
+    if not n:
+        raise ValueError("Point cloud is empty")
+    max_points = max(1000, int(max_points))
+    # Normal-sized clouds retain the optimized native loader.
+    if n <= max_points and n * 100 < available_bytes() * .6:
+        pcd = o3d.io.read_point_cloud(path)
+        if voxel:
+            pcd = pcd.voxel_down_sample(float(voxel))
+    else:
+        lo, hi = bounds_from_ply(path)
+        area = max(float(np.sort(hi-lo)[-2:].prod()), 1e-12)
+        v = float(voxel or max(math.sqrt(area / max_points), 1e-9))
+        pcd = o3d.geometry.PointCloud()
+        for records in vertex_blocks(path):
+            xyz = np.column_stack([records["x"], records["y"], records["z"]])
+            block = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(xyz))
+            if all(k in records.dtype.names for k in ("red", "green", "blue")):
+                block.colors = o3d.utility.Vector3dVector(np.column_stack(
+                    [records["red"], records["green"], records["blue"]]) / 255.)
+            if all(k in records.dtype.names for k in ("nx", "ny", "nz")):
+                block.normals = o3d.utility.Vector3dVector(np.column_stack(
+                    [records["nx"], records["ny"], records["nz"]]))
+            pcd += block.voxel_down_sample(v)
+            if len(pcd.points) > 2 * max_points:
+                pcd = pcd.voxel_down_sample(v)
+                if not voxel and len(pcd.points) > max_points:
+                    v *= max(1.1, math.sqrt(len(pcd.points) / max_points))
+                    pcd = pcd.voxel_down_sample(v)
         pcd = pcd.voxel_down_sample(v)
-        log(f"Voxel downsample to fit memory (voxel {v:.4g}): {n:,} -> {len(pcd.points):,} points")
+    if voxel and len(pcd.points) > max_points:
+        raise ValueError(f"Manual voxel retains {len(pcd.points):,} points, above the {max_points:,} limit. "
+                         "Increase voxel size or the point limit; the previous mesh was kept.")
+    while not voxel and len(pcd.points) > max_points:
+        extent = pcd.get_max_bound() - pcd.get_min_bound()
+        v = max(math.sqrt(max(float(np.sort(extent)[-2:].prod()), 1e-12) / max_points), 1e-9)
+        before = len(pcd.points)
+        pcd = pcd.voxel_down_sample(v)
+        if len(pcd.points) >= before:
+            pcd = pcd.uniform_down_sample(max(2, math.ceil(before/max_points)))
+    if len(pcd.points) < 4:
+        raise ValueError("Too few points after downsampling")
+    log(f"Meshing points: {n:,} -> {len(pcd.points):,}; hard limit {max_points:,}")
     return pcd, n
 
 
@@ -123,11 +157,11 @@ def decimate(mesh, target):
     return mesh
 
 
-def clean(mesh, log=print, long_edge_factor=8.0, min_component=0.01):
+def clean(mesh, log=print, long_edge_factor=8.0, min_component=0.01, min_component_faces=200):
     mesh.remove_duplicated_vertices(); mesh.remove_degenerate_triangles()
     mesh.remove_duplicated_triangles(); mesh.remove_non_manifold_edges()
     a = remove_long_edges(mesh, long_edge_factor) if long_edge_factor else 0
-    b = remove_small_components(mesh, min_component) if min_component else 0
+    b = remove_small_components(mesh, min_component, min_component_faces) if (min_component or min_component_faces) else 0
     log(f"Cleanup: removed {a:,} long-edge faces, {b:,} faces in small components")
     return mesh
 
@@ -191,8 +225,8 @@ def build_mesh(cfg, log=print):
             log(f"Removed {n:,} faces farther than 8x point spacing from the cloud (gaps)")
     else:
         mesh = o3d.io.read_triangle_mesh(cfg["delaunay_ply"])
-        n_in = cfg.get("n_points", len(mesh.vertices) * 2)
-    mesh = clean(mesh, log, cfg.get("long_edge_factor", 8.0), cfg.get("min_component", 0.01))
+        n_in = cfg.get("n_points") or len(mesh.vertices) * 2
+    mesh = clean(mesh, log, cfg.get("long_edge_factor", 8.0), cfg.get("min_component", 0.01), cfg.get("min_component_faces", 200))
     tgt = target_faces(n_in, cfg.get("face_count", "Medium"), cfg.get("custom_faces"))
     nf = len(mesh.triangles)
     mesh = decimate(mesh, tgt)

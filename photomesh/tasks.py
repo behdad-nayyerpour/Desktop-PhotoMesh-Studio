@@ -56,8 +56,20 @@ def cmd_filter_cloud(cfg):
         C, D = _cameras(cfg["model"])
     up = cfg.get("up")
     cloud, stats = pf.filter_cloud(cloud, cfg, C, D, up, log=_log)
-    pf.write_cloud(cfg["output"], cloud["xyz"], cloud.get("rgb"), cloud.get("normals"),
-                   cloud.get("confidence"))
+    if not len(cloud["xyz"]):
+        raise ValueError("Filtering removed every point; previous cloud was kept. Relax the filters.")
+    temporary = cfg["output"] + ".building.ply"
+    try:
+        pf.write_cloud(temporary, cloud["xyz"], cloud.get("rgb"), cloud.get("normals"), cloud.get("confidence"))
+        from .dense import ply_vertex_count
+        if not ply_vertex_count(temporary):
+            raise ValueError("Incomplete point cloud output")
+        os.replace(temporary, cfg["output"])
+    finally:
+        if os.path.exists(temporary):
+            os.remove(temporary)
+    with open(os.path.join(os.path.dirname(cfg["output"]), "filter_stats.json"), "w", encoding="utf-8") as fh:
+        json.dump({"input": len(conf) if 'conf' in locals() else None, "output": len(cloud["xyz"]), "filters": stats}, fh)
     _log(f"POINTS {len(cloud['xyz'])}")
     _log(f"Filtering done in {time.perf_counter() - t0:.1f} s -> {cfg['output']}")
 
