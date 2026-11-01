@@ -17,7 +17,7 @@ def _combo(items, current=None):
 
 
 class _SettingsDialog(QDialog):
-    """Base: 'General' group + collapsible 'Advanced' group, OK/Cancel."""
+    """Base: General and Advanced settings groups, with OK/Cancel."""
 
     def __init__(self, title, parent=None):
         super().__init__(parent)
@@ -125,6 +125,7 @@ class BuildPointCloudDialog(_SettingsDialog):
         self.radius = QCheckBox("Radius outlier removal"); self.radius.setChecked(True)
         self.elev = QCheckBox("Remove points far above/below the terrain"); self.elev.setChecked(True)
         f.addRow("Minimum confidence (photos):", self.min_conf)
+        self.confidence.toggled.connect(self.min_conf.setEnabled)
         for w in (self.sor, self.radius, self.elev):
             f.addRow(w)
         self.layout().insertWidget(2, self.outl)
@@ -260,6 +261,7 @@ class OptimizeCamerasDialog(_SettingsDialog):
                                    "Without sufficient reference data, local bundle adjustment is offered.")
         self.use_cameras = QCheckBox("Use camera GPS (geographic/UTM coordinate systems)")
         self.use_cameras.setChecked(bool(s.get("use_cameras", False)))
+        self.use_cameras.setToolTip("Use only enabled photos checked in the Reference panel.")
         self.bundle = QCheckBox("Bundle adjustment (otherwise similarity transform only)"); self.bundle.setChecked(True)
         self.intr = QCheckBox("Fit focal length, principal point and k1"); self.intr.setChecked(True)
         for w in (self.use_markers, self.use_cameras, self.bundle, self.intr):

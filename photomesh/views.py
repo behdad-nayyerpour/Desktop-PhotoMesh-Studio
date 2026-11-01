@@ -965,7 +965,7 @@ class PhotoView(QWidget):
     """Shows a single photo with pan/zoom and marker overlay.
 
     Right-click: place the active marker here / remove a marker near the
-    cursor. Pinned markers are green flags, predicted (not yet placed) ones blue."""
+    cursor. Pinned markers are green, used predictions blue, unused predictions grey."""
     placeMarker = Signal(float, float)      # photo pixel coordinates
     removeMarker = Signal(str)
     addMarker = Signal(float, float)        # new marker pinned at this pixel

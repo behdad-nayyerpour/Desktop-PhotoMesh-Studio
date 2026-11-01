@@ -10,7 +10,7 @@
    Hierarchical), coarse-to-fine, key point limit, guided matching…
    Result: camera positions + tie points in the **Model** view.
 3. *Workflow → Build Point Cloud…* — Quality + Depth filtering (CUDA).
-4. *Workflow → Build Model…* — Source (Depth maps / Point cloud / Tie points),
+4. *Workflow → Build Model…* — Source (Depth maps / Point cloud),
    surface type, face count.
 5. *File → Save* stores a `*.pmsx` project (JSON); results live in
    `<project>.files/`.
@@ -126,7 +126,7 @@ are not required to generate the DXF.
 
 ## Ground control and check points
 
-The Markers pane provides **All**, **Control**, and **Check** tabs and coordinate
+The marker section of the Reference pane provides **All**, **Control**, and **Check** tabs and coordinate
 and pixel RMSE summaries. Control points participate in adjustment; check points
 measure the result independently. Ignoring a marker is separate from its
 Control/Check classification.
@@ -172,6 +172,31 @@ Use **File > Export** to export orthomosaic and DEM products.
 Progress dialogs show observed stage progress separately from the weighted
 overall estimate. A stage with an unknown total remains indeterminate.
 Remaining time appears when enough measured progress is available.
-The status bar and busy cursor report background loading and preparation.
+The status bar shows only Ready/Busy and CPU/GPU load. Progress stays in the
+processing dialog or relevant Model/Photos pane. A busy cursor acknowledges
+commands while their settings and input data are being prepared.
 
 [Back to the main page](../README.md)
+
+
+## Reference and Workspace in 1.0
+
+Reference combines camera GPS and marker tables. Checking a camera enables its
+GPS for optimization (when camera GPS is enabled in Optimize Cameras); it does
+not enable/disable the photo for alignment. Selecting a row only selects it.
+Uncheck a marker to use it as a check point instead of a control point.
+Ignored markers are excluded independently of that classification.
+
+Workspace lists the project's photos and products directly, without a Chunk row
+or Add/Merge/Duplicate/Delete Chunk commands. Version 1.0 opens one dataset per
+project. A legacy multi-chunk file is rejected with instructions to separate its
+datasets in an older version; its original file is not modified.
+
+**Preferences > Theme** applies Dark/Light immediately and remembers the choice.
+**Default view** selects the requested product when it is available after loading.
+Windows native file dialogs are the default. The built-in dialog option remains
+an explicit fallback for Windows shell-dialog problems.
+
+Marker edits preserve the selected photo and Photos-panel scroll position.
+Project preparation runs off the UI thread and is transactional: a failed or
+cancelled open leaves the current project in place.

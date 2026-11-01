@@ -25,9 +25,9 @@ def marker_menu(menu, label, callback):
 def draw_flag(painter, x, y, colour, active=False):
     """The bottom point is the exact GCP; the flag is offset above it."""
     from PySide6.QtCore import QPointF
-    from PySide6.QtGui import QPen, QBrush, QPolygonF
+    from PySide6.QtGui import QPen, QBrush, QPolygonF, QPainter
     painter.save()
-    painter.setRenderHint(painter.Antialiasing)
+    painter.setRenderHint(QPainter.Antialiasing)
     pole = [(x, y), (x, y - 23)]
     for col, width in ((QColor(0, 0, 0, 210), 4.5 if active else 3.5),
                        (colour, 2.5 if active else 1.8)):
@@ -48,6 +48,8 @@ def flag_icon(state, size=24):
     pm = QPixmap(size, size); pm.fill(Qt.transparent)
     painter = QPainter(pm)
     painter.scale(size / 28, size / 28)
-    draw_flag(painter, 6, 26, color(state))
-    painter.end()
+    try:
+        draw_flag(painter, 6, 26, color(state))
+    finally:
+        painter.end()
     return QIcon(pm)

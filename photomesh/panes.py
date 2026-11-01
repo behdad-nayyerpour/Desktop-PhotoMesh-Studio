@@ -53,10 +53,9 @@ def _outdated(prod):
 
 
 class WorkspacePane(QTreeWidget):
-    """Metashape-style project tree:
+    """Single-project product tree:
 
-    Workspace (N chunks, M images)
-      Chunk 1 (M images, K markers, T tie points) [R]
+    Project (M images)
         Images (a/n aligned)            [camera groups per sensor if > 1]
         Markers (K)
         Tie Points (T points)
@@ -68,7 +67,6 @@ class WorkspacePane(QTreeWidget):
     3D-view layers carry a visibility checkbox (synced with the layer toggles);
     double-click shows the item."""
     cameraActivated = Signal(int, int)      # chunk index, camera index
-    chunkActivated = Signal(int)
     contextAction = Signal(str, int)        # action, chunk index
     selectionInfo = Signal(dict)
     layerToggled = Signal(str, bool)        # layer key, visible
@@ -410,7 +408,10 @@ class ReferencePane(QTableWidget):
                 self.clearContents()
                 self.setRowCount(len(chunk.cameras))
                 geo = chunk.georef or {}
-                crs = CRS.parse(geo.get("crs") or chunk.crs)
+                try:
+                    crs = CRS.parse(geo.get("crs") or chunk.crs)
+                except ValueError:
+                    crs = CRS()
                 for row, camera in enumerate(chunk.cameras):
                     est = list(camera.est) if camera.est is not None else [None] * 3
                     ref = [camera.lon, camera.lat, camera.alt]

@@ -1,5 +1,7 @@
 # PhotoMesh Studio
 
+**Version 1.0.0** — one project, integrated references, consistent progress, and marker flags.
+
 Desktop photogrammetry software for turning overlapping aerial photographs into
 3D point clouds, textured meshes, orthomosaics, elevation models, and DXF contours.
 
@@ -34,7 +36,7 @@ See [installation and requirements](docs/installation.md) and [updating](UPDATIN
 
 Dense reconstruction from depth maps requires an NVIDIA GPU and a compatible
 CUDA build of COLMAP. Alignment and mesh generation from existing point clouds
-or tie points can run on the CPU. The 3D viewer requires an OpenGL-capable driver.
+can run on the CPU. The 3D viewer requires an OpenGL-capable driver.
 
 ## Quick start
 

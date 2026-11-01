@@ -4,6 +4,19 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
+### 1.0.0 (2026-11-01)
+
+- Applied and persisted Dark/Light themes and the preferred loaded-product view.
+- Removed ineffective alignment/mesh controls and unsupported chunk-management commands.
+- Unified camera GPS and ground-control/check tables in Reference. Camera reference checkboxes are independent of row selection and alignment enablement.
+- Replaced marker targets with consistent green/blue/grey flags anchored by a precise ground point in Photo, Model and Ortho views and marker tables.
+- Kept two progress bars in task dialogs/relevant panes. The status bar now contains Ready/Busy and CPU/GPU load only.
+- Acknowledged commands immediately with a counted busy cursor; retained explicit native-dialog fallback settings.
+- Moved project preparation off the GUI thread and made failed/cancelled opens transactional.
+- Preserved photo-list items, selection and scroll position during marker edits.
+- Kept the legacy single-dataset file format; multi-chunk legacy projects require separation in an older release instead of silently losing data.
+- No new runtime dependencies. Build a new complete Setup to distribute 1.0.0.
+
 ### 0.1.17 (2026-10-30)
 
 - Repository maintenance: removed retired Git updaters, portable ZIP builders, and obsolete guides. Full Setup remains the installation/update method; source launch helpers, active shortcut repair, benchmark tools, and applicable regression tests are retained. This maintenance does not change the application version or rebuild published installers.

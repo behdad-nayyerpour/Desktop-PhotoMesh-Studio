@@ -30,11 +30,15 @@ def prepare_project(path, report, cancelled):
     context = ReferenceMixin()
     context.project = project
     context.chunk = chunk
-    model = context._sparse_model()
+    report(3, 4, "Preparing marker observations")
+    markers = None
+    if chunk.markers:
+        try:
+            markers = context._marker_positions()
+        except (OSError, ValueError, RuntimeError) as error:
+            notes.append(f"Marker display could not be prepared: {error}")
     if cancelled():
         return None
-    report(3, 4, "Preparing marker observations")
-    markers = context._marker_positions() if chunk.markers else None
     found = [c for c in chunk.cameras if os.path.exists(c.path)]
     report(4, 4, "Project ready")
     return {"project": project, "notes": notes, "found": found,

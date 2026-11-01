@@ -633,7 +633,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
         Cameras appear at once; the PLYs (tie points, a display-decimated
         point cloud, the mesh + its normals) and marker positions are loaded
-        in a background thread with a progress bar in the status bar, so the
+        in a background thread with progress in the Model pane, so the
         window stays responsive while a 28M-point project opens."""
         self.model_view.clear()
         ch = self.chunk
@@ -2650,7 +2650,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
 
     def about(self):
         QMessageBox.about(self, f"About {APP_NAME}",
-            f"<b>{APP_NAME}</b> {APP_VERSION}<br>Open-source photogrammetry front-end prototype.<br>"
+            f"<b>{APP_NAME}</b> {APP_VERSION}<br>Desktop photogrammetry application.<br>"
             "Reconstruction engine: COLMAP (BSD), GLOMAP (BSD). Speed pipeline: fastpipe.<br>"
             "Runs fully offline: no network access at run time.<br>"
             "UI built with PySide6 / pyqtgraph.")
