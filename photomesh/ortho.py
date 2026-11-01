@@ -45,7 +45,7 @@ Build Orthomosaic
    resolution, float32) used for the cursor Z read-out, info.json.
 """
 from __future__ import annotations
-from .workflow import product_transaction, raster_budget, region_checked
+from .workflow import product_transaction, raster_budget, region_checked, processing_crs
 
 import json
 import math
@@ -250,6 +250,8 @@ class Surface:
     """Embree scene of the surface in the projection frame."""
 
     def __init__(self, V, F):
+        from .workflow import require_mesh
+        require_mesh(V,F)
         import open3d as o3d
         self.o3d = o3d
         self.scene = o3d.t.geometry.RaycastingScene()
@@ -450,7 +452,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         if not c.get("dem") or not os.path.exists(c["dem"]):
             raise RuntimeError("Surface 'DEM' needs a DEM - run Workflow > Build DEM first")
         from .raster_surface import RasterSurface
-        surf = RasterSurface(c["dem"], off, R, (georef.get("crs") if is_geo else None))
+        surf = RasterSurface(c["dem"], off, R, (processing_crs(georef) if is_geo else None))
         V = np.array([surf.lo,surf.hi])
         F = None
         lg("Ortho: direct DEM sampling; no hidden grid decimation")
@@ -481,6 +483,8 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         gsd = float(np.median(th[ok] / fx[ok]))
     else:
         gsd = float(np.median(np.abs(Cp[:, 2] - np.median(V[:, 2])) / fx))
+    if not np.isfinite(gsd) or gsd <= 0:
+        raise ValueError("Cannot estimate positive photo GSD; check camera heights and selected surface")
     native_gsd=gsd
     gsd /= float(c.get("photo_scale",1))
     # pixels per metre of each view at the surface (for the resolution term)
@@ -668,7 +672,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     tile = int(c["tile"]); B = max(tile, int(c["block"]) // tile * tile)
     levels = gt.overview_levels(W, H)
     path = os.path.join(out, "orthomosaic.tif")
-    crs = (georef.get("crs") or c.get("crs") or "") if is_geo else ""
+    crs = processing_crs(georef) if is_geo else ""
     world_geo = (x0 + off[0], y1 + off[1], px, px) if True else None
     writer = gt.TiledTiffWriter(path, levels, 4, np.uint8, tile, "Deflate", alpha=True, geo=world_geo,
                                 crs=crs or 'LOCAL_CS["Local coordinates (model units)"]',

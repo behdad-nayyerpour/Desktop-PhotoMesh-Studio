@@ -114,6 +114,11 @@ def mesh_context(d, parent):
     from .mesh import target_faces
     ch = getattr(parent, "chunk", None)
     d.input_points = getattr(ch, "point_count", 0)
+    if ch and ch.point_cloud_ply and os.path.isfile(ch.point_cloud_ply):
+        from .plyio import ply_counts
+        try: d.input_points=ply_counts(ch.point_cloud_ply)[0]
+        except (OSError,ValueError): pass
+    d.input_points_filtered=d.input_points
     if ch and ch.workdir:
         path = os.path.join(ch.workdir, "dense", "fused.ply")
         if os.path.isfile(path):
@@ -137,7 +142,7 @@ def mesh_context(d, parent):
         poisson = d.source.currentIndex() == 0
         for widget in (d.interp, d.voxel, d.max_pts):
             widget.setEnabled(poisson)
-        d.input_points = d.input_points_raw if not poisson else getattr(ch, "point_count", 0)
+        d.input_points = d.input_points_raw if not poisson else d.input_points_filtered
         custom = d.face_count.currentText() == "Custom"
         d.custom.setEnabled(custom)
         if not custom:
@@ -160,7 +165,10 @@ def texture_context(d, parent, has_uv):
         d.count.setEnabled(not keep); d.auto_pages.setEnabled(not keep)
         if keep:
             ch = getattr(parent, "chunk", None)
-            d.count.setValue(int((getattr(ch, "texture", {}) or {}).get("count", d.count.value())))
+            actual=int((getattr(ch, "texture", {}) or {}).get("count", d.count.value()))
+            d.count.setMaximum(max(64,actual)); d.count.setValue(actual)
+        else:
+            d.count.setMaximum(64)
         try:
             size = int(d.size.currentText())
             summary.setText(f"RGB pages alone: {size*size*d.count.value()*3/2**20:.0f} MiB. "
@@ -245,6 +253,9 @@ def dem_context(d, parent):
 
 
 def ortho_context(d, parent):
+    ch=getattr(parent,"chunk",None)
+    if not getattr(ch,"georef",None):
+        d.proj.setText("Local coordinates (model units) - top view in camera-derived projection frame")
     d.hole_distance = number(0, 1e6, 0, 4)
     d.hole_distance.setSpecialValueText("Auto (64 output pixels)")
     d.aform.addRow("Maximum fill distance (model units):", d.hole_distance)

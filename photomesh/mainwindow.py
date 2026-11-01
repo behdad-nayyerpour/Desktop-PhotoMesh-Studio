@@ -67,6 +67,7 @@ def migrate_ui_settings():
         settings.setValue("ui/native_dialogs_initialized_v1", True)
 
 
+from .workflow import processing_crs
 from .registration_ui import RegistrationMixin
 
 
@@ -2360,7 +2361,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Orthomosaic + DEM layers of the active chunk in the Ortho tab (tiles load in the background)."""
         ch = self.chunk
         from .geotiff import is_geographic
-        crs = self._crs_text(ch)
+        from .workflow import processing_crs
+        crs = processing_crs(ch.georef) if ch.georef else self._crs_text(ch)
         geo = bool(ch.georef)
         for d in (ch.orthomosaic, ch.dem):       # an imported georeferenced raster in a local project
             if not geo and d and d.get("georef"):
@@ -2430,7 +2432,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             {name: (ch.model_ply if name == "Mesh" else ch.point_cloud_ply) for name in sources})
         if self._workflow_source_plans is None:
             return
-        dlg = BuildDEMDialog(self, sources, crs=self._crs_text(ch) if ch.georef else "", unit="m" if ch.georef else "model units",
+        dlg = BuildDEMDialog(self, sources, crs=processing_crs(ch.georef), unit="m" if ch.georef else "model units",
                              bounds=self._workflow_source_plans[sources[0]]["bounds"])
         if not dlg.exec():
             return

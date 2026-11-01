@@ -841,6 +841,8 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     out = c["out_dir"]; os.makedirs(out, exist_ok=True)
     t0 = time.perf_counter()
     V, F = read_mesh(c["mesh"])
+    from .workflow import require_mesh
+    require_mesh(V,F)
     log(f"Texture: mesh {len(V):,} vertices, {len(F):,} faces")
     views = load_views(c["model"], c["photos"], log)
     if not views:

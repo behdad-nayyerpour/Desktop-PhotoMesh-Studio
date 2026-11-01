@@ -39,7 +39,9 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
         source = c.get("source","Point cloud")
         if source == "Mesh":
             from .texture import read_mesh
-            P,F = read_mesh(c["mesh"]); require_points(P)
+            P,F = read_mesh(c["mesh"])
+            from .workflow import require_mesh
+            require_mesh(P,F)
             if not len(F): raise ValueError("Mesh has no triangles")
             P = P @ R.T
             surface = o.Surface(P,F)
@@ -177,7 +179,8 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                     dest=dem[r0:r1]; dest[fm]=proposed[center][fm]; fillmask[r0:r1]=fm
                     check()
         stages["interpolation"]=time.perf_counter()-started-sum(stages.values()); prog(70)
-        crs=(georef.get("crs") or c.get("crs") or "") if georef else ""
+        from .workflow import processing_crs
+        crs=processing_crs(georef) if georef else ""
         geo=(x0+off[0],y1+off[1],px,px)
         path=os.path.join(out,"dem.tif"); mask_path=os.path.join(out,"coverage.tif")
         writer=gt.TiledTiffWriter(path,gt.overview_levels(W,H),1,np.float32,int(c["tile"]),"Deflate",

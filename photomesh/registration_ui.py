@@ -1,5 +1,5 @@
 """Added-photo registration UI, collecting only measured, usable controls."""
-import json, os, tempfile, uuid
+import os, uuid
 import numpy as np
 from PySide6.QtWidgets import QMessageBox, QInputDialog
 from .georef import _stem

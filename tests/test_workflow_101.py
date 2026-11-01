@@ -221,3 +221,11 @@ def test_changed_photo_invalidates_undistortion_and_changed_depth_setting_only_d
     assert workspace_reuse(str(marker),changed,True)==(False,False)
     changed=dict(cfg,depth_parameters={"num_iterations":4})
     assert workspace_reuse(str(marker),changed,True)==(True,False)
+
+
+def test_metric_raster_crs_does_not_label_eastings_as_longitude():
+    from photomesh.workflow import processing_crs
+    assert processing_crs({"crs":"EPSG:4326","crs_kind":"wgs84","zone":[38,False]})=="EPSG:32638"
+    assert processing_crs({"crs":"EPSG:4326","zone":[38,True]})=="EPSG:32738"
+    assert processing_crs({})==""
+    with pytest.raises(ValueError,match="zone"): processing_crs({"crs":"EPSG:4326"})

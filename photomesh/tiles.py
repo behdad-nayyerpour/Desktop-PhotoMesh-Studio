@@ -28,7 +28,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 from . import gltf
-from .workflow import product_transaction, file_stamp, publish_directory
+from .workflow import product_transaction, file_stamp, publish_directory, processing_crs
 from .texture import (plane_basis, rasterize, pack, split_large, charts_from_labels, face_adjacency,
                       dilate, bilinear)
 
@@ -235,7 +235,14 @@ def _root_transform(georef, center_model):
     lat, lon = utm_inverse(E, N, int(z), bool(south))
     lat, lon = float(lat), float(lon)
     O = geodetic_to_ecef(lat, lon, float(h)); Bm = enu_basis(lat, lon)
-    M = np.eye(4); M[:3, 0] = Bm[0]; M[:3, 1] = Bm[1]; M[:3, 2] = Bm[2]; M[:3, 3] = O - M[:3, :3] @ np.asarray(center_model, float)
+    # UTM grid axes include meridian convergence and projection scale.
+    # A local Jacobian preserves them rather than assuming grid north is true north.
+    def earth(e,n,zheight):
+        latitude,longitude=utm_inverse(e,n,int(z),bool(south))
+        return geodetic_to_ecef(float(latitude),float(longitude),float(zheight))
+    east=(earth(E+1,N,h)-earth(E-1,N,h))/2
+    north=(earth(E,N+1,h)-earth(E,N-1,h))/2
+    M = np.eye(4); M[:3, 0] = east; M[:3, 1] = north; M[:3, 2] = Bm[2]; M[:3, 3] = O - M[:3, :3] @ np.asarray(center_model, float)
     return M.T.ravel().tolist(), (lat, lon, float(h))
 
 
@@ -279,7 +286,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
                     "tilesetVersion": time.strftime("%Y-%m-%dT%H:%M:%S")},
           "geometricError": float(root.error * 2 or 1.0), "root": rj,
           "extras": {"up_frame_rotation": Rup.tolist(), "georeferenced": metric,
-                     "crs": georef.get("crs") if georef else "local (not georeferenced)",
+                     "crs": processing_crs(georef) if georef else "local (not georeferenced)",
                      # tile vertices are in the local frame; world = Rup.T @ p + world_offset
                      # (UTM / WGS84 chunks are also placed on the globe by root.transform)
                      "world_offset": [float(x) for x in georef.get("offset")]
@@ -315,6 +322,8 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
     from .texture import read_mesh
     t0 = time.perf_counter()
     V, F = read_mesh(c["mesh"])
+    from .workflow import require_mesh
+    require_mesh(V,F)
     baker_args = {}
     src_texel = 0.0
     tdir = c.get("texture_dir")

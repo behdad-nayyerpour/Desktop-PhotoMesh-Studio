@@ -239,9 +239,8 @@ def test_rerun_after_realignment_redoes_photos(tmp_path):
     assert not (img / "a.jpg").exists()
 
 
-def test_legacy_marker_without_model_signature(tmp_path):
-    """The marker of the failed run (no model signature yet) is accepted when
-    the model files are older than it - the user's case."""
+def test_legacy_marker_without_identity_is_revalidated(tmp_path):
+    """A legacy marker cannot prove calibration/photo identity; regenerate working images once."""
     wd = tmp_path / "wd"; (wd / "sparse" / "0").mkdir(parents=True)
     cio.write_model(str(wd / "sparse" / "0"), synthetic_model())
     d = wd / "dense"; (d / "images").mkdir(parents=True); (d / "images" / "a.jpg").write_bytes(b"done")
@@ -251,7 +250,9 @@ def test_legacy_marker_without_model_signature(tmp_path):
     t = os.path.getmtime(wd / "sparse" / "0" / "images.bin") + 10
     os.utime(d / "workspace.json", (t, t))
     _steps(wd, "F:/photos")
-    assert (d / "images" / "a.jpg").exists()
+    assert not (d / "images" / "a.jpg").exists()
+    current=json.loads((d / "workspace.json").read_text())
+    assert "camera_stamp" in current and "photo_stamps" in current
     assert "model_sig" in json.load(open(d / "workspace.json"))
 
 

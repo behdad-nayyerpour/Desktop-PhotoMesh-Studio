@@ -811,12 +811,11 @@ def model_signature(model_dir):
 def workspace_reuse(marker, cfg, reuse_depth):
     """(keep undistorted photos, keep depth maps) for a rerun.
 
-    The undistorted photos are kept whenever the model, photo folder and
+    The undistorted photos are kept whenever the model, source-photo identity and
     quality are unchanged - also when 'Reuse depth maps' is off (resume after
     a failed or cancelled undistortion). The depth maps are kept only with
-    'Reuse depth maps' and identical settings. A marker written before the
-    model signature existed counts as matching when the model files are older
-    than the marker."""
+    'Reuse depth maps' and identical settings. Legacy markers lacking current photo/calibration identity are invalidated once
+    when the pipeline supplies the new identity fields."""
     if not os.path.exists(marker):
         return True, False          # nothing recorded: per-photo validity check decides
     try:

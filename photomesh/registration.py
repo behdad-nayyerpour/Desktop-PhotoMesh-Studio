@@ -1,5 +1,5 @@
 """GCP resection for added photographs; existing camera poses never move."""
-import copy, json, os
+import json, os
 import numpy as np
 from scipy.optimize import least_squares
 from scipy.spatial import ConvexHull
@@ -12,6 +12,8 @@ def validate_controls(xyz, xy, width, height):
     xyz,xy=np.asarray(xyz,float),np.asarray(xy,float)
     if len(xyz)<6:
         raise ValueError(f"At least 6 measured controls with known 3D positions are required; found {len(xyz)}")
+    if len(np.unique(xyz,axis=0))<6 or len(np.unique(xy,axis=0))<6:
+        raise ValueError("At least 6 distinct control points are required")
     if not np.isfinite(xyz).all() or not np.isfinite(xy).all():
         raise ValueError("Non-finite control coordinates")
     if np.linalg.matrix_rank(xyz-xyz.mean(0))<2:

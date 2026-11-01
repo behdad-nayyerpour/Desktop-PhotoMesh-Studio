@@ -1,7 +1,6 @@
 """Shared product transactions, input identity and bounded processing helpers."""
 from __future__ import annotations
 import functools
-import hashlib
 import json
 import os
 import shutil
@@ -166,3 +165,27 @@ def bounds_from_ply(path):
 
 def source_unit(georef):
     return "m" if georef else "model units"
+
+
+def require_mesh(vertices,faces):
+    require_points(vertices,"Mesh")
+    f=np.asarray(faces)
+    if f.ndim!=2 or f.shape[1]!=3 or not len(f):
+        raise ValueError("Mesh must contain triangles")
+    if not np.issubdtype(f.dtype,np.integer) or f.min()<0 or f.max()>=len(vertices):
+        raise ValueError("Mesh contains invalid vertex indices")
+
+
+def processing_crs(georef):
+    """The reconstruction stores geographic references in a metric UTM frame."""
+    if not georef: return ""
+    reference=georef.get("crs") or ""
+    from .georef import CRS
+    try: geographic=CRS.parse(reference).kind=="wgs84"
+    except ValueError: geographic=georef.get("crs_kind")=="wgs84"
+    if not geographic: return reference
+    zone=georef.get("zone")
+    if not zone:
+        raise ValueError("Geographic references need their metric reconstruction zone before raster export")
+    number,south=zone if isinstance(zone,(list,tuple)) else (zone,False)
+    return f"EPSG:{(32700 if south else 32600)+int(number)}"
