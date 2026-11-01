@@ -152,3 +152,72 @@ def test_confidence_cannot_silently_skip_missing_counts():
     from photomesh.pcfilter import filter_cloud
     with pytest.raises(ValueError,match="unavailable"):
         filter_cloud({"xyz":np.zeros((10,3))},{"min_confidence":3})
+
+
+def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_path,monkeypatch):
+    from PIL import Image as PILImage
+    from photomesh.project import Project,Camera as Photo
+    from photomesh import colmap_io as cio
+    project=Project(); project.path=str(tmp_path/"registered.pmsx"); ch=project.chunk
+    R=np.diag([1.,-1.,-1.]); cam=cio.Camera(1,1000,800,np.array([800.,800.,500.,400.]))
+    xyz=np.array([[-3,-2,0],[3,-2,.4],[3,2,0],[-3,2,.2],[0,0,1],[-2,1,.7],[2,-1,.3]])
+    poses={}
+    for index,center in enumerate(([-1.,0.,10.],[1.,0.,10.],[.5,.3,10.])):
+        path=tmp_path/f"photo{index}.jpg"; PILImage.new("RGB",(1000,800),(100,150,200)).save(path)
+        aligned=index<2
+        ch.cameras.append(Photo(str(path),aligned=aligned,width=1000,height=800,
+            colmap_name=path.name if aligned else "",est=center if aligned else None,
+            rot=R.tolist() if aligned else None))
+        if aligned: poses[index+1]=cio.Image(path.name,1,cio.rot_to_qvec(R),-R@center,
+                                            np.empty((0,2)),np.empty(0,dtype=np.int64))
+    points=cio.Points(np.empty(0,np.uint64),np.empty((0,3)),np.empty((0,3),np.uint8),np.empty(0),
+                     np.zeros(1,np.int64),np.empty(0,np.uint32),np.empty(0,np.uint32))
+    wd=project.default_workdir(ch); model=os.path.join(wd,"sparse","0")
+    cio.write_model(model,cio.Model({1:cam},poses,points))
+    original={name:open(os.path.join(model,name),"rb").read() for name in ("cameras.bin","images.bin","points3D.bin")}
+    pixels,_=cio.project(cam,R,-R@np.array([.5,.3,10.]),xyz)
+    ch.markers=[{"label":f"G{i}","enabled":True,"projections":{"photo2":[*xy.tolist(),True]}}
+                for i,xy in enumerate(pixels)]
+    project.save(project.path)
+    window.project=project; window.refresh_all()
+    monkeypatch.setattr(window,"_marker_positions",lambda:[(f"G{i}",point,True) for i,point in enumerate(xyz)])
+    refreshed=[]
+    monkeypatch.setattr(window,"_update_photo_shapes",lambda:refreshed.append(window.current_photo))
+    window.register_selected_photos([2])
+    assert ch.cameras[2].aligned and np.allclose(ch.cameras[2].est,[.5,.3,10.],atol=1e-3)
+    assert ch.cameras[0].est==[-1.,0.,10.] and ch.cameras[1].est==[1.,0.,10.]
+    assert all(open(os.path.join(model,name),"rb").read()==data for name,data in original.items())
+    assert refreshed and refreshed[-1]==2
+    published=cio.read_model(window._model_dir())
+    assert len(published.images)==3 and ch.cameras[2].colmap_name=="photo2.jpg"
+
+
+def test_realign_preserves_georeferenced_frame(tmp_path):
+    from photomesh import colmap_io as cio
+    from photomesh.registration import preserve_frame
+    from photomesh.georef import transform_model
+    from tests.test_dense_mesh_gcp import synthetic_model
+    original=synthetic_model(); changed=synthetic_model()
+    from scipy.spatial.transform import Rotation
+    transform_model(changed,2.5,Rotation.from_euler("xyz",[.2,-.1,.5]).as_matrix(),np.array([100.,200.,30.]))
+    path=str(tmp_path/"model"); cio.write_model(path,changed)
+    known={im.name:{"center":im.center().tolist(),"rotation":im.R().tolist()} for im in original.images.values()}
+    preserve_frame({"model":path,"cameras":known},log=lambda *_:None)
+    restored=cio.read_model(path)
+    assert np.allclose(restored.points.xyz,original.points.xyz,atol=1e-6)
+    for key,im in original.images.items():
+        assert np.allclose(restored.images[key].center(),im.center(),atol=1e-6)
+        assert np.allclose(restored.images[key].R(),im.R(),atol=1e-6)
+
+
+def test_changed_photo_invalidates_undistortion_and_changed_depth_setting_only_depth(tmp_path):
+    from photomesh.dense import workspace_reuse
+    marker=tmp_path/"workspace.json"
+    cfg={"model":"model","image_root":"photos","dense":"dense","quality":"Medium","max_sources":8,
+         "camera_stamp":[1,2],"photo_stamps":[["a",1]],"depth_parameters":{"num_iterations":3}}
+    marker.write_text(json.dumps(cfg))
+    assert workspace_reuse(str(marker),cfg,True)==(True,True)
+    changed=dict(cfg,photo_stamps=[["a",2]])
+    assert workspace_reuse(str(marker),changed,True)==(False,False)
+    changed=dict(cfg,depth_parameters={"num_iterations":4})
+    assert workspace_reuse(str(marker),changed,True)==(True,False)
