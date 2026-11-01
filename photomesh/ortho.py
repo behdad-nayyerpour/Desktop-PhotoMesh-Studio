@@ -16,14 +16,14 @@ multiple of the pixel size in world coordinates.
 
 Build Orthomosaic
 -----------------
-1. Surface: the mesh (or the DEM, triangulated) in an Embree scene. A vertical
-   ray per output pixel gives the surface height (DSM) - the photo point to
-   sample is (X, Y, height).
+1. Surface: mesh triangles in an Embree scene, or direct cached DEM-cell sampling.
+   Each output pixel receives a surface height (DSM); its photo sample is
+   (X, Y, height).
 2. Coarse grid (16 px cells): for every camera, the cells in its footprint
    get a score = cos^4(off-nadir angle) x image-border fade x resolution
    (most nadir, closest, centre of the photo). Top 6 views per cell; an
    occlusion ray cell -> camera removes hidden views.
-3. Colours of the candidates at the cells (1/8 scale photos): per-photo
+3. Colours of the candidates at the cells (up to 660 px previews): per-photo
    exposure gains (least squares in log space), ghosting filter (views that
    disagree with the median colour: moving cars, people).
 4. View selection: Potts model on the cell grid solved by ICM (large single-
@@ -533,14 +533,14 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     cells = np.flatnonzero(near)
     m = len(cells)
     Xc = np.column_stack([cx[cells], cy[cells], cz[cells]])
-    K = int(c["top_k"]) * 2  # reserve candidates for occlusion fallback
+    K = int(c["top_k"])
     best_s = np.zeros((m, K), np.float32); best_v = np.full((m, K), -1, np.int32)
     zground = float(np.median(cz[hit]))
     lock = threading.Lock()
     fade = 0.04
     sharp = np.ones(len(views))
 
-    def cand(vi):
+    def cand(vi, refill=False):
         check()
         v = views[vi]
         C = Cp[vi]
@@ -569,6 +569,11 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
             idx = np.arange(m)
         if not len(idx):
             return
+        if refill:
+            idx=idx[needs_refill[idx]]
+            if not len(idx): return
+            idx=idx[~(examined[idx]==vi).any(1)]
+            if not len(idx): return
         uv, z = _project(v, Xc[idx], Rn)
         okk = (z > 0) & (uv[:, 0] >= 0) & (uv[:, 0] < v.W) & (uv[:, 1] >= 0) & (uv[:, 1] < v.H)
         idx, uv = idx[okk], uv[okk]
@@ -582,6 +587,9 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         s = (np.clip(cos, 0, 1) ** 4 * b * res * sharp[vi]).astype(np.float32)
         keep = s > 1e-4
         idx, s = idx[keep], s[keep]
+        if refill and len(idx):
+            visible=~surf.occluded(Xc[idx],np.broadcast_to(C,Xc[idx].shape),eps)
+            idx,s=idx[visible],s[visible]
         with lock:
             cur = best_s[idx]
             mn = cur.argmin(1)
@@ -600,14 +608,27 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
         occ = np.zeros(len(flat), bool)
         for a in range(0, len(flat), 4_000_000):
             occ[a:a + 4_000_000] = surf.occluded(Xs[a:a + 4_000_000], Cs[a:a + 4_000_000], eps)
+        examined=best_v.copy() if occ.any() else None
         bs = best_s.ravel(); bv = best_v.ravel()
         bs[flat[occ]] = 0; bv[flat[occ]] = -1
         lg(f"Ortho: {len(flat):,} cell/photo candidates, {occ.mean() * 100:.1f}% occluded")
+    if len(flat) and occ.any():
+        needs_refill=np.zeros(m,bool)
+        needs_refill[np.unique(flat[occ]//K)]=True
+        # Only cells that lost a candidate need another projection/visibility pass.
+        # Previously examined cameras are excluded, including rejected occluded ones.
+        if needs_refill.any():
+            before=int((best_v[needs_refill]>=0).sum())
+            with ThreadPoolExecutor(threads) as ex:
+                list(ex.map(lambda vi:cand(vi,True),range(len(views))))
+            replenished=int((best_v[needs_refill]>=0).sum())-before
+            lg(f"Ortho: replenished {replenished:,} visible candidates in {int(needs_refill.sum()):,} occluded cells")
+        del examined
     order = np.argsort(-best_s, 1)[:, :int(c["top_k"])]
     best_s = np.take_along_axis(best_s, order, 1); best_v = np.take_along_axis(best_v, order, 1)
     K = int(c["top_k"])
     stage("view candidates + visibility", t0); prog(14); check()
-    # ---- colour statistics on the 1/8 scale photos
+    # ---- colour statistics on small photo previews
     t0 = time.perf_counter()
     used = np.unique(best_v[best_v >= 0])
     def small(vi):

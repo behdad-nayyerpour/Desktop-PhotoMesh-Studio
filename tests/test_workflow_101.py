@@ -314,3 +314,22 @@ def test_meshing_rejects_nonfinite_source_before_poisson(tmp_path):
     save_ply(str(cloud),points,None)
     with pytest.raises(ValueError,match="non-finite"):
         load_point_cloud(str(cloud),log=lambda *_:None)
+
+
+def test_ortho_replenishes_views_lost_to_occlusion(tmp_path,monkeypatch):
+    from tests import texsynth
+    from photomesh import ortho
+    scene=texsynth.make_scene(str(tmp_path/"scene"))
+    calls=[0]
+    def occluded(self,points,cameras,eps):
+        calls[0]+=1
+        return np.full(len(points),calls[0]==1,bool)
+    monkeypatch.setattr(ortho.Surface,"occluded",occluded)
+    log=[]
+    result=ortho.build_orthomosaic(dict(mesh=scene["mesh"],model=scene["model"],photos=scene["photos"],
+        out_dir=str(tmp_path/"ortho"),georef={"offset":[0,0,0]},pixel_size=.2,top_k=1,
+        hole_filling=False,ghosting=False,blending="Disabled",block=512),log=log.append)
+    assert calls[0]>1 and result["photos_used"]>0
+    counts=[int(line.split("replenished ")[1].split()[0].replace(",",""))
+            for line in log if "replenished " in line]
+    assert counts and max(counts)>0
