@@ -728,8 +728,11 @@ def rasterize(uvp, page, npages, size):
     lo = np.floor(uvp.min(1) - .5).astype(np.int64)
     hi = np.ceil(uvp.max(1) + .5).astype(np.int64)
     extent = hi - lo
-    estimate = float(np.minimum(extent[:, 0], size) @ np.minimum(extent[:, 1], size).astype(float))
-    disk = estimate * 26 > available_bytes() * .35
+    estimate = float(np.sum(np.minimum(extent[:, 0], size).astype(float) * np.minimum(extent[:, 1], size)))
+    free = available_bytes()
+    if len(extent) and extent.max() <= 256 and estimate * 160 < free * .45:
+        return _rasterize_fast(uvp,page,npages,size,lo,hi)
+    disk = estimate * 26 > free * .35
     dtype = np.dtype([("page", "i2"), ("y", "i4"), ("x", "i4"), ("face", "i4"), ("b1", "f4"), ("b2", "f4")])
     out = []
     spool = tempfile.NamedTemporaryFile(prefix="photomesh-raster-", suffix=".bin", delete=False) if disk else None
@@ -793,6 +796,47 @@ def rasterize(uvp, page, npages, size):
         return tuple(np.empty(0, dtype=dt) for dt in ("i2","i4","i4","i4","f4","f4"))
     arrays=tuple(np.concatenate([entry[k] for entry in out]) for k in range(6))
     return unique_texels(arrays,size)
+
+
+def _rasterize_fast(uvp, page, npages, size, lo, hi):
+    """Texels covered by each triangle: (page, y, x, face, b1, b2) arrays."""
+    out = []
+    ext = (hi - lo).max(1)
+    classes = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]
+    cls = np.searchsorted(classes, ext)
+    for ci, S in enumerate(classes):
+        fsel = np.flatnonzero(cls == ci)
+        if not len(fsel):
+            continue
+        batch = max(1, int(8_000_000 // (S * S)))
+        gy, gx = np.mgrid[0:S, 0:S]
+        gx = gx.ravel(); gy = gy.ravel()
+        for s0 in range(0, len(fsel), batch):
+            fs = fsel[s0:s0 + batch]
+            X = lo[fs, 0][:, None] + gx[None]; Y = lo[fs, 1][:, None] + gy[None]
+            px = X + 0.5; py = Y + 0.5
+            a, b, c = uvp[fs, 0], uvp[fs, 1], uvp[fs, 2]
+            v0 = b - a; v1 = c - a
+            den = v0[:, 0] * v1[:, 1] - v1[:, 0] * v0[:, 1]
+            den = np.where(np.abs(den) < 1e-12, 1e-12, den)
+            qx = px - a[:, 0:1]; qy = py - a[:, 1:2]
+            b1 = (qx * v1[:, 1:2] - v1[:, 0:1] * qy) / den[:, None]
+            b2 = (v0[:, 0:1] * qy - qx * v0[:, 1:2]) / den[:, None]
+            eps = 1e-6
+            inside = (b1 >= -eps) & (b2 >= -eps) & (b1 + b2 <= 1 + eps) & (X >= 0) & (Y >= 0) & (X < size) & (Y < size)
+            r, k = np.nonzero(inside)
+            out.append((page[fs[r]].astype(np.int16), Y[r, k].astype(np.int32), X[r, k].astype(np.int32),
+                        fs[r].astype(np.int32), b1[r, k].astype(np.float32), b2[r, k].astype(np.float32)))
+    if not out:
+        z = np.zeros(0)
+        return z.astype(np.int16), z.astype(np.int32), z.astype(np.int32), z.astype(np.int32), z.astype(np.float32), z.astype(np.float32)
+    cat = [np.concatenate([o[j] for o in out]) for j in range(6)]
+    # a texel on a shared edge belongs to one face only
+    kind = np.uint32 if npages * size * size <= 2**32 else np.uint64
+    key = (cat[0].astype(kind) * size + cat[1].astype(kind)) * size + cat[2].astype(kind)
+    _u, first = np.unique(key, return_index=True)
+    return tuple(c[first] for c in cat)
+
 
 
 def unique_texels(arrays,size):

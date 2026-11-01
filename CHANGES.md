@@ -4,6 +4,22 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
+### 1.0.1 (2026-11-01)
+
+- Reviewed alignment, dense-cloud, mesh, texture, tiled-model, DSM and orthomosaic workflows together; see the [77-item scope](docs/development/workflow-review-101.md).
+- Show effective settings, grid/texture resource estimates, source freshness, real units and mesh triangle targets (including the disabled target field).
+- Remove duplicate alignment resolutions and the ineffective reset checkbox. Use one visible feature limit; the default is 24,000 to retain the former fine-stage workload without a hidden secondary cap.
+- Preserve the existing project frame and previous results during re-alignment; failed/cancelled builds do not publish partial products.
+- Validate depth-map reuse against photo, calibration and all relevant depth settings. Legacy caches without input identity require one rebuild.
+- Make terrain filtering opt-in, expose local-filter thresholds and report supporting-photo counts and removal statistics.
+- Stream large PLY point inputs, enforce meshing point limits, expose component thresholds and disable source-inapplicable controls.
+- Rasterize actual mesh triangles for DSMs, retain coverage masks and sample DEM surfaces directly for orthomosaics.
+- Keep pixel limits, texture page limits and tile limits explicit; bound pathological atlas/partition cases and correct parent bounds/global transforms.
+- Provide transactional texture/raster/tiled product sets and invalidate caches when their source photos or geometry change.
+- Add right-click **Align Selected Photos from GCPs**: calibrated camera resection from at least six distinct, well-spread measured controls; existing poses remain fixed and visible shapes refresh on the new photo.
+- No additional runtime dependencies. Rebuild the full Setup EXE for distribution.
+- Automated validation includes regression tests, software OpenGL and same-runner processing benchmarks. A full real-data COLMAP/CUDA reconstruction is still a release check on target hardware.
+
 ### 1.0.0 (2026-11-01)
 
 - Workspace/Reference now extend to the status bar; Photos/Console/Jobs align beneath the viewport to their right.

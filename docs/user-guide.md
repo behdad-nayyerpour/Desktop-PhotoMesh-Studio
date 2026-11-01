@@ -5,13 +5,13 @@
 1. *Workflow → Add Photos…* / *Add Folder…* — photos are analysed in parallel
    (EXIF GPS, thumbnails, global descriptors) and appear in **Photos**,
    **Workspace** and **Reference** panes.
-2. *Workflow → Align Photos…* — Accuracy, matching mode (**Fast** default /
+2. *Workflow → Align Photos…* — image resolution, matching mode (**Fast** default /
    Exhaustive / Sequential), **camera estimation** (Auto / Global / Incremental /
    Hierarchical), coarse-to-fine, key point limit, guided matching…
    Result: camera positions + tie points in the **Model** view.
 3. *Workflow → Build Point Cloud…* — Quality + Depth filtering (CUDA).
-4. *Workflow → Build Model…* — Source (Depth maps / Point cloud),
-   surface type, face count.
+4. *Workflow → Build Model…* — Source (Point cloud / Delaunay from fused cloud and visibility),
+   trimming and target triangle count.
 5. *File → Save* stores a `*.pmsx` project (JSON); results live in
    `<project>.files/`.
 
@@ -22,8 +22,8 @@ place and never written to; downscaled undistorted copies go to `<workdir>\dense
 quality Ultra/High/Medium/Low/Lowest = 1/2/4/8/16× downscale, one undistorted
 pinhole camera per camera group, PatchMatch neighbours chosen from the sparse model
 (shared tie points × triangulation-angle weight, 8 per photo by default),
-geometric consistency, depth filtering Disabled/Mild/Moderate/Aggressive mapped to
-PatchMatch/fusion thresholds, then outlier filtering (minimum confidence = photos
+geometric consistency, depth filtering Disabled/Mild/Moderate/Aggressive: Disabled turns off the PatchMatch depth
+filter; fusion consistency checks remain active, then outlier filtering (minimum confidence = photos
 per point, terrain sanity check, statistical and radius outlier removal; scipy
 cKDTree, multi-threaded). Depth maps can be reused when the settings are unchanged.
 
@@ -31,11 +31,12 @@ cKDTree, multi-threaded). Depth maps can be reused when the settings are unchang
 Gradual Selection** (tie points: reprojection error, reconstruction uncertainty,
 image count, projection accuracy).
 
-**Build Model** – Poisson (Open3D) with density trimming (Interpolation
-Disabled/Enabled/Extrapolated), or Delaunay from the depth maps; face count
+**Build Model** – Poisson (Open3D) with strong/moderate trimming or permitted extrapolation,
+or Delaunay from the fused cloud and visibility data; face count
 High/Medium/Low (points/5, /15, /45 as in Metashape) or Custom, quadric decimation,
 removal of faces bridging gaps, long-edge faces and small components; automatic
-voxel downsampling above 12 M points so big clouds fit in RAM.
+voxel downsampling with an enforced point limit and bounded large-file loading.
+A manual voxel that exceeds the limit is reported rather than silently changed.
 
 **Ground control** – File > Import > Import Markers / Import Reference reads
 Metashape reference exports (`# CoordinateSystem:` + `#Label X Y Z ...`, as
@@ -219,3 +220,58 @@ driver-dependent glyph corruption over textured models.
 
 Workspace and Reference extend down to the status bar. Photos, Console and Jobs
 share the bottom area beneath the viewport, to the right of the left tabs.
+
+
+## Workflow settings in 1.0.1
+
+- Alignment uses Full, Half, Quarter or One-eighth image dimensions. The visible
+  feature limit is the only fine-stage limit; zero means the engine default,
+  not unlimited. Review calibration groups before combining mixed sensors.
+- Re-alignment runs in a separate generation, preserves the old project frame
+  using common camera poses and replaces the active alignment only on success.
+  Derived products are marked outdated; their files remain recoverable.
+- Depth-map reuse includes photo identity, camera calibration and all relevant
+  depth settings. The first run against an older cache without those identities
+  rebuilds its working images/maps. Keep depth maps if future reuse is wanted.
+- Supporting-photo confidence is an observation count. Missing counts are reported
+  rather than silently ignored. Terrain rejection is off by default and is not
+  bare-earth classification.
+- Mesh presets show the estimated triangle target in the count field even while
+  that field is disabled. Cleanup and simplification may produce fewer faces.
+  Voxel values use metres only when the reconstruction has a metric frame.
+- Texture page count is a hard maximum unless automatic count is selected.
+  Keep UV requires an exact source identity and displays the retained page count.
+  Colour hole filling infers colour; it does not repair mesh geometry.
+- Point tiles use the displayed point limit directly and export PNTS. Mesh tiles
+  export B3DM/GLB. Texture controls are disabled for point tiles.
+- DEM output is a DSM, not automatically classified ground. Mesh input samples
+  triangle interiors. Coverage masks distinguish observed (1), inferred (2)
+  and nodata (0) cells. Point aggregation offers Mean, Median and Highest.
+- Orthomosaic half-resolution mode halves each photo, not a fixed-size assumption.
+  A DEM surface is sampled at its own grid resolution. Filled pixels are inferred,
+  not additional measured detail. DEM and camera frames must agree.
+- Geographic survey references are reconstructed in a metric frame. Raster CRS
+  labels describe that metric processing frame; UTM eastings are never labelled
+  as longitude/latitude.
+- Outdated inputs are displayed in the settings. Rebuild them, or explicitly
+  acknowledge using the older source. New settings use a scrollable body with
+  the confirmation buttons always accessible.
+
+### Register newly added photos
+
+After the original photos are aligned, add the new photos and place at least six
+distinct pinned control markers over each new image. Their 3D positions must be
+known in the existing model (surveyed in its frame or triangulated from aligned
+photos). Spread them over the image; collinear or tightly clustered controls are
+rejected. A compatible calibrated camera is required; choose its calibration
+when multiple groups are available.
+
+Right-click the photo(s) in Photos or Workspace and select **Align Selected
+Photos from GCPs**. The batch is published only when every selected pose passes
+the reprojection/geometry checks. Existing camera poses are unchanged. Shapes
+refresh on the registered photo when their display is enabled.
+
+Processing performance is compared against 1.0.0 on the same CI runner for
+equivalent workloads. Corrected geometry, larger explicitly requested feature
+counts, finer pixels or additional pages change the amount of work; they cannot
+be assigned the same runtime merely by changing a label.

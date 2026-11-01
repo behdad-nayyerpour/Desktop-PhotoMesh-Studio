@@ -55,8 +55,8 @@ def main():
     Path("workflow-performance.json").write_text(json.dumps(result,indent=2))
     print(json.dumps(result,indent=2),flush=True)
     # Broad enough for shared-runner noise, strict enough to expose material regressions.
-    if any(row["ratio"]>1.25 for row in result.values() if isinstance(row,dict) and "ratio" in row):
-        raise SystemExit("Performance regression above 25%; investigate before release")
+    if any(row["ratio"]>1.08 for row in result.values() if isinstance(row,dict) and "ratio" in row):
+        raise SystemExit("Performance regression above 8%; investigate before release")
 
 
 if __name__=="__main__": main()

@@ -1,6 +1,6 @@
 # PhotoMesh Studio
 
-**Source version 1.0.0** — one project, integrated references, consistent progress, and marker flags.
+**Source version 1.0.1** — source-aware processing settings, recoverable products, and GCP registration of added photos.
 Windows installers are published separately in Releases; check their version before downloading.
 
 Desktop photogrammetry software for turning overlapping aerial photographs into
