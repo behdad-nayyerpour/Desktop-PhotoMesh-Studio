@@ -150,5 +150,7 @@ def pytest_collection_modifyitems(config, items):
     import pytest
     for item in items:
         for name, why in CI_ONLY_LOCAL.items():
+            if name == "opengl" and os.environ.get("PHOTOMESH_GL_TESTS") == "1":
+                continue  # explicit Xvfb/Mesa display supplied by the workflow
             if item.get_closest_marker(name):
                 item.add_marker(pytest.mark.skip(reason=f"CI: {why} ({name})"), append=False); break
