@@ -578,7 +578,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         _log.info("%s", text)
 
     def _start_resource_monitor(self):
-        """CPU / GPU load in the status bar (background thread, ~1.5 s; GPU hidden without NVIDIA NVML)."""
+        """CPU / GPU load in the status bar; unavailable GPU sampling is shown explicitly."""
         from .statusmon import ResourceMonitor
         self.cpu_label = QLabel("CPU  --"); self.gpu_label = QLabel("GPU unavailable")
         for lab in (self.cpu_label, self.gpu_label):
@@ -1048,38 +1048,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         finally:
             self._opening = False
 
-    def _check_photo_names(self):
-        """Projects from 0.1.9 and older do not record the COLMAP name of each
-        photo: recover it from the working folder, and warn when photos that
-        share a file name cannot be told apart."""
-        from .photonames import photo_map, recover_names
-        for ch in self.project.chunks:
-            if any(c.aligned and not c.colmap_name for c in ch.cameras):
-                if recover_names(ch, ch.workdir):
-                    self.project.modified = True
-                amb = photo_map(ch)[1]
-                if amb:
-                    self._warn_ambiguous(amb)
 
-    def _report_missing_photos(self, ask=True):
-        """Photos not found at their saved paths: offer Change Image Paths right away."""
-        from .relink import missing_cameras
-        n = sum(len(missing_cameras(ch)) for ch in self.project.chunks)
-        if n:
-            msg = (f"{n} photo(s) not found at their saved paths (moved disk/computer?). "
-                   f"Use Tools > Change Image Paths... to point the project at the photos' new folder.")
-            self.log(msg); self.statusBar().showMessage(msg, 20000)
-            if ask:
-                r = QMessageBox.question(
-                    self, "Missing Photos",
-                    f"{n} photo(s) of this project were not found at their saved paths "
-                    f"(the photos were moved, or the project was opened on another computer).\n\n"
-                    f"Locate the folder that contains them now?\n"
-                    f"(You can do this later with Tools > Change Image Paths...)",
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-                if r == QMessageBox.Yes:
-                    self.change_image_paths()
-        return n
 
     def change_image_paths(self, ci=None):
         """Relink photos after moving them (other drive letter / computer): pick
@@ -1123,16 +1092,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                                 f"{done} photo(s) relinked.\n{len(nf)} not found"
                                 + (f":\n{', '.join(nf[:10])}{' ...' if len(nf) > 10 else ''}" if nf else "."))
         return done, nf
-
-    def _backfill_meta(self):
-        """Projects processed before metadata was recorded: rebuild it from the
-        logs next to the project. Kept in memory and saved with the next Save."""
-        for ch in self.project.chunks:
-            added = procmeta.backfill(ch, self.project.path)
-            if added:
-                self.project.modified = True
-                self.log(f"{ch.name}: processing metadata reconstructed from logs ({', '.join(added)}); "
-                         f"values not in the logs are shown as 'unknown'. Save to keep it in the project.")
 
 
     def save_project(self):
