@@ -244,8 +244,6 @@ def _draw(key, p):
             p.setPen(Qt.NoPen); p.setBrush(QBrush(QColor(40 + 35 * k, 60 + 25 * k, 200 - 25 * k)))
             p.drawRect(QRectF(4, 4 + 4 * k, 24, 4))
         p.setPen(QPen(QColor(220, 220, 230), 1)); p.setBrush(Qt.NoBrush); p.drawRect(QRectF(4, 4, 24, 24))
-    elif key == "add_chunk":
-        _draw("chunk", p); _plus(p)
     elif key == "add_photos":
         _draw("photo", p); _plus(p)
     elif key == "add_folder":

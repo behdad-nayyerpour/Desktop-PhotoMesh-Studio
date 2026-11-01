@@ -32,11 +32,6 @@ def test_project_switch_drops_marker_overlays_history_and_pending(window, tmp_pa
         path = str(tmp_path / "next.pmsx")
         project.save(path)
         window.open_project(path)
-    elif transition == "add_chunk":
-        window._workspace_action("Add Chunk", -1)
-    else:
-        window.project.chunks.append(target)
-        window.set_active(1)
     from PySide6.QtWidgets import QApplication
     QApplication.processEvents()
     window.wait_view_loaded()

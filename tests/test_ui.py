@@ -95,9 +95,6 @@ def test_project_switch_clears_photo_and_ortho_views(window, image_dir, tmp_path
         path = str(tmp_path / "empty.pmsx")
         Project().save(path)
         window.open_project(path)
-    else:
-        window.project.chunks.append(Chunk())
-        window.set_active(1)
 
     assert window.current_photo == -1
     assert window.tabs.currentWidget() is window.model_view

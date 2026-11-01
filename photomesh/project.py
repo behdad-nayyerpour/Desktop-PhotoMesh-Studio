@@ -77,7 +77,8 @@ class Camera:
 
 @dataclass
 class Chunk:
-    name: str = "Chunk 1"
+    # Internal legacy dataset name; the interface exposes one project.
+    name: str = "Project"
     cameras: list = field(default_factory=list)
     workdir: str = ""
     tie_points_ply: str = ""

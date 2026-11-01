@@ -180,7 +180,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.resizeDocks([self.docks["Workspace"]], [330], Qt.Horizontal)
         self.resizeDocks([self.docks["Workspace"], self.docks["Properties"]], [420, 220], Qt.Vertical)
         self.resizeDocks([self.docks["Photos"]], [230], Qt.Vertical)
-        self.workspace.cameraActivated.connect(lambda ci, k: (self.set_active(ci), self.open_photo(k)))
+        self.workspace.cameraActivated.connect(lambda ci, k: self._safe("Open Photo", self.open_photo)(k))
         self.workspace.contextAction.connect(self._workspace_action)
         self.workspace.selectionInfo.connect(self._show_properties)
         self.workspace.layerToggled.connect(self.set_layer_visible)
@@ -241,8 +241,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.set_modified(); self.reload_view()
 
     def _show_requested(self, kind, ci):
-        if ci != self.project.active:
-            self.set_active(ci)
+        if ci != 0:
+            return
         if kind == "tie":
             self.show_layer("tie")
         elif kind in ("cloud", "depth"):
@@ -780,13 +780,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.project.modified = True
         self.refresh_all()
 
-    def set_active(self, ci):
-        if 0 <= ci < len(self.project.chunks) and ci != self.project.active:
-            self.project.active = ci
-            self._reset_project_views()
-            self.refresh_all(); self.reload_view()
 
-    # ------------------------------------------------------- layer visibility
     def layer_action(self, key):
         return self.actions[f"Model/{LAYER_ACTIONS[key]}"]
 
@@ -918,8 +912,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         if action == "Change Image Paths...":
             self.change_image_paths(); return
         elif action.startswith("marker:"):
-            if ci != self.project.active:
-                self.set_active(ci)
             _t, act, labs = action.split(":", 2)
             labels = [l for l in labs.split("\x1f") if l]
             if labels == ["*"]:
@@ -933,8 +925,6 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         elif action.startswith(("shape_layer:", "show_shape:", "remove_shape_layer:", "measure_shape:",
                                 "shape_style:")) or \
                 action in ("Export Shapes...", "Remove Shapes"):
-            if ci != self.project.active:
-                self.set_active(ci)
             if action.startswith("shape_layer:"):
                 _t, on, name = action.split(":", 2)
                 self.set_shape_layer_visible(name, bool(int(on)))
