@@ -718,7 +718,7 @@ def pack_fit(uv, comp, size, count, pad, log=print, page_policy="auto"):
                 f"using up to {c} page(s){', 1 px border' if p != pad else ''}")
         return r
     raise RuntimeError(f"texture atlas packing failed: {int(comp.max()) + 1:,} charts do not fit "
-                       f"within the {counts[-1]}-page limit of {size}x{size} - use a larger size or enable automatic page count")
+                       f"within the {counts[-1]}-page limit of {size}x{size} - use a larger texture size or enable automatic page count")
 
 
 def rasterize(uvp, page, npages, size):
@@ -865,7 +865,8 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
             z = np.load(cache)
             if str(z["key"]) == key:
                 best_s, best_v, sign = z["best_s"], z["best_v"], float(z["sign"])
-                log("Texture: visibility reused from the previous run (same model and cameras)")
+                log("Texture: visibility reused from the previous run (same model, cameras and photos)")
+            z.close()
         except Exception:
             best_s = None
     if best_s is None:
@@ -875,6 +876,12 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
             np.savez(os.path.join(out, "visibility_cache.npz"), key=key, best_s=best_s, best_v=best_v, sign=sign)
         except OSError:
             pass
+    if not os.path.exists(os.path.join(out, "visibility_cache.npz")) and os.path.isfile(cache):
+        try:
+            os.link(cache, os.path.join(out, "visibility_cache.npz"))
+        except OSError:
+            import shutil
+            shutil.copyfile(cache, os.path.join(out, "visibility_cache.npz"))
     best_s = best_s.copy(); best_v = best_v.copy()
     stage("visibility", t0)
     t0 = time.perf_counter()
@@ -929,6 +936,7 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
             uvp = uvp * (size / old)
         count = int(page.max()) + 1
         scale = float(z["scale"]) * size / old if "scale" in z else 1.0
+        z.close()
         log(f"Texture: keeping the previous uv atlas ({count} page(s))")
     else:
         e1, e2 = plane_basis(up)
@@ -1146,6 +1154,7 @@ def load_textured(mesh, tex_dir):
     uv, page, size = z["uv"], z["page"].astype(np.int64), int(z["size"])
     if len(uv) != len(F):
         raise ValueError("texture does not belong to this model (face count differs)")
+    z.close()
     return V, F, uv, page, size, [os.path.join(tex_dir, n) for n in info["pages"]]
 
 

@@ -179,6 +179,12 @@ def raster_size(xmin, ymin, xmax, ymax, px, max_dimension=0, off_xy=(0.0, 0.0)):
     if max_dimension:
         px = max(px, max(xmax - xmin, ymax - ymin) / float(max_dimension))
     _x0, _y1, W, H = make_grid(xmin, ymin, xmax, ymax, px, off_xy)
+    if max_dimension:
+        for _ in range(4):
+            if max(W,H) <= max_dimension:
+                break
+            px *= (max(W,H)+1)/float(max_dimension)
+            _x0,_y1,W,H = make_grid(xmin,ymin,xmax,ymax,px,off_xy)
     return px, W, H
 
 

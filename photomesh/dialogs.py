@@ -152,7 +152,7 @@ class BuildPointCloudDialog(_SettingsDialog):
         dense_context(self, parent)
 
     def settings(self):
-        return {"quality": self.quality.currentText(),
+        result = {"quality": self.quality.currentText(),
                 "depth_filtering": self.filtering.currentText(),
                 "reuse": self.reuse.isChecked(),
                 "keep_depth_maps": self.keep_depth.isChecked(),
@@ -164,6 +164,13 @@ class BuildPointCloudDialog(_SettingsDialog):
                             "elevation": self.elev.isChecked(), "local_ratio": self.local_ratio.value(),
                             "elevation_k": self.elevation_k.value(),
                             "elevation_min_dev": self.elevation_dev.value() or None}}
+        mode = self.up_mode.currentText()
+        if mode != "Camera-derived up":
+            vector = [0.,0.,1.] if mode == "Project Z" else [v.value() for v in self.up_values]
+            if sum(v*v for v in vector) < 1e-12:
+                raise ValueError("Terrain up direction cannot be zero")
+            result["filters"]["up"] = vector
+        return result
 
 
 class BuildModelDialog(_SettingsDialog):

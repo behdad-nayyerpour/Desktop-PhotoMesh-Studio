@@ -343,7 +343,7 @@ def test_fast_steps_use_cache_and_feature_cap(tmp_path, monkeypatch):
     assert all("_work_" in a[a.index("--image_path") + 1] for a in fe)
     fine = fe[-1]
     assert fine[fine.index("--SiftExtraction.max_num_features") + 1] == "40000"
-    assert "Selecting fine key points" in labels and "Coloring tie points" in labels
+    assert "Selecting fine key points" not in labels and "Coloring tie points" in labels
     assert labels.count("Rescaling key points") == 2
     steps = fp.fast_align_steps("colmap", str(tmp_path / "w2"), names, infos,
                                 {"accuracy": "Medium", "key_point_limit": 40000, "decode_cache": False,

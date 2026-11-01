@@ -1826,7 +1826,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         wd = self.project.default_workdir(ch)
         s = dlg.settings()
         if ch.georef:
-            s["filters"]["up"] = [0.0, 0.0, 1.0]
+            s["filters"].setdefault("up", [0.0, 0.0, 1.0])
         steps = [("Preparing point cloud", lambda: dense_steps(exe, wd, s, cm.image_dir(wd)), 1)]
         self.log(f"Build Point Cloud: quality={s['quality']}, depth filtering={s['depth_filtering']}, "
                  f"{s['max_sources']} neighbour photos, workdir={wd}")
@@ -2407,7 +2407,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             {name: (ch.model_ply if name == "Mesh" else ch.point_cloud_ply) for name in sources})
         if self._workflow_source_plans is None:
             return
-        dlg = BuildDEMDialog(self, sources, crs=self._crs_text(ch), unit="m" if ch.georef else "units",
+        dlg = BuildDEMDialog(self, sources, crs=self._crs_text(ch) if ch.georef else "", unit="m" if ch.georef else "model units",
                              bounds=self._workflow_source_plans[sources[0]]["bounds"])
         if not dlg.exec():
             return

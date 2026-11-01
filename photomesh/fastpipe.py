@@ -814,9 +814,7 @@ def fast_align_steps(exe, wd, names, infos, s):
     work_f, work_c = os.path.join(wd, "_work_fine"), os.path.join(wd, "_work_coarse")
     dims = {}
     fine_kp = s["key_point_limit"]
-    fine_keep = 0  # user feature limit is the sole limit; no hidden truncation
-    if fine_kp > 0 and fine_keep >= fine_kp:
-        fine_keep = 0
+
 
     def decode_once():
         import shutil
@@ -952,11 +950,6 @@ def fast_align_steps(exe, wd, names, infos, s):
         ]
         if use_cache:
             steps += [("Rescaling key points", rescale(fdb, work_f), 1)]
-        if fine_keep:
-            def sel():
-                k = select_keypoints(fdb, fine_keep)
-                return [("log", f"Kept {fine_keep} best features per photo ({k} photos reduced)", 0)]
-            steps += [("Selecting fine key points", sel, 1)]
         steps += [
             ("Planning fine matching", plan_fine, 1),
         ]

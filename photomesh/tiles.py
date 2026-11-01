@@ -246,8 +246,8 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
     c = dict(DEFAULTS); c.update({k: v for k, v in cfg.items() if v is not None})
     t_all = time.perf_counter(); stages = {}
     out = c["out_dir"]
-    tmp = out.rstrip("/\\") + "_building"
-    shutil.rmtree(tmp, ignore_errors=True); os.makedirs(os.path.join(tmp, "tiles"))
+    tmp = out
+    os.makedirs(os.path.join(tmp, "tiles"), exist_ok=True)
     up = np.asarray(c.get("up") or [0, 0, 1.0], float); up /= np.linalg.norm(up)
     Rup = rotation_to_z(up)                # model frame -> up frame (z = up); identity when georeferenced
     georef = c.get("georef") or {}
@@ -299,7 +299,6 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
                       "children": [k.key for k in n.children]} for n in nodes]}
     with open(os.path.join(tmp, "photomesh_tiles.json"), "w", encoding="utf-8") as fh:
         json.dump(idx, fh)
-    publish_directory(tmp, out)
     size = sum(os.path.getsize(os.path.join(dp, f)) for dp, _d, fs in os.walk(out) for f in fs)
     res = {"dir": out, "tileset": os.path.join(out, "tileset.json"), "index": os.path.join(out, "photomesh_tiles.json"),
            "levels": levels, "tiles": len(nodes), "pixel_size": leaf_texel, "georef": metric,
@@ -332,6 +331,7 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
             log(f"Tiled model: texture source {len(pages)} page(s), texel {src_texel:.4g}")
         else:
             log("Tiled model: texture does not match the model (rebuild texture) - using vertex colours")
+        z.close()
     if not baker_args:
         from .plyio import load_ply
         m = load_ply(c["mesh"], max_points=0)

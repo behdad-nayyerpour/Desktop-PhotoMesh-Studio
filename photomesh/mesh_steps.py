@@ -19,12 +19,16 @@ def mesh_steps(exe, wd, s, cloud_path, cam_center=None):
         fused = os.path.join(dense, "fused.ply")
         if not os.path.isfile(fused):
             raise RuntimeError("Delaunay requires fused.ply and its visibility file; rebuild the point cloud.")
-        source_points = ply_counts(fused)[0]
+        try:
+            source_points = ply_counts(fused)[0]
+        except (OSError, ValueError):
+            source_points = 0  # the processing worker reports the invalid input without touching old products
     else:
         from .plyio import ply_counts
-        source_points = ply_counts(cloud_path)[0]
-    if not source_points:
-        raise ValueError("The meshing source is empty")
+        try:
+            source_points = ply_counts(cloud_path)[0]
+        except (OSError, ValueError):
+            source_points = 0
     # the new mesh is written to model.building.ply and replaces model.ply only when it
     # is complete and has faces (mesh.commit_mesh): a failed or cancelled build keeps
     # the previous model

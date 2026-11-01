@@ -38,12 +38,9 @@ def test_rough_mesh_any_level_packs(texel, amp):
 
 def test_face_grid_fallback_when_page_too_small():
     V, F = rough(amp=3.0)
-    uvp, size, te = tiles.tile_atlas(V, F, UP, 0.2, 256)    # tiny max texture: per-triangle grid
-    _valid(uvp, size, F)
-    cell = size // int(np.ceil(np.sqrt(len(F))))
-    idx = np.floor(uvp.min(1) / cell).astype(np.int64)
-    assert (np.floor((uvp.max(1) - 1e-6) / cell).astype(np.int64) == idx).all()   # each stays in its cell
-    assert len(np.unique(idx[:, 0] * 100000 + idx[:, 1])) == len(F)                 # one cell each
+    # 1.0.1 respects the texture cap; the builder must split this input first.
+    with pytest.raises(ValueError, match="capacity"):
+        tiles.tile_atlas(V, F, UP, 0.2, 256)
 
 
 def test_fallback_used_when_packer_fails(monkeypatch):

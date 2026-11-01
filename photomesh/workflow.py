@@ -78,6 +78,7 @@ def product_transaction(function):
         previous = target + ".previous"
         if os.path.exists(previous) and not os.path.exists(target):
             os.replace(previous, target)
+        os.makedirs(target, exist_ok=True)
         stage = tempfile.mkdtemp(prefix=os.path.basename(target) + ".building-", dir=os.path.dirname(target))
         trial = dict(cfg, out_dir=stage, previous_dir=target)
         try:

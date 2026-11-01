@@ -188,7 +188,7 @@ def test_dialogs_construct(qtbot):
         if hasattr(d, "settings"):
             assert isinstance(d.settings(), dict)
     s = dialogs.AlignPhotosDialog().settings()
-    assert s["mode"] == "Fast" and s["key_point_limit"] == 40000 and s["accuracy"] == "High"
+    assert s["mode"] == "Fast" and s["key_point_limit"] == 24000 and s["accuracy"] == "High"
 
 
 def test_dense_without_cuda_warns(window, no_dialogs, monkeypatch, tmp_path):

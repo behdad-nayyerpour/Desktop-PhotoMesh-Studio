@@ -75,6 +75,13 @@ def dense_context(d, parent):
     d.outl.layout().addRow("Local isolation ratio:", d.local_ratio)
     d.outl.layout().addRow("Terrain deviation multiplier:", d.elevation_k)
     d.outl.layout().addRow("Minimum terrain deviation (model units):", d.elevation_dev)
+    d.up_mode=QComboBox(); d.up_mode.addItems(["Camera-derived up","Project Z","Custom"])
+    d.up_values=[number(-1,1,v,5) for v in (0,0,1)]
+    d.outl.layout().addRow("Terrain up direction:",d.up_mode)
+    for axis,control in zip("XYZ",d.up_values): d.outl.layout().addRow(f"Custom up {axis}:",control)
+    def up_mode(*_):
+        for control in d.up_values: control.setEnabled(d.up_mode.currentText()=="Custom")
+    d.up_mode.currentTextChanged.connect(up_mode); up_mode()
     d.elev.setToolTip("Off by default. Not ground classification; may remove buildings or steep terrain.")
     d.sor.setText("Statistical isolation (local density)")
     d.radius.setText("Neighbour isolation (adaptive distance)")
