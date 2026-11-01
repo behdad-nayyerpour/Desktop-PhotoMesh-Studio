@@ -1,3 +1,6 @@
+> Historical engineering record. For current instructions, see the
+> [documentation index](../README.md).
+
 # Import Shapes - progress notes (2026-10-21)
 
 ## Menus

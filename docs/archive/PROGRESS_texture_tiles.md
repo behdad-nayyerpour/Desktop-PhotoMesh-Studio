@@ -1,3 +1,6 @@
+> Historical engineering record. For current instructions, see the
+> [documentation index](../README.md).
+
 # Build Texture / Build Tiled Model - progress (times UTC+4)
 
 ## 17:44 milestone: GUI integration + tests (box)

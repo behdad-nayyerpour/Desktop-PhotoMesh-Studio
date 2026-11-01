@@ -66,6 +66,14 @@ foreach ($name in @("main.py", "README.md", "CHANGES.md", "UPDATING.md", "INSTAL
     Copy-Item -LiteralPath (Join-Path $app $name) -Destination (Join-Path $appStage $name)
 }
 
+# Keep local Help links and the README screenshot available in the installed app.
+Copy-Tree (Join-Path $app "docs") (Join-Path $appStage "docs")
+Copy-Item -LiteralPath (Join-Path $app "screenshot.png") -Destination (Join-Path $appStage "screenshot.png")
+New-Item -ItemType Directory -Force -Path (Join-Path $appStage "packaging") | Out-Null
+foreach ($guide in @("README.md", "RELEASE.md")) {
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot $guide) -Destination (Join-Path (Join-Path $appStage "packaging") $guide)
+}
+
 Write-Host "Copying Python and its tested packages"
 $pythonStage = Join-Path $stage "python"
 if ($sourceMode -eq "venv") {

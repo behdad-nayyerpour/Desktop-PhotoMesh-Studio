@@ -1,3 +1,6 @@
+> Historical engineering record. For current instructions, see the
+> [documentation index](../README.md).
+
 # PhotoMesh Studio – dense / filter / mesh / GCP progress (2026-10-21)
 
 Times are Asia/Yerevan (UTC+4). Project: C:\Users\Behdad\PhotoMeshStudio\bench_drone5\drone_DJI_001_fast.pmsx

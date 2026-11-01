@@ -1,5 +1,7 @@
 # Build the Windows installer
 
+[Packaging overview](README.md) · [Development guide](../docs/development/README.md)
+
 Each release produces one offline file: `PhotoMeshStudio_Setup_<version>.exe`.
 It contains the app, Python, Python packages, COLMAP, and GLOMAP. Users run
 the new Setup on the existing installation; it replaces the managed app,

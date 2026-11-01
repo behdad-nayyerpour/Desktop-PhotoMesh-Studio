@@ -11,9 +11,6 @@ Easiest way: in PhotoMesh Studio use the error dialog's "Report to GitHub" butto
 or Help > Report a Problem... - the app fills in everything below.
 Reports are saved in %LOCALAPPDATA%\PhotoMeshStudio\reports (report_YYYYMMDD_HHMMSS.md + .zip);
 please drag the .zip into this issue. No photos, no coordinates, no personal paths are included.
-
-ساده‌ترین راه: در PhotoMesh Studio دکمهٔ «Report to GitHub» در پنجرهٔ خطا یا Help > Report a Problem...
-را بزنید؛ برنامه همه‌چیز را پر می‌کند. فایل zip گزارش را به این صفحه بکشید.
 -->
 
 # PhotoMesh Studio error report

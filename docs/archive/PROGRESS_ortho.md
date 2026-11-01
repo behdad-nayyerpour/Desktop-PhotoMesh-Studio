@@ -1,3 +1,6 @@
+> Historical engineering record. For current instructions, see the
+> [documentation index](../README.md).
+
 # Orthomosaic + DEM (v0.1.2 work)
 
 ## Menus
