@@ -13,7 +13,7 @@ exit /b
 set "HERE=%~f2\"
 set "SETUP="
 set "FIX="
-set "URL=https://github.com/behdad-nayyerpour/photomesh-studio-improved.git"
+set "URL=https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio.git"
 set "APP="
 if exist "%HERE%photomesh-studio\main.py" set "APP=%HERE%photomesh-studio"
 if not defined APP if exist "%HERE%main.py" set "APP=%HERE:~0,-1%"
@@ -121,13 +121,13 @@ goto :fail
 :nofetch_keep
 echo.
 echo Could not download from GitHub. Check the internet connection and sign in with the GitHub
-echo account that has access to behdad-nayyerpour/photomesh-studio-improved, then run this file again.
+echo account that has access to behdad-nayyerpour/Desktop-PhotoMesh-Studio, then run this file again.
 echo Your existing checkout was not changed.
 goto :fail
 :nofetch
 echo.
 echo Could not download from GitHub. Check the internet connection and sign in with the GitHub
-echo account that has access to behdad-nayyerpour/photomesh-studio-improved, then run this file again.
+echo account that has access to behdad-nayyerpour/Desktop-PhotoMesh-Studio, then run this file again.
 :undo
 rem remove only the .git folder this run created; program files and data are unchanged
 cd /d "%HERE%"

@@ -1,7 +1,7 @@
 # Installing a newer version
 
 1. Download `PhotoMeshStudio_Setup_<version>.exe` from the
-   [latest release](https://github.com/behdad-nayyerpour/photomesh-studio-improved/releases/latest).
+   [latest release](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
 2. Save your project and close PhotoMesh Studio.
 3. Run Setup. For an existing EXE installation, use the same installation
    folder if prompted.

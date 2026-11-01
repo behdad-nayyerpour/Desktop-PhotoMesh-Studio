@@ -30,7 +30,7 @@ from . import APP_NAME, APP_VERSION
 # ---------------------------------------------------------------- configuration
 # Where "Report to GitHub" points. A customer build can point it to its own
 # tracker or set it to None (or PHOTOMESH_ISSUES_URL=off) to hide the button.
-ISSUES_URL = "https://github.com/behdad-nayyerpour/photomesh-studio-improved/issues/new"
+ISSUES_URL = "https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new"
 ISSUE_LABELS = "bug"
 MAX_URL = 7000            # browsers/GitHub cope with ~8 KB; keep a margin
 LOG_LINES = 300           # console/log lines of the failed step in a report

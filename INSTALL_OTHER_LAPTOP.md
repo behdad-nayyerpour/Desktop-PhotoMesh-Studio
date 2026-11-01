@@ -1,7 +1,7 @@
 # Installing PhotoMesh Studio on another computer
 
 Use the complete `PhotoMeshStudio_Setup_<version>.exe` from
-[Releases](https://github.com/behdad-nayyerpour/photomesh-studio-improved/releases/latest).
+[Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
 Python, its required packages, COLMAP, and GLOMAP are included.
 
 - [Installation, requirements, and moving projects](docs/installation.md)

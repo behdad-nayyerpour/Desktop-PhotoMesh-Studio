@@ -2,7 +2,7 @@
 
 ## Current release
 
-Use **[build_release.ps1](https://github.com/behdad-nayyerpour/photomesh-studio-improved/blob/main/packaging/build_release.ps1)** and **[release.iss](https://github.com/behdad-nayyerpour/photomesh-studio-improved/blob/main/packaging/release.iss)**
+Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/build_release.ps1)** and **[release.iss](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/release.iss)**
 to produce one complete `PhotoMeshStudio_Setup_<version>.exe` and its SHA256.
 Follow the [release guide](RELEASE.md). No separate Update EXE is produced.
 

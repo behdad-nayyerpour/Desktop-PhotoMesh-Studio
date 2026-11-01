@@ -4,7 +4,7 @@
 
 ## Windows installer
 
-1. Open [Releases](https://github.com/behdad-nayyerpour/photomesh-studio-improved/releases/latest).
+1. Open [Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
 2. Download `PhotoMeshStudio_Setup_<version>.exe`.
 3. Run Setup and choose an installation folder. The default is
    `%LOCALAPPDATA%\Programs\PhotoMesh Studio`.

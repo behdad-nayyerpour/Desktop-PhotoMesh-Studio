@@ -3,17 +3,17 @@
 Desktop photogrammetry software for turning overlapping aerial photographs into
 3D point clouds, textured meshes, orthomosaics, elevation models, and DXF contours.
 
-**[Download for Windows](https://github.com/behdad-nayyerpour/photomesh-studio-improved/releases/latest)** ·
+**[Download for Windows](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)** ·
 [User guide](docs/user-guide.md) · [Installation](docs/installation.md) ·
 [Changelog](CHANGES.md) ·
-[Report a problem](https://github.com/behdad-nayyerpour/photomesh-studio-improved/issues/new?template=bug_report.md)
+[Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
 
 ![PhotoMesh Studio displaying a reconstructed aerial survey](screenshot.png)
 
 ## Install
 
 Download `PhotoMeshStudio_Setup_<version>.exe` from
-[Releases](https://github.com/behdad-nayyerpour/photomesh-studio-improved/releases/latest)
+[Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)
 and run it. The offline installer includes Python, its required packages, COLMAP,
 and GLOMAP; a separate Python or Git installation is not needed.
 

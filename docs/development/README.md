@@ -9,8 +9,8 @@ Source setup downloads Python packages and needs internet access.
 Install a compatible Python and Git first, then use PowerShell:
 
 ```powershell
-git clone https://github.com/behdad-nayyerpour/photomesh-studio-improved.git
-cd photomesh-studio-improved
+git clone https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio.git
+cd Desktop-PhotoMesh-Studio
 .\setup.bat
 .\run.bat
 ```
@@ -35,7 +35,7 @@ Get builds from [GLOMAP releases](https://github.com/colmap/glomap/releases).
 
 ## Tests
 
-Install [development requirements](https://github.com/behdad-nayyerpour/photomesh-studio-improved/blob/main/requirements-dev.txt) in the
+Install [development requirements](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/requirements-dev.txt) in the
 development environment.
 
 ```bat

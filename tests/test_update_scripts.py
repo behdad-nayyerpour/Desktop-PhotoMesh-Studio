@@ -6,7 +6,7 @@ import subprocess
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-URL = "https://github.com/behdad-nayyerpour/photomesh-studio-improved.git"
+URL = "https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio.git"
 SCRIPTS = ["update.bat", "rollback.bat", "setup_git_update.bat", "packaging/update.ps1"]
 
 

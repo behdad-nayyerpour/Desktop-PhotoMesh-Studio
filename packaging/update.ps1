@@ -101,7 +101,7 @@ Say "Checking GitHub for updates (the first time a browser window may ask you to
 G fetch origin --tags --prune --force
 if ($LASTEXITCODE) {
     Say "Could not reach the repository. Check the internet connection and that you are signed in to the" Red
-    Say "GitHub account that has access to behdad-nayyerpour/photomesh-studio-improved, then run update.bat again." Red
+    Say "GitHub account that has access to behdad-nayyerpour/Desktop-PhotoMesh-Studio, then run update.bat again." Red
     Done 1
 }
 
