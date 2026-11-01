@@ -163,6 +163,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         from .report_ui import ErrorReporter
         self.reporter = ErrorReporter(self)
         L, B = Qt.LeftDockWidgetArea, Qt.BottomDockWidgetArea
+        # Keep the left tabs full-height; bottom panes belong below the viewport.
+        self.setCorner(Qt.BottomLeftCorner, L)
         self.docks = {
             "Workspace": self._dock("Workspace", self._workspace_panel(), L, "ws"),
             "Reference": self._dock("Reference", self.reference_panel, L, "ref"),

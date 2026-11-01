@@ -162,3 +162,20 @@ def test_theme_reuses_native_style_when_stylesheet_wraps_it(qapp, monkeypatch):
     for name in ("Dark", "Light", "Dark"):
         apply_theme(qapp, name)
     assert calls == []
+
+
+def test_left_tabs_extend_beside_all_bottom_panes(window):
+    assert window.corner(Qt.BottomLeftCorner) == Qt.LeftDockWidgetArea
+    window.resize(1500, 920)
+    for left_name in ("Workspace", "Reference"):
+        left = window.docks[left_name]
+        left.show(); left.raise_()
+        for bottom_name in ("Photos", "Console", "Jobs"):
+            bottom = window.docks[bottom_name]
+            bottom.show(); bottom.raise_()
+            QApplication.processEvents()
+            assert left.geometry().bottom() > bottom.geometry().top()
+            assert bottom.geometry().left() > left.geometry().right()
+            assert abs(bottom.geometry().left() - window.tabs.geometry().left()) <= 2
+            gap = window.statusBar().geometry().top() - left.geometry().bottom()
+            assert 0 <= gap <= 2 * window.fontMetrics().height() + 12

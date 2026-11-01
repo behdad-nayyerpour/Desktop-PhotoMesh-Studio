@@ -216,3 +216,6 @@ background work continues; processing dialogs retain the wait cursor.
 
 3D marker labels and the legend are rasterized before GL composition to avoid
 driver-dependent glyph corruption over textured models.
+
+Workspace and Reference extend down to the status bar. Photos, Console and Jobs
+share the bottom area beneath the viewport, to the right of the left tabs.
