@@ -285,7 +285,7 @@ def test_progress_dialog_detail_and_monotone(qapp):
     dlg = ProgressDialog("Build Point Cloud")
     dlg.set_progress(10, "Building depth maps")
     dlg.set_detail(12.34, "Depth maps: photometric pass 5/640 - about 2 h 01 min left")
-    assert dlg.bar.value() == 123 and "photometric pass 5/640" in dlg.stage.text() and "12.3%" in dlg.stage.text()
+    assert dlg.bar.value() == 123 and "photometric pass 5/640" in dlg.stage.text() and "12%" in dlg.bar.text()
     dlg.set_progress(11, "Building depth maps")                  # int update must not move it back
     assert dlg.bar.value() == 123
     dlg.set_progress(80, "Building point cloud (fusion)")

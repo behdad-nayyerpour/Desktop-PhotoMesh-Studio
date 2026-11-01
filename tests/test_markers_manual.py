@@ -199,13 +199,9 @@ def test_photo_flags_kinds_ctrl_click_and_context(window, tmp_path):
     pv.active_marker = "G9"; pv.ctrl_click(30, 40)
     assert got == [("add", 10.0, 20.0), ("pin", "G9", 30.0, 40.0)]
     pv.set_markers([("A", 100, 100, "pinned"), ("B", 200, 100, "placed"), ("C", 300, 100, "predicted")])
-    pens = {}
-    for it in pv._overlay:
-        if hasattr(it, "pen") and it.zValue() == 7:
-            pens.setdefault(it.pen().color().name(), set()).add(it.pen().style())
-    assert pens["#28dc3c"] == {Qt.SolidLine}                      # pinned: green
-    assert pens["#3c8cff"] == {Qt.SolidLine}                      # placed, not pinned: blue
-    assert pens["#bebebe"] == {Qt.DashLine}                       # predicted: grey, dashed
+    flags = [item for item in pv._overlay if hasattr(item, "colour") and item.zValue() == 7]
+    assert [item.colour.name() for item in flags] == ["#28dc3c", "#3c8cff", "#bebebe"]
+    assert all(item.pos().y() == 100 for item in flags)  # exact ground position is the item origin
     assert [m[0] for m in pv.markers_near(105, 100)] == ["A"]
     # pinning a blue flag through the window keeps one projection per photo and pins it
     lab = window.add_marker_at_photo(500.0, 400.0, k=0)

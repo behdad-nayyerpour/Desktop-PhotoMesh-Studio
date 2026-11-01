@@ -188,8 +188,8 @@ def test_gui_build_model_replaces_and_marks_products_outdated(window, no_dialogs
     assert ch.texture == {}                                   # the atlas belongs to the old mesh
     assert ch.tiled_model.get("stale") and ch.orthomosaic.get("stale")
     assert not ch.dem.get("stale")                            # built from the point cloud
-    labels = [window.workspace.topLevelItem(0).child(0).child(k).text(0)
-              for k in range(window.workspace.topLevelItem(0).child(0).childCount())]
+    labels = [window.workspace.topLevelItem(0).child(k).text(0)
+              for k in range(window.workspace.topLevelItem(0).childCount())]
     assert any(l.startswith("Tiled Model") and "outdated" in l for l in labels)
 
 

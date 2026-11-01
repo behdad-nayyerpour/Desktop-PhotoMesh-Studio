@@ -8,7 +8,7 @@ import shutil
 import time
 
 import numpy as np
-from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal
+from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEventLoop
 from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
@@ -187,12 +187,12 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.workspace.showRequested.connect(self._show_requested)
         self.workspace.markerActivated.connect(self._goto_marker)
         self.markers_pane.markerActivated.connect(self._goto_marker)
-        self.photos.photoActivated.connect(self.open_photo)
-        self.reference.cameraActivated.connect(self.open_photo)
+        self.photos.photoActivated.connect(self._safe("Open Photo", self.open_photo))
+        self.reference.cameraActivated.connect(self._safe("Open Photo", self.open_photo))
         self.reference.cameraReferenceToggled.connect(self._camera_reference_changed)
         self.markers_pane.markerToggled.connect(self.toggle_marker)
         self.markers_pane.itemSelectionChanged.connect(self._marker_selection_changed)
-        self.photo_view.placeMarker.connect(self.place_marker)
+        self.photo_view.placeMarker.connect(self._safe("Place Marker", self.place_marker))
         self.photo_view.removeMarker.connect(self.remove_marker_projection)
         self.photo_view.addMarker.connect(lambda u, v: self.add_marker_at_photo(u, v))
         self.photo_view.pinMarker.connect(lambda lab, u, v: self.pin_marker(lab, u, v))
@@ -537,7 +537,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         def wrapper(*args):
             try:
                 with self.busy_indicator(name):
-                    QApplication.processEvents()
+                    QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
                     return fn(*args)
             except Exception as e:  # noqa: BLE001
                 import traceback
@@ -984,6 +984,12 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self._marker_init()
         self._model_cache = (None,)
         self._marker_xyz_cache = None
+        for raster in getattr(self, "_prepared_rasters", {}).values():
+            raster.close()
+        self._prepared_rasters = {}
+        self._shape_cache.clear()
+        self._photo_shape_cache.clear()
+        self._sampler_cache.clear()
         self.markers_pane.pending = self._ref_pending
         self.markers_pane.clearSelection()
         self.markers_pane.setCurrentCell(-1, -1)
@@ -1014,21 +1020,31 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                 self.show_error("Open Project", error, step="Open project")
                 return
             if cancelled or result is None:
+                for raster in (result or {}).get("rasters", {}).values():
+                    raster.close()
                 return
             self._reset_project_views()
             self.project = result["project"]
             self.console.ns["project"] = self.project
             self._model_cache = result["model_cache"]
             self._marker_xyz_cache = result["marker_cache"]
+            self._prepared_rasters = result.get("rasters", {})
+            if result.get("shape_cache"):
+                self._shape_cache[id(self.chunk)] = result["shape_cache"]
             for note in result["notes"]:
                 self.log(note)
             if self.project.relocated:
                 self.project.modified = True
                 self.log("Project paths relocated. Save to retain the updated paths.")
             missing = len(self.chunk.cameras) - len(result["found"])
+            if result.get("ambiguous"):
+                self._warn_ambiguous(result["ambiguous"])
             if missing:
-                QMessageBox.information(self, "Missing Photos",
-                    f"{missing} photo(s) are unavailable. Use Tools > Change Image Paths to locate them.")
+                msg = f"{missing} photo(s) are unavailable. Use Tools > Change Image Paths to locate them."
+                self.log(msg)
+                if QMessageBox.question(self, "Missing Photos", msg + "\n\nLocate the photos now?",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+                    self.change_image_paths()
             self.refresh_all()
             self.reload_view()
             self.start_thumbnails(result["found"])
@@ -2315,7 +2331,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                     if cur is not None:
                         self.ortho_view.set_raster(kind, None)
                 elif cur is None or cur.info.get("path") != d["path"]:
-                    self.ortho_view.set_raster(kind, d)
+                    prepared = getattr(self, "_prepared_rasters", {}).pop(kind, None)
+                    self.ortho_view.set_raster(kind, d, prepared=prepared)
             except Exception as e:  # noqa: BLE001
                 self.log(f"Cannot show {'DEM' if kind == 'dem' else 'orthomosaic'}: {e}")
         for k in ("ortho", "dem", "markers", "marker_labels"):

@@ -101,7 +101,7 @@ def test_open_reports_missing_photos(window, tmp_path):
     p = Project(); p.chunks = [Chunk(cameras=[Camera(path=r"Q:\x\a.jpg")])]
     p.save(str(tmp_path / "m.pmsx"))
     window.open_project(str(tmp_path / "m.pmsx"))
-    assert "Change Image Paths" in window.statusBar().currentMessage()
+    assert "Change Image Paths" in window.console.out.toPlainText()
 
 
 def test_cpu_only_without_nvidia_driver(monkeypatch):

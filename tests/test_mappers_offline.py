@@ -471,4 +471,4 @@ def test_unaligned_photos_reported(window, image_dir):
     window.add_photos(sorted(str(p) for p in image_dir.iterdir()))
     cams = window.chunk.cameras
     window._report_unaligned(cams[:2], len(cams))
-    assert f"{len(cams) - 2}/{len(cams)} photos aligned" in window.statusBar().currentMessage()
+    assert f"{len(cams) - 2}/{len(cams)} photos aligned" in window.statusBar().details

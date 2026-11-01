@@ -205,3 +205,21 @@ def test_default_view_setting_selects_loaded_product(window):
         assert window.layer_states()["tie"]
     finally:
         setting.setValue("ui/default_view", old)
+
+
+def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, monkeypatch):
+    import json
+    from photomesh.dialogs import OptimizeCamerasDialog
+    from test_markers_manual import _scene
+    ch = _scene(window, tmp_path)
+    for i, camera in enumerate(ch.cameras):
+        camera.lon, camera.lat, camera.alt = 44. + i * .001, 40., 100.
+    ch.cameras[1].use_reference = False
+    ch.cameras[2].enabled = False
+    monkeypatch.setattr(OptimizeCamerasDialog, "exec", lambda self: True)
+    ran = []
+    monkeypatch.setattr(window, "_run", lambda *a, **kw: ran.append(a))
+    window.optimize_cameras()
+    assert ran
+    cfg = json.load(open(tmp_path / "work" / "georef_task.json", encoding="utf-8"))
+    assert set(cfg["camera_gps"]) == {ch.cameras[0].label}

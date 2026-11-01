@@ -1,5 +1,5 @@
 """Consistent task progress in the relevant pane and a minimal status bar."""
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar, QStatusBar, QPushButton
 from .progress import WorkProgress
 
@@ -38,12 +38,25 @@ class ProgressPanel(QWidget):
         self.subtask = QProgressBar(); self.subtask.setFormat("Current task: %p%")
         self.timing = QLabel()
         self.meter = WorkProgress()
+        self.timer = QTimer(self); self.timer.setInterval(1000)
+        self.timer.timeout.connect(self._refresh_timing)
         for w in (self.detail, self.overall, self.subtask, self.timing):
             layout.addWidget(w)
         button = QPushButton("Cancel", self)
         button.clicked.connect(self.cancelled)
         layout.addWidget(button)
         self.hide()
+
+    def _refresh_timing(self):
+        self.timing.setText(self.meter.text())
+
+    def showEvent(self, event):
+        self.timer.start()
+        super().showEvent(event)
+
+    def hideEvent(self, event):
+        self.timer.stop()
+        super().hideEvent(event)
 
     def update_progress(self, done=0, total=0, text=""):
         self.detail.setText(text)

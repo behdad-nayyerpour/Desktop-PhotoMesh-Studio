@@ -3,7 +3,7 @@ import os
 from .project import Project
 from .reference_ui import ReferenceMixin
 from . import procmeta
-from .photonames import recover_names
+from .photonames import recover_names, photo_map
 
 
 def prepare_project(path, report, cancelled):
@@ -39,9 +39,30 @@ def prepare_project(path, report, cancelled):
             notes.append(f"Marker display could not be prepared: {error}")
     if cancelled():
         return None
+    ambiguous = photo_map(chunk)[1]
     found = [c for c in chunk.cameras if os.path.exists(c.path)]
+    shape_cache = None
+    shape_path = (chunk.shapes or {}).get("path")
+    if shape_path and os.path.exists(shape_path):
+        from . import shapes
+        try:
+            shape_cache = ((shape_path, os.path.getmtime(shape_path)), shapes.load(shape_path))
+        except (OSError, ValueError) as error:
+            notes.append(f"Shapes could not be loaded: {error}")
+    rasters = {}
+    from .orthoview import RasterLayer
+    for kind, info in (("dem", chunk.dem), ("ortho", chunk.orthomosaic)):
+        if info and info.get("path") and os.path.exists(info["path"]):
+            try:
+                rasters[kind] = RasterLayer(kind, info)
+            except (OSError, ValueError, RuntimeError) as error:
+                notes.append(f"{kind} could not be opened: {error}")
+    if cancelled():
+        for raster in rasters.values():
+            raster.close()
+        return None
     report(4, 4, "Project ready")
     return {"project": project, "notes": notes, "found": found,
             "model_cache": getattr(context, "_model_cache", (None,)),
             "marker_cache": getattr(context, "_marker_xyz_cache", None),
-            "markers": markers}
+            "markers": markers, "ambiguous": ambiguous, "rasters": rasters, "shape_cache": shape_cache}

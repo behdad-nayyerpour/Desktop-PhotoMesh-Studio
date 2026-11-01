@@ -112,7 +112,7 @@ def test_overlay_draws_labels_over_geometry_and_marks_occluded(qapp):
     for _k, _t, r in rects:                                             # label boxes painted, fully
         c = img.pixelColor(int(r.left() + 1), int(r.center().y()))
         assert c.red() < 90 and c.green() < 90, c.name()
-    assert img.pixelColor(100, 50) == QColor(40, 220, 60)              # pinned marker is green
+    assert img.pixelColor(100, 50).green() > 2 * img.pixelColor(100, 50).red()              # pinned marker is green
 
 
 def test_label_visibility_and_legend(qapp):

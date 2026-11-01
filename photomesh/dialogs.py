@@ -99,7 +99,7 @@ class BuildPointCloudDialog(_SettingsDialog):
     def __init__(self, parent=None):
         super().__init__("Build Point Cloud", parent)
         from PySide6.QtWidgets import QDoubleSpinBox
-        self.source = _combo(["Depth maps"])
+        self.source = QLabel("Depth maps (CUDA)")
         self.quality = _combo(cm.QUALITY, "Medium")
         self.gform.addRow("Source data:", self.source)
         self.gform.addRow("Quality:", self.quality)
@@ -297,8 +297,8 @@ class BuildTextureDialog(_SettingsDialog):
     def __init__(self, parent=None, has_uv=False):
         super().__init__("Build Texture", parent)
         st = QSettings()
-        self.ttype = _combo(["Diffuse map"])
-        self.source = _combo(["Images"])
+        self.ttype = QLabel("Diffuse map")
+        self.source = QLabel("Images")
         self.mapping = _combo(["Generic", "Adaptive orthophoto", "Orthophoto"] + (["Keep uv"] if has_uv else []),
                               st.value("texture/mapping", "Generic", str))
         self.blending = _combo(["Mosaic (default)", "Average", "Max intensity", "Min intensity", "Disabled"],
@@ -449,9 +449,12 @@ class ProgressDialog(QDialog):
     def set_stage_progress(self, fraction, text):
         self._stage_text = text
         if fraction < 0:
-            self._meter.reset()
+            if not getattr(self, "_unknown_stage", False):
+                self._meter.reset()
+            self._unknown_stage = True
             self.stage_bar.setRange(0, 0)
         else:
+            self._unknown_stage = False
             self._meter.update(fraction * 1000, 1000)
             self.stage_bar.setRange(0, 1000)
             self.stage_bar.setValue(min(1000, int(fraction * 1000)))

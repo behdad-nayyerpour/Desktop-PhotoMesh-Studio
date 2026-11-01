@@ -528,9 +528,8 @@ class ModelView(QWidget):
         self.gl.update()
 
     def set_markers(self, pts, labels=None, control=None):
-        """Marker positions (model frame): control (enabled) markers yellow, check
-        (disabled) markers cyan. Dots and labels are drawn in the final overlay
-        pass (overlay3d), on top of every model; hidden ones are hollow."""
+        """Flags anchored to model-frame GCP locations, with shared marker states.
+        The final overlay keeps flags and labels visible over geometry."""
         self._marker_data = (pts, labels, control)
         self.overlay.marker_states = self.marker_states
         self._remove("markers"); self._remove("marker_labels")

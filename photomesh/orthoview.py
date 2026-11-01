@@ -242,7 +242,7 @@ class OrthoView(QWidget):
                     best, bd = d["index"], dist
         return best
 
-    def set_raster(self, kind, info):
+    def set_raster(self, kind, info, prepared=None):
         """kind 'ortho' | 'dem'; info dict with 'path' (None removes the layer)."""
         old = self.layers.pop(kind, None)
         self.gen += 1
@@ -250,7 +250,7 @@ class OrthoView(QWidget):
         if old is not None:
             old.close()
         if info and info.get("path"):
-            lay = RasterLayer(kind, info)
+            lay = prepared if prepared is not None else RasterLayer(kind, info)
             lay.visible = self.vis.get(kind, True)
             self.layers[kind] = lay
             if self.center is None or len(self.layers) == 1:
