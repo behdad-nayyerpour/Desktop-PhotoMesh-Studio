@@ -148,3 +148,17 @@ def test_processing_dialog_keeps_wait_cursor(window, qtbot):
         dialog.running = False; dialog.close()
         busy.end()
     assert QApplication.overrideCursor() is None
+
+
+def test_theme_reuses_native_style_when_stylesheet_wraps_it(qapp, monkeypatch):
+    from photomesh.theme import apply_theme
+    apply_theme(qapp, "Dark")
+    calls = []
+    original = qapp.setStyle
+    def record(*args):
+        calls.append(args)
+        return original(*args)
+    monkeypatch.setattr(qapp, "setStyle", record)
+    for name in ("Dark", "Light", "Dark"):
+        apply_theme(qapp, name)
+    assert calls == []

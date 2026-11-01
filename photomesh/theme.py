@@ -3,9 +3,16 @@ from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QApplication
 
 
-def apply_dark_theme(app: QApplication) -> None:
-    if app.style().objectName().lower() != "fusion":
+def _ensure_fusion(app):
+    # Stylesheets wrap Fusion in QStyleSheetStyle, whose objectName is empty.
+    # Replacing that wrapper deletes a native style still used by other views.
+    if not app.property("photomesh_fusion_initialized"):
         app.setStyle("Fusion")
+        app.setProperty("photomesh_fusion_initialized", True)
+
+
+def apply_dark_theme(app: QApplication) -> None:
+    _ensure_fusion(app)
     p = QPalette()
     base, window, text = QColor(43, 43, 43), QColor(53, 53, 55), QColor(220, 220, 220)
     p.setColor(QPalette.Window, window)
@@ -44,8 +51,7 @@ def apply_theme(app, name=None):
     from PySide6.QtGui import QPalette
     name = name or QSettings().value("ui/theme", "Dark", str)
     if name == "Light":
-        if app.style().objectName().lower() != "fusion":
-            app.setStyle("Fusion")
+        _ensure_fusion(app)
         app.setStyleSheet("")
         app.setPalette(app.style().standardPalette())
     else:

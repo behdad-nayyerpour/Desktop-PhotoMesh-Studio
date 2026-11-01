@@ -2,8 +2,8 @@
 
 Drawn with QPainter *after* every GL item of the frame (see ModelView's GL
 widget paintGL), so the texture, the mesh and the tiled model can never hide a
-label: text sits on a dark rounded box, marker dots are filled when visible
-and hollow (with the label still fully readable) when the surface hides them.
+label: CPU-rasterized text sits on a dark rounded box, and marker flags
+remain anchored at their ground points, including behind a surface.
 Positions are projected on the CPU with the view's MVP, points behind the
 near plane are skipped, and boxes are clamped inside the viewport. All sizes
 are in logical (device-independent) pixels, so they look the same at any DPI.
