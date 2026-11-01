@@ -1,10 +1,9 @@
 """One-time repair of the desktop / Start-menu shortcut icon (Windows).
 
-Older setups created "PhotoMesh Studio.lnk" with python(w).exe's icon. The
-updater that installs a new version is still the previous version's script,
-so the app itself runs packaging/fix_shortcut_icon.ps1 once per version
+Older source/portable setups created "PhotoMesh Studio.lnk" with python(w).exe's
+icon. When the repair helper is present, the app runs it once per version
 (hidden, in the background, offline). The script changes only IconLocation
-of shortcuts that start this install."""
+of shortcuts that start this install. Current Setup creates the correct icon."""
 from __future__ import annotations
 
 import os

@@ -1,5 +1,5 @@
 """0.1.12: splash from the first moment, simpler menus (no "not implemented"
-placeholders), shortcut icon = the app .ico (and repaired by the updater)."""
+placeholders), shortcut icon = the app .ico (with an active repair helper)."""
 import os
 import subprocess
 import sys
@@ -140,11 +140,13 @@ def test_processing_menus_unchanged(window):
 
 
 # ------------------------------------------------------------------ 3 shortcut icon
-def test_create_shortcut_uses_app_ico():
-    s = _read("packaging/create_shortcut.ps1")
-    assert 'photomesh\\resources\\photomesh.ico' in s
-    assert "IconLocation = \"$icon,0\"" in s
-    assert "python.exe" not in s
+def test_setup_shortcuts_use_app_ico():
+    s = _read("packaging/release.iss")
+    icons = s.split("[Icons]", 1)[1].split("[Tasks]", 1)[0]
+    shortcuts = [line for line in icons.splitlines() if line.startswith("Name:")]
+    assert len(shortcuts) == 2
+    assert all('IconFilename: "{app}\\app\\photomesh\\resources\\photomesh.ico"' in line
+               for line in shortcuts)
 
 
 def test_fix_shortcut_icon_only_changes_icon():
@@ -155,8 +157,6 @@ def test_fix_shortcut_icon_only_changes_icon():
     assert assigned == {"$lnk.IconLocation"}
     assert "PhotoMesh Studio.lnk" in s and 'photomesh\\resources\\photomesh.ico' in s
     assert "Remove-Item" not in s and "Delete" not in s
-    u = _read("packaging/update.ps1")
-    assert "fix_shortcut_icon.ps1" in u
 
 
 def test_app_runs_icon_fix_once_per_version(monkeypatch):

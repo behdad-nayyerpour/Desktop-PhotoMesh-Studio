@@ -61,25 +61,31 @@ skipped in CI. The Windows job is available through manual workflow dispatch.
 | `photomesh/` | Application code and resources |
 | `main.py` | Application entry point |
 | `tests/` | Unit, GUI, integration tests, and required fixtures |
-| `packaging/` | Current Setup builder and retained legacy distribution tooling |
+| `packaging/` | Current Setup builder, installer definition, guides, and active shortcut repair helper |
 | `docs/` | User and developer documentation |
 | `tools/` | Developer utilities; locally supplied reconstruction binaries are ignored |
 | `benchmark.py`, `dense_benchmark.py`, `gcp_benchmark.py` | Developer benchmark entry points |
 | `setup.bat`, `run.bat`, `run_tests.bat` | Source-environment helpers |
-| `update.bat`, `rollback.bat`, `setup_git_update.bat` | Legacy source/portable update compatibility |
 
 Benchmark scripts remain at their existing paths. They are developer tools,
 not part of the normal installation workflow.
 
-## Documentation compatibility
+## Documentation and maintained tools
 
 The application opens the root `README.md` through **Help > Contents**.
 The Setup builder includes that README, its screenshot, the `docs` folder,
-and the root compatibility guides.
+and the root changelog and update guide.
 
-`CHANGES.md`, `UPDATING.md`, and `INSTALL_OTHER_LAPTOP.md` retain their
-original names because older scripts refer to them.
 The English changelog remains in `CHANGES.md`; no parallel changelog is maintained.
+User documentation is in `docs/`, with current update instructions in `UPDATING.md`.
 
-See [packaging tools](../../packaging/README.md) before removing an apparently
-old script. Required test fixtures and runtime resources must remain in place.
+Legacy Git updaters, portable ZIP builders, and their obsolete guides have been
+removed. Use the complete Setup for installed releases. Source checkouts can be
+updated with normal Git commands; resolve or save local changes before updating.
+
+The benchmark and GUI utility scripts remain usable development entry points.
+Tests named after earlier versions still protect behavior in the current app;
+their versioned names do not mean they are obsolete. Binary shape fixtures and
+the application icon are required resources.
+
+See [packaging tools](../../packaging/README.md) for the remaining build files.

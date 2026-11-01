@@ -6,6 +6,8 @@ EXE. See [Updating](UPDATING.md).
 
 ### 0.1.17 (2026-10-30)
 
+- Repository maintenance: removed retired Git updaters, portable ZIP builders, and obsolete guides. Full Setup remains the installation/update method; source launch helpers, active shortcut repair, benchmark tools, and applicable regression tests are retained. This maintenance does not change the application version or rebuild published installers.
+
 - Progress dialogs open before work starts, separate observed stage progress from the weighted overall estimate, and show elapsed time plus measured-rate ETA where available. Unknown totals remain indeterminate.
 - Pipeline planning callbacks run off the GUI thread. Partial process output is buffered so split progress lines are retained.
 - Background view, texture, Ortho tile and thumbnail jobs report activity in the status bar with a busy cursor, without clearing another active job's status.

@@ -14,6 +14,5 @@
 - [Architecture and performance](development/architecture.md)
 - [Project notes and third-party components](development/project-notes.md)
 - [Build and publish an installer](../packaging/RELEASE.md)
-- [Historical archive](archive/README.md)
 
 [Back to the main page](../README.md)

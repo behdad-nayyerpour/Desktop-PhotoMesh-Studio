@@ -62,8 +62,6 @@ see the [user guide](docs/user-guide.md).
 | Build the Windows installer | [Release guide](packaging/RELEASE.md) |
 | Review changes by version | [Changelog](CHANGES.md) |
 
-Historical engineering notes and portable-install instructions are kept in
-[the documentation archive](docs/archive/README.md).
 
 ## Project
 

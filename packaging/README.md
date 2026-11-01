@@ -1,27 +1,25 @@
 # Packaging tools
 
-## Current release
-
-Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/build_release.ps1)** and **[release.iss](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/release.iss)**
+Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/build_release.ps1)**
+and **[release.iss](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/release.iss)**
 to produce one complete `PhotoMeshStudio_Setup_<version>.exe` and its SHA256.
-Follow the [release guide](RELEASE.md). No separate Update EXE is produced.
+Follow the [release guide](RELEASE.md). The same Setup installs a new copy or
+replaces an existing EXE installation. No separate Update EXE is produced.
+
+## Files in this folder
+
+| File | Purpose |
+|---|---|
+| `build_release.ps1` | Stage the app and tested runtime, validate imports, build Setup and its checksum |
+| `release.iss` | Inno Setup definition, managed installation folders, shortcuts, and launch action |
+| `fix_shortcut_icon.ps1` | Repair the icon of an existing shortcut; called by `photomesh/shortcut_icon.py` in source installations |
+| `RELEASE.md` | Installer build and release validation instructions |
+| `README.md` | This overview |
 
 The installer includes the English README, screenshot, and documentation folder
 so **Help > Contents** can open the local guide without a network connection.
+The shortcut repair helper is retained because the application calls it when
+available. Setup itself creates shortcuts with the application icon.
 
-## Legacy compatibility
-
-These scripts and templates remain because older portable/source installations
-and packaging workflows use them:
-
-| Files | Purpose |
-|---|---|
-| `build_dist.ps1`, `build_portable.ps1` | Previous portable distribution builders |
-| `build_update.ps1`, `UPDATE_README.txt`, `check_update.bat` | Previous portable code-update packages |
-| `update.ps1` | Git-based updater used by root batch wrappers |
-| `README_FIRST.txt`, `install_offline.bat`, `PhotoMesh Studio.bat` | Previous portable first-run workflow |
-| `check_install_path.py`, `create_shortcut.ps1`, `fix_shortcut_icon.ps1` | Compatibility helpers |
-| `run_tests_offline.bat` | Portable-environment test helper |
-
-They are not the update method for an EXE installation.
-See [archived portable instructions](../docs/archive/portable-installation.md).
+The obsolete portable ZIP builders and Git update scripts have been removed.
+Use [Installing a newer version](../UPDATING.md) for the current workflow.

@@ -20,7 +20,8 @@ file integrity; see [Installation](docs/installation.md#verify-a-download).
 
 Developers running from source should follow the
 [development guide](docs/development/README.md).
-The older Git/portable update scripts remain for compatibility and are not the
-update method for an EXE installation.
+The retired Git updater and portable ZIP tooling are no longer distributed.
+Existing portable users should install the complete Setup and open their projects
+from their separate data folders.
 
 [Back to the main page](README.md)

@@ -71,5 +71,4 @@ or application safety. The installer is not code signed.
 ## Other installation methods
 
 - Developers: [run from source](development/README.md).
-- Historical portable ZIPs: [archived instructions](archive/portable-installation.md).
 - Problems: [troubleshooting](troubleshooting.md).

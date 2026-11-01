@@ -3,7 +3,6 @@
 *.py   text eol=lf
 *.md   text eol=lf
 *.txt  text eol=lf
-packaging/*.txt text eol=crlf
 *.ini  text eol=lf
 *.json text eol=lf
 *.cfg  text eol=lf

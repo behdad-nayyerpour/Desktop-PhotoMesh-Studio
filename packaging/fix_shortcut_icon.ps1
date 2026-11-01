@@ -2,7 +2,7 @@
 Repairs the icon of existing "PhotoMesh Studio.lnk" shortcuts (desktop and Start menu,
 per-user and all-users) that start THIS install but show python(w).exe's icon.
 Only IconLocation is changed - target, arguments, working folder and name stay as they are.
-Run by update.ps1 after an update, and once by the app itself (photomesh/shortcut_icon.py).
+Run once by the app itself (photomesh/shortcut_icon.py) when this helper is present.
 Offline; prints one line per fixed shortcut.
 #>
 param([Parameter(Mandatory = $true)][string]$Repo)
