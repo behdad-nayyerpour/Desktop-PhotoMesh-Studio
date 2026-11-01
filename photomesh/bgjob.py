@@ -65,9 +65,12 @@ class BackgroundJob(QObject):
                 self._last = now
                 flush, self._pending = self._pending, []
         if flush is not None:
-            if flush:
-                self.batch.emit(flush)
-            self.progress.emit(int(done), int(total), str(text))
+            try:
+                if flush:
+                    self.batch.emit(flush)
+                self.progress.emit(int(done), int(total), str(text))
+            except RuntimeError:
+                self.cancel()
 
     def _run(self):
         try:
@@ -83,10 +86,13 @@ class BackgroundJob(QObject):
             log.error("%s failed:\n%s", self.name, self.traceback)
         with self._lock:
             rest, self._pending = self._pending, []
-        if rest:
-            self.batch.emit(rest)
         self.finished = True
-        self.done.emit(self.result, self.error)
+        try:
+            if rest:
+                self.batch.emit(rest)
+            self.done.emit(self.result, self.error)
+        except RuntimeError:
+            pass  # the owning window was destroyed while the worker was stopping
 
     def start(self):
         self.thread = threading.Thread(target=self._run, name=self.name, daemon=True)

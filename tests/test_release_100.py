@@ -82,7 +82,7 @@ def test_task_panel_has_two_bars_and_unknown_totals(qtbot):
     assert len(panel.findChildren(QProgressBar)) == 2
     assert panel.overall.maximum() == panel.subtask.maximum() == 0
     panel.update_progress(2, 5, "Reading")
-    assert panel.overall.value() == panel.subtask.value() == 2
+    assert panel.overall.value() == 2 and panel.subtask.maximum() == 0
 
 
 def test_run_modal_uses_two_bars_and_keeps_event_loop_alive(window):
@@ -225,3 +225,31 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
     assert ran
     cfg = json.load(open(tmp_path / "work" / "georef_task.json", encoding="utf-8"))
     assert set(cfg["camera_gps"]) == {ch.cameras[0].label}
+
+
+def test_ortho_context_hit_includes_flag_above_ground_point(window):
+    view = window.ortho_view
+    view.center, view.scale = (100., 100.), 2.
+    view.set_markers([("G1", 100., 100.)])
+    x, y = view.to_screen(100., 100.)
+    assert view.marker_at(x + 8, y - 20) == "G1"
+
+
+def test_marker_hit_radius_remains_correct_after_photo_rotation(window, image_dir):
+    photo = str(sorted(image_dir.iterdir())[0])
+    window.photo_view.open(photo)
+    window.photo_view.set_markers([("A", 10., 10., "pinned"), ("B", 500., 400., "placed")])
+    window.photo_view.view.rotate(90)
+    assert [m[0] for m in window.photo_view.markers_near(10., 10.)] == ["A"]
+
+
+def test_thumbnail_batches_from_previous_project_are_ignored(window, monkeypatch):
+    from photomesh.bgjob import BackgroundJob
+    job = BackgroundJob(lambda *a: None, parent=window)
+    job.batch.connect(window._thumbnail_batch)
+    window._thumb_job = job
+    window._reset_project_views()
+    received = []
+    monkeypatch.setattr(window, "_apply_thumbs", lambda items: received.extend(items))
+    job.batch.emit([{"path": "old.jpg"}])
+    assert received == []

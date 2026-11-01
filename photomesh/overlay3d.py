@@ -192,6 +192,7 @@ class Overlay:
         fm = QFontMetricsF(font)
         rects = []
         n_markers = n_hidden = 0
+        flags = []
         for path, col in self._fills:
             painter.setPen(Qt.NoPen); painter.setBrush(QBrush(col)); painter.drawPath(path)
         for it in items:
@@ -203,8 +204,7 @@ class Overlay:
                 continue
             if kind == "marker":
                 n_markers += 1; n_hidden += occ
-                from .marker_style import draw_flag
-                draw_flag(painter, x, y, col)
+                flags.append((x, y, col))
             elif kind == "shape":
                 pass                                     # the GL pass draws the shape points
             if text:
@@ -237,6 +237,9 @@ class Overlay:
                                               box.center().y() - img.height() / img.devicePixelRatio() / 2), img)
                 painter.setFont(font)
                 rects.append((kind, text, box))
+        from .marker_style import draw_flag
+        for x, y, col in flags:
+            draw_flag(painter, x, y, col)
         if self.legend and n_markers:
             self._legend(painter, fm, height)
         painter.restore()

@@ -15,6 +15,9 @@ class ActivityStatusBar(QStatusBar):
     def showMessage(self, text, timeout=0):
         self.details = str(text)
         self.setToolTip(self.details)
+        host = self.parentWidget()
+        if self.details not in ("Ready", "Busy", "") and hasattr(host, "console"):
+            host.log(self.details)
         super().showMessage(self.state)
 
     def clearMessage(self):
@@ -61,10 +64,14 @@ class ProgressPanel(QWidget):
     def update_progress(self, done=0, total=0, text=""):
         self.detail.setText(text)
         self.meter.update(done, total)
-        for bar in (self.overall, self.subtask):
-            bar.setRange(0, total if total > 0 else 0)
-            if total > 0:
-                bar.setValue(min(max(0, done), total))
+        self.overall.setRange(0, total if total > 0 else 0)
+        if total > 0:
+            self.overall.setValue(min(max(0, done), total))
+        # Reports count completed files/items, not the fraction of the current file.
+        # Show that inner work as indeterminate until it has actually completed.
+        self.subtask.setRange(0, 100 if total > 0 and done >= total else 0)
+        if self.subtask.maximum():
+            self.subtask.setValue(100)
         self.timing.setText(self.meter.text())
         self.show()
 

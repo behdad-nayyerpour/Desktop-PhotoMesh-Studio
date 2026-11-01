@@ -582,7 +582,10 @@ class ModelView(QWidget):
         points, labels, _ = self.overlay.markers
         xy, _z, valid = project(mvp, points, self.gl.width(), self.gl.height())
         distance = np.linalg.norm(xy - [x, y], axis=1)
-        choices = np.flatnonzero(valid & (distance <= tolerance))
+        delta = np.asarray([x, y]) - xy
+        flag_hit = ((delta[:, 0] >= -5) & (delta[:, 0] <= 18) &
+                    (delta[:, 1] >= -27) & (delta[:, 1] <= 6))
+        choices = np.flatnonzero(valid & ((distance <= tolerance) | flag_hit))
         return labels[min(choices, key=lambda k: distance[k])] if len(choices) and labels else None
 
     def _context(self, pos):
@@ -1218,7 +1221,8 @@ class PhotoView(QWidget):
         (none while Show Markers is off: hidden flags can't be picked)."""
         if not self.vis.get("markers", True):
             return []
-        s = max(abs(self.view.transform().m11()), 1e-9)
+        transform = self.view.transform()
+        s = max(float(np.hypot(transform.m11(), transform.m12())), 1e-9)
         return [m for m in self.markers if (m[1] - x) ** 2 + (m[2] - y) ** 2 < (px / s) ** 2]
 
     def zoom(self, f):

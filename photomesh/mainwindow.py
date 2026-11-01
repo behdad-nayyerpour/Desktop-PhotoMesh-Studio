@@ -8,7 +8,7 @@ import shutil
 import time
 
 import numpy as np
-from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEventLoop
+from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEventLoop, Slot
 from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
@@ -55,7 +55,7 @@ PROJECT_FILTER = f"{APP_NAME} project (*{PROJECT_EXT})"
 
 
 def window_title(path, modified=False):
-    """'PhotoMesh Studio 0.1.7 - <project>' (Untitled while unsaved; * = unsaved changes)."""
+    """'PhotoMesh Studio <version> - <project>' (Untitled while unsaved; * = unsaved changes)."""
     name = os.path.splitext(path.replace("\\", "/").rsplit("/", 1)[-1])[0] if path else "Untitled"
     return f"{APP_NAME} {APP_VERSION} - {name}{'*' if modified else ''}"
 
@@ -981,6 +981,10 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         self.view_loading = False; self.model_progress.reset()
         self.busy_indicator.background("view-loader")
         self.busy_indicator.background("texture-loader")
+        self.cancel_thumbnails()
+        self._thumb_job = None
+        self.photos.clearSelection(); self.photos.setCurrentRow(-1)
+        self.photos._photo_identity = None
         self._marker_init()
         self._model_cache = (None,)
         self._marker_xyz_cache = None
@@ -1556,8 +1560,8 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         def work(report, cancelled):
             return map_images(lambda p: analyze_image(p, cache), paths, workers=max(1, min(6, (os.cpu_count() or 2) - 1)),
                               progress=lambda i, n, p, r: report(i, n, "", r), cancel=cancelled)
-        job = BackgroundJob(work, name="thumbnails")
-        job.batch.connect(self._apply_thumbs)
+        job = BackgroundJob(work, name="thumbnails", parent=self)
+        job.batch.connect(self._thumbnail_batch)
         from .progress import WorkProgress
         thumb_meter = WorkProgress()
         def thumbnail_progress(d, n, text):
@@ -1567,7 +1571,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             self.photo_progress.update_progress(d, n, "Preparing photo previews")
             self.busy_indicator.background("thumbnails", "Thumbnails", d, n, text)
         job.progress.connect(thumbnail_progress)
-        job.done.connect(lambda r, e, j=job: self._thumbs_done(j, r, e))
+        job.done.connect(self._thumbnail_done)
         self._thumb_job = job
         self.photo_progress.update_progress(0, len(paths), "Preparing photo previews")
         self.busy_indicator.background("thumbnails", "Thumbnails", 0, len(paths))
@@ -1595,6 +1599,19 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
                     c.width, c.height = r["width"], r["height"]
                 if ch is self.chunk:
                     self.photos.set_thumb(k, c)
+
+    @Slot(list)
+    def _thumbnail_batch(self, items):
+        if self.sender() is self._thumb_job:
+            self._apply_thumbs(items)
+
+    @Slot(object, object)
+    def _thumbnail_done(self, result, error):
+        job = self.sender()
+        if job is not None:
+            job.wait()
+        if job is self._thumb_job:
+            self._thumbs_done(job, result, error)
 
     def _thumbs_done(self, job, result, err):
         if job is not self._thumb_job:
@@ -1651,7 +1668,7 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
             if label and (not stage_t or stage_t[-1][0] != label) and label != "Finished":
                 stage_t.append((label, time.perf_counter()))
         self.runner.progress.connect(on_progress)
-        job = f"{title} - {self.chunk.name}"
+        job = f"{title} - {os.path.splitext(os.path.basename(self.project.path))[0] or 'Untitled'}"
         self.jobs.add_job(f"[running] {job}")
         mark = self.console.mark()
         load_tb = []

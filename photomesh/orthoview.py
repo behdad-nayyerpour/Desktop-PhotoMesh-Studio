@@ -194,9 +194,14 @@ class OrthoView(QWidget):
     def marker_at(self, x, y, tolerance=18):
         if not self.vis.get("markers", True):
             return None
-        hits = [(sum((a - b) ** 2 for a, b in zip(self.to_screen(X, Y), (x, y))), label)
-                for label, X, Y in self.markers]
-        return min(hits)[1] if hits and min(hits)[0] <= tolerance ** 2 else None
+        hits = []
+        for label, X, Y in self.markers:
+            sx, sy = self.to_screen(X, Y)
+            dx, dy = x - sx, y - sy
+            distance = dx * dx + dy * dy
+            if distance <= tolerance * tolerance or (-5 <= dx <= 18 and -27 <= dy <= 6):
+                hits.append((distance, label))
+        return min(hits)[1] if hits else None
 
     def set_active_marker(self, label):
         self.active_marker = label
@@ -501,7 +506,7 @@ class OrthoView(QWidget):
                     draw_flag(p, x, y, col, lab == self.active_marker)
                     if self.vis.get("marker_labels", True):
                         rect = p.fontMetrics().boundingRect(str(lab)).adjusted(-4, -2, 4, 2)
-                        rect.moveBottomLeft(QPointF(x + 10, y - 8).toPoint())
+                        rect.moveBottomLeft(QPointF(x + 18, y - 18).toPoint())
                         p.fillRect(rect, QColor(15, 15, 20, 210))
                         p.setPen(col); p.drawText(rect, Qt.AlignCenter, str(lab))
         self._draw_overlay(p)

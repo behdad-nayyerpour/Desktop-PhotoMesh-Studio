@@ -63,7 +63,7 @@ class WorkspacePane(QTreeWidget):
         Point Cloud (P points, Q quality)
         3D Model (F faces, ...)
 
-    Only products that exist get a row. Rows of the active chunk that are also
+    Only products that exist get a row. Product rows that are also
     3D-view layers carry a visibility checkbox (synced with the layer toggles);
     double-click shows the item."""
     cameraActivated = Signal(int, int)      # chunk index, camera index
@@ -445,10 +445,10 @@ class ReferencePane(QTableWidget):
                             from .icons import icon
                             item.setIcon(icon("photo"))
                             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-                            item.setCheckState(Qt.Checked if camera.use_reference else Qt.Unchecked)
+                            item.setCheckState(Qt.Checked if camera.use_reference and has_gps else Qt.Unchecked)
                             item.setToolTip("Use GPS as a reference in camera optimization; selecting a row only selects the photo.")
                             if not has_gps:
-                                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                                item.setFlags(item.flags() & ~Qt.ItemIsUserCheckable)
                                 item.setToolTip("No complete GPS position; reference use is unavailable.")
                         self.setItem(row, col, item)
                     if row in selected:
