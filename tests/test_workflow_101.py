@@ -229,3 +229,54 @@ def test_metric_raster_crs_does_not_label_eastings_as_longitude():
     assert processing_crs({"crs":"EPSG:4326","zone":[38,True]})=="EPSG:32738"
     assert processing_crs({})==""
     with pytest.raises(ValueError,match="zone"): processing_crs({"crs":"EPSG:4326"})
+
+
+def test_large_skinny_uv_triangle_is_not_silently_dropped():
+    from photomesh.texture import rasterize
+    uv=np.array([[[0.,0.],[20000.,0.],[0.,1.5]]],np.float32)
+    page,y,x,face,b1,b2=rasterize(uv,np.zeros(1,np.int64),1,32768)
+    assert len(x)>10000 and np.all(face==0)
+    keys=y.astype(np.int64)*32768+x
+    assert len(np.unique(keys))==len(keys)
+
+
+def test_directory_swap_failure_restores_previous_generation(tmp_path,monkeypatch):
+    target=tmp_path/"product"; target.mkdir(); (target/"old").write_text("healthy")
+    stage=tmp_path/"stage"; stage.mkdir(); (stage/"new").write_text("new")
+    real=os.replace
+    def fail(source,destination):
+        if os.path.abspath(source)==str(stage): raise PermissionError("busy")
+        return real(source,destination)
+    monkeypatch.setattr(os,"replace",fail)
+    with pytest.raises(PermissionError): w.publish_directory(str(stage),str(target))
+    assert (target/"old").read_text()=="healthy" and not (target/"new").exists()
+
+
+def test_point_tile_parent_bounds_cover_every_child(tmp_path):
+    from photomesh.tiles import build_tiles
+    from photomesh.plyio import save_ply
+    rng=np.random.default_rng(5); xyz=rng.normal(size=(1600,3))
+    path=tmp_path/"cloud.ply"; save_ply(str(path),xyz,None)
+    result=build_tiles({"source":"Point cloud","cloud":str(path),"out_dir":str(tmp_path/"tiles"),
+                        "tile_points":30,"format":"glb","max_depth":1},log=lambda *_:None)
+    index=json.loads(open(result["index"]).read()); nodes={n["key"]:n for n in index["nodes"]}
+    assert result["format"]=="pnts"
+    for parent in nodes.values():
+        assert parent["count"]<=30
+        for name in parent["children"]:
+            child=nodes[name]
+            assert np.all(np.array(parent["bmin"])<=child["bmin"])
+            assert np.all(np.array(parent["bmax"])>=child["bmax"])
+
+
+@pytest.mark.parametrize("method,expected",[("mean",1.),("median",1.),("highest",2.)])
+def test_dem_point_aggregation_is_effective(tmp_path,method,expected):
+    from photomesh.ortho import build_dem
+    from photomesh.plyio import save_ply
+    from photomesh.geotiff import TiffReader
+    cloud=tmp_path/"cloud.ply"
+    save_ply(str(cloud),np.array([[.1,.1,0],[.8,.8,2],[.2,.8,0],[.8,.2,2]]),None)
+    result=build_dem({"cloud":str(cloud),"out_dir":str(tmp_path/method),"pixel_size":1.,
+                      "region":[0,0,1,1],"aggregation":method,"interpolation":"Disabled"},log=lambda *_:None)
+    with TiffReader(result["path"]) as reader: value=reader.read_level(0)[0,0,0]
+    assert value==pytest.approx(expected)

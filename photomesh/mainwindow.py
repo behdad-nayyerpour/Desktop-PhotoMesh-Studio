@@ -926,7 +926,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if action in ("Add Chunk", "Set as Active Chunk", "Rename Chunk...", "Duplicate Chunk", "Remove Chunk"):
             raise ValueError("Chunk management is not supported; use one project per dataset.")
         if action.startswith("register_camera:"):
-            self.register_selected_photos([int(action.split(":")[1])]); return
+            clicked=int(action.split(":")[1])
+            indices=[role[2] for role in self.workspace.selected_roles() if role[0]=="camera"]
+            self.register_selected_photos(indices if clicked in indices else [clicked]); return
         if action == "Change Image Paths...":
             self.change_image_paths(); return
         elif action.startswith("marker:"):

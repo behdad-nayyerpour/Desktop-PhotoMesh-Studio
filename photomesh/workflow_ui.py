@@ -193,6 +193,7 @@ def texture_context(d, parent, has_uv):
 
 
 def tiles_context(d, parent):
+    summary=note(d,"",True)
     def update(*_):
         points = d.source.currentText() == "Point cloud"
         d.pixel.setEnabled(not points); d.max_tex.setEnabled(not points)
@@ -203,10 +204,21 @@ def tiles_context(d, parent):
         if not points and old in [d.fmt.itemText(i) for i in range(d.fmt.count())]:
             d.fmt.setCurrentText(old)
         d.fmt.blockSignals(False)
+        ch=getattr(parent,"chunk",None)
+        count=getattr(ch,"point_count" if points else "face_count",0)
+        leaves=math.ceil(count/max(d.tile_faces.value(),1))
+        text=f"{count:,} source {'points' if points else 'triangles'}; at least {leaves:,} leaf tiles. "
+        if not points:
+            texture=getattr(ch,"texture",{}) or {}
+            if not texture or texture.get("stale"):
+                text+="No current texture recorded; vertex colours or grey may be used. "
+            text+=f"Worker image-array estimate up to {int(d.max_tex.currentText())**2*180/2**20:.0f} MiB."
+        summary.setText(text)
         label = d.aform.labelForField(d.tile_faces)
         if label:
             label.setText("Points per tile:" if points else "Triangles per tile:")
     d.source.currentTextChanged.connect(update)
+    d.tile_faces.valueChanged.connect(update); d.max_tex.currentTextChanged.connect(update)
     note(d, "Auto uses source texture resolution, or mesh-edge spacing if no texture is available. "
             "A manual value is the requested minimum texel size; effective values are reported.", True)
     update()

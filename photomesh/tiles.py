@@ -346,7 +346,11 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         m = load_ply(c["mesh"], max_points=0)
         if m["colors"] is not None:
             baker_args = dict(vcol=m["colors"][:, :3] * 255)
-    baker = __import__("photomesh.tiles", fromlist=["Baker"]).Baker(V, F, **baker_args)
+    from .memguard import available_bytes
+    estimate=V.nbytes*6+F.nbytes*8+sum(image.nbytes for image in baker_args.get("pages",[]))
+    if estimate>available_bytes()*.75:
+        raise ValueError("Source geometry/texture exceeds the working-memory budget; simplify the source or reduce texture pages")
+    baker = Baker(V, F, **baker_args)
     P = V[F]
     edge = float(np.median(np.linalg.norm(P[:, 1] - P[:, 0], axis=1)))
     if not src_texel:
@@ -444,8 +448,13 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
 def _build_points(c, tmp, Rup, log, prog):
     from .pcfilter import read_cloud
     cl = read_cloud(c["cloud"])
-    X = cl["xyz"].astype(np.float64) @ Rup.T
-    rgb = cl.get("rgb")
+    X = cl.pop("xyz")
+    if not np.allclose(Rup,np.eye(3)):
+        X = X @ Rup.T
+    from .workflow import require_points
+    require_points(X,"Point cloud")
+    rgb = cl.pop("rgb",None)
+    del cl
     rgb = np.asarray(rgb, np.uint8) if rgb is not None else np.full((len(X), 3), 200, np.uint8)
     log(f"Tiled model: point cloud {len(X):,} points")
     lim = int(c["tile_points"])
