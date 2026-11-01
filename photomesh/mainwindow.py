@@ -1839,8 +1839,13 @@ class MainWindow(ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
         if not dlg.exec():
             return
         s = dlg.settings()
-        if s["source"] == "Depth maps" and not cm.has_cuda(exe):
-            QMessageBox.warning(self, "Build Model", "'Depth maps' source needs a CUDA build of COLMAP."); return
+        if s["source"] == "Depth maps":
+            cuda = self._cuda_available(exe)
+            if cuda is None:
+                return
+            if not cuda:
+                QMessageBox.warning(self, "Build Model", "'Depth maps' source needs a CUDA build of COLMAP.")
+                return
         if s["source"] == "Point cloud" and not (ch.point_cloud_ply and os.path.exists(ch.point_cloud_ply)):
             QMessageBox.information(self, "Build Model", "Build the point cloud first or choose another source."); return
         from .mesh_steps import mesh_steps
