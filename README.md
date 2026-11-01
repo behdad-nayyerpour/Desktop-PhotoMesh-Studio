@@ -11,7 +11,15 @@ Desktop photogrammetry software for turning overlapping aerial photographs into
 [Changelog](CHANGES.md) ·
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
 
-![PhotoMesh Studio displaying a reconstructed aerial survey](screenshot.png)
+## Screenshots
+
+**Dark theme**
+
+![PhotoMesh Studio 1.0.1 displaying a reconstructed aerial survey in dark mode](screenshot.png)
+
+**Light theme**
+
+![PhotoMesh Studio 1.0.1 displaying a reconstructed aerial survey in light mode](screenshot-light.png)
 
 ## Install
 

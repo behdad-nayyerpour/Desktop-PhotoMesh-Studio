@@ -68,7 +68,9 @@ foreach ($name in @("main.py", "README.md", "CHANGES.md", "UPDATING.md", "requir
 
 # Keep local Help links and the README screenshot available in the installed app.
 Copy-Tree (Join-Path $app "docs") (Join-Path $appStage "docs")
-Copy-Item -LiteralPath (Join-Path $app "screenshot.png") -Destination (Join-Path $appStage "screenshot.png")
+foreach ($screenshot in @("screenshot.png", "screenshot-light.png")) {
+    Copy-Item -LiteralPath (Join-Path $app $screenshot) -Destination (Join-Path $appStage $screenshot)
+}
 New-Item -ItemType Directory -Force -Path (Join-Path $appStage "packaging") | Out-Null
 foreach ($guide in @("README.md", "RELEASE.md")) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $guide) -Destination (Join-Path (Join-Path $appStage "packaging") $guide)
