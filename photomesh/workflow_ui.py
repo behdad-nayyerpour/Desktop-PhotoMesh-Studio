@@ -315,24 +315,23 @@ def prepare_source_plans(window, sources):
     from .bgjob import run_modal
     import numpy as np
     ch=window.chunk
-    rotation=np.eye(3)
-    if not ch.georef and ch.aligned_count():
-        from .tasks import model_up
-        from .tiles import rotation_to_z
-        rotation=rotation_to_z(model_up(window._model_dir(),False))
-        # Use precisely the orthographic frame employed by DEM/Ortho.
-        from .texture import load_views
-        from .ortho import projection_rotation
-        views=load_views(window._model_dir(),window._photo_map(ch),lambda *_:None)
-        if views: rotation=projection_rotation(views,False)
+    local_frame=not ch.georef and bool(ch.aligned_count())
+    model=window._model_dir() if local_frame else None
+    photos=window._photo_map(ch) if local_frame else None
     cache=getattr(window,"_workflow_plan_cache",{})
     off=np.asarray((ch.georef or {}).get("offset") or [0,0,0],float)
     def work(report,cancel):
+        rotation=np.eye(3)
+        if local_frame:
+            from .texture import load_views
+            from .ortho import projection_rotation
+            views=load_views(model,photos,lambda *_:None)
+            if views: rotation=projection_rotation(views,False)
         plans={}
         for index,(name,path) in enumerate(sources.items()):
             key=json.dumps([file_stamp(path),rotation.tolist(),off.tolist()])
             if key in cache: plans[name]=cache[key]; continue
-            lo,hi=np.full(3,np.inf),np.full(3,-np.inf); count=0; occupied=set()
+            lo,hi=np.full(3,np.inf),np.full(3,-np.inf); count=0
             for records in vertex_blocks(path):
                 if cancel(): return None
                 xyz=np.column_stack([records["x"],records["y"],records["z"]]).astype(float) @ rotation.T
