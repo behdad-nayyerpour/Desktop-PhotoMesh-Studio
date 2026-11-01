@@ -44,7 +44,7 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q photomesh main.py tests
       - name: System libraries (Qt offscreen, Open3D)
-        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 libgomp1 xvfb xauth libgl1-mesa-dri libxcb-cursor0 libxkbcommon-x11-0
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 libgomp1 xvfb xauth libgl1-mesa-dri libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0 libxcb-randr0
       - name: Install
         run: pip install -q -r requirements-dev.txt psutil
       - name: Reference and Ortho regressions
@@ -59,7 +59,7 @@ jobs:
           QT_QPA_PLATFORM: xcb
           PHOTOMESH_GL_TESTS: "1"
           LIBGL_ALWAYS_SOFTWARE: "1"
-        run: xvfb-run -a python -m pytest -vv -rs --tb=short -m opengl tests/test_view_overlay.py
+        run: xvfb-run -a python -m pytest -s -vv -rs --tb=short -m opengl tests/test_view_overlay.py
       - name: Summary
         if: always()
         run: |
