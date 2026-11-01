@@ -203,7 +203,7 @@ class BuildModelDialog(_SettingsDialog):
         mesh_context(self, parent)
 
     def settings(self):
-        return {"source": self.source.currentText(),
+        return {"source": "Point cloud" if self.source.currentIndex() == 0 else "Depth maps",
                 "face_count": self.face_count.currentText(),
                 "custom_faces": self.custom.value(),
                 "interpolation": ["Disabled", "Enabled", "Extrapolated"][self.interp.currentIndex()],

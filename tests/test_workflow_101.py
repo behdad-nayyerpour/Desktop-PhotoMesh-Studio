@@ -38,7 +38,7 @@ def test_mesh_count_visible_and_effective_controls(window):
     assert dialog.custom.value()==1_000_000 and not dialog.custom.isEnabled()
     dialog.face_count.setCurrentText("High")
     assert dialog.custom.value()==3_000_000
-    dialog.source.setCurrentText("Depth maps")
+    dialog.source.setCurrentIndex(1)
     assert not dialog.voxel.isEnabled() and not dialog.interp.isEnabled()
     assert not dialog.max_pts.isEnabled()
 

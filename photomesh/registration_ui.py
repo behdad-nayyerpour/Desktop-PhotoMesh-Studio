@@ -7,6 +7,8 @@ from .georef import _stem
 
 class RegistrationMixin:
     def register_selected_photos(self, indices=None):
+        if not self._require_saved("Align Selected Photos"):
+            return
         ch=self.chunk
         if indices is None:
             indices=[item.data(256) for item in self.photos.selectedItems()]
@@ -21,7 +23,7 @@ class RegistrationMixin:
         from .bgjob import run_modal
         model_dir=self._model_dir()
         model=cio.read_model(model_dir)
-        positions={label:np.asarray(X,float) for label,X,_ctl in self._marker_positions()}
+        positions={label:np.asarray(X,float) for label,X,_ctl in (self._marker_positions() or [])}
         photos=[]
         for index in indices:
             camera=ch.cameras[index]
@@ -38,7 +40,9 @@ class RegistrationMixin:
             try: validate_controls(xyz,xy,camera.width,camera.height)
             except ValueError as error:
                 QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: {error}"); return
-            candidates=[cid for cid,cam in model.cameras.items() if cam.width==camera.width and cam.height==camera.height]
+            groups={(cam.model,cam.params.tobytes()):cid for cid,cam in model.cameras.items()
+                    if cam.width==camera.width and cam.height==camera.height}
+            candidates=list(groups.values())
             if not candidates:
                 QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: no calibrated camera with matching dimensions"); return
             cid=candidates[0]
@@ -57,10 +61,7 @@ class RegistrationMixin:
         wd=self.project.default_workdir(ch)
         generation=os.path.join(wd,"registration-"+uuid.uuid4().hex[:12])
         destination=os.path.join(generation,"sparse","0")
-        from .colmap import prepare_images
-        mapping=prepare_images(ch,generation)
-        for photo in photos:
-            photo["name"]=mapping[ch.cameras[photo["index"]].path]
+        expose_registration_photos(ch,generation,photos)
         cfg={"model":model_dir,"output":destination,"photos":photos}
         from .registration import register
         messages=[]
@@ -80,3 +81,36 @@ class RegistrationMixin:
         if result["added"]:
             self.open_photo(result["added"][0]["index"])
             self._update_photo_shapes()
+
+
+def expose_registration_photos(chunk,folder,photos):
+    """Stable aliases: adding a duplicate basename never renames an existing camera."""
+    selected={p["index"]:p["name"] for p in photos}
+    aliases={}
+    for index,camera in enumerate(chunk.cameras):
+        name=selected.get(index) or camera.colmap_name
+        if name:
+            if name in aliases and os.path.normcase(aliases[name])!=os.path.normcase(camera.path):
+                raise ValueError("Ambiguous camera aliases; repair photo paths before registration")
+            aliases[name]=camera.path
+    roots={os.path.dirname(os.path.abspath(path)) for path in aliases.values()}
+    direct=len(roots)==1 and all(name==os.path.basename(path) for name,path in aliases.items())
+    if direct:
+        root=next(iter(roots))
+    else:
+        import shutil
+        root=os.path.join(folder,"images"); os.makedirs(root,exist_ok=True)
+        for name,path in aliases.items():
+            destination=os.path.abspath(os.path.join(root,name))
+            if os.path.commonpath([destination,os.path.abspath(root)])!=os.path.abspath(root):
+                raise ValueError("Invalid image alias")
+            os.makedirs(os.path.dirname(destination),exist_ok=True)
+            try: os.link(path,destination)
+            except OSError:
+                try: os.symlink(path,destination)
+                except OSError: shutil.copy2(path,destination)
+    os.makedirs(folder,exist_ok=True)
+    with open(os.path.join(folder,"image_root.txt"),"w",encoding="utf-8") as fh:
+        fh.write("images" if not direct else root)
+    with open(os.path.join(folder,"image_list.txt"),"w",encoding="utf-8") as fh:
+        fh.write("\n".join(sorted(aliases))+"\n")

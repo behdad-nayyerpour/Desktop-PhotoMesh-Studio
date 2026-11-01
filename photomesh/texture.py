@@ -786,11 +786,23 @@ def rasterize(uvp, page, npages, size):
                 try: os.remove(path)
                 except OSError: pass
             atexit.register(cleanup)
-            return tuple(data[name] for name in dtype.names)
+            arrays=tuple(data[name] for name in dtype.names)
+            return unique_texels(arrays,size)
         os.remove(path)
     if not out:
         return tuple(np.empty(0, dtype=dt) for dt in ("i2","i4","i4","i4","f4","f4"))
-    return tuple(np.concatenate([entry[k] for entry in out]) for k in range(6))
+    arrays=tuple(np.concatenate([entry[k] for entry in out]) for k in range(6))
+    return unique_texels(arrays,size)
+
+
+def unique_texels(arrays,size):
+    # Shared-edge texels have exactly one owner, as in the original renderer.
+    from .memguard import available_bytes
+    if len(arrays[0])*32 > available_bytes()*.7:
+        raise ValueError("Texture sample indices exceed available RAM; use smaller pages or fewer pages")
+    key=(arrays[0].astype(np.int64)*size+arrays[1])*size+arrays[2]
+    _keys,first=np.unique(key,return_index=True)
+    return tuple(a[first] for a in arrays)
 
 
 def dilate(img, mask, iters):

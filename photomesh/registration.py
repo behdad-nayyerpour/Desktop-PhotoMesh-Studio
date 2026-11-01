@@ -43,7 +43,9 @@ def solve_pose(camera, xyz, xy, initial_images, max_error=5.0):
         R=Rotation.from_rotvec(fit.x[:3]).as_matrix()
         uv,z=cio.project(camera,R,fit.x[3:],local)
         error=np.linalg.norm(uv-xy,axis=1)
-        if np.all(z>0) and np.max(error)<=max_error:
+        singular=np.linalg.svd(fit.jac,compute_uv=False)
+        stable=len(singular)==6 and singular[-1]>singular[0]*1e-8
+        if stable and np.all(z>0) and np.max(error)<=max_error:
             score=float(np.sqrt(np.mean(error**2)))
             if best is None or score<best[0]:
                 best=(score,R,scale*fit.x[3:]-R@origin)

@@ -126,13 +126,22 @@ def vertex_blocks(path, block=500_000):
                     raise ValueError("Truncated PLY vertex block")
                 yield records
             return
-    from .pcfilter import read_cloud
-    cloud = read_cloud(path)
-    for start in range(0, len(cloud["xyz"]), block):
-        xyz = cloud["xyz"][start:start+block]
-        records = np.empty(len(xyz), dtype=[("x", "f8"), ("y", "f8"), ("z", "f8")])
-        records["x"], records["y"], records["z"] = xyz.T
-        yield records
+    # ASCII PLY can be streamed without loading the whole cloud.
+    import itertools
+    from .plyio import read_header
+    with open(path,"rb") as fh:
+        header=read_header(fh)
+        if header is None or header[1] is not None or not header[2] or header[2][0][0]!="vertex":
+            raise ValueError("Large-cloud streaming requires binary or scalar ASCII PLY vertices first")
+        _,count,properties=header[2][0]
+        if any(p is None or p[0]=="list" for p in properties):
+            raise ValueError("Unsupported PLY vertex layout")
+        dtype=np.dtype(properties)
+        step=min(block,65536)
+        for start in range(0,count,step):
+            lines=list(itertools.islice(fh,min(step,count-start)))
+            if len(lines)!=min(step,count-start): raise ValueError("Truncated ASCII vertices")
+            yield np.atleast_1d(np.loadtxt(lines,dtype=dtype))
 
 
 def point_count(path):

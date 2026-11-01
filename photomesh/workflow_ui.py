@@ -95,9 +95,22 @@ def dense_context(d, parent):
         size, files = depth_maps_size(os.path.join(ch.workdir, "dense"))
         text += f" Existing map files: {files}; {size/2**30:.2f} GiB (compatibility checked at start)."
     note(d, text, True)
+    estimate=note(d,"",True)
+    def update_estimate(*_):
+        from .dense import QUALITY_FACTOR
+        factor=QUALITY_FACTOR[d.quality.currentText()]
+        cameras=[c for c in getattr(ch,"cameras",[]) if c.aligned]
+        pixels=sum(max(1,round(c.width/factor))*max(1,round(c.height/factor)) for c in cameras if c.width and c.height)
+        known=sum(bool(c.width and c.height) for c in cameras)
+        estimate.setText(f"{known}/{len(cameras)} known image sizes; scale 1/{factor}. "
+                         f"Depth/normal peak estimate ~{pixels*32/2**30:.2f} GiB, plus workspace/fusion. "
+                         "Exact disk and fusion RAM plan are checked before computation.")
+    d.quality.currentTextChanged.connect(update_estimate); update_estimate()
 
 
 def mesh_context(d, parent):
+    d.source.setItemText(1, "Delaunay (fused cloud + visibility)")
+    d.custom.setMaximum(2147483647)
     from .mesh import target_faces
     ch = getattr(parent, "chunk", None)
     d.input_points = getattr(ch, "point_count", 0)

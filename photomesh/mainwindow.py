@@ -1850,7 +1850,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                             points=ch.point_count,
                             fusion_seconds=round(sum(v for k, v in stages.items() if "fusion" in k.lower()), 2) or None,
                             filtering_seconds=round(sum(v for k, v in stages.items() if "ilter" in k), 2) or None,
-                            filtering=[], **procmeta.file_info(ch.point_cloud_ply))
+                            filtering=(json.load(open(os.path.join(wd, "dense", "filter_stats.json"), encoding="utf-8")).get("filters", [])
+                                       if os.path.isfile(os.path.join(wd, "dense", "filter_stats.json")) else []),
+                            **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
                   lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s)
 
