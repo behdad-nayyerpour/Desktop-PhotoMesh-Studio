@@ -36,6 +36,8 @@ jobs:
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -48,7 +50,7 @@ jobs:
       - name: Install
         run: pip install -q -r requirements-dev.txt psutil
       - name: Workflow 1.0.1 regressions
-        run: python -m pytest -x -vv --tb=short -p no:cacheprovider tests/test_workflow_101.py
+        run: python -m pytest -vv --tb=short -p no:cacheprovider tests/test_workflow_101.py
       - name: Reference and Ortho regressions
         timeout-minutes: 3
         run: python -m pytest -x -vv --tb=short -o faulthandler_timeout=60 -p no:cacheprovider tests/test_reference_lifecycle.py tests/test_release_0117.py tests/test_release_100.py tests/test_release_100_followup.py
@@ -62,6 +64,8 @@ jobs:
           PHOTOMESH_GL_TESTS: "1"
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: xvfb-run -a python -m pytest -s -vv -rs --tb=short -m opengl tests/test_view_overlay.py
+      - name: Compare processing performance with 1.0.0
+        run: python tools/benchmark_workflow_101.py
       - name: Summary
         if: always()
         run: |

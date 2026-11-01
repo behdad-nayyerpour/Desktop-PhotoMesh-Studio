@@ -190,13 +190,34 @@ def dem_context(d, parent):
     d.aform.addRow("Maximum fill distance (model units):", d.max_fill)
     d.aform.addRow("Fill smoothing distance (0 = none):", d.smooth_distance)
     note(d, "Surface model (DSM): buildings/vegetation are retained. This is not classified bare earth.")
+    grid_info=note(d, "")
+    def preview(*_):
+        from .ortho import raster_size
+        plans=getattr(parent,"_workflow_source_plans",{}) or {}
+        plan=plans.get(d.source.currentText())
+        if not plan: return
+        try:
+            bounds=d.region_box.region() or plan["bounds"]
+            pixel=d.pixel.value() or plan["auto"]
+            px,width,height=raster_size(*bounds,pixel)
+            grid_info.setText(f"Estimated grid: {width:,} x {height:,}; pixel ~{px:.6g} model units. "
+                              f"Uncompressed heights: {width*height*4/2**20:.0f} MiB; auto is finalized from source density.")
+        except ValueError as error: grid_info.setText(str(error))
+    def selected_source(*_):
+        plan=(getattr(parent,"_workflow_source_plans",{}) or {}).get(d.source.currentText())
+        if plan:
+            for control,value in zip(d.region_box.spins,plan["bounds"]): control.setValue(value)
+        preview()
+    d.source.currentTextChanged.connect(selected_source)
+    d.pixel.valueChanged.connect(preview); d.region_box.toggled.connect(preview)
+    for control in d.region_box.spins: control.valueChanged.connect(preview)
     def update(*_):
         d.aggregation.setEnabled(d.source.currentText() != "Mesh")
         enabled = d.interp.currentText() != "Disabled"
         d.max_fill.setEnabled(enabled and d.interp.currentText() != "Extrapolated")
         d.smooth_distance.setEnabled(enabled)
     d.source.currentTextChanged.connect(update); d.interp.currentTextChanged.connect(update)
-    update()
+    selected_source(); update()
 
 
 def ortho_context(d, parent):
@@ -227,3 +248,44 @@ def ortho_context(d, parent):
     d.holes.setToolTip("Fills short gaps with inferred heights/colours; does not create measured detail.")
     d.ghost.setToolTip("Coarse colour outlier detection requires four valid views. Coverage is reported.")
     surface(); update()
+
+
+def prepare_source_plans(window, sources):
+    """Cached projection bounds; one bounded scan per changed source, never on GUI thread."""
+    from .workflow import file_stamp, vertex_blocks, require_points
+    from .bgjob import run_modal
+    import numpy as np
+    ch=window.chunk
+    rotation=np.eye(3)
+    if not ch.georef and ch.aligned_count():
+        from .tasks import model_up
+        from .tiles import rotation_to_z
+        rotation=rotation_to_z(model_up(window._model_dir(),False))
+        # Use precisely the orthographic frame employed by DEM/Ortho.
+        from .texture import load_views
+        from .ortho import projection_rotation
+        views=load_views(window._model_dir(),window._photo_map(ch),lambda *_:None)
+        if views: rotation=projection_rotation(views,False)
+    cache=getattr(window,"_workflow_plan_cache",{})
+    off=np.asarray((ch.georef or {}).get("offset") or [0,0,0],float)
+    def work(report,cancel):
+        plans={}
+        for index,(name,path) in enumerate(sources.items()):
+            key=json.dumps([file_stamp(path),rotation.tolist(),off.tolist()])
+            if key in cache: plans[name]=cache[key]; continue
+            lo,hi=np.full(3,np.inf),np.full(3,-np.inf); count=0; occupied=set()
+            for records in vertex_blocks(path):
+                if cancel(): return None
+                xyz=np.column_stack([records["x"],records["y"],records["z"]]).astype(float) @ rotation.T
+                require_points(xyz)
+                lo,hi=np.minimum(lo,xyz.min(0)),np.maximum(hi,xyz.max(0)); count+=len(xyz)
+            bounds=[float(lo[0]+off[0]),float(lo[1]+off[1]),float(hi[0]+off[0]),float(hi[1]+off[1])]
+            auto=2*math.sqrt(max((hi[0]-lo[0])*(hi[1]-lo[1]),1e-12)/max(count,1))
+            plan={"bounds":bounds,"count":count,"auto":auto,"rotation":rotation.tolist()}
+            cache[key]=plan; plans[name]=plan; report(index+1,len(sources))
+        return plans
+    result,cancelled,error=run_modal(window,"Prepare Raster","Checking source extents...",work,len(sources))
+    if error: raise ValueError(error)
+    if cancelled or result is None: return None
+    window._workflow_plan_cache=cache
+    return result

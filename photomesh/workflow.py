@@ -42,7 +42,7 @@ def remap_paths(value, old, new):
         p, root = os.path.abspath(value), os.path.abspath(old)
         try:
             if os.path.commonpath([p, root]) == root:
-                return os.path.join(new, os.path.relpath(p, root))
+                return os.path.normpath(os.path.join(new, os.path.relpath(p, root)))
         except ValueError:
             pass
     return value

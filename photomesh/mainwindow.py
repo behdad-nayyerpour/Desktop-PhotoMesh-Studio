@@ -2402,8 +2402,13 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not (have_cloud or have_mesh):
             QMessageBox.information(self, "Build DEM", "Build the point cloud (or the model) first."); return
         sources = (["Point cloud"] if have_cloud else []) + (["Mesh"] if have_mesh else [])
+        from .workflow_ui import prepare_source_plans
+        self._workflow_source_plans = prepare_source_plans(self,
+            {name: (ch.model_ply if name == "Mesh" else ch.point_cloud_ply) for name in sources})
+        if self._workflow_source_plans is None:
+            return
         dlg = BuildDEMDialog(self, sources, crs=self._crs_text(ch), unit="m" if ch.georef else "units",
-                             bounds=self._world_bounds_guess(ch))
+                             bounds=self._workflow_source_plans[sources[0]]["bounds"])
         if not dlg.exec():
             return
         s = dlg.settings()
