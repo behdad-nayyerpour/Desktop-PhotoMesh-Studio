@@ -23,8 +23,10 @@ class RasterSurface:
             with open(info_path,encoding="utf-8") as fh: info=json.load(fh)
         if rotation is not None and info.get("rotation") is not None:
             if not np.allclose(info["rotation"],rotation,atol=1e-7):
+                self.reader.close()
                 raise ValueError("DEM and cameras use different projection frames; rebuild DEM")
         if crs and info.get("crs") and crs != info["crs"]:
+            self.reader.close()
             raise ValueError("DEM and cameras use different coordinate systems")
         zr=info.get("z_range") or [-1e4,1e4]
         self.zmin=float(zr[0] or 0)-self.offset[2]

@@ -304,3 +304,13 @@ def test_median_memory_preflight_keeps_existing_product(tmp_path,monkeypatch):
     with pytest.raises(ValueError,match="median needs more RAM"):
         build_dem({"cloud":str(cloud),"out_dir":str(out),"aggregation":"median"},log=lambda *_:None)
     assert (out/"healthy").read_text()=="previous"
+
+
+def test_meshing_rejects_nonfinite_source_before_poisson(tmp_path):
+    from photomesh.mesh import load_point_cloud
+    from photomesh.plyio import save_ply
+    cloud=tmp_path/"bad.ply"
+    points=np.array([[0,0,0],[1,0,0],[0,1,0],[0,0,1],[np.nan,0,0]],float)
+    save_ply(str(cloud),points,None)
+    with pytest.raises(ValueError,match="non-finite"):
+        load_point_cloud(str(cloud),log=lambda *_:None)

@@ -46,7 +46,7 @@ def _o3d():
 
 def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
     o3d = _o3d()
-    from .workflow import point_count, vertex_blocks, bounds_from_ply
+    from .workflow import point_count, vertex_blocks, bounds_from_ply, require_points
     from .memguard import available_bytes
     n = point_count(path)
     if not n:
@@ -64,6 +64,7 @@ def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
         pcd = o3d.geometry.PointCloud()
         for records in vertex_blocks(path):
             xyz = np.column_stack([records["x"], records["y"], records["z"]])
+            require_points(xyz,"Point cloud")
             block = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(xyz))
             if all(k in records.dtype.names for k in ("red", "green", "blue")):
                 block.colors = o3d.utility.Vector3dVector(np.column_stack(
@@ -88,6 +89,7 @@ def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
         pcd = pcd.voxel_down_sample(v)
         if len(pcd.points) >= before:
             pcd = pcd.uniform_down_sample(max(2, math.ceil(before/max_points)))
+    require_points(np.asarray(pcd.points),"Point cloud")
     if len(pcd.points) < 4:
         raise ValueError("Too few points after downsampling")
     log(f"Meshing points: {n:,} -> {len(pcd.points):,}; hard limit {max_points:,}")
