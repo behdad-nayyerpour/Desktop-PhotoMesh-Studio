@@ -4,7 +4,8 @@ from PySide6.QtWidgets import QApplication
 
 
 def apply_dark_theme(app: QApplication) -> None:
-    app.setStyle("Fusion")
+    if app.style().objectName().lower() != "fusion":
+        app.setStyle("Fusion")
     p = QPalette()
     base, window, text = QColor(43, 43, 43), QColor(53, 53, 55), QColor(220, 220, 220)
     p.setColor(QPalette.Window, window)
@@ -43,7 +44,8 @@ def apply_theme(app, name=None):
     from PySide6.QtGui import QPalette
     name = name or QSettings().value("ui/theme", "Dark", str)
     if name == "Light":
-        app.setStyle("Fusion")
+        if app.style().objectName().lower() != "fusion":
+            app.setStyle("Fusion")
         app.setStyleSheet("")
         app.setPalette(app.style().standardPalette())
     else:
