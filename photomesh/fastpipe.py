@@ -37,7 +37,6 @@ BA_FUNCTION_TOLERANCE = 1e-6     # relative cost change at which bundle adjustme
 # Fine-stage features kept per photo after extraction (see select_keypoints).
 # GPU brute-force matching is O(features^2): on the drone set all ~50k
 # features (clamped to 32768) cost 82 ms/pair; 18k cost 21 ms/pair.
-FINE_KEEP = {"Highest": 24000, "High": 24000, "Medium": 18000, "Low": 12000, "Lowest": 8000}
 
 
 # ------------------------------------------------------------ image analysis

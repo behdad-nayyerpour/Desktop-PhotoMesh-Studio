@@ -264,7 +264,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
             progress(int(p), 100)
     if c["source"] == "Point cloud":
         c["format"] = "pnts"
-        info = _build_points(c, tmp, Rup, log, prog)
+        info = _build_points(c, tmp, Rup, log, prog, cancel)
     else:
         info = _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages)
     root = info["root"]
@@ -445,8 +445,13 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
     return {"root": root, "faces": int(len(F))}
 
 
-def _build_points(c, tmp, Rup, log, prog):
+def _build_points(c, tmp, Rup, log, prog, cancel=None):
     from .pcfilter import read_cloud
+    from .plyio import ply_counts
+    from .memguard import available_bytes
+    count,_ = ply_counts(c["cloud"])
+    if count*200 > available_bytes()*.7:
+        raise ValueError("Point-tile working arrays exceed available RAM; reduce or split the source cloud")
     cl = read_cloud(c["cloud"])
     X = cl.pop("xyz")
     if not np.allclose(Rup,np.eye(3)):
@@ -481,6 +486,7 @@ def _build_points(c, tmp, Rup, log, prog):
     sel = {}
     order = sorted(nodes, key=lambda n: -n.depth)
     for i, n in enumerate(order):
+        if cancel and cancel(): raise KeyboardInterrupt
         if not n.children:
             idx = n.items
         else:

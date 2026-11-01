@@ -10,6 +10,9 @@ class RasterSurface:
     def __init__(self, path, offset=(0,0,0), rotation=None, crs=None):
         self.reader=gt.TiffReader(path)
         self.offset=np.asarray(offset,float)
+        if not self.reader.geo:
+            self.reader.close()
+            raise ValueError("DEM has no spatial grid; rebuild or georeference the DEM first")
         x0,y1,px,py=self.reader.geo
         self.x0,self.y1,self.px,self.py=x0-self.offset[0],y1-self.offset[1],px,py
         self.width,self.height=self.reader.width,self.reader.height

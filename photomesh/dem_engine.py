@@ -39,6 +39,10 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
         source = c.get("source","Point cloud")
         if source == "Mesh":
             from .texture import read_mesh
+            from .plyio import ply_counts
+            vertices,faces=ply_counts(c["mesh"])
+            if vertices*200+faces*300 > available_bytes()*.7:
+                raise ValueError("Mesh DSM working arrays exceed available RAM; simplify the mesh or use a point-cloud source")
             P,F = read_mesh(c["mesh"])
             from .workflow import require_mesh
             require_mesh(P,F)
@@ -54,6 +58,8 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             from .plyio import ply_counts, read_fast
             npoints = ply_counts(c["cloud"])[0]
             if not npoints: raise ValueError("Point cloud is empty")
+            if c.get("aggregation")=="median" and npoints*64>available_bytes()*.5:
+                raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller source")
             if npoints*80 < available_bytes()*.4:
                 data = read_fast(c["cloud"])
                 if data is not None:
@@ -62,6 +68,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                     require_points(P)
             lo,hi=np.full(3,np.inf),np.full(3,-np.inf)
             sample = []
+            sample_stride=max(1,math.ceil(npoints/100000))
             def blocks():
                 if P is not None:
                     yield P; return
@@ -70,7 +77,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             for xyz in blocks():
                 require_points(xyz)
                 lo,hi=np.minimum(lo,xyz.min(0)),np.maximum(hi,xyz.max(0))
-                sample.append(xyz[::max(1,len(xyz)//10000)])
+                if P is None: sample.append(xyz[::sample_stride].copy())
             # Occupied-area estimate from a bounded sample; exact small-cloud path retained.
             samples = P if P is not None else np.concatenate(sample)
             g=max(float(np.ptp(hi[:2]-lo[:2])),float(np.max(hi[:2]-lo[:2])))/512 or 1.
@@ -89,6 +96,9 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
         x0,y1,W,H=o.make_grid(xmin,ymin,xmax,ymax,px,off[:2])
         if W*H>c["max_pixels"]: raise ValueError(f"DEM would be {W:,} x {H:,}; increase pixel size or select a region")
         budget=raster_budget(W,H,64,out)
+        import shutil
+        if shutil.disk_usage(out).free < W*H*48:
+            raise ValueError("DEM scratch grids and TIFFs need more disk space; select a region or coarser pixels")
         log(f"DEM plan: {W:,} x {H:,}; pixel {px:.6g} {'m' if georef else 'model units'}; "
             f"~{budget['memory']/2**30:.2f} GiB working arrays; disk-backed when needed")
         dem=array("heights",(H,W),"f8",np.nan)
@@ -144,6 +154,9 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
         halo=max(2,math.ceil(maxfill/px),math.ceil(smoothing/px*4))
         interpolation=c.get("interpolation","Enabled")
         if interpolation!="Disabled" and hole.any():
+            rows=H if interpolation=="Extrapolated" else min(H,256+2*halo)
+            if W*rows*96 > available_bytes()*.65:
+                raise ValueError("Interpolation halo exceeds available RAM; reduce fill/smoothing distance or use coarser pixels")
             if interpolation=="Extrapolated":
                 # An exact global nearest lookup is necessary for unrestricted fill.
                 # Guard it before allocation rather than failing partway through.

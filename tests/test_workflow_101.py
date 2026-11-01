@@ -280,3 +280,27 @@ def test_dem_point_aggregation_is_effective(tmp_path,method,expected):
                       "region":[0,0,1,1],"aggregation":method,"interpolation":"Disabled"},log=lambda *_:None)
     with TiffReader(result["path"]) as reader: value=reader.read_level(0)[0,0,0]
     assert value==pytest.approx(expected)
+
+
+def test_point_tile_memory_preflight_does_not_decode_oversized_source(tmp_path,monkeypatch):
+    from photomesh.tiles import build_tiles
+    from photomesh.plyio import save_ply
+    from photomesh import memguard,pcfilter
+    cloud=tmp_path/"cloud.ply"; save_ply(str(cloud),np.zeros((10,3)),None)
+    monkeypatch.setattr(memguard,"available_bytes",lambda:100)
+    def forbidden(*_): pytest.fail("Oversized source must be rejected before decoding")
+    monkeypatch.setattr(pcfilter,"read_cloud",forbidden)
+    with pytest.raises(ValueError,match="RAM"):
+        build_tiles({"source":"Point cloud","cloud":str(cloud),"out_dir":str(tmp_path/"tiles")},log=lambda *_:None)
+
+
+def test_median_memory_preflight_keeps_existing_product(tmp_path,monkeypatch):
+    from photomesh.ortho import build_dem
+    from photomesh.plyio import save_ply
+    from photomesh import memguard
+    cloud=tmp_path/"cloud.ply"; save_ply(str(cloud),np.zeros((10,3)),None)
+    out=tmp_path/"dem"; out.mkdir(); (out/"healthy").write_text("previous")
+    monkeypatch.setattr(memguard,"available_bytes",lambda:100)
+    with pytest.raises(ValueError,match="median needs more RAM"):
+        build_dem({"cloud":str(cloud),"out_dir":str(out),"aggregation":"median"},log=lambda *_:None)
+    assert (out/"healthy").read_text()=="previous"
