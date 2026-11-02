@@ -26,7 +26,7 @@ Desktop photogrammetry software for turning overlapping aerial photographs into
 Download `PhotoMeshStudio_Setup_<version>.exe` from
 [Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)
 and run it. The offline installer includes Python, its required packages, COLMAP,
-and GLOMAP; a separate Python or Git installation is not needed.
+and optional legacy GLOMAP; a separate Python or Git installation is not needed.
 
 For a later version, close PhotoMesh Studio and run the newer Setup over the
 existing installation. There is no separate Update EXE.

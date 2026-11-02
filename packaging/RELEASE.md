@@ -36,7 +36,7 @@ COLMAP/GPU reconstruction. The EXE is not code signed.
 
 The builder prepares COLMAP 4.2.1 CPU/CUDA engines plus the local ALIKED/LightGlue
 models with fixed SHA256 digests. The tested source COLMAP is retained as a legacy
-dense fallback; legacy GLOMAP is optional. Python packages are reused from the
+GPU SIFT/dense fallback; legacy GLOMAP is optional. Python packages are reused from the
 tested RuntimeSource as before.
 
 Initial preparation needs internet access on the build machine. Downloads are

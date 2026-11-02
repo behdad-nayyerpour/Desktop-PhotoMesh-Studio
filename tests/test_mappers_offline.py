@@ -464,7 +464,8 @@ def test_extractor_never_uses_colmap_single_camera(tmp_path, monkeypatch):
     fe = [a for a in _cmds(steps) if a[0] == "feature_extractor"]
     assert fe and all(a[a.index("--ImageReader.single_camera") + 1] == "0" for a in fe)
     labels = [l for l, _, _ in steps]
-    assert labels.index("Grouping cameras") < labels.index("Rescaling key points")
+    # Group only after restoring original dimensions: downscaled mixed sensors can collide.
+    assert labels.index("Rescaling key points") < labels.index("Grouping cameras")
 
 
 def test_unaligned_photos_reported(window, image_dir):
