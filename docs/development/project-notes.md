@@ -4,8 +4,10 @@
 
 PhotoMesh Studio is an independent Python/PySide6 desktop photogrammetry project.
 
-Reconstruction uses [COLMAP](https://colmap.github.io/) (BSD) and optionally
-[GLOMAP](https://github.com/colmap/glomap) (BSD). The project's own processing
+Reconstruction uses [COLMAP](https://colmap.github.io/) (BSD), including its integrated global mapper.
+Standalone [GLOMAP](https://github.com/colmap/glomap) is retained only for compatible legacy engines.
+Optional local neural matching uses ALIKED (BSD) and LightGlue (Apache 2.0);
+[license notices](engine-modernization-102.md#offline-build-and-redistribution) accompany the bundle. The project's own processing
 pipeline is described in [Architecture and performance](architecture.md).
 Dependencies are listed in [requirements.txt](../../requirements.txt).
 

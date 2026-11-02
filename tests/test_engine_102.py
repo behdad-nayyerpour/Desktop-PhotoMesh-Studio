@@ -142,15 +142,18 @@ def test_database_calibration_merge_updates_modern_frames(tmp_path):
         CREATE TABLE rig_sensors(rig_id INTEGER,sensor_id INTEGER,sensor_type INTEGER,sensor_from_rig BLOB);
         CREATE TABLE frames(frame_id INTEGER PRIMARY KEY,rig_id INTEGER);
         CREATE TABLE frame_data(frame_id INTEGER,data_id INTEGER,sensor_id INTEGER,sensor_type INTEGER);
+        CREATE TABLE pose_priors(pose_prior_id INTEGER PRIMARY KEY,corr_data_id INTEGER,corr_sensor_id INTEGER,corr_sensor_type INTEGER);
         """)
         for cid in (1,2):
             con.execute("INSERT INTO cameras VALUES(?,?,?,?,?,?)",(cid,2,1000,800,np.array([800.,500.,400.,0.]).tobytes(),1))
             con.execute("INSERT INTO images VALUES(?,?,?)",(cid,str(cid)+".jpg",cid))
+            con.execute("INSERT INTO pose_priors VALUES(?,?,?,0)",(cid,cid,cid))
     merge_identical_cameras(db)
     with sqlite3.connect(db) as con:
         assert con.execute("SELECT COUNT(*) FROM rigs").fetchone()[0]==1
         assert con.execute("SELECT COUNT(*) FROM frames").fetchone()[0]==2
         assert con.execute("SELECT COUNT(DISTINCT sensor_id) FROM frame_data").fetchone()[0]==1
+        assert con.execute("SELECT COUNT(DISTINCT corr_sensor_id) FROM pose_priors").fetchone()[0]==1
         assert not list(con.execute("PRAGMA foreign_key_check"))
 
 
@@ -239,3 +242,30 @@ def test_validation_rejects_broken_track_links(tmp_path):
     cio.write_model(str(tmp_path),model)
     with pytest.raises(ValueError,match="missing image"):
         engine.validate_model(str(tmp_path))
+
+
+def test_geographic_zone_handles_dateline_and_rejects_invalid_regions():
+    from photomesh.georef import geographic_zone,valid_gps
+    zone,south=geographic_zone([[179.99,10,100],[-179.99,10.001,100],[179.98,10.002,100]])
+    assert zone in (1,60) and not south
+    assert valid_gps([float("nan"),40,100]) is None
+    assert valid_gps([44,89,100]) is None
+    with pytest.raises(ValueError,match="projection regions"):
+        geographic_zone([[0,40,100],[44,40,100],[45,40,100]])
+
+
+def test_delaunay_does_not_require_gpu_for_existing_fusion(window,tmp_path,monkeypatch):
+    from photomesh import dialogs,mesh_steps
+    from photomesh.project import Camera
+    window.project.path=str(tmp_path/"project.pmsx")
+    window.chunk.cameras=[Camera(str(tmp_path/"a.jpg"),aligned=True,est=[0,0,10])]
+    monkeypatch.setattr(window,"_need_colmap",lambda:"engine")
+    monkeypatch.setattr(window,"_cuda_available",lambda *_:pytest.fail("Delaunay meshing is a CPU task"))
+    monkeypatch.setattr(dialogs.BuildModelDialog,"exec",lambda *_:1)
+    original=dialogs.BuildModelDialog.settings
+    monkeypatch.setattr(dialogs.BuildModelDialog,"settings",lambda d:dict(original(d),source="Depth maps"))
+    monkeypatch.setattr(mesh_steps,"mesh_steps",lambda *a,**k:([("mesh",["delaunay_mesher"],1)],str(tmp_path/"model.ply")))
+    calls=[]
+    monkeypatch.setattr(window,"_run",lambda *a,**k:calls.append(a))
+    window.build_model()
+    assert calls and calls[0][0]=="Build Model"

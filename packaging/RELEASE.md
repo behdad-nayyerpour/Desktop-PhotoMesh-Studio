@@ -30,3 +30,21 @@ Before publishing, install the new Setup over a test installation, confirm
 Help > About shows the new version, and run a small real photo project on
 the target hardware. The automated test suite does not exercise a full
 COLMAP/GPU reconstruction. The EXE is not code signed.
+
+
+## Pinned engines in 1.0.2
+
+The builder prepares COLMAP 4.2.1 CPU/CUDA engines plus the local ALIKED/LightGlue
+models with fixed SHA256 digests. The tested source COLMAP is retained as a legacy
+dense fallback; legacy GLOMAP is optional. Python packages are reused from the
+tested RuntimeSource as before.
+
+Initial preparation needs internet access on the build machine. Downloads are
+cached in `%LOCALAPPDATA%\PhotoMeshStudioBuild\engine-cache`; use `-EngineCache`
+to choose another folder. A subsequent build can use `-OfflineBuild` when all
+verified cache entries are present. Target users receive the engines and models
+inside the complete Setup and processing needs no network access.
+
+Native CPU integration and numerical benchmarks are documented in the
+[engine review](../docs/development/engine-modernization-102.md). GPU behavior
+must additionally be checked on target hardware before distributing a release.

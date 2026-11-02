@@ -4,6 +4,21 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
+### 1.0.2 (2026-11-02)
+
+- Pin the offline Windows engine bundle to COLMAP 4.2.1, with CPU/CUDA builds, SHA256-verified local neural models and retained legacy compatibility.
+- Prefer the maintained integrated global mapper when available. Keep incremental fallback; do not enable experimental bundle-adjustment backends automatically.
+- Probe CUDA driver/device compatibility and real feature extraction/matching in child processes. A failed GPU feature probe retries the same method on CPU.
+- Isolate native engine DLL/Qt settings from the application's PySide6 environment.
+- Add explicit optional SIFT + LightGlue and ALIKED + LightGlue modes with visible, bounded feature counts and local model validation. No processing-time downloads.
+- Apply checked, valid, non-collinear camera GPS to the initial model frame when selected. Preserve existing project frames; use Optimize Cameras for later changes.
+- Reject invalid geographic regions and filter GPS positions before selecting a metric projection zone.
+- Synchronize modern frame/rig metadata and pose-prior camera links after calibration grouping, optimization, registration and coordinate transformations.
+- Validate reconstruction geometry/observation tracks in an isolated worker before activating an alignment. Publish adjusted sparse models and dependent geometry together with rollback on failure.
+- Match current/legacy solver option names, invalidate depth reuse when the engine changes and allow CPU Delaunay meshing from existing fusion data.
+- Add native Windows reconstruction benchmarks with known geometry, calibration-free comparisons and point-cloud/mesh checks. Neural methods are not assumed faster or more accurate for every dataset.
+- Rebuild the full Setup EXE. Preparation downloads pinned assets once into a reusable build cache; target-machine processing remains offline.
+
 ### 1.0.1 (2026-11-01)
 
 - Reviewed alignment, dense-cloud, mesh, texture, tiled-model, DSM and orthomosaic workflows together; see the [77-item scope](docs/development/workflow-review-101.md).

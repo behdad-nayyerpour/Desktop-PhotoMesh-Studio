@@ -853,6 +853,29 @@ def write_report(path, rows, crs, pixel=None, counts=None):
 
 
 
+def valid_gps(xyz):
+    try:
+        values=np.asarray(xyz,float)
+    except (TypeError,ValueError):
+        return None
+    if values.shape!=(3,) or not np.isfinite(values).all() or abs(values[0])>180 or not -80<=values[1]<=84:
+        return None
+    return values
+
+
+def geographic_zone(xyz):
+    values=np.asarray(xyz,float)
+    if values.ndim!=2 or values.shape[1]!=3 or not len(values) or any(valid_gps(row) is None for row in values):
+        raise ValueError("Geographic references require finite longitude/latitude/height within the supported UTM latitude range (-80 to 84 degrees)")
+    longitude=np.radians(values[:,0])
+    center=float(np.arctan2(np.sin(longitude).mean(),np.cos(longitude).mean()))
+    delta=np.angle(np.exp(1j*(longitude-center)))
+    if np.max(np.abs(np.degrees(delta)))>6:
+        raise ValueError("Geographic references span incompatible projection regions; check GPS outliers or process one survey area")
+    latitude=float(values[:,1].mean())
+    return utm_zone(math.degrees(center),latitude),latitude<0
+
+
 def camera_gps_metric(model, gps, crs, zone_hint=None):
     """EXIF GPS is lon/lat/alt, including when the project CRS is UTM."""
     if crs.kind == "local":
@@ -862,9 +885,10 @@ def camera_gps_metric(model, gps, crs, zone_hint=None):
         iid = names.get(_stem(label))
         if iid is None or len(xyz) != 3 or any(v is None for v in xyz):
             continue
-        lon, lat, alt = np.asarray(xyz, float)
-        if not np.isfinite([lon, lat, alt]).all() or abs(lon) > 180 or abs(lat) > 90:
+        values=valid_gps(xyz)
+        if values is None:
             continue
+        lon,lat,alt=values
         if crs.kind == "utm":
             E, N = utm_forward(lat, lon, crs.zone, crs.south)
             out[iid] = np.array([E, N, alt], float)
@@ -981,14 +1005,12 @@ def run_task(cfg, log=print):
     crs = CRS.parse(cfg.get("crs", ""))
     markers = [Marker(**m) for m in cfg.get("markers", []) if not m.get("disabled", False)]
     names = name_index(model)
-    # ---- metric frame
-    zone_hint = None
-    gps = cfg.get("camera_gps") or {}
-    if crs.kind == "wgs84":
-        pts = [m.ref for m in markers if m.ref] or list(gps.values())
-        if pts:
-            a = np.array(pts, float); zone_hint = (utm_zone(a[:, 0].mean(), a[:, 1].mean()), a[:, 1].mean() < 0)
-    metric = lambda xyz: crs.to_metric(np.atleast_2d(xyz), zone_hint)[0]
+    # Camera references outside the aligned model must not select its map zone.
+    gps={}
+    for label,value in (cfg.get("camera_gps") or {}).items():
+        clean=valid_gps(value)
+        if clean is not None and _stem(label) in names:
+            gps[label]=clean.tolist()
     # ---- triangulate markers in the current model
     tri = {}
     for m in markers:
@@ -999,6 +1021,11 @@ def run_task(cfg, log=print):
     log(f"Markers: {len(markers)} imported, {len(tri)} with >=2 projections on aligned photos, "
         f"{len(control)} control, {sum(1 for m in markers if not m.enabled and m.label in tri)} check")
     # ---- initial similarity
+    zone_hint=None
+    if crs.kind=="wgs84":
+        references=[m.ref for m in control] if cfg.get("use_markers",True) and len(control)>=3 else list(gps.values())
+        if references: zone_hint=geographic_zone(references)
+    metric = lambda xyz: crs.to_metric(np.atleast_2d(xyz),zone_hint)[0]
     cam_gps = camera_gps_metric(model, gps, crs, zone_hint) if cfg.get("use_cameras") else {}
     use_markers = cfg.get("use_markers", True) and len(control) >= 3
     if use_markers:

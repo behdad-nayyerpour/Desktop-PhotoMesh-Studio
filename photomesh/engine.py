@@ -229,6 +229,10 @@ def synchronize_database_frames(connection):
     connection.execute("DELETE FROM rigs")
     ids = [r[0] for r in connection.execute("SELECT DISTINCT camera_id FROM images")]
     connection.executemany("INSERT INTO rigs(rig_id,ref_sensor_id,ref_sensor_type) VALUES(?,?,0)", [(cid,cid) for cid in ids])
+    if "pose_priors" in tables:
+        columns={row[1] for row in connection.execute("PRAGMA table_info(pose_priors)")}
+        if {"corr_data_id","corr_sensor_id","corr_sensor_type"}<=columns:
+            connection.execute("UPDATE pose_priors SET corr_sensor_id=(SELECT camera_id FROM images WHERE image_id=pose_priors.corr_data_id) WHERE corr_sensor_type=0 AND EXISTS(SELECT 1 FROM images WHERE image_id=pose_priors.corr_data_id)")
     rows = list(connection.execute("SELECT image_id,camera_id FROM images"))
     connection.executemany("INSERT INTO frames(frame_id,rig_id) VALUES(?,?)", rows)
     connection.executemany("INSERT INTO frame_data(frame_id,data_id,sensor_id,sensor_type) VALUES(?,?,?,0)",
@@ -373,7 +377,7 @@ def execution_settings(exe, settings, workdir, log=print):
 def gps_frame_available(cameras, crs="", existing_alignment=False):
     """GPS references must define a 2-D footprint, not just have three rows."""
     import numpy as np
-    from .georef import CRS, utm_forward, utm_zone
+    from .georef import CRS, utm_forward, geographic_zone, valid_gps
     if existing_alignment:
         return False, "The existing project frame is preserved. Use Optimize Cameras to apply GPS to this project."
     if crs and CRS.parse(crs).kind == "local":
@@ -382,17 +386,16 @@ def gps_frame_available(cameras, crs="", existing_alignment=False):
     for camera in cameras:
         if not camera.enabled or not camera.use_reference:
             continue
-        xyz=(camera.lon,camera.lat,camera.alt)
-        if any(v is None or not np.isfinite(v) for v in xyz):
-            continue
-        if abs(xyz[0])>180 or abs(xyz[1])>90:
-            continue
-        values.append(xyz)
+        xyz=valid_gps((camera.lon,camera.lat,camera.alt))
+        if xyz is not None: values.append(xyz)
     if len(values)<3:
         return False, "At least three checked cameras with valid longitude, latitude and altitude are required."
     values=np.asarray(values,float)
-    zone=utm_zone(float(np.mean(values[:,0])),float(np.mean(values[:,1])))
-    east,north=utm_forward(values[:,1],values[:,0],zone,bool(np.mean(values[:,1])<0))
+    try:
+        zone,south=geographic_zone(values)
+    except ValueError as error:
+        return False,str(error)
+    east,north=utm_forward(values[:,1],values[:,0],zone,south)
     ground=np.column_stack([east,north])
     singular=np.linalg.svd(ground-ground.mean(0),compute_uv=False)
     if len(singular)<2 or singular[1]<max(1e-3,singular[0]*1e-4):

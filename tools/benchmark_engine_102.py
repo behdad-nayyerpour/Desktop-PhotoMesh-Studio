@@ -52,9 +52,9 @@ def make_scene(folder):
     finally: texsynth.albedo=previous
 
 
-def measure_alignment(exe,root,scene,method,mapper):
+def measure_alignment(exe,root,scene,method,mapper,known_calibration=True):
     from photomesh.georef import umeyama
-    folder=root/(method.replace(" ","_").replace("+","_")+"-"+mapper); folder.mkdir()
+    folder=root/(method.replace(" ","_").replace("+","_")+"-"+mapper+("" if known_calibration else "-uncalibrated")); folder.mkdir()
     database=str(folder/"database.db"); out=folder/"sparse"; out.mkdir()
     photos=os.path.dirname(next(iter(scene["photos"].values())))
     settings={"feature_method":method,"key_point_limit":2048,"use_gpu":False}
@@ -68,13 +68,14 @@ def measure_alignment(exe,root,scene,method,mapper):
         times["extract"]=command(exe,extract,log)
         # Known camera calibration is the controlled input for this numerical benchmark.
         by_name={im.name:truth_cameras[im.camera_id] for im in truth_images.values()}
-        with closing(sqlite3.connect(database)) as con:
-            rows=list(con.execute("SELECT name,camera_id FROM images"))
-            for name,cid in rows:
-                camera=by_name[name]
-                con.execute("UPDATE cameras SET model=?,params=?,prior_focal_length=1 WHERE camera_id=?",
-                            (camera.model,np.asarray(camera.params,np.float64).tobytes(),cid))
-            con.commit()
+        if known_calibration:
+            with closing(sqlite3.connect(database)) as con:
+                rows=list(con.execute("SELECT name,camera_id FROM images"))
+                for name,cid in rows:
+                    camera=by_name[name]
+                    con.execute("UPDATE cameras SET model=?,params=?,prior_focal_length=1 WHERE camera_id=?",
+                                (camera.model,np.asarray(camera.params,np.float64).tobytes(),cid))
+                con.commit()
         fp.merge_identical_cameras(database)
         match=["exhaustive_matcher","--database_path",database]
         match+=engine.matching_arguments(exe,"exhaustive_matcher",settings)
@@ -99,7 +100,7 @@ def measure_alignment(exe,root,scene,method,mapper):
         error=float(np.sqrt(np.mean(np.sum((src@R.T*scale+t-dst)**2,1))))
         pixels=cio.observation_errors(model)[0]
         reprojection=float(np.sqrt(np.mean(pixels**2)))
-        if len(model.images)<12 or len(model.points)<100 or error>.5 or reprojection>2.:
+        if len(model.images)<12 or len(model.points)<100 or (known_calibration and error>.5) or reprojection>2.:
             raise AssertionError(f"Geometry regression: {len(model.images)} cameras, {len(model.points)} points, {error} m center RMS, {reprojection} px RMS")
         # Exercise the actual native reader after changing the model frame.
         from photomesh.georef import transform_model
@@ -111,15 +112,15 @@ def measure_alignment(exe,root,scene,method,mapper):
         for iid,im in model.images.items():
             np.testing.assert_allclose(native.images[iid].center(),im.center(),atol=1e-7)
         np.testing.assert_allclose(native.points.xyz,model.points.xyz,atol=1e-7)
-    return {"method":method,"mapper":mapper,"cameras":len(model.images),"points":len(model.points),
+    return {"method":method,"mapper":mapper,"calibration_known":known_calibration,"cameras":len(model.images),"points":len(model.points),
             "camera_rms_m":error,"reprojection_rms_px":reprojection,"seconds":times,
             "total_seconds":sum(times.values())}
 
 
-def measure_fast_pipeline(exe,root,scene):
+def measure_fast_pipeline(exe,root,scene,known_calibration=True):
     from photomesh.georef import umeyama
     from PIL import Image
-    folder=root/"fast-coarse-fine"; folder.mkdir()
+    folder=root/("fast-coarse-fine"+("" if known_calibration else "-uncalibrated")); folder.mkdir()
     names=list(scene["photos"])
     photos=os.path.dirname(next(iter(scene["photos"].values())))
     (folder/"image_root.txt").write_text(photos,encoding="utf-8")
@@ -134,6 +135,31 @@ def measure_fast_pipeline(exe,root,scene):
     previous=fp.COARSE_MAX_SIZE; fp.COARSE_MAX_SIZE=256
     try: steps=fp.fast_align_steps(exe,str(folder),names,infos,settings)
     finally: fp.COARSE_MAX_SIZE=previous
+    # All numerical comparisons in this script use the same known calibration.
+    # Supply it after extraction, before grouping/rescaling, also for the full
+    # coarse/fine pipeline. An unconstrained focal prior on a nearly planar block
+    # is not a calibrated metric-accuracy test.
+    truth_images=cio.read_images(os.path.join(scene["model"],"images.bin"))
+    truth_cameras=cio.read_cameras(os.path.join(scene["model"],"cameras.bin"))
+    by_name={im.name:truth_cameras[im.camera_id] for im in truth_images.values()}
+    def calibration_fixture():
+        with closing(sqlite3.connect(str(folder/"coarse.db"))) as con:
+            for name,cid in list(con.execute("SELECT name,camera_id FROM images")):
+                width,height=con.execute("SELECT width,height FROM cameras WHERE camera_id=?",(cid,)).fetchone()
+                camera=by_name[name]; params=camera.params.copy()
+                sx,sy=width/camera.width,height/camera.height
+                if camera.model==2:
+                    params[:3]*=[sx,sx,sy]
+                elif camera.model==1:
+                    params[:4]*=[sx,sy,sx,sy]
+                else:
+                    raise AssertionError("Unsupported calibration in known fixture")
+                con.execute("UPDATE cameras SET model=?,params=?,prior_focal_length=1 WHERE camera_id=?",
+                            (camera.model,params.tobytes(),cid))
+            con.commit()
+        return []
+    first=next(i for i,(label,*_) in enumerate(steps) if label.startswith("Detecting points"))
+    if known_calibration: steps.insert(first+1,("Known calibration fixture",calibration_fixture,0))
     # Two database generations, native triangulation and modern BA flags are exercised.
     timing=fp.run_steps(exe,steps,log=lambda *_:None,logfile=str(folder/"native.log"))
     model=engine.validate_model(str(folder/"sparse"/"0"))
@@ -143,9 +169,9 @@ def measure_fast_pipeline(exe,root,scene):
     scale,R,t=umeyama(src,dst)
     error=float(np.sqrt(np.mean(np.sum((src@R.T*scale+t-dst)**2,1))))
     reprojection=float(np.sqrt(np.mean(cio.observation_errors(model)[0]**2)))
-    if len(model.images)<12 or len(model.points)<100 or reprojection>2. or error>.5:
+    if len(model.images)<12 or len(model.points)<100 or reprojection>2. or (known_calibration and error>.5):
         raise AssertionError(f"Fast pipeline geometry regression: {len(model.images)} cameras, {len(model.points)} points, {error} m, {reprojection} px")
-    return {"method":"SIFT","mapper":"fast-coarse-fine","cameras":len(model.images),"points":len(model.points),
+    return {"method":"SIFT","mapper":"fast-coarse-fine","calibration_known":known_calibration,"cameras":len(model.images),"points":len(model.points),
             "camera_rms_m":error,"reprojection_rms_px":reprojection,"stages":timing,
             "total_seconds":sum(item[1] for item in timing)}
 
@@ -192,6 +218,12 @@ def main():
             results.append(result); print(json.dumps(result),flush=True)
         fast=measure_fast_pipeline(args.exe,root,scene)
         results.append(fast); print(json.dumps(fast),flush=True)
+        estimated=measure_alignment(args.exe,root,scene,"SIFT","incremental",False)
+        estimated_fast=measure_fast_pipeline(args.exe,root,scene,False)
+        results.extend([estimated,estimated_fast])
+        print(json.dumps(estimated),flush=True); print(json.dumps(estimated_fast),flush=True)
+        if estimated_fast["camera_rms_m"]>max(.5,estimated["camera_rms_m"]*1.25):
+            raise AssertionError("Coarse/fine calibration-free geometry degraded relative to full-resolution incremental mapping")
         cloud_mesh=measure_cloud_mesh(root,scene)
         print(json.dumps(cloud_mesh),flush=True)
         # SIFT + LightGlue has distinct weights/options and gets its own real native probe.

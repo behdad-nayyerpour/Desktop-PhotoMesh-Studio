@@ -275,3 +275,34 @@ Processing performance is compared against 1.0.0 on the same CI runner for
 equivalent workloads. Corrected geometry, larger explicitly requested feature
 counts, finer pixels or additional pages change the amount of work; they cannot
 be assigned the same runtime merely by changing a label.
+
+
+## Engine selection and GPS in 1.0.2
+
+The full Setup includes pinned modern CPU/CUDA engines and the tested legacy
+engine when supplied by the build runtime. The app probes the driver, GPU
+generation and native initialization outside its GUI process. Unsupported GPU
+feature execution retries the same feature method on CPU; dense depth maps
+still require a compatible NVIDIA/CUDA engine.
+
+**Align Photos > Features and matching** offers SIFT (default), SIFT + LightGlue,
+and ALIKED + LightGlue. Neural methods use local models supplied by Setup.
+They are optional: learned features are not automatically faster or more
+accurate on every aerial block. Their feature count is explicit (default 2,048,
+maximum 4,096); neural matching does not reuse SIFT descriptors or a coarse SIFT
+database. Coarse-to-fine is a SIFT path.
+
+**Apply checked camera GPS to model scale, orientation and location** is separate
+from GPS pair preselection. It is offered for an initial alignment when enough
+checked cameras have valid non-collinear positions in a supported projection
+region. It applies a similarity transformation; it does not turn ordinary EXIF
+GPS into survey-grade control or replace calibration/GCP validation.
+
+Existing alignments and survey frames are preserved. Use **Optimize Cameras**
+with the appropriate references and accuracies to change their frame.
+Rebuild derived products when camera geometry changes.
+
+SIFT remains the default. Automatic mapping chooses the integrated global
+solver for sufficiently large sets when supported, and retains incremental
+fallback. A CUDA build alone does not establish GPU support in every solver:
+uncertified Ceres GPU solvers and experimental backends are not enabled by default.

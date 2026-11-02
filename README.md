@@ -1,6 +1,6 @@
 # PhotoMesh Studio
 
-**Source version 1.0.1** — source-aware processing settings, recoverable products, and GCP registration of added photos.
+**Source version 1.0.2** — offline engine compatibility checks, maintained global mapping, optional neural matching, and explicit GPS framing.
 Windows installers are published separately in Releases; check their version before downloading.
 
 Desktop photogrammetry software for turning overlapping aerial photographs into
@@ -35,7 +35,8 @@ See [installation and requirements](docs/installation.md) and [updating](UPDATIN
 
 ## Main features
 
-- Photo alignment with COLMAP and optional GLOMAP acceleration.
+- Photo alignment with COLMAP, integrated global mapping, and legacy-engine fallback.
+- Optional offline SIFT/LightGlue or ALIKED/LightGlue matching; SIFT remains the default.
 - Dense point clouds, filtering, meshes, textures, and tiled 3D models.
 - Ground control and check points, camera optimization, and error reports.
 - Orthomosaic and DEM generation with georeferenced raster export.

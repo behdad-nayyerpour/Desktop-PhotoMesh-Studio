@@ -90,3 +90,10 @@ redist/
 *.exe
 *.dll
 *.pyd
+
+# Verified engine build assets and generated benchmark evidence
+.engine-download-cache/
+engine-fixture/
+engine-downloads/
+engine-benchmark.json
+workflow-performance.json
