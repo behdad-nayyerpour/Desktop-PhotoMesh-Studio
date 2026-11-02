@@ -89,3 +89,12 @@ their versioned names do not mean they are obsolete. Binary shape fixtures and
 the application icon are required resources.
 
 See [packaging tools](../../packaging/README.md) for the remaining build files.
+
+## Required release quality review
+
+Every application version includes the [maintainability and release quality
+checklist](release-quality.md). Review duplication, dead code, readability and
+workflow interactions alongside correctness, compatibility and performance.
+The root [contributor instructions](../../AGENTS.md) apply to coding agents as
+well. A full baseline maintainability audit is pending and belongs in the next
+application version's plan before release.

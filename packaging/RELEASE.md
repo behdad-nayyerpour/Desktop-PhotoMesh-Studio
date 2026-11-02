@@ -26,6 +26,11 @@ The source is read but not changed. The builder validates copied Python
 packages, creates the Setup EXE, and writes a matching `.sha256` file.
 Choose a fresh stage directory for each build.
 
+Before preparing a new release, complete the [release quality
+checklist](../docs/development/release-quality.md) and retain the review evidence
+with the version's existing review document or PR/release notes. Passing tests
+alone does not establish a maintainability or duplicate-code audit.
+
 Before publishing, install the new Setup over a test installation, confirm
 Help > About shows the new version, and run a small real photo project on
 the target hardware. The automated test suite does not exercise a full
