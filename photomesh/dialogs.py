@@ -575,7 +575,7 @@ class PreferencesDialog(QDialog):
         b.clicked.connect(self._browse)
         row.addWidget(self.colmap); row.addWidget(b)
         af.addRow("COLMAP executable:", row)
-        found = cm.find_colmap()
+        found = cm.locate_colmap()
         af.addRow("Detected:", QLabel(found or "<i>not found</i>"))
         tabs.addTab(adv, "Advanced")
         lay.addWidget(tabs)

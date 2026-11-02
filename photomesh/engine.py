@@ -281,7 +281,21 @@ def sibling_engine(exe, name):
     return None
 
 
+_SELECTION = {}
+
+
+def selection_known(exe):
+    return fingerprint(exe) in _SELECTION
+
+
 def select_bundled(exe):
+    key=fingerprint(exe)
+    if key not in _SELECTION:
+        _SELECTION[key]=_select_bundled(exe)
+    return _SELECTION[key]
+
+
+def _select_bundled(exe):
     if not bundle_manifest(exe):
         return exe
     if gpu_device(exe):

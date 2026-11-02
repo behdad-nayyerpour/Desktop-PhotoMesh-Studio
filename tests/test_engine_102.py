@@ -269,3 +269,30 @@ def test_delaunay_does_not_require_gpu_for_existing_fusion(window,tmp_path,monke
     monkeypatch.setattr(window,"_run",lambda *a,**k:calls.append(a))
     window.build_model()
     assert calls and calls[0][0]=="Build Model"
+
+
+def test_startup_locator_does_not_run_native_capability_probe(tmp_path,monkeypatch):
+    from photomesh import colmap
+    exe=tmp_path/"bin"/"colmap.exe"; exe.parent.mkdir(); exe.write_bytes(b"fixture")
+    monkeypatch.setattr(colmap,"_bundled_candidates",lambda:iter([str(exe)]))
+    monkeypatch.setattr(engine,"select_bundled",lambda *_:pytest.fail("Startup must not probe a native executable"))
+    assert colmap.locate_colmap()==str(exe)
+
+
+def test_coarse_pose_reuse_requires_focal_priors(tmp_path,monkeypatch):
+    from photomesh import fastpipe as fp,colmap
+    monkeypatch.setattr(colmap,"colmap_options",lambda *_:set())
+    settings={"accuracy":"High","key_point_limit":2048,"use_gpu":False,
+              "coarse_to_fine":True,"decode_cache":False,"mapper":"Incremental"}
+    steps=fp.fast_align_steps("missing-engine",str(tmp_path),["a.jpg","b.jpg"],
+                              [{"width":4000,"height":3000}]*2,settings)
+    with sqlite3.connect(str(tmp_path/"coarse.db")) as database:
+        database.execute("CREATE TABLE cameras(camera_id INTEGER,prior_focal_length INTEGER)")
+        database.execute("INSERT INTO cameras VALUES(1,0)")
+    check=next(action for label,action,_ in steps if label=="Checking coarse calibration")
+    assert "disabled" in check()[0][1]
+    fine=next(action for label,action,_ in steps if label=="Planning fine matching")
+    (tmp_path/"pairs.txt").write_text("a.jpg b.jpg\n")
+    selected=fine()
+    assert any(isinstance(args,list) and args and args[0]=="mapper" for _,args,_ in selected)
+    assert not any(isinstance(args,list) and args and args[0]=="point_triangulator" for _,args,_ in selected)

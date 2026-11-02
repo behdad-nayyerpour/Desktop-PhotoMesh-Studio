@@ -16,6 +16,7 @@ EXE. See [Updating](UPDATING.md).
 - Synchronize modern frame/rig metadata and pose-prior camera links after calibration grouping, optimization, registration and coordinate transformations.
 - Validate reconstruction geometry/observation tracks in an isolated worker before activating an alignment. Publish adjusted sparse models and dependent geometry together with rollback on failure.
 - Match current/legacy solver option names, invalidate depth reuse when the engine changes and allow CPU Delaunay meshing from existing fusion data.
+- Disable coarse-camera pose reuse when focal priors are unavailable; reconstruct at target resolution to avoid biased self-calibration.
 - Add native Windows reconstruction benchmarks with known geometry, calibration-free comparisons and point-cloud/mesh checks. Neural methods are not assumed faster or more accurate for every dataset.
 - Rebuild the full Setup EXE. Preparation downloads pinned assets once into a reusable build cache; target-machine processing remains offline.
 

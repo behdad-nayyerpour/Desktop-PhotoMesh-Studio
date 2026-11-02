@@ -119,7 +119,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.refresh_all()
         from .theme import apply_theme
         apply_theme(QApplication.instance())
-        self.log(f"{APP_NAME} {APP_VERSION} started. COLMAP: {cm.find_colmap() or 'not found'}")
+        self.log(f"{APP_NAME} {APP_VERSION} started. COLMAP: {cm.locate_colmap() or 'not found'}")
 
     # ------------------------------------------------------------------ UI
     def _build_central(self):
@@ -1598,7 +1598,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.statusBar().showMessage(f"Log folder: {d}  (current log: {diag.log_path() or 'not available'})", 15000)
 
     def _need_colmap(self):
-        exe = cm.find_colmap()
+        exe,cancelled,error=run_modal(self,"Check Reconstruction Engine","Checking compatible engine...",
+            lambda report,stop:cm.find_colmap(),0)
+        if cancelled: return None
+        if error:
+            self.show_error("Check Reconstruction Engine",error)
+            return None
         if not exe:
             QMessageBox.warning(self, "COLMAP not found",
                 "This command uses COLMAP as its reconstruction engine, but no 'colmap' "
@@ -1613,7 +1618,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         processing metadata (procmeta.record) for the step. params: the step's
         settings (dialog values), for the error report if it fails. on_fail: run
         when the step fails or is cancelled (e.g. show the previous result again)."""
-        exe = engine_exe or cm.find_colmap()
+        from .engine import bundle_manifest,selection_known
+        candidate=cm.locate_colmap()
+        if not engine_exe and candidate and bundle_manifest(candidate) and not selection_known(candidate):
+            exe,cancelled,error=run_modal(self,"Check Reconstruction Engine","Checking compatible engine...",
+                lambda report,stop:cm.find_colmap(),0)
+            if cancelled: return
+            if error:
+                self.show_error("Check Reconstruction Engine",error)
+                return
+        else:
+            exe=engine_exe or cm.find_colmap()
         if self.runner is not None and getattr(self.runner, "busy", False):
             QMessageBox.information(self, title, "Another processing task is running."); return
         dlg = ProgressDialog(title, self)

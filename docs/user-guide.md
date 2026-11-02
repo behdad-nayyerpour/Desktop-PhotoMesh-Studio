@@ -306,3 +306,10 @@ SIFT remains the default. Automatic mapping chooses the integrated global
 solver for sufficiently large sets when supported, and retains incremental
 fallback. A CUDA build alone does not establish GPU support in every solver:
 uncertified Ceres GPU solvers and experimental backends are not enabled by default.
+
+
+Coarse pose reuse additionally requires reliable focal priors reported by the
+engine. If those priors are unavailable, the target-resolution features are
+mapped afresh rather than inheriting a potentially ambiguous coarse calibration.
+The Console records that decision. Reprojection error alone is not an
+independent accuracy check; use surveyed check points for metric validation.

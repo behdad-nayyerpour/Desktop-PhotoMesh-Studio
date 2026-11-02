@@ -42,7 +42,7 @@ def _resolve(path: str) -> str:
     return path
 
 
-def find_colmap() -> str | None:
+def _find_colmap(check_compatibility=True) -> str | None:
     """Tools > Preferences path, then the COLMAP shipped next to the app
     (tools/colmap - the tested version, also in the portable package), then PATH."""
     custom = QSettings().value("colmap/path", "", str)
@@ -51,7 +51,7 @@ def find_colmap() -> str | None:
     for c in _bundled_candidates():
         if os.path.isfile(c) and (os.name == "nt" or os.access(c, os.X_OK)):
             from .engine import select_bundled
-            selected = select_bundled(c)
+            selected = select_bundled(c) if check_compatibility else c
             if selected:
                 return _resolve(selected)
     for name in ("colmap", "COLMAP", "colmap.bat", "COLMAP.bat", "colmap.exe"):
@@ -66,6 +66,15 @@ def find_colmap() -> str | None:
         if os.path.isfile(c):
             return _resolve(c)
     return None
+
+
+def find_colmap() -> str | None:
+    return _find_colmap(True)
+
+
+def locate_colmap() -> str | None:
+    """Path lookup only: safe for startup and interactive preferences."""
+    return _find_colmap(False)
 
 
 # ------------------------------------------------------------------ GLOMAP

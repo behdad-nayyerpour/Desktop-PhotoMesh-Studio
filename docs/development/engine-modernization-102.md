@@ -31,6 +31,11 @@
 
 ## Safety and numerical policy
 
+Coarse pose reuse is guarded by the engine database focal-prior flags. A native
+calibration-free regression exposed biased geometry despite low reprojection
+error; that route now uses target-resolution mapping instead of inheriting
+coarse camera poses. The same counterexample remains in the native benchmark.
+
 SIFT stays the default. A faster label is not used to reduce quality invisibly.
 Neural methods have explicit feature limits and their own databases. Experimental
 Caspar is not automatically selected because its camera/prior support differs.

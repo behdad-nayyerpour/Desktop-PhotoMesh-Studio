@@ -911,8 +911,25 @@ def fast_align_steps(exe, wd, names, infos, s):
             steps.append(("Removing working images", cleanup, 0))
     steps += [
         ("Matching points (preselected pairs)", import_matches(first_db, pairs_txt), 15),
-    ] + mapper_steps(exe, first_db, img_dir, first_sparse, s, n, ilist, coarse=do_fine,
-                     tag=" (coarse)" if do_fine else "")
+    ]
+    coarse_state={"trusted":True}
+    mapping=mapper_steps(exe,first_db,img_dir,first_sparse,s,n,ilist,coarse=do_fine,
+                         tag=" (coarse)" if do_fine else "")
+    if do_fine:
+        def plan_coarse():
+            try:
+                database=sqlite3.connect(first_db)
+                try: priors=database.execute("SELECT prior_focal_length FROM cameras").fetchall()
+                finally: database.close()
+                coarse_state["trusted"]=bool(priors) and all(row[0] for row in priors)
+            except sqlite3.Error:
+                coarse_state["trusted"]=False
+            if not coarse_state["trusted"]:
+                return [("log","Coarse pose reuse disabled: reliable focal priors are unavailable. Mapping at target resolution preserves self-calibration.",0)]
+            return mapping
+        steps.append(("Checking coarse calibration",plan_coarse,1))
+    else:
+        steps += mapping
     if do_fine:
         ctxt = os.path.join(wd, "sparse_coarse_txt")
         fine_pairs = os.path.join(wd, "pairs_fine.txt")
@@ -920,6 +937,11 @@ def fast_align_steps(exe, wd, names, infos, s):
 
         def plan_fine():
             os.makedirs(ctxt, exist_ok=True)
+            if not coarse_state["trusted"]:
+                pre=[tuple(line.split()) for line in open(pairs_txt,encoding="utf-8") if line.strip()]
+                write_pairs(fine_pairs,pre)
+                return [("log","Target-resolution mapping with unknown calibration; coarse camera poses are not inherited.",0),
+                        ("Matching points (target resolution)",import_matches(fdb,fine_pairs),15)] + mapper_steps(exe,fdb,img_dir,sparse,s,n,ilist,tag=" (fine)")
             images_txt = os.path.join(ctxt, "images.txt")
             if not os.path.exists(images_txt):
                 return [("log", "Coarse model missing - fine stage skipped", 0)]
@@ -969,8 +991,9 @@ def fast_align_steps(exe, wd, names, infos, s):
 
         steps += [
             ("Preparing fine database", prepare_fine_db, 1),
-            ("Exporting coarse cameras", ["model_converter", "--input_path", os.path.join(csparse, "0"),
-             "--output_path", ctxt, "--output_type", "TXT"], 1),
+            ("Exporting coarse cameras", lambda: [
+                ("Exporting calibrated coarse cameras",["model_converter","--input_path",os.path.join(csparse,"0"),
+                 "--output_path",ctxt,"--output_type","TXT"],1)] if coarse_state["trusted"] else [], 0),
             (f"Detecting points (fine {fine_size}px)", extract(fdb, fine_size, fine_kp,
                                                                 work_f if use_cache else None), 20),
         ]
