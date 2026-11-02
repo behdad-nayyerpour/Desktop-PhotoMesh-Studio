@@ -10,7 +10,7 @@ name: Tests
 
 on:
   push:
-    branches: [main, "release/1.0.0", "improve/workflow-review"]
+    branches: [main, "release/1.0.0", "improve/workflow-review", "improve/engine-modernization"]
     tags: ["v*"]
     paths-ignore: ["**.md", "screenshot*.png", "*.bat"]
   workflow_dispatch:
@@ -74,7 +74,7 @@ jobs:
           { echo '### Tests (Linux)'; echo '```'; if [ -f pytest.txt ]; then grep -E '^(SKIPPED|FAILED|ERROR)|passed|failed' pytest.txt || true; fi; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
   windows:
-    if: (github.event_name == 'workflow_dispatch' && inputs.windows) || (github.ref == 'refs/heads/release/1.0.0' || github.ref == 'refs/heads/improve/workflow-review')
+    if: (github.event_name == 'workflow_dispatch' && inputs.windows) || (github.ref == 'refs/heads/release/1.0.0' || github.ref == 'refs/heads/improve/workflow-review' || github.ref == 'refs/heads/improve/engine-modernization')
     runs-on: windows-latest
     timeout-minutes: 25
     env:

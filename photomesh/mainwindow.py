@@ -1608,12 +1608,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.statusBar().showMessage("COLMAP not found", 6000)
         return exe
 
-    def _run(self, title, steps, on_success, meta=None, params=None, on_fail=None):
+    def _run(self, title, steps, on_success, meta=None, params=None, on_fail=None, engine_exe=None):
         """meta: callable(seconds, stage_seconds) run after on_success, to record
         processing metadata (procmeta.record) for the step. params: the step's
         settings (dialog values), for the error report if it fails. on_fail: run
         when the step fails or is cancelled (e.g. show the previous result again)."""
-        exe = cm.find_colmap()
+        exe = engine_exe or cm.find_colmap()
         if self.runner is not None and getattr(self.runner, "busy", False):
             QMessageBox.information(self, title, "Another processing task is running."); return
         dlg = ProgressDialog(title, self)
@@ -1754,6 +1754,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         previous_poses = {mapping[c.path]: {"center":c.est,"rotation":c.rot}
                           for c in enabled if c.aligned and c.est is not None and c.rot is not None}
         def prepare_alignment():
+            from .engine import execution_settings
+            probe_logs=[]
+            s.update(execution_settings(exe, s, wd, probe_logs.append))
             planned = cm.align_steps(exe, ch, wd, s, names=names, infos=[c.info() for c in enabled])
             if previous_poses:
                 path=os.path.join(wd,"preserve_frame.json")
@@ -1761,7 +1764,24 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                     json.dump({"model":os.path.join(wd,"sparse","0"),"cameras":previous_poses},fh)
                 index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
                 planned.insert(index,("Preserving project frame",[cm.PYTHON,"preserve_frame",path],2))
-            return planned
+            if s.get("gps_frame"):
+                gps_path = os.path.join(wd, "alignment_gps.json")
+                gps_cfg = {"model": os.path.join(wd,"sparse","0"), "markers": [],
+                           "crs": ch.crs or "EPSG:4326", "use_markers": False, "use_cameras": True,
+                           "camera_gps": {mapping[c.path]: [c.lon,c.lat,c.alt] for c in enabled
+                                          if c.use_reference and all(v is not None and np.isfinite(v) for v in (c.lon,c.lat,c.alt))},
+                           "bundle": False, "transform_files": [], "result": os.path.join(wd,"alignment_georef.json"),
+                           "report": os.path.join(wd,"alignment_georef.txt")}
+                with open(gps_path,"w",encoding="utf-8") as handle:
+                    json.dump(gps_cfg,handle)
+                index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
+                planned.insert(index,("Applying camera GPS frame",[cm.PYTHON,"georef",gps_path],2))
+            def validate():
+                from .engine import validate_model
+                validate_model(os.path.join(wd,"sparse","0"))
+                return []
+            planned.append(("Validating reconstructed geometry",validate,1))
+            return [("log",message,0) for message in probe_logs] + planned
         steps = [("Preparing alignment", prepare_alignment, 1)]
         self.log(f"Align Photos: mode={s['mode']}, accuracy={s['accuracy']}, workdir={wd}")
 
@@ -1770,6 +1790,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             if not poses:
                 raise ValueError("No camera poses were produced; previous alignment was kept")
             ch.workdir = wd
+            if s.get("gps_frame"):
+                with open(os.path.join(wd,"alignment_georef.json"),encoding="utf-8") as handle:
+                    result=json.load(handle)
+                ch.georef = {key:result.get(key) for key in ("offset","similarity","crs","crs_kind","zone","rows","control_rmse","check_rmse")}
+                ch.crs = result["crs"]
+                self.log("Camera GPS applied: model scale/orientation/location are metric. GPS accuracy still limits survey accuracy.")
             if wd != original_wd:
                 self._invalidate_camera_products(ch)
                 if ch.georef:
@@ -1826,6 +1852,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         exe = self._need_colmap()
         if not exe:
             return
+        from .engine import bundle_manifest, dense_executable
+        if bundle_manifest(exe):
+            selected,cancelled,error=run_modal(self,"Check Dense Engine","Checking compatible CUDA engine...",
+                lambda report,stop:dense_executable(exe),0)
+            if cancelled: return
+            if error or not selected:
+                QMessageBox.warning(self,"CUDA engine unavailable",
+                    "No compatible dense CUDA engine was found. Alignment can use the CPU. "
+                    "Check the NVIDIA driver/device or install the complete Setup; prior results are kept.")
+                return
+            exe=selected
         cuda = self._cuda_available(exe)
         if cuda is None:
             return
@@ -1872,7 +1909,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                        if os.path.isfile(os.path.join(wd, "dense", "filter_stats.json")) else []),
                             **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
-                  lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s)
+                  lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s, engine_exe=exe)
 
     def build_model(self):
         if not self._require_saved("Build Model"):

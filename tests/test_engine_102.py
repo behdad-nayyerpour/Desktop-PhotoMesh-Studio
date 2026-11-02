@@ -1,0 +1,162 @@
+"""Numerical and isolation regressions for offline engine modernization."""
+import json
+import os
+import sqlite3
+import struct
+from pathlib import Path
+from types import SimpleNamespace
+import numpy as np
+import pytest
+from photomesh import engine
+
+
+@pytest.fixture(autouse=True)
+def clear_probes(monkeypatch):
+    monkeypatch.setattr(engine, "_GPU", None)
+    engine._PROBES.clear()
+    engine._PREFLIGHT.clear()
+    engine._MODEL_STAMPS.clear()
+
+
+def test_child_environment_does_not_change_host(tmp_path,monkeypatch):
+    exe=tmp_path/"engine"/"bin"/"colmap.exe"; exe.parent.mkdir(parents=True)
+    (exe.parent.parent/"plugins").mkdir()
+    monkeypatch.setenv("QT_PLUGIN_PATH","host-pyside")
+    monkeypatch.setenv("PATH","host-path")
+    result=engine.child_env(str(exe))
+    assert os.environ["QT_PLUGIN_PATH"]=="host-pyside" and os.environ["PATH"]=="host-path"
+    assert result["QT_PLUGIN_PATH"]==str(exe.parent.parent/"plugins")
+    assert result["PATH"].startswith(str(exe.parent))
+
+
+@pytest.mark.parametrize("driver,cc,memory,expected",[(13020,75,4*1024**3,True),
+    (12000,89,8*1024**3,False),(13020,61,8*1024**3,False),(13020,89,512*1024**2,False)])
+def test_bundle_hardware_gate(monkeypatch,driver,cc,memory,expected):
+    monkeypatch.setattr(engine,"run_help",lambda *_:"COLMAP 4.2.1 with CUDA")
+    monkeypatch.setattr(engine,"bundle_manifest",lambda *_:{"cuda":True,"minimum_driver":13020,"minimum_cc":75})
+    monkeypatch.setattr(engine,"hardware",lambda:{"driver":driver,"devices":[{"index":0,"cc":cc,"memory":memory,"name":"test"}]})
+    assert bool(engine.gpu_device("engine"))==expected
+
+
+def test_no_gpu_preference_is_honored(monkeypatch):
+    monkeypatch.setattr(engine,"hardware",lambda:pytest.fail("GPU must not be probed when disabled"))
+    assert engine.gpu_device("engine",False) is None
+
+
+def test_failed_native_probe_is_not_cached_as_gpu(monkeypatch,tmp_path):
+    from photomesh import colmap
+    monkeypatch.setattr(engine,"gpu_device",lambda *_:{"index":0,"memory":4*1024**3,"name":"GPU"})
+    monkeypatch.setattr(engine,"matching_arguments",lambda *a,**k:[])
+    monkeypatch.setattr(colmap,"opt",lambda *a,**k:[])
+    calls=[]
+    def run(command,**kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=1 if len(calls)==1 else 0,stdout="",stderr="GPU rejected")
+    monkeypatch.setattr(engine.subprocess,"run",run)
+    first=engine.execution_settings("engine",{"use_gpu":True},str(tmp_path),lambda *_:None)
+    second=engine.execution_settings("engine",{"use_gpu":True},str(tmp_path),lambda *_:None)
+    assert not first["use_gpu"] and not second["use_gpu"]
+    assert len(calls)==3
+
+
+def test_missing_offline_weights_never_download(tmp_path):
+    with pytest.raises(ValueError,match="Offline model missing"):
+        engine.verified_model(str(tmp_path/"bin"/"colmap.exe"),"aliked-n16rot.onnx")
+
+
+def test_model_hash_and_changed_file_revalidated(tmp_path,monkeypatch):
+    import hashlib
+    root=tmp_path/"engine"; path=root/"models"/"model.onnx"; path.parent.mkdir(parents=True)
+    path.write_bytes(b"model")
+    expected=hashlib.sha256(b"model").hexdigest()
+    monkeypatch.setattr(engine,"bundle_manifest",lambda *_:{"models":{"model.onnx":expected}})
+    assert engine.verified_model(str(root/"bin"/"colmap.exe"),"model.onnx")==str(path)
+    path.write_bytes(b"corrupt")
+    with pytest.raises(ValueError,match="checksum mismatch"):
+        engine.verified_model(str(root/"bin"/"colmap.exe"),"model.onnx")
+
+
+def test_integrated_global_does_not_assume_cuda_means_ceres_cuda(monkeypatch):
+    from photomesh import colmap
+    options={"GlobalMapper.gp_use_gpu","GlobalMapper.ba_ceres_use_gpu"}
+    monkeypatch.setattr(colmap,"colmap_options",lambda *_:options)
+    monkeypatch.setattr(engine,"has_global",lambda *_:True)
+    monkeypatch.setattr(engine,"gpu_device",lambda *_:{"memory":8*1024**3})
+    monkeypatch.setattr(engine,"bundle_manifest",lambda *_:{"cuda":True,"ceres_cuda":False})
+    args=engine.global_arguments("engine",{"use_gpu":True},"db","photos","out")
+    assert args[0]=="global_mapper"
+    assert args[args.index("--GlobalMapper.gp_use_gpu")+1]=="0"
+    assert args[args.index("--GlobalMapper.ba_ceres_use_gpu")+1]=="0"
+
+
+def test_neural_feature_and_matcher_types_are_consistent(monkeypatch):
+    from photomesh import colmap
+    options={"FeatureExtraction.type","FeatureExtraction.use_gpu","FeatureMatching.type",
+             "FeatureMatching.use_gpu","AlikedExtraction.n16rot_model_path",
+             "AlikedExtraction.max_num_features","AlikedMatching.lightglue_model_path"}
+    monkeypatch.setattr(colmap,"colmap_options",lambda *_:options)
+    monkeypatch.setattr(engine,"gpu_device",lambda *_:None)
+    monkeypatch.setattr(engine,"verified_model",lambda exe,name:"/offline/"+name)
+    cfg={"feature_method":"ALIKED + LightGlue","key_point_limit":2048,"use_gpu":False}
+    extract=engine.matching_arguments("engine","feature_extractor",cfg,True)
+    match=engine.matching_arguments("engine","matches_importer",cfg)
+    assert "ALIKED_N16ROT" in extract and "ALIKED_LIGHTGLUE" in match
+    assert not any("http" in value for value in extract+match)
+
+
+def test_neural_rejects_implicit_or_unbounded_feature_count(monkeypatch):
+    from photomesh import colmap
+    monkeypatch.setattr(colmap,"colmap_options",lambda *_:set())
+    monkeypatch.setattr(engine,"gpu_device",lambda *_:None)
+    for count in (0,100000):
+        with pytest.raises(ValueError,match="explicit feature limit"):
+            engine.matching_arguments("engine","matches_importer",{"feature_method":"ALIKED + LightGlue","key_point_limit":count})
+
+
+def test_frame_binary_poses_follow_model_rewrite(tmp_path):
+    from tests.test_dense_mesh_gcp import synthetic_model
+    from photomesh import colmap_io as cio
+    from photomesh.georef import transform_model
+    model=synthetic_model()
+    transform_model(model,2.,np.eye(3),np.array([100.,200.,30.]))
+    cio.write_model(str(tmp_path),model)
+    data=(tmp_path/"frames.bin").read_bytes()
+    assert struct.unpack_from("<Q",data)[0]==len(model.images)
+    offset=8
+    for iid in sorted(model.images):
+        frame,rig,*rest=struct.unpack_from("<II7dI",data,offset); offset+=68
+        kind,camera,photo=struct.unpack_from("<iIQ",data,offset); offset+=16
+        im=model.images[iid]
+        assert frame==photo==iid and rig==camera==im.camera_id and kind==0 and rest[-1]==1
+        assert np.allclose(rest[:7],np.r_[im.qvec,im.tvec])
+
+
+def test_database_calibration_merge_updates_modern_frames(tmp_path):
+    from photomesh.fastpipe import merge_identical_cameras
+    db=str(tmp_path/"database.db")
+    with sqlite3.connect(db) as con:
+        con.executescript("""
+        CREATE TABLE cameras(camera_id INTEGER PRIMARY KEY,model INTEGER,width INTEGER,height INTEGER,params BLOB,prior_focal_length INTEGER);
+        CREATE TABLE images(image_id INTEGER PRIMARY KEY,name TEXT,camera_id INTEGER);
+        CREATE TABLE rigs(rig_id INTEGER PRIMARY KEY,ref_sensor_id INTEGER,ref_sensor_type INTEGER);
+        CREATE TABLE rig_sensors(rig_id INTEGER,sensor_id INTEGER,sensor_type INTEGER,sensor_from_rig BLOB);
+        CREATE TABLE frames(frame_id INTEGER PRIMARY KEY,rig_id INTEGER);
+        CREATE TABLE frame_data(frame_id INTEGER,data_id INTEGER,sensor_id INTEGER,sensor_type INTEGER);
+        """)
+        for cid in (1,2):
+            con.execute("INSERT INTO cameras VALUES(?,?,?,?,?,?)",(cid,2,1000,800,np.array([800.,500.,400.,0.]).tobytes(),1))
+            con.execute("INSERT INTO images VALUES(?,?,?)",(cid,str(cid)+".jpg",cid))
+    merge_identical_cameras(db)
+    with sqlite3.connect(db) as con:
+        assert con.execute("SELECT COUNT(*) FROM rigs").fetchone()[0]==1
+        assert con.execute("SELECT COUNT(*) FROM frames").fetchone()[0]==2
+        assert con.execute("SELECT COUNT(DISTINCT sensor_id) FROM frame_data").fetchone()[0]==1
+        assert not list(con.execute("PRAGMA foreign_key_check"))
+
+
+def test_alignment_dialog_explains_gps_and_has_explicit_neural_limit(window):
+    from photomesh.dialogs import AlignPhotosDialog
+    d=AlignPhotosDialog(window)
+    assert not d.gps_frame.isEnabled()
+    d.feature_method.setCurrentText("ALIKED + LightGlue")
+    assert d.key_limit.value()==2048 and d.key_limit.maximum()==4096 and not d.c2f.isEnabled()

@@ -219,6 +219,28 @@ def write_model(d, model: Model):
     write_cameras(os.path.join(d, "cameras.bin"), model.cameras)
     write_images(os.path.join(d, "images.bin"), model.images)
     write_points3D(os.path.join(d, "points3D.bin"), model.points)
+    # COLMAP 4 reads frame poses in preference to images.bin poses. Always
+    # synchronize both, including after GCP adjustment, registration and scaling.
+    write_trivial_frames(d, model)
+
+
+def write_trivial_frames(folder, model):
+    """One independent-photo frame per image; compatible with COLMAP 4.x.
+
+    Older COLMAP ignores these extra files. All absolute poses remain exactly
+    those in images.bin; no geometry or camera calibration is approximated.
+    """
+    with open(os.path.join(folder, "rigs.bin"), "wb") as rigs:
+        rigs.write(struct.pack("<Q", len(model.cameras)))
+        for cid in sorted(model.cameras):
+            rigs.write(struct.pack("<IIiI", cid, 1, 0, cid))
+    with open(os.path.join(folder, "frames.bin"), "wb") as frames:
+        frames.write(struct.pack("<Q", len(model.images)))
+        for iid in sorted(model.images):
+            image = model.images[iid]
+            frames.write(struct.pack("<II7dI", iid, image.camera_id,
+                                     *image.qvec, *image.tvec, 1))
+            frames.write(struct.pack("<iIQ", 0, image.camera_id, iid))
 
 
 def remove_points(model: Model, remove):

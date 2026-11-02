@@ -1,4 +1,6 @@
 """Processing settings dialogs, progress dialog and preferences."""
+import math
+
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
@@ -79,11 +81,22 @@ class AlignPhotosDialog(_SettingsDialog):
         self.gform.addRow("Matching mode:", self.mode)
         self.mapper = _combo(["Auto", "Global", "Incremental", "Hierarchical"], "Auto")
         self.mapper.setToolTip("Camera pose estimation:\n"
-                               "Auto: Global for 100+ photos (if GLOMAP is bundled), else Incremental\n"
-                               "Global: GLOMAP - solves all cameras at once, fastest on large sets\n"
+                               "Auto: integrated global mapper for 100+ photos when available, else Incremental\n"
+                               "Global: solve cameras together; actual speed depends on the dataset\n"
                                "Incremental: COLMAP, adds photos one by one (most robust, slow on large sets)\n"
                                "Hierarchical: COLMAP, splits the scene and solves parts in parallel")
         self.gform.addRow("Camera estimation:", self.mapper)
+        self.feature_method = _combo(["SIFT", "SIFT + LightGlue", "ALIKED + LightGlue"], "SIFT")
+        self.feature_method.setToolTip("SIFT is the tested default. Neural methods require the offline model bundle and a compatible engine; they are checked before processing.")
+        self.gform.addRow("Features and matching:", self.feature_method)
+        self.gps_frame = QCheckBox("Apply checked camera GPS to model scale, orientation and location")
+        cameras = getattr(getattr(parent, "chunk", None), "cameras", [])
+        gps_count = sum(c.enabled and c.use_reference and all(v is not None and math.isfinite(v) for v in (c.lon,c.lat,c.alt)) for c in cameras)
+        existing_frame = bool(getattr(getattr(parent, "chunk", None), "georef", None))
+        self.gps_frame.setChecked(gps_count >= 3 and not existing_frame)
+        self.gps_frame.setEnabled(gps_count >= 3 and not existing_frame)
+        self.gps_frame.setToolTip("Requires three non-collinear valid camera positions. Existing survey frames are preserved; use Optimize Cameras to change them.")
+        self.gform.addRow(self.gps_frame)
         self.gform.addRow(self.c2f)
         self.gform.addRow("Image resolution:", self.accuracy)
         self.gform.addRow(self.generic)
@@ -101,6 +114,12 @@ class AlignPhotosDialog(_SettingsDialog):
         for w in (self.guided, self.single_camera):
             self.aform.addRow(w)
         self.key_limit.setToolTip("Maximum features per image. Engine default omits the override; no hidden fine-stage cap.")
+        def feature_limits():
+            neural = self.feature_method.currentText() != "SIFT"
+            self.key_limit.setMaximum(4096 if neural else 1_000_000)
+            self.key_limit.setValue(2048 if neural else 24000)
+            self.c2f.setEnabled(not neural and self.mode.currentText()=="Fast")
+        self.feature_method.currentTextChanged.connect(feature_limits)
         def pair_mode(text):
             self.generic.setEnabled(text == "Fast")
             self.reference.setEnabled(text == "Fast")
@@ -114,6 +133,8 @@ class AlignPhotosDialog(_SettingsDialog):
                 "generic": self.generic.isChecked(),
                 "mode": self.mode.currentText(),
                 "mapper": self.mapper.currentText(),
+                "feature_method": self.feature_method.currentText(),
+                "gps_frame": self.gps_frame.isChecked(),
                 "coarse_to_fine": self.c2f.isChecked(),
                 "reference": self.reference.isChecked(),
                 "sequential": self.mode.currentText() == "Sequential",

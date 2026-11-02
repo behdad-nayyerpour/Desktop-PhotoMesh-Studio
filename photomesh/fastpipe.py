@@ -451,6 +451,8 @@ def merge_identical_cameras(db, groups=None):
         for old, new in remap.items():
             con.execute("UPDATE images SET camera_id=? WHERE camera_id=?", (new, old))
             con.execute("DELETE FROM cameras WHERE camera_id=?", (old,))
+        from .engine import synchronize_database_frames
+        synchronize_database_frames(con)
         con.commit()
         return dict(con.execute("SELECT camera_id, COUNT(*) FROM images GROUP BY camera_id").fetchall())
     finally:
@@ -680,14 +682,16 @@ MAPPERS = ["Auto", "Global", "Incremental", "Hierarchical"]
 AUTO_GLOBAL_MIN_IMAGES = 100     # below this incremental SfM is fast and most robust
 
 
-def choose_mapper(s, n_images):
+def choose_mapper(s, n_images, exe=None):
     """Resolve 'Auto' -> 'Global' (GLOMAP, when bundled) for large sets."""
     from .colmap import find_glomap
+    from .engine import has_global
+    integrated = bool(exe and has_global(exe))
     m = s.get("mapper", "Auto")
-    if m == "Global" and not find_glomap():
+    if m == "Global" and not (integrated or find_glomap()):
         return "Incremental"
     if m == "Auto":
-        return "Global" if (n_images >= AUTO_GLOBAL_MIN_IMAGES and find_glomap()) else "Incremental"
+        return "Global" if (n_images >= AUTO_GLOBAL_MIN_IMAGES and (integrated or find_glomap())) else "Incremental"
     return m if m in MAPPERS else "Incremental"
 
 
@@ -717,7 +721,7 @@ def mapper_steps(exe, db, img_dir, out, s, n_images, ilist=None, coarse=False, t
     """Camera-pose estimation steps for the selected mapper. GLOMAP and the
     hierarchical mapper fall back to the tuned incremental mapper if they fail."""
     from .colmap import GLOMAP, Try, opt
-    kind = choose_mapper(s, n_images)
+    kind = choose_mapper(s, n_images, exe)
     inc = incremental_mapper_args(exe, db, img_dir, out, ilist, n_images, coarse)
     label = f"Estimating camera locations{tag}"
 
@@ -727,6 +731,12 @@ def mapper_steps(exe, db, img_dir, out, s, n_images, ilist=None, coarse=False, t
         return [("log", "falling back to the incremental mapper", 0),
                 (label + " - incremental", inc, 25)]
     if kind == "Global":
+        from .engine import global_arguments
+        integrated = global_arguments(exe, s, db, img_dir, out)
+        if integrated is not None:
+            return [("log", f"Mapper: integrated COLMAP global on {n_images} images", 0),
+                    (label + " - global", Try(integrated, fallback), 25),
+                    ("Checking global model", _check_model(out, n_images, fallback), 0)]
         # GLOMAP 1.2 reading a COLMAP 3.8 database aborts in its final
         # re-triangulation (frame/rig check, legacy DB has no frames), so that
         # stage is skipped and done by COLMAP instead (fine stage or below).
@@ -812,7 +822,7 @@ def fast_align_steps(exe, wd, names, infos, s):
     gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = max([i.get("width", 0) for i in infos] + [i.get("height", 0) for i in infos] + [0]) or 3200
     fine_size = max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]])
-    do_fine = s.get("coarse_to_fine", True) and fine_size > COARSE_MAX_SIZE * 1.25
+    do_fine = s.get("feature_method", "SIFT") == "SIFT" and s.get("coarse_to_fine", True) and fine_size > COARSE_MAX_SIZE * 1.25
     coarse_size = min(COARSE_MAX_SIZE, fine_size)
     cdb, fdb = os.path.join(wd, "coarse.db"), os.path.join(wd, "database.db")
     csparse, sparse = os.path.join(wd, "sparse_coarse"), os.path.join(wd, "sparse")
@@ -860,12 +870,15 @@ def fast_align_steps(exe, wd, names, infos, s):
         a += opt(exe, "feature_extractor", ["FeatureExtraction.max_image_size", "SiftExtraction.max_image_size"], size)
         if kp > 0:
             a += opt(exe, "feature_extractor", ["SiftExtraction.max_num_features"], kp)
-        a += opt(exe, "feature_extractor", ["FeatureExtraction.use_gpu", "SiftExtraction.use_gpu"], gpu)
+        from .engine import matching_arguments
+        local = dict(s, key_point_limit=kp)
+        a += matching_arguments(exe, "feature_extractor", local, extraction=True)
         return a
 
     def import_matches(db, ptxt):
         a = ["matches_importer", "--database_path", db, "--match_list_path", ptxt, "--match_type", "pairs"]
-        a += opt(exe, "matches_importer", ["FeatureMatching.use_gpu", "SiftMatching.use_gpu"], gpu)
+        from .engine import matching_arguments
+        a += matching_arguments(exe, "matches_importer", s)
         if s.get("guided_matching"):
             a += opt(exe, "matches_importer", ["FeatureMatching.guided_matching", "SiftMatching.guided_matching"], "1")
         return a
@@ -1058,7 +1071,7 @@ def _run_logged(prog, args, label, logfile):
         with open(logfile, "a", encoding="utf-8", errors="replace") as lf:
             lf.write(f"\n===== {label}  [{time.strftime('%H:%M:%S')}]\n> {os.path.basename(prog)} {' '.join(args)}\n")
             lf.flush()
-            r = subprocess.run([prog] + args, stdout=lf, stderr=subprocess.STDOUT, env=_env_for(args))
+            r = subprocess.run([prog] + args, stdout=lf, stderr=subprocess.STDOUT, env=_env_for(args) or __import__("photomesh.engine", fromlist=["child_env"]).child_env(prog))
         if r.returncode != 0:
             with open(logfile, encoding="utf-8", errors="replace") as lf:
                 tail = lf.read()[-2000:]

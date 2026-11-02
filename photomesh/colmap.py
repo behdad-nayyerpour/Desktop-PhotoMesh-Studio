@@ -31,22 +31,13 @@ def _bundled_candidates():
 
 
 def _resolve(path: str) -> str:
-    """Prefer bin/colmap.exe over the COLMAP.bat wrapper on Windows and put
-    the bundled lib folder (DLLs, Qt plugins) on PATH for child processes."""
+    """Prefer the executable; keep DLL/Qt paths confined to its child process."""
     path = os.path.abspath(path)
     base = os.path.dirname(path)
     if path.lower().endswith(".bat"):
         exe = os.path.join(base, "bin", "colmap.exe")
         if os.path.isfile(exe):
             path, base = exe, os.path.join(base, "bin")
-    lib = os.path.join(os.path.dirname(base), "lib")
-    if sys.platform.startswith("win") and os.path.isdir(lib):
-        parts = os.environ.get("PATH", "").split(os.pathsep)
-        if lib not in parts:
-            os.environ["PATH"] = lib + os.pathsep + os.environ.get("PATH", "")
-        plugins = os.path.join(lib, "plugins")
-        if os.path.isdir(plugins):
-            os.environ.setdefault("QT_PLUGIN_PATH", plugins)
     return path
 
 
@@ -58,7 +49,8 @@ def find_colmap() -> str | None:
         return _resolve(custom)
     for c in _bundled_candidates():
         if os.path.isfile(c) and (os.name == "nt" or os.access(c, os.X_OK)):
-            return _resolve(c)
+            from .engine import select_bundled
+            return _resolve(select_bundled(c))
     for name in ("colmap", "COLMAP", "colmap.bat", "COLMAP.bat", "colmap.exe"):
         p = shutil.which(name)
         if p:
@@ -116,6 +108,8 @@ def task_env():
 def resolve_cmd(exe, args):
     """(program, args) for a step: GLOMAP steps run glomap, PYTHON steps our
     photomesh.tasks module, the rest colmap."""
+    if getattr(args, "executable", None):
+        return args.executable, list(args)
     if args and args[0] == PYTHON:
         return python_exe(), ["-m", "photomesh.tasks", *[str(a) for a in args[1:]]]
     if args and args[0] == GLOMAP:
@@ -172,12 +166,17 @@ def gpu_status(exe=None) -> str:
 def has_cuda(exe: str) -> bool:
     """CUDA usable: an NVIDIA driver is installed and COLMAP is a CUDA build
     (COLMAP prints '... without CUDA' in its banner for CPU-only builds)."""
+    from .engine import bundle_manifest, gpu_device
+    if bundle_manifest(exe):
+        return bool(gpu_device(exe))
     if not nvidia_driver_present():
         return False
     key = (exe, "__banner__")
     if key not in _HELP_CACHE:
         try:
-            out = subprocess.run([exe, "help"], capture_output=True, text=True, timeout=30)
+            out = subprocess.run([exe, "help"], capture_output=True, text=True, timeout=30,
+                                 env=__import__("photomesh.engine", fromlist=["child_env"]).child_env(exe),
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             _HELP_CACHE[key] = out.stdout + out.stderr
         except Exception:
             _HELP_CACHE[key] = ""
@@ -190,8 +189,10 @@ def colmap_options(exe: str, command: str) -> set:
     if key not in _HELP_CACHE:
         try:
             out = subprocess.run([exe, command, "-h"], capture_output=True,
-                                 text=True, timeout=30)
-            text = out.stdout + out.stderr
+                                 text=True, timeout=30,
+                                 env=__import__("photomesh.engine", fromlist=["child_env"]).child_env(exe),
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            text = (out.stdout + out.stderr) if getattr(out, "returncode", 0) == 0 else ""
         except Exception:
             text = ""
         _HELP_CACHE[key] = set(re.findall(r"--([A-Za-z0-9_.]+)", text))
@@ -252,11 +253,11 @@ def align_steps(exe, chunk, wd, s, names=None, infos=None):
     if s["key_point_limit"] > 0:
         fe += opt(exe, "feature_extractor", ["SiftExtraction.max_num_features"],
                   s["key_point_limit"])
-    fe += opt(exe, "feature_extractor", ["FeatureExtraction.use_gpu",
-                                          "SiftExtraction.use_gpu"], gpu)
+    from .engine import matching_arguments
+    fe += matching_arguments(exe, "feature_extractor", s, extraction=True)
     matcher = "sequential_matcher" if s.get("sequential") else "exhaustive_matcher"
     m = [matcher, "--database_path", db]
-    m += opt(exe, matcher, ["FeatureMatching.use_gpu", "SiftMatching.use_gpu"], gpu)
+    m += matching_arguments(exe, matcher, s)
     if s.get("guided_matching"):
         m += opt(exe, matcher, ["FeatureMatching.guided_matching",
                                 "SiftMatching.guided_matching"], "1")
@@ -544,6 +545,13 @@ class PipelineRunner(QObject):
             from PySide6.QtCore import QProcessEnvironment
             env = QProcessEnvironment()
             for k, v in task_env().items():
+                env.insert(k, v)
+            self.proc.setProcessEnvironment(env)
+        else:
+            from PySide6.QtCore import QProcessEnvironment
+            from .engine import child_env
+            env = QProcessEnvironment()
+            for k, v in child_env(prog).items():
                 env.insert(k, v)
             self.proc.setProcessEnvironment(env)
         self.proc.setProcessChannelMode(QProcess.MergedChannels)
