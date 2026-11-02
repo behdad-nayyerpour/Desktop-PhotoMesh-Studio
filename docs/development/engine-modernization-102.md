@@ -45,7 +45,7 @@ Feature extraction/matching and dense processing use compatible GPU paths.
 
 The official pinned CUDA archive uses CUDA 13.2 and Turing-or-newer architectures.
 The bundled policy conservatively requires a matching driver API and device
-generation. The CPU engine and retained legacy dense engine cover other
+generation. The CPU engine and retained legacy GPU SIFT/dense engine cover other
 supported configurations. A native failure is reported by a child process;
 results are not activated from a failed generation.
 

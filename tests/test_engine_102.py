@@ -273,7 +273,7 @@ def test_delaunay_does_not_require_gpu_for_existing_fusion(window,tmp_path,monke
 
 def test_startup_locator_does_not_run_native_capability_probe(tmp_path,monkeypatch):
     from photomesh import colmap
-    exe=tmp_path/"bin"/"colmap.exe"; exe.parent.mkdir(); exe.write_bytes(b"fixture")
+    exe=tmp_path/"bin"/"colmap.exe"; exe.parent.mkdir(); exe.write_bytes(b"fixture"); exe.chmod(0o755)
     monkeypatch.setattr(colmap,"_bundled_candidates",lambda:iter([str(exe)]))
     monkeypatch.setattr(engine,"select_bundled",lambda *_:pytest.fail("Startup must not probe a native executable"))
     assert colmap.locate_colmap()==str(exe)
@@ -296,3 +296,37 @@ def test_coarse_pose_reuse_requires_focal_priors(tmp_path,monkeypatch):
     selected=fine()
     assert any(isinstance(args,list) and args and args[0]=="mapper" for _,args,_ in selected)
     assert not any(isinstance(args,list) and args and args[0]=="point_triangulator" for _,args,_ in selected)
+
+
+def test_older_driver_keeps_compatible_legacy_gpu_sift(monkeypatch):
+    monkeypatch.setattr(engine,"bundle_manifest",lambda exe:{"cuda":True} if exe=="modern" else {})
+    monkeypatch.setattr(engine,"gpu_device",lambda exe,*_:{"name":"GPU"} if exe=="legacy" else None)
+    monkeypatch.setattr(engine,"sibling_engine",lambda exe,name:"legacy" if name=="colmap-legacy" else "cpu")
+    assert engine._select_bundled("modern")=="legacy"
+
+
+def test_neural_commands_route_to_modern_cpu_without_new_flags_on_legacy(monkeypatch):
+    from photomesh import colmap
+    monkeypatch.setattr(engine,"sibling_engine",lambda exe,name:"cpu" if name=="colmap-cpu" else None)
+    monkeypatch.setattr(colmap,"colmap_options",lambda exe,*_:{"FeatureExtraction.type"} if exe=="cpu" else set())
+    assert engine.feature_executable("legacy",{"feature_method":"ALIKED + LightGlue"})=="cpu"
+    assert engine.feature_executable("legacy",{"feature_method":"SIFT"})=="legacy"
+
+
+def test_dynamic_command_binding_preserves_python_and_native_fallback():
+    from photomesh.colmap import Try,PYTHON,resolve_cmd
+    native=Try(["global_mapper"],fallback=lambda:[("fallback",["mapper"],1)])
+    bound=engine.bind_steps("modern-cpu",[("plan",lambda:[("native",native,1)],0),
+                                         ("python",[PYTHON,"validate_model","cfg"],1)])
+    dynamic=bound[0][1]()
+    assert resolve_cmd("legacy",dynamic[0][1])[0]=="modern-cpu"
+    fallback=dynamic[0][1].fallback()
+    assert resolve_cmd("legacy",fallback[0][1])[0]=="modern-cpu"
+    assert bound[1][1][0]==PYTHON and not hasattr(bound[1][1],"executable")
+
+
+def test_disabling_preselection_matches_all_pairs():
+    from photomesh.fastpipe import select_pairs
+    names=[f"photo{i}.jpg" for i in range(16)]
+    pairs=select_pairs(names,[{}]*16,use_desc=False,use_gps=False)
+    assert len(pairs)==120 and ("photo0.jpg","photo15.jpg") in pairs

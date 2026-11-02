@@ -313,3 +313,12 @@ engine. If those priors are unavailable, the target-resolution features are
 mapped afresh rather than inheriting a potentially ambiguous coarse calibration.
 The Console records that decision. Reprojection error alone is not an
 independent accuracy check; use surveyed check points for metric validation.
+
+On older drivers, a compatible retained legacy engine continues GPU SIFT and
+dense processing. Optional neural methods can use the modern CPU engine instead.
+Disabling both pair-preselection options explicitly matches all image pairs;
+large datasets should retain appropriate preselection to limit the workload.
+
+Cloud Properties accepts historical pair-list and dictionary filter statistics.
+Opening an older project does not require rebuilding its point cloud for this
+metadata display fix.

@@ -43,12 +43,53 @@ def file_info(path):
     return {"file": path, "file_size": st.st_size, "file_modified": _iso(st.st_mtime)}
 
 
+def filtering_records(value):
+    """Normalize stored filter statistics without changing their numerical meaning.
+
+    Native filtering returns (name, removed) pairs; legacy log recovery stored
+    dictionaries. JSON turns tuples into lists. Both remain readable.
+    Invalid counts are unknown, never silently converted to zero.
+    """
+    import math
+    if isinstance(value, dict):
+        value=[value] if "filter" in value else list(value.items())
+    if not isinstance(value,(list,tuple)):
+        return []
+    records=[]
+    for row in value:
+        if isinstance(row,dict):
+            name,count=row.get("filter"),row.get("removed")
+        elif isinstance(row,(list,tuple)) and len(row)==2:
+            name,count=row
+        else:
+            continue
+        if not isinstance(name,str) or not name.strip():
+            continue
+        removed=None
+        try:
+            if not isinstance(count,bool) and count is not None:
+                text=str(count).replace(",","")
+                try:
+                    integer=int(text)
+                    if integer>=0: removed=integer
+                except ValueError:
+                    numeric=float(text)
+                    if math.isfinite(numeric) and numeric>=0 and numeric.is_integer():
+                        removed=int(numeric)
+        except (TypeError,ValueError,OverflowError):
+            pass
+        records.append({"filter":name.strip(),"removed":removed})
+    return records
+
+
 def record(chunk, step, params=None, seconds=None, stages=None, **results):
     """Store metadata of a step that just ran in the app."""
     meta = dict(getattr(chunk, "meta", None) or {})
     entry = {"params": dict(params or {}), "seconds": seconds, "stages": dict(stages or {}),
              "date": now_iso(), "software": software(), "source": "recorded"}
     entry.update(results)
+    if step == "point_cloud":
+        entry["filtering"]=filtering_records(entry.get("filtering"))
     meta[step] = entry
     chunk.meta = meta
     return entry
@@ -452,10 +493,12 @@ def properties(chunk, kind, index=None):
                 ("Fusion time", fmt_time(e.get("fusion_seconds"))),
                 ("Points after fusion", fmt(e.get("points_fused"))),
                 ("Filtering time", fmt_time(e.get("filtering_seconds")))]
-        for f in e.get("filtering") or []:
-            rows.append((f"Filter: {f['filter']}", f"{f['removed']:,} points removed"))
-        if not e.get("filtering"):
-            rows.append(("Filtering steps", UNKNOWN))
+        filtering=filtering_records(e.get("filtering"))
+        for item in filtering:
+            count=item["removed"]
+            rows.append((f"Filter: {item['filter']}",f"{count:,} points removed" if count is not None else UNKNOWN))
+        if not filtering:
+            rows.append(("Filtering steps",UNKNOWN))
         rows += [("File size", fmt_size(e.get("file_size") or file_info(chunk.point_cloud_ply)["file_size"])),
                  ("File", chunk.point_cloud_ply)] + _common(e)
         return rows

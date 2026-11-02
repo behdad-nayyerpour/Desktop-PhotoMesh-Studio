@@ -546,6 +546,11 @@ def select_pairs(names, infos, k_desc=8, k_gps=8, window=3, use_desc=True, use_g
     infos : list of analysis dicts aligned with names (may lack keys)
     """
     n = len(names)
+    if not use_desc and not use_gps:
+        # Disabling both preselection methods means all pairs, not an implicit
+        # filename-neighbour graph that can split an otherwise connected block.
+        return sorted((min(names[i],names[j]),max(names[i],names[j]))
+                      for i in range(n) for j in range(i+1,n))
     pairs = set()
 
     def add(i, j):

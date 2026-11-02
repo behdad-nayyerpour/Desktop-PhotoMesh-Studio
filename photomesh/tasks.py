@@ -55,6 +55,7 @@ def cmd_filter_cloud(cfg):
     if cfg.get("model") and os.path.isdir(cfg["model"]):
         C, D = _cameras(cfg["model"])
     up = cfg.get("up")
+    input_count=len(cloud["xyz"])
     cloud, stats = pf.filter_cloud(cloud, cfg, C, D, up, log=_log)
     if not len(cloud["xyz"]):
         raise ValueError("Filtering removed every point; previous cloud was kept. Relax the filters.")
@@ -69,7 +70,8 @@ def cmd_filter_cloud(cfg):
         if os.path.exists(temporary):
             os.remove(temporary)
     with open(os.path.join(os.path.dirname(cfg["output"]), "filter_stats.json"), "w", encoding="utf-8") as fh:
-        json.dump({"input": len(conf) if 'conf' in locals() else None, "output": len(cloud["xyz"]), "filters": stats}, fh)
+        from .procmeta import filtering_records
+        json.dump({"input": input_count, "output": len(cloud["xyz"]), "filters": filtering_records(stats)}, fh)
     _log(f"POINTS {len(cloud['xyz'])}")
     _log(f"Filtering done in {time.perf_counter() - t0:.1f} s -> {cfg['output']}")
 

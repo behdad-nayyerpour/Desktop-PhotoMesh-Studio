@@ -1767,10 +1767,11 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         previous_poses = {mapping[c.path]: {"center":c.est,"rotation":c.rot}
                           for c in enabled if c.aligned and c.est is not None and c.rot is not None}
         def prepare_alignment():
-            from .engine import execution_settings
+            from .engine import execution_settings,feature_executable,bind_steps
             probe_logs=[]
-            s.update(execution_settings(exe, s, wd, probe_logs.append))
-            planned = cm.align_steps(exe, ch, wd, s, names=names, infos=[c.info() for c in enabled])
+            selected=feature_executable(exe,s)
+            s.update(execution_settings(selected,s,wd,probe_logs.append))
+            planned = cm.align_steps(selected, ch, wd, s, names=names, infos=[c.info() for c in enabled])
             if previous_poses:
                 path=os.path.join(wd,"preserve_frame.json")
                 with open(path,"w",encoding="utf-8") as fh:
@@ -1793,7 +1794,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             with open(validation_path,"w",encoding="utf-8") as handle:
                 json.dump({"model":os.path.join(wd,"sparse","0")},handle)
             planned.append(("Validating reconstructed geometry",[cm.PYTHON,"validate_model",validation_path],1))
-            return [("log",message,0) for message in probe_logs] + planned
+            return bind_steps(selected,[("log",message,0) for message in probe_logs] + planned)
         steps = [("Preparing alignment", prepare_alignment, 1)]
         self.log(f"Align Photos: mode={s['mode']}, accuracy={s['accuracy']}, workdir={wd}")
 
@@ -1913,12 +1914,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                     removed = {}
             procmeta.record(ch, "depth_maps", params=p, seconds=round(depth_s, 2) or None, stages=stages,
                             count=count or None, kept=not removed.get("removed", False))
+            filter_statistics={}
+            statistics_path=os.path.join(wd,"dense","filter_stats.json")
+            if os.path.isfile(statistics_path):
+                with open(statistics_path,encoding="utf-8") as handle:
+                    filter_statistics=json.load(handle)
             procmeta.record(ch, "point_cloud", params=dict(p, filters=s.get("filters")), seconds=dt, stages=stages,
+                            points_fused=filter_statistics.get("input"),
                             points=ch.point_count,
                             fusion_seconds=round(sum(v for k, v in stages.items() if "fusion" in k.lower()), 2) or None,
                             filtering_seconds=round(sum(v for k, v in stages.items() if "ilter" in k), 2) or None,
-                            filtering=(json.load(open(os.path.join(wd, "dense", "filter_stats.json"), encoding="utf-8")).get("filters", [])
-                                       if os.path.isfile(os.path.join(wd, "dense", "filter_stats.json")) else []),
+                            filtering=filter_statistics.get("filters",[]),
                             **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
                   lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s, engine_exe=exe)

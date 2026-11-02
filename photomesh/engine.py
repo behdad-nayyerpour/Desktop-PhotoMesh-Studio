@@ -300,6 +300,9 @@ def _select_bundled(exe):
         return exe
     if gpu_device(exe):
         return exe
+    legacy=sibling_engine(exe,"colmap-legacy")
+    if legacy and gpu_device(legacy):
+        return legacy
     cpu = sibling_engine(exe, "colmap-cpu")
     if cpu and run_help(cpu):
         return cpu
@@ -335,6 +338,8 @@ def execution_settings(exe, settings, workdir, log=print):
     import numpy as np
     from .colmap import opt
     s = dict(settings)
+    s["engine_version"]=bundle_manifest(exe).get("version","legacy/custom")
+    s["engine_executable"]=exe
     method = s.get("feature_method", "SIFT")
     device = gpu_device(exe, s.get("use_gpu", False))
     s["use_gpu"] = bool(device)
@@ -415,3 +420,43 @@ def gps_frame_available(cameras, crs="", existing_alignment=False):
     if len(singular)<2 or singular[1]<max(1e-3,singular[0]*1e-4):
         return False, "GPS positions are collinear or have insufficient footprint spread."
     return True, "Apply a similarity from checked GPS positions. GPS measurement accuracy limits the result."
+
+
+def feature_executable(exe,settings):
+    """Preserve working legacy GPU SIFT on older drivers; route neural methods
+    to the modern offline engine without sending new flags to the old binary.
+    """
+    if settings.get("feature_method","SIFT")=="SIFT":
+        return exe
+    from .colmap import colmap_options
+    if "FeatureExtraction.type" in colmap_options(exe,"feature_extractor"):
+        return exe
+    for name in ("colmap","colmap-cpu"):
+        candidate=sibling_engine(exe,name)
+        if not candidate: continue
+        if name=="colmap" and not gpu_device(candidate):
+            continue
+        if "FeatureExtraction.type" in colmap_options(candidate,"feature_extractor"):
+            return candidate
+    raise ValueError("No compatible offline neural engine is installed. Reinstall the complete Setup or select SIFT.")
+
+
+def bind_steps(exe,steps):
+    """Bind dynamic native commands to the engine used to construct their flags."""
+    from .colmap import Cmd,PYTHON,GLOMAP
+    result=[]
+    def bind_callback(callback):
+        def run():
+            return bind_steps(exe,callback() or [])
+        return run
+    for label,action,weight in steps:
+        if callable(action):
+            action=bind_callback(action)
+        elif isinstance(action,list) and action and action[0] not in (PYTHON,GLOMAP):
+            if not hasattr(action,"meter"):
+                action=Cmd(action)
+            action.executable=exe
+            if hasattr(action,"fallback") and action.fallback:
+                action.fallback=bind_callback(action.fallback)
+        result.append((label,action,weight))
+    return result
