@@ -941,8 +941,8 @@ def run_local_task(cfg, log=print):
     try:
         shutil.rmtree(stage, ignore_errors=True)
         cio.write_model(stage, model)
-        for fn in ("cameras.bin", "images.bin", "points3D.bin"):
-            replace_file(os.path.join(stage, fn), os.path.join(mdir, fn))
+        from .workflow import publish_outputs
+        publish_outputs([(stage,mdir)])
     finally:
         shutil.rmtree(stage, ignore_errors=True)
     out = {"local_only": True, "similarity": None, "markers": est,
@@ -1085,11 +1085,14 @@ def run_task(cfg, log=print):
             if os.path.exists(tmp):
                 os.remove(tmp)
         raise
-    for fn in ("cameras.bin", "images.bin", "points3D.bin"):
-        replace_file(os.path.join(new_dir, fn), os.path.join(mdir, fn))
-    shutil.rmtree(new_dir, ignore_errors=True)
-    for tmp, p in staged:
-        replace_file(tmp, p)
+    from .workflow import publish_outputs
+    try:
+        publish_outputs([(new_dir,mdir),*staged])
+    finally:
+        shutil.rmtree(new_dir,ignore_errors=True)
+        for tmp,_ in staged:
+            if os.path.isfile(tmp): os.remove(tmp)
+    for _,p in staged:
         log(f"Transformed {os.path.basename(p)} into the georeferenced frame")
     errs, _, _ = cio.observation_errors(model)
     log(f"Tie points: {len(model.points):,}, reprojection RMS {np.sqrt(np.mean(errs ** 2)):.3f} px")

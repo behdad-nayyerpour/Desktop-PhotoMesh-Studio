@@ -351,3 +351,33 @@ def execution_settings(exe, settings, workdir, log=print):
                 raise ValueError(f"Engine compatibility check failed for {method}. "
                                  "No survey files were changed. Select SIFT or reinstall the full Setup.\n" + failure)
     return s
+
+
+def gps_frame_available(cameras, crs="", existing_alignment=False):
+    """GPS references must define a 2-D footprint, not just have three rows."""
+    import numpy as np
+    from .georef import CRS, utm_forward, utm_zone
+    if existing_alignment:
+        return False, "The existing project frame is preserved. Use Optimize Cameras to apply GPS to this project."
+    if crs and CRS.parse(crs).kind == "local":
+        return False, "Choose a geographic/UTM project CRS before using camera GPS."
+    values=[]
+    for camera in cameras:
+        if not camera.enabled or not camera.use_reference:
+            continue
+        xyz=(camera.lon,camera.lat,camera.alt)
+        if any(v is None or not np.isfinite(v) for v in xyz):
+            continue
+        if abs(xyz[0])>180 or abs(xyz[1])>90:
+            continue
+        values.append(xyz)
+    if len(values)<3:
+        return False, "At least three checked cameras with valid longitude, latitude and altitude are required."
+    values=np.asarray(values,float)
+    zone=utm_zone(float(np.mean(values[:,0])),float(np.mean(values[:,1])))
+    east,north=utm_forward(values[:,1],values[:,0],zone,bool(np.mean(values[:,1])<0))
+    ground=np.column_stack([east,north])
+    singular=np.linalg.svd(ground-ground.mean(0),compute_uv=False)
+    if len(singular)<2 or singular[1]<max(1e-3,singular[0]*1e-4):
+        return False, "GPS positions are collinear or have insufficient footprint spread."
+    return True, "Apply a similarity from checked GPS positions. GPS measurement accuracy limits the result."

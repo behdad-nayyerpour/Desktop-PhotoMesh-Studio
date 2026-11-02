@@ -160,3 +160,33 @@ def test_alignment_dialog_explains_gps_and_has_explicit_neural_limit(window):
     assert not d.gps_frame.isEnabled()
     d.feature_method.setCurrentText("ALIKED + LightGlue")
     assert d.key_limit.value()==2048 and d.key_limit.maximum()==4096 and not d.c2f.isEnabled()
+
+
+def test_gps_requires_a_spread_footprint():
+    from photomesh.project import Camera
+    def cameras(coords):
+        return [Camera(str(i)+".jpg",lon=lon,lat=lat,alt=100.,use_reference=True)
+                for i,(lon,lat) in enumerate(coords)]
+    line=cameras([(44.,40.),(44.,40.001),(44.,40.002)])
+    assert not engine.gps_frame_available(line)[0]
+    block=cameras([(44.,40.),(44.001,40.),(44.,40.001)])
+    assert engine.gps_frame_available(block)[0]
+    assert not engine.gps_frame_available(block,existing_alignment=True)[0]
+    block[0].use_reference=False
+    assert not engine.gps_frame_available(block)[0]
+
+
+def test_publication_failure_restores_model_and_cloud(tmp_path,monkeypatch):
+    from photomesh.workflow import publish_outputs
+    model=tmp_path/"model"; model.mkdir(); (model/"pose").write_text("old")
+    stage=tmp_path/"model-stage"; stage.mkdir(); (stage/"pose").write_text("new")
+    cloud=tmp_path/"cloud.ply"; cloud.write_text("old-cloud")
+    staged_cloud=tmp_path/"cloud-stage.ply"; staged_cloud.write_text("new-cloud")
+    real=os.replace
+    def replace(source,destination):
+        if source==str(staged_cloud): raise PermissionError("injected publication failure")
+        return real(source,destination)
+    monkeypatch.setattr(os,"replace",replace)
+    with pytest.raises(PermissionError):
+        publish_outputs([(str(stage),str(model)),(str(staged_cloud),str(cloud))])
+    assert (model/"pose").read_text()=="old" and cloud.read_text()=="old-cloud"

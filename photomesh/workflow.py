@@ -189,3 +189,42 @@ def processing_crs(georef):
         raise ValueError("Geographic references need their metric reconstruction zone before raster export")
     number,south=zone if isinstance(zone,(list,tuple)) else (zone,False)
     return f"EPSG:{(32700 if south else 32600)+int(number)}"
+
+
+def publish_outputs(pairs):
+    """Publish a prepared set of files/directories; roll back on any failure.
+
+    Backups use unique sibling names and rename operations, so large clouds are
+    not copied a second time. All outputs must be fully prepared before entry.
+    """
+    import uuid
+    token=uuid.uuid4().hex
+    entries=[]
+    for source,destination in pairs:
+        source,destination=os.path.abspath(source),os.path.abspath(destination)
+        if source==destination or not os.path.exists(source):
+            raise ValueError("Invalid staged output")
+        entries.append((source,destination,destination+".previous-"+token,os.path.exists(destination)))
+    if len({entry[1] for entry in entries})!=len(entries):
+        raise ValueError("Duplicate output destination")
+    moved=[]; published=[]
+    try:
+        for source,destination,backup,exists in entries:
+            if exists:
+                os.replace(destination,backup)
+                moved.append((destination,backup))
+        for source,destination,backup,exists in entries:
+            os.replace(source,destination)
+            published.append((source,destination))
+    except BaseException:
+        for source,destination in reversed(published):
+            os.replace(destination,source)
+        for destination,backup in reversed(moved):
+            os.replace(backup,destination)
+        raise
+    for _,_,backup,exists in entries:
+        if exists:
+            if os.path.isdir(backup): shutil.rmtree(backup,ignore_errors=True)
+            else:
+                try: os.remove(backup)
+                except OSError: pass

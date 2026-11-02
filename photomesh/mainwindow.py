@@ -1722,10 +1722,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
         original_wd = self.project.default_workdir(ch)
-        wd = original_wd
-        if ch.aligned_count():
-            import uuid
-            wd = os.path.join(original_wd, "alignment-" + uuid.uuid4().hex[:12])
+        import uuid
+        wd = os.path.join(self.project.data_dir, "alignment-" + uuid.uuid4().hex[:12])
         try:
             mapping = cm.prepare_images(ch, wd)
         except OSError as e:

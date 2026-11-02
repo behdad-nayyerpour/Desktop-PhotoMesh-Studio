@@ -792,7 +792,7 @@ def read_vis_counts(path):
 
 
 # ------------------------------------------------------------ the steps
-UNDISTORT_KEYS = ("model", "image_root", "dense", "quality", "camera_stamp", "photo_stamps")
+UNDISTORT_KEYS = ("model", "image_root", "dense", "quality", "camera_stamp", "photo_stamps", "engine_stamp")
 
 
 def model_signature(model_dir):
@@ -949,6 +949,7 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
                         (("depth_filtering", "Mild"), ("window_step", 2), ("num_iterations", 3),
                          ("window_radius", 5), ("num_samples", 15))}
     cfg_marker = dict(cfg, model_sig=model_signature(cfg["model"]),
+                      engine_stamp=file_stamp(exe) if os.path.isfile(exe) else [exe,None],
                       camera_stamp=model_stamp(cfg["model"]) if os.path.isfile(os.path.join(cfg["model"],"images.bin")) else [],
                       depth_parameters=depth_parameters,
                       photo_stamps=[file_stamp(os.path.join(image_root, name)) if os.path.isfile(os.path.join(image_root,name)) else [os.path.join(image_root,name), None] for name in photo_names])

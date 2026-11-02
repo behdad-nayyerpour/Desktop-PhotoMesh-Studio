@@ -1,6 +1,4 @@
 """Processing settings dialogs, progress dialog and preferences."""
-import math
-
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
@@ -91,11 +89,13 @@ class AlignPhotosDialog(_SettingsDialog):
         self.gform.addRow("Features and matching:", self.feature_method)
         self.gps_frame = QCheckBox("Apply checked camera GPS to model scale, orientation and location")
         cameras = getattr(getattr(parent, "chunk", None), "cameras", [])
-        gps_count = sum(c.enabled and c.use_reference and all(v is not None and math.isfinite(v) for v in (c.lon,c.lat,c.alt)) for c in cameras)
-        existing_frame = bool(getattr(getattr(parent, "chunk", None), "georef", None))
-        self.gps_frame.setChecked(gps_count >= 3 and not existing_frame)
-        self.gps_frame.setEnabled(gps_count >= 3 and not existing_frame)
-        self.gps_frame.setToolTip("Requires three non-collinear valid camera positions. Existing survey frames are preserved; use Optimize Cameras to change them.")
+        from .engine import gps_frame_available
+        project_chunk=getattr(parent,"chunk",None)
+        existing=bool(project_chunk and (project_chunk.georef or project_chunk.aligned_count()))
+        ready,reason=gps_frame_available(cameras,getattr(project_chunk,"crs",""),existing)
+        self.gps_frame.setChecked(ready)
+        self.gps_frame.setEnabled(ready)
+        self.gps_frame.setToolTip(reason)
         self.gform.addRow(self.gps_frame)
         self.gform.addRow(self.c2f)
         self.gform.addRow("Image resolution:", self.accuracy)
