@@ -56,7 +56,47 @@ calibration-free cases; actual survey work still requires independent controls.
 
 ## Validation evidence
 
-VALIDATION_PENDING
+Validated code: `427ed36cd2fbe3e9a644cfa1cc509afb752783ef`.
+[GitHub Actions run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41515504654)
+completed successfully on Linux and Windows: **581 passed, 8 skipped** on each.
+The skipped tests require local survey/GPU fixtures or a real display; the
+separate Mesa OpenGL overlay test passed. Compilation, undefined-name checks
+and the PowerShell builder parser passed.
+
+The pinned Windows CPU binary reconstructed the deterministic 16-view,
+two-sensor synthetic scene with these measured results:
+
+| Features | Mapping | Calibration | Cameras | Centre RMS (m) | Reprojection RMS (px) | Time (s) |
+|---|---|---|---:|---:|---:|---:|
+| SIFT | incremental | Known | 16 | 0.0118 | 0.223 | 4.91 |
+| SIFT | global | Known | 16 | 0.0116 | 0.214 | 4.96 |
+| ALIKED + LightGlue | global | Known | 16 | 0.0439 | 0.372 | 15.46 |
+| SIFT | fast-coarse-fine | Known | 16 | 0.0228 | 0.227 | 11.79 |
+| SIFT | incremental | Estimated | 16 | 0.0134 | 0.221 | 5.98 |
+| SIFT | fast-coarse-fine | Estimated | 16 | 0.0249 | 0.222 | 12.19 |
+
+The coarse threshold was deliberately reduced to 256 px to exercise both
+stages on this small fixture. It is not a representative speed comparison for
+large aerial surveys. Neural matching was slower here and remains optional.
+The calibration-free comparison retains the original regression scene and
+passes the fixed geometry/registration gates; low reprojection error alone
+is not accepted as evidence of correct geometry.
+
+Native model conversion re-read the transformed modern frame/rig files and
+agreed with camera centres and tie points to 1e-7. SIFT + LightGlue passed its
+separate offline extraction/matching probe. A 30,000-point filtering/Poisson
+check produced 1,999 faces with median distance 0.00334 m from the known
+synthetic surface. Its timings and the reconstruction measurements are in the
+[benchmark artifact](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41515504654/artifacts/13174934324).
+
+On the same Linux runner, rasterization time was 0.975x and synthetic texturing
+1.019x the 1.0.0 baseline; both passed the existing 1.08x regression limit.
+This gate does not imply identical timing for different requested workloads.
+
+The reported cloud Properties exception has old pair-list/dictionary schema,
+invalid-count and project-save/reopen regressions. Original sensor dimensions
+are restored before grouping working photos; a collision test prevents mixed
+sensors from being combined after downscaling.
 
 No user computer or dataset is used for development validation. Tests run in
 GitHub Actions. Full real-data CUDA reconstruction and driver-specific behavior
