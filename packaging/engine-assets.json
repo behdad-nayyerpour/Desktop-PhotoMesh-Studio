@@ -1,0 +1,32 @@
+{
+  "version": "4.2.1",
+  "windows": {
+    "cuda": {
+      "name": "colmap-x64-windows-cuda.zip",
+      "url": "https://github.com/colmap/colmap/releases/download/4.2.1/colmap-x64-windows-cuda.zip",
+      "sha256": "e9c5cbd84c2ea986d2e970a2473fc2d2e6b34a2cdcf5d3df2765c319a63af881"
+    },
+    "cpu": {
+      "name": "colmap-x64-windows-nocuda.zip",
+      "url": "https://github.com/colmap/colmap/releases/download/4.2.1/colmap-x64-windows-nocuda.zip",
+      "sha256": "c493d88cb4a43f21afba42cb55bf786e5434a0420e73db0ba1454c5d8b3686ae"
+    }
+  },
+  "models": [
+    {
+      "name": "aliked-n16rot.onnx",
+      "url": "https://github.com/colmap/colmap/releases/download/3.13.0/aliked-n16rot.onnx",
+      "sha256": "39c423d0a6f03d39ec89d3d1d61853765c2fb6a8b8381376c703e5758778a547"
+    },
+    {
+      "name": "aliked-lightglue.onnx",
+      "url": "https://github.com/colmap/colmap/releases/download/3.13.0/aliked-lightglue.onnx",
+      "sha256": "b9a5de7204648b18a8cf5dcac819f9d30de1a5961ef03756803c8b86c2dceb8d"
+    },
+    {
+      "name": "sift-lightglue.onnx",
+      "url": "https://github.com/colmap/colmap/releases/download/3.13.0/sift-lightglue.onnx",
+      "sha256": "e0500228472b43f92b3d36881a09b3310d3b058b56187b246cc7b9ab6429096e"
+    }
+  ]
+}

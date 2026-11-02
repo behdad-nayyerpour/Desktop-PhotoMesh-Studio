@@ -44,7 +44,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Compile Python sources
-        run: python -m compileall -q photomesh main.py tests
+        run: python -m compileall -q photomesh main.py tests tools
       - name: System libraries (Qt offscreen, Open3D)
         run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 libgomp1 xvfb xauth libgl1-mesa-dri libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0 libxcb-randr0
       - name: Install
@@ -76,7 +76,7 @@ jobs:
   windows:
     if: (github.event_name == 'workflow_dispatch' && inputs.windows) || (github.ref == 'refs/heads/release/1.0.0' || github.ref == 'refs/heads/improve/workflow-review' || github.ref == 'refs/heads/improve/engine-modernization')
     runs-on: windows-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       QT_QPA_PLATFORM: offscreen
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -91,3 +91,18 @@ jobs:
         run: pip install -q -r requirements-dev.txt psutil
       - name: Tests (no COLMAP / GPU)
         run: python -m pytest -q -rs -p no:cacheprovider tests
+
+      - name: Prepare pinned CPU engine and offline models
+        if: github.ref == 'refs/heads/improve/engine-modernization'
+        run: python tools/prepare_engine.py --output engine-fixture --cache engine-downloads --cpu-only
+      - name: Native 4.2.1 geometry and feature integration benchmark
+        if: github.ref == 'refs/heads/improve/engine-modernization'
+        timeout-minutes: 15
+        run: python tools/benchmark_engine_102.py --exe engine-fixture/colmap-cpu/bin/colmap.exe
+      - name: Upload engine benchmark evidence
+        if: always() && github.ref == 'refs/heads/improve/engine-modernization'
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-benchmark-windows
+          path: engine-benchmark.json
+          if-no-files-found: ignore

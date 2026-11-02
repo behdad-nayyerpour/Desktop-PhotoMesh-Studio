@@ -9,7 +9,9 @@ param(
     [Parameter(Mandatory=$true)][string]$RuntimeSource,
     [Parameter(Mandatory=$true)][string]$ISCC,
     [string]$OutputDir = (Join-Path $PSScriptRoot "..\dist"),
-    [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage")
+    [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage"),
+    [string]$EngineCache = (Join-Path $PSScriptRoot "..\.engine-download-cache"),
+    [switch]$OfflineBuild
 )
 $ErrorActionPreference = "Stop"
 $app = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
@@ -84,9 +86,16 @@ if ($sourceMode -eq "venv") {
 } else {
     Copy-Tree (Join-Path $runtime "python") $pythonStage @("__pycache__") @("*.pyc")
 }
-Write-Host "Copying COLMAP and GLOMAP"
-Copy-Tree $colmap (Join-Path $stage "tools\colmap")
+Write-Host "Retaining the tested legacy reconstruction engine"
+$legacyColmap = Join-Path $runtime "tools\colmap-legacy"
+if (-not (Test-Path -LiteralPath $legacyColmap)) { $legacyColmap = $colmap }
+Copy-Tree $legacyColmap (Join-Path $stage "tools\colmap-legacy")
 Copy-Tree $glomap (Join-Path $stage "tools\glomap")
+Write-Host "Preparing pinned COLMAP 4.2.1 CPU/CUDA engines and offline neural models"
+$engineArgs = @((Join-Path $app "tools\prepare_engine.py"), "--output", (Join-Path $stage "tools"), "--cache", $EngineCache)
+if ($OfflineBuild) { $engineArgs += "--offline" }
+& (Join-Path $pythonStage "python.exe") @engineArgs
+if ($LASTEXITCODE -ne 0) { throw "Offline engine bundle preparation failed" }
 
 if ($sourceMode -eq "venv") {
     $freeze = @(& $venvPy -m pip freeze --exclude-editable | Sort-Object)
@@ -101,6 +110,11 @@ if ($sourceMode -eq "venv") {
 } else {
     $runtimeDescription = @("Reused installed runtime ID: $runtimeId")
 }
+$engineHash = (Get-FileHash -LiteralPath (Join-Path $stage "tools\colmap\photomesh-engine.json") -Algorithm SHA256).Hash.ToLowerInvariant()
+$runtimeDescription += "modern-engine-manifest=$engineHash"
+$sha = [Security.Cryptography.SHA256]::Create()
+$runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()
+$sha.Dispose()
 Set-Content -LiteralPath (Join-Path $appStage "runtime.id") -Value $runtimeId -Encoding ascii
 Set-Content -LiteralPath (Join-Path $stage "runtime.lock") -Value $runtimeDescription -Encoding utf8
 Set-Content -LiteralPath (Join-Path $appStage "release_manifest.txt") -Value @("PhotoMesh Studio $version", "Runtime ID: $runtimeId") -Encoding utf8
