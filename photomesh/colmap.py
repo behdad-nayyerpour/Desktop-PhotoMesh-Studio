@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 import numpy as np
+from .engine import child_env
 from PySide6.QtCore import QObject, QProcess, Signal, QSettings, Qt, Slot
 
 _HELP_CACHE: dict = {}
@@ -50,7 +51,9 @@ def find_colmap() -> str | None:
     for c in _bundled_candidates():
         if os.path.isfile(c) and (os.name == "nt" or os.access(c, os.X_OK)):
             from .engine import select_bundled
-            return _resolve(select_bundled(c))
+            selected = select_bundled(c)
+            if selected:
+                return _resolve(selected)
     for name in ("colmap", "COLMAP", "colmap.bat", "COLMAP.bat", "colmap.exe"):
         p = shutil.which(name)
         if p:
@@ -175,7 +178,7 @@ def has_cuda(exe: str) -> bool:
     if key not in _HELP_CACHE:
         try:
             out = subprocess.run([exe, "help"], capture_output=True, text=True, timeout=30,
-                                 env=__import__("photomesh.engine", fromlist=["child_env"]).child_env(exe),
+                                 env=child_env(exe),
                                  creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             _HELP_CACHE[key] = out.stdout + out.stderr
         except Exception:
@@ -190,7 +193,7 @@ def colmap_options(exe: str, command: str) -> set:
         try:
             out = subprocess.run([exe, command, "-h"], capture_output=True,
                                  text=True, timeout=30,
-                                 env=__import__("photomesh.engine", fromlist=["child_env"]).child_env(exe),
+                                 env=child_env(exe),
                                  creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             text = (out.stdout + out.stderr) if getattr(out, "returncode", 0) == 0 else ""
         except Exception:

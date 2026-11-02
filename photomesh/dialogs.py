@@ -75,7 +75,6 @@ class AlignPhotosDialog(_SettingsDialog):
                              "with coarse-to-fine alignment. Exhaustive: match all pairs.")
         self.c2f = QCheckBox("Coarse-to-fine (align downscaled first)")
         self.c2f.setChecked(True)
-        self.mode.currentTextChanged.connect(lambda t: self.c2f.setEnabled(t == "Fast"))
         self.gform.addRow("Matching mode:", self.mode)
         self.mapper = _combo(["Auto", "Global", "Incremental", "Hierarchical"], "Auto")
         self.mapper.setToolTip("Camera pose estimation:\n"
@@ -120,6 +119,7 @@ class AlignPhotosDialog(_SettingsDialog):
             self.key_limit.setValue(2048 if neural else 24000)
             self.c2f.setEnabled(not neural and self.mode.currentText()=="Fast")
         self.feature_method.currentTextChanged.connect(feature_limits)
+        self.mode.currentTextChanged.connect(lambda *_: self.c2f.setEnabled(self.feature_method.currentText()=="SIFT" and self.mode.currentText()=="Fast"))
         def pair_mode(text):
             self.generic.setEnabled(text == "Fast")
             self.reference.setEnabled(text == "Fast")

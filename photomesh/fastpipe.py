@@ -30,6 +30,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
+from .engine import child_env
 
 COARSE_MAX_SIZE = 1024
 COARSE_KEYPOINTS = 4000
@@ -706,9 +707,9 @@ def incremental_mapper_args(exe, db, img_dir, out, ilist=None, n_images=0, coars
     a += opt(exe, "mapper", ["Mapper.num_threads"], -1)
     big = n_images >= AUTO_GLOBAL_MIN_IMAGES
     if big:
-        a += opt(exe, "mapper", ["Mapper.ba_global_images_ratio"], 1.4)
+        a += opt(exe, "mapper", ["Mapper.ba_global_frames_ratio", "Mapper.ba_global_images_ratio"], 1.4)
         a += opt(exe, "mapper", ["Mapper.ba_global_points_ratio"], 1.4)
-        a += opt(exe, "mapper", ["Mapper.ba_global_images_freq"], 2000)
+        a += opt(exe, "mapper", ["Mapper.ba_global_frames_freq", "Mapper.ba_global_images_freq"], 2000)
         a += opt(exe, "mapper", ["Mapper.ba_global_points_freq"], 1000000)
     a += opt(exe, "mapper", ["Mapper.ba_global_max_num_iterations"], 15 if coarse else (25 if big else 50))
     a += opt(exe, "mapper", ["Mapper.ba_global_max_refinements"], 2 if (coarse or big) else 5)
@@ -732,7 +733,7 @@ def mapper_steps(exe, db, img_dir, out, s, n_images, ilist=None, coarse=False, t
                 (label + " - incremental", inc, 25)]
     if kind == "Global":
         from .engine import global_arguments
-        integrated = global_arguments(exe, s, db, img_dir, out)
+        integrated = global_arguments(exe, s, db, img_dir, out, coarse=coarse)
         if integrated is not None:
             return [("log", f"Mapper: integrated COLMAP global on {n_images} images", 0),
                     (label + " - global", Try(integrated, fallback), 25),
@@ -755,9 +756,9 @@ def mapper_steps(exe, db, img_dir, out, s, n_images, ilist=None, coarse=False, t
         return steps
     if kind == "Hierarchical":
         h = ["hierarchical_mapper", "--database_path", db, "--image_path", img_dir, "--output_path", out]
-        h += opt(exe, "hierarchical_mapper", ["num_workers"], -1)
-        h += opt(exe, "hierarchical_mapper", ["leaf_max_num_images"], max(100, min(500, n_images // 4)))
-        h += opt(exe, "hierarchical_mapper", ["image_overlap"], 50)
+        h += opt(exe, "hierarchical_mapper", ["HierarchicalMapper.num_workers", "num_workers"], -1)
+        h += opt(exe, "hierarchical_mapper", ["HierarchicalMapper.leaf_max_num_images", "leaf_max_num_images"], max(100, min(500, n_images // 4)))
+        h += opt(exe, "hierarchical_mapper", ["HierarchicalMapper.image_overlap", "image_overlap"], 50)
         h += opt(exe, "hierarchical_mapper", ["Mapper.ba_global_max_num_iterations"], 15 if coarse else 25)
         h += opt(exe, "hierarchical_mapper", ["Mapper.ba_global_max_refinements"], 2)
         return [("log", f"Mapper: hierarchical (parallel sub-models) on {n_images} images", 0),
@@ -787,8 +788,8 @@ def _retriangulate(exe, db, img_dir, out):
             tri += opt(exe, "point_triangulator", ["Mapper.num_threads"], -1)
             tri += opt(exe, "point_triangulator", ["Mapper.ba_global_function_tolerance"], BA_FUNCTION_TOLERANCE)
             ba = ["bundle_adjuster", "--input_path", m0, "--output_path", m0]
-            ba += opt(exe, "bundle_adjuster", ["BundleAdjustment.max_num_iterations"], 30)
-            ba += opt(exe, "bundle_adjuster", ["BundleAdjustment.function_tolerance"], BA_FUNCTION_TOLERANCE)
+            ba += opt(exe, "bundle_adjuster", ["BundleAdjustmentCeres.max_num_iterations", "BundleAdjustment.max_num_iterations"], 30)
+            ba += opt(exe, "bundle_adjuster", ["BundleAdjustmentCeres.function_tolerance", "BundleAdjustment.function_tolerance"], BA_FUNCTION_TOLERANCE)
             return [("Triangulating tie points", Try(tri, None), 5),
                     ("Optimizing cameras (bundle adjustment)", Try(ba, None), 5),
                     filter_step(exe, m0)]
@@ -1036,10 +1037,10 @@ def fine_refine_steps(exe, fdb, img_dir, coarse_txt, wd, fine0, missing, n, n_co
                 (f"Registering {missing} remaining images", Try(reg, None), 6),
                 ("Checking registered images", retri, 0)]
     ba = ["bundle_adjuster", "--input_path", fine0, "--output_path", fine0]
-    ba += opt(exe, "bundle_adjuster", ["BundleAdjustment.max_num_iterations"], 30)
+    ba += opt(exe, "bundle_adjuster", ["BundleAdjustmentCeres.max_num_iterations", "BundleAdjustment.max_num_iterations"], 30)
     # stop when the relative cost change < 1e-6 (the drone run converged by
     # iteration ~10 of 39; the remaining iterations changed nothing)
-    ba += opt(exe, "bundle_adjuster", ["BundleAdjustment.function_tolerance"], BA_FUNCTION_TOLERANCE)
+    ba += opt(exe, "bundle_adjuster", ["BundleAdjustmentCeres.function_tolerance", "BundleAdjustment.function_tolerance"], BA_FUNCTION_TOLERANCE)
     seq.append(("Optimizing cameras (bundle adjustment)", Try(ba, rerun), 7))
     seq.append(filter_step(exe, fine0))
 
@@ -1071,7 +1072,7 @@ def _run_logged(prog, args, label, logfile):
         with open(logfile, "a", encoding="utf-8", errors="replace") as lf:
             lf.write(f"\n===== {label}  [{time.strftime('%H:%M:%S')}]\n> {os.path.basename(prog)} {' '.join(args)}\n")
             lf.flush()
-            r = subprocess.run([prog] + args, stdout=lf, stderr=subprocess.STDOUT, env=_env_for(args) or __import__("photomesh.engine", fromlist=["child_env"]).child_env(prog))
+            r = subprocess.run([prog] + args, stdout=lf, stderr=subprocess.STDOUT, env=_env_for(args) or child_env(prog))
         if r.returncode != 0:
             with open(logfile, encoding="utf-8", errors="replace") as lf:
                 tail = lf.read()[-2000:]

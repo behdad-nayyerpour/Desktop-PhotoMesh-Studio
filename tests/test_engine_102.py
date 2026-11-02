@@ -190,3 +190,52 @@ def test_publication_failure_restores_model_and_cloud(tmp_path,monkeypatch):
     with pytest.raises(PermissionError):
         publish_outputs([(str(stage),str(model)),(str(staged_cloud),str(cloud))])
     assert (model/"pose").read_text()=="old" and cloud.read_text()=="old-cloud"
+
+
+def test_gps_similarity_and_modern_frame_publication_are_consistent(tmp_path):
+    from tests.test_dense_mesh_gcp import synthetic_model
+    from photomesh import colmap_io as cio,georef as g
+    model=synthetic_model(n_img=8,two_cameras=False)
+    for i,image in enumerate(model.images.values()):
+        center=image.center(); center[1]=(i%2)*15.
+        image.tvec=-image.R()@center
+        image.xys=cio.project(model.cameras[image.camera_id],image.R(),image.tvec,
+                             model.points.xyz[np.maximum(image.point3D_ids,0)])[0]
+    points=model.points.xyz.copy()
+    original={im.name:im.center().copy() for im in model.images.values()}
+    angle=.3
+    R=np.array([[np.cos(angle),-np.sin(angle),0],[np.sin(angle),np.cos(angle),0],[0,0,1.]])
+    scale=2.5; translation=np.array([500000.,4400000.,1000.])
+    world={name:scale*R@center+translation for name,center in original.items()}
+    gps={}
+    for name,value in world.items():
+        lat,lon=g.utm_inverse(value[0],value[1],38,False)
+        gps[name]=[float(lon),float(lat),value[2]]
+    folder=tmp_path/"model"; cio.write_model(str(folder),model)
+    result=g.run_task({"model":str(folder),"markers":[],"crs":"EPSG:32638","camera_gps":gps,
+                       "use_markers":False,"use_cameras":True,"bundle":False},log=lambda *_:None)
+    actual=cio.read_model(str(folder)); offset=np.asarray(result["offset"])
+    for image in actual.images.values():
+        np.testing.assert_allclose(image.center()+offset,world[image.name],atol=1e-4)
+    np.testing.assert_allclose(actual.points.xyz+offset,points@R.T*scale+translation,atol=1e-4)
+    assert (folder/"frames.bin").is_file() and (folder/"rigs.bin").is_file()
+
+
+def test_safe_builder_rejects_traversal(tmp_path):
+    import zipfile
+    from tools.prepare_engine import safe_extract
+    archive=tmp_path/"bad.zip"
+    with zipfile.ZipFile(archive,"w") as output: output.writestr("../escape","bad")
+    with pytest.raises(ValueError,match="Unsafe"):
+        safe_extract(archive,tmp_path/"stage")
+    assert not (tmp_path/"escape").exists()
+
+
+def test_validation_rejects_broken_track_links(tmp_path):
+    from tests.test_dense_mesh_gcp import synthetic_model
+    from photomesh import colmap_io as cio
+    model=synthetic_model()
+    model.points.track_img[0]=999999
+    cio.write_model(str(tmp_path),model)
+    with pytest.raises(ValueError,match="missing image"):
+        engine.validate_model(str(tmp_path))

@@ -35,10 +35,10 @@ def alignment_context(d, parent):
         maximum = max([max(c.width, c.height) for c in cameras] or [0])
         from .colmap import ACCURACY_DOWNSCALE, find_glomap
         side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentData() or d.accuracy.currentText()]) if maximum else 0
-        fine = mode == "Fast" and d.c2f.isChecked() and side > COARSE_MAX_SIZE * 1.25
+        fine = d.feature_method.currentText()=="SIFT" and mode == "Fast" and d.c2f.isChecked() and side > COARSE_MAX_SIZE * 1.25
         kind = d.mapper.currentText()
         if kind == "Auto":
-            kind = "Global" if len(cameras) >= 100 and find_glomap() else "Incremental"
+            kind = "Global if supported; otherwise Incremental" if len(cameras) >= 100 else "Incremental"
         text = f"{len(cameras)} photos; solver: {kind}. "
         text += f"Two stages: up to 1024 px / {side} px." if fine else f"One stage: {side or 'unknown'} px."
         if mode == "Fast" and d.c2f.isChecked() and side and not fine:
@@ -48,6 +48,7 @@ def alignment_context(d, parent):
     for control in (d.mode, d.mapper, d.accuracy):
         control.currentTextChanged.connect(update)
     d.c2f.toggled.connect(update)
+    d.feature_method.currentTextChanged.connect(update)
     button = QPushButton("Review calibration groups...")
     d.aform.addRow(button)
     d.calibration_groups = {}

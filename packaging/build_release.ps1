@@ -10,7 +10,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ISCC,
     [string]$OutputDir = (Join-Path $PSScriptRoot "..\dist"),
     [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage"),
-    [string]$EngineCache = (Join-Path $PSScriptRoot "..\.engine-download-cache"),
+    [string]$EngineCache = (Join-Path $env:LOCALAPPDATA "PhotoMeshStudioBuild\engine-cache"),
     [switch]$OfflineBuild
 )
 $ErrorActionPreference = "Stop"
@@ -28,7 +28,7 @@ $installedPython = Join-Path $runtime "python\python.exe"
 $installedIdPath = Join-Path $runtime "app\runtime.id"
 $colmap = Join-Path $runtime "tools\colmap"
 $glomap = Join-Path $runtime "tools\glomap"
-foreach ($p in @($colmap, $glomap)) {
+foreach ($p in @($colmap)) {
     if (-not (Test-Path -LiteralPath $p)) { throw "Required runtime path missing: $p" }
 }
 if ((Test-Path -LiteralPath $venvPy -PathType Leaf) -and (Test-Path -LiteralPath $site -PathType Container)) {
@@ -90,7 +90,7 @@ Write-Host "Retaining the tested legacy reconstruction engine"
 $legacyColmap = Join-Path $runtime "tools\colmap-legacy"
 if (-not (Test-Path -LiteralPath $legacyColmap)) { $legacyColmap = $colmap }
 Copy-Tree $legacyColmap (Join-Path $stage "tools\colmap-legacy")
-Copy-Tree $glomap (Join-Path $stage "tools\glomap")
+if (Test-Path -LiteralPath $glomap) { Copy-Tree $glomap (Join-Path $stage "tools\glomap") }
 Write-Host "Preparing pinned COLMAP 4.2.1 CPU/CUDA engines and offline neural models"
 $engineArgs = @((Join-Path $app "tools\prepare_engine.py"), "--output", (Join-Path $stage "tools"), "--cache", $EngineCache)
 if ($OfflineBuild) { $engineArgs += "--offline" }
@@ -102,7 +102,8 @@ if ($sourceMode -eq "venv") {
     if ($LASTEXITCODE -ne 0) { throw "pip freeze failed" }
     $pyver = (& $venvPy -c "import sys; print(sys.version.split()[0])")
     $colhash = (Get-FileHash -LiteralPath (Join-Path $colmap "bin\colmap.exe") -Algorithm SHA256).Hash
-    $glhash = (Get-FileHash -LiteralPath (Join-Path $glomap "bin\glomap.exe") -Algorithm SHA256).Hash
+    $glhash = "not bundled"
+    if (Test-Path -LiteralPath (Join-Path $glomap "bin\glomap.exe")) { $glhash = (Get-FileHash -LiteralPath (Join-Path $glomap "bin\glomap.exe") -Algorithm SHA256).Hash }
     $runtimeDescription = @("python=$pyver", "colmap=$colhash", "glomap=$glhash") + $freeze
     $sha = [Security.Cryptography.SHA256]::Create()
     $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()

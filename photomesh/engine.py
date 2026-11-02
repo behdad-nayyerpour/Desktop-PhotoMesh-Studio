@@ -185,7 +185,7 @@ def verified_model(exe, name):
     return str(path)
 
 
-def global_arguments(exe, settings, database, images, output):
+def global_arguments(exe, settings, database, images, output, coarse=False):
     """Use maintained global mapping; Ceres CPU is the safe solver default.
 
     A CUDA-enabled executable does not prove that Ceres was built with cuDSS.
@@ -197,14 +197,19 @@ def global_arguments(exe, settings, database, images, output):
         return None
     result = ["global_mapper", "--database_path", database, "--image_path", images, "--output_path", output]
     if "GlobalMapper.skip_retriangulation" in opts:
-        result += ["--GlobalMapper.skip_retriangulation", "0"]
+        result += ["--GlobalMapper.skip_retriangulation", str(int(coarse))]
     if "GlobalMapper.random_seed" in opts:
         result += ["--GlobalMapper.random_seed", "0"]
     # Do not automatically activate experimental backends or unsupported camera models.
-    gpu = bool(gpu_device(exe, settings.get("use_gpu", False))) and bundle_manifest(exe).get("ceres_cuda") is True
+    device = gpu_device(exe, settings.get("use_gpu", False))
+    gpu = bool(device) and bundle_manifest(exe).get("ceres_cuda") is True
     for key in ("GlobalMapper.gp_use_gpu", "GlobalMapper.ba_ceres_use_gpu"):
         if key in opts:
             result += ["--" + key, str(int(gpu))]
+    if gpu:
+        for key in ("GlobalMapper.gp_gpu_index", "GlobalMapper.ba_gpu_index"):
+            if key in opts:
+                result += ["--"+key,str(device["index"])]
     return result
 
 
@@ -242,10 +247,22 @@ def validate_model(folder):
             raise ValueError("Reconstruction contains unsupported or invalid calibration")
     for im in model.images.values():
         R = im.R()
+        if im.camera_id not in model.cameras or not np.isfinite(im.xys).all():
+            raise ValueError("Reconstruction contains an invalid image/calibration link")
         if not np.isfinite(im.tvec).all() or not np.isfinite(R).all() or not np.allclose(R.T @ R, np.eye(3), atol=1e-6):
             raise ValueError("Reconstruction contains an invalid camera pose")
     if not np.isfinite(model.points.xyz).all():
         raise ValueError("Reconstruction contains non-finite 3D points")
+    P=model.points
+    if len(P.track_start)!=len(P)+1 or P.track_start[0]!=0 or np.any(np.diff(P.track_start)<0) or P.track_start[-1]!=len(P.track_img) or len(P.track_idx)!=len(P.track_img):
+        raise ValueError("Reconstruction contains malformed observation tracks")
+    image_ids=np.array(sorted(model.images),dtype=np.uint32)
+    positions=np.searchsorted(image_ids,P.track_img)
+    if np.any(positions>=len(image_ids)) or not np.array_equal(image_ids[np.minimum(positions,len(image_ids)-1)],P.track_img):
+        raise ValueError("Reconstruction observation references a missing image")
+    counts=np.array([len(model.images[int(iid)].xys) for iid in image_ids],dtype=np.int64)
+    if np.any(P.track_idx>=counts[positions]):
+        raise ValueError("Reconstruction observation lies outside its image feature array")
     return model
 
 
@@ -270,7 +287,7 @@ def select_bundled(exe):
         return cpu
     if run_help(exe):
         return exe  # CPU feature flags remain forced off for an incompatible GPU.
-    raise ValueError("The bundled reconstruction engine cannot start. Reinstall Setup or select a compatible engine.")
+    return None
 
 
 def dense_executable(exe):

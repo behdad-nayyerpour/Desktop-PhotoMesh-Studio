@@ -92,6 +92,13 @@ jobs:
       - name: Tests (no COLMAP / GPU)
         run: python -m pytest -q -rs -p no:cacheprovider tests
 
+      - name: Parse packaging PowerShell
+        shell: pwsh
+        run: |
+          $parseTokens = $null
+          $parseProblems = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'packaging/build_release.ps1'), [ref]$parseTokens, [ref]$parseProblems)
+          if ($parseProblems.Count) { throw ($parseProblems | Out-String) }
       - name: Prepare pinned CPU engine and offline models
         if: github.ref == 'refs/heads/improve/engine-modernization'
         run: python tools/prepare_engine.py --output engine-fixture --cache engine-downloads --cpu-only

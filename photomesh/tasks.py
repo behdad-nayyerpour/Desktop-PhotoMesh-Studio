@@ -206,7 +206,13 @@ def cmd_preserve_frame(cfg):
     preserve_frame(cfg,log=_log)
 
 
-COMMANDS = {"preserve_frame": cmd_preserve_frame, "register_photos": cmd_register_photos,"build_ortho": cmd_build_ortho, "build_dem": cmd_build_dem, "export_raster": cmd_export_raster,
+def cmd_validate_model(cfg):
+    from .engine import validate_model
+    model=validate_model(cfg["model"])
+    _log(f"Validated {len(model.images):,} cameras and {len(model.points):,} finite tie points with consistent observation tracks")
+
+
+COMMANDS = {"validate_model": cmd_validate_model, "preserve_frame": cmd_preserve_frame, "register_photos": cmd_register_photos,"build_ortho": cmd_build_ortho, "build_dem": cmd_build_dem, "export_raster": cmd_export_raster,
             "build_texture": cmd_build_texture, "build_tiles": cmd_build_tiles,
             "refine_markers": cmd_refine_markers, "dense_prepare": cmd_dense_prepare, "filter_cloud": cmd_filter_cloud,
             "build_mesh": cmd_build_mesh, "georef": cmd_georef}

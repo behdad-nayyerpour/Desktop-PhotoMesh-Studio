@@ -1774,11 +1774,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                     json.dump(gps_cfg,handle)
                 index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
                 planned.insert(index,("Applying camera GPS frame",[cm.PYTHON,"georef",gps_path],2))
-            def validate():
-                from .engine import validate_model
-                validate_model(os.path.join(wd,"sparse","0"))
-                return []
-            planned.append(("Validating reconstructed geometry",validate,1))
+            validation_path=os.path.join(wd,"validate_model.json")
+            with open(validation_path,"w",encoding="utf-8") as handle:
+                json.dump({"model":os.path.join(wd,"sparse","0")},handle)
+            planned.append(("Validating reconstructed geometry",[cm.PYTHON,"validate_model",validation_path],1))
             return [("log",message,0) for message in probe_logs] + planned
         steps = [("Preparing alignment", prepare_alignment, 1)]
         self.log(f"Align Photos: mode={s['mode']}, accuracy={s['accuracy']}, workdir={wd}")

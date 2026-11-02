@@ -5,6 +5,7 @@ A synthetic benchmark is not evidence of absolute speed on every aerial survey.
 """
 from __future__ import annotations
 import argparse
+from contextlib import closing
 import json
 import os
 from pathlib import Path
@@ -67,12 +68,13 @@ def measure_alignment(exe,root,scene,method,mapper):
         times["extract"]=command(exe,extract,log)
         # Known camera calibration is the controlled input for this numerical benchmark.
         by_name={im.name:truth_cameras[im.camera_id] for im in truth_images.values()}
-        with sqlite3.connect(database) as con:
+        with closing(sqlite3.connect(database)) as con:
             rows=list(con.execute("SELECT name,camera_id FROM images"))
             for name,cid in rows:
                 camera=by_name[name]
                 con.execute("UPDATE cameras SET model=?,params=?,prior_focal_length=1 WHERE camera_id=?",
                             (camera.model,np.asarray(camera.params,np.float64).tobytes(),cid))
+            con.commit()
         fp.merge_identical_cameras(database)
         match=["exhaustive_matcher","--database_path",database]
         match+=engine.matching_arguments(exe,"exhaustive_matcher",settings)
@@ -114,6 +116,68 @@ def measure_alignment(exe,root,scene,method,mapper):
             "total_seconds":sum(times.values())}
 
 
+def measure_fast_pipeline(exe,root,scene):
+    from photomesh.georef import umeyama
+    from PIL import Image
+    folder=root/"fast-coarse-fine"; folder.mkdir()
+    names=list(scene["photos"])
+    photos=os.path.dirname(next(iter(scene["photos"].values())))
+    (folder/"image_root.txt").write_text(photos,encoding="utf-8")
+    (folder/"image_list.txt").write_text("\n".join(names)+"\n",encoding="utf-8")
+    infos=[]
+    for path in scene["photos"].values():
+        with Image.open(path) as image: infos.append({"width":image.width,"height":image.height})
+    settings={"feature_method":"SIFT","key_point_limit":2048,"use_gpu":False,"accuracy":"High",
+              "coarse_to_fine":True,"mapper":"Incremental","single_camera":True,
+              "generic":False,"reference":False,"min_shared":8}
+    # A smaller coarse threshold exercises both stages on the small known scene.
+    previous=fp.COARSE_MAX_SIZE; fp.COARSE_MAX_SIZE=256
+    try: steps=fp.fast_align_steps(exe,str(folder),names,infos,settings)
+    finally: fp.COARSE_MAX_SIZE=previous
+    # Two database generations, native triangulation and modern BA flags are exercised.
+    timing=fp.run_steps(exe,steps,log=lambda *_:None,logfile=str(folder/"native.log"))
+    model=engine.validate_model(str(folder/"sparse"/"0"))
+    truth=cio.read_images(os.path.join(scene["model"],"images.bin")); truth={im.name:im for im in truth.values()}
+    src=np.array([im.center() for im in model.images.values()])
+    dst=np.array([truth[im.name].center() for im in model.images.values()])
+    scale,R,t=umeyama(src,dst)
+    error=float(np.sqrt(np.mean(np.sum((src@R.T*scale+t-dst)**2,1))))
+    reprojection=float(np.sqrt(np.mean(cio.observation_errors(model)[0]**2)))
+    if len(model.images)<12 or len(model.points)<100 or reprojection>2. or error>.5:
+        raise AssertionError(f"Fast pipeline geometry regression: {len(model.images)} cameras, {len(model.points)} points, {error} m, {reprojection} px")
+    return {"method":"SIFT","mapper":"fast-coarse-fine","cameras":len(model.images),"points":len(model.points),
+            "camera_rms_m":error,"reprojection_rms_px":reprojection,"stages":timing,
+            "total_seconds":sum(item[1] for item in timing)}
+
+
+def measure_cloud_mesh(root,scene):
+    import open3d as o3d
+    from photomesh import pcfilter,mesh
+    o3d.utility.random.seed(17)
+    source=o3d.io.read_triangle_mesh(scene["mesh"]); source.compute_vertex_normals()
+    cloud=source.sample_points_uniformly(30000)
+    original=np.asarray(cloud.points); normals=np.asarray(cloud.normals)
+    start=time.perf_counter()
+    filtered,stats=pcfilter.filter_cloud({"xyz":original,"normals":normals},
+        {"statistical":True,"radius":True,"elevation":False,"local_ratio":3},log=lambda *_:None)
+    filter_seconds=time.perf_counter()-start
+    path=root/"mesh-input.ply"
+    pcfilter.write_cloud(str(path),filtered["xyz"],normals=filtered.get("normals"))
+    start=time.perf_counter()
+    result=mesh.build_mesh({"source":"Point cloud","cloud":str(path),"out":str(root/"mesh.ply"),
+        "tmp":str(root/"mesh.building.ply"),"face_count":"Medium","max_points":30000},log=lambda *_:None)
+    mesh_seconds=time.perf_counter()-start
+    actual=o3d.io.read_triangle_mesh(str(root/"mesh.ply"))
+    surface=o3d.t.geometry.RaycastingScene()
+    surface.add_triangles(o3d.core.Tensor(np.asarray(source.vertices,np.float32)),
+                          o3d.core.Tensor(np.asarray(source.triangles,np.uint32)))
+    distance=surface.compute_distance(o3d.core.Tensor(np.asarray(actual.vertices,np.float32))).numpy()
+    if not result["faces"] or not np.isfinite(distance).all() or np.median(distance)>.25:
+        raise AssertionError("Mesh geometry regression")
+    return {"input_points":30000,"filtered_points":len(filtered["xyz"]),"filter_seconds":filter_seconds,
+            "mesh":result,"mesh_seconds":mesh_seconds,"median_surface_distance":float(np.median(distance)),"filters":stats}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe",required=True)
@@ -126,11 +190,15 @@ def main():
         for method,mapper in (("SIFT","incremental"),("SIFT","global"),("ALIKED + LightGlue","global")):
             result=measure_alignment(args.exe,root,scene,method,mapper)
             results.append(result); print(json.dumps(result),flush=True)
+        fast=measure_fast_pipeline(args.exe,root,scene)
+        results.append(fast); print(json.dumps(fast),flush=True)
+        cloud_mesh=measure_cloud_mesh(root,scene)
+        print(json.dumps(cloud_mesh),flush=True)
         # SIFT + LightGlue has distinct weights/options and gets its own real native probe.
         engine.execution_settings(args.exe,{"feature_method":"SIFT + LightGlue","key_point_limit":2048,
                                            "use_gpu":False},str(root),print)
     payload={"engine":engine.PINNED_VERSION,"dataset":"deterministic synthetic calibrated aerial block",
-             "results":results,"gpu_reconstruction_tested":False}
+             "results":results,"cloud_mesh":cloud_mesh,"gpu_reconstruction_tested":False}
     Path(args.output).write_text(json.dumps(payload,indent=2),encoding="utf-8")
     print(json.dumps(payload,indent=2),flush=True)
 
