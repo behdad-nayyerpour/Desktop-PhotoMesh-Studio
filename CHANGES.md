@@ -16,6 +16,8 @@ EXE. See [Updating](UPDATING.md).
 - Synchronize modern frame/rig metadata and pose-prior camera links after calibration grouping, optimization, registration and coordinate transformations.
 - Validate reconstruction geometry/observation tracks in an isolated worker before activating an alignment. Publish adjusted sparse models and dependent geometry together with rollback on failure.
 - Match current/legacy solver option names, invalidate depth reuse when the engine changes and allow CPU Delaunay meshing from existing fusion data.
+- Restore original calibration dimensions before grouping cached working photos, preventing different sensors from merging after downscaling.
+- Match all pairs when both preselection methods are explicitly disabled.
 - Disable coarse-camera pose reuse when focal priors are unavailable; reconstruct at target resolution to avoid biased self-calibration.
 - Add native Windows reconstruction benchmarks with known geometry, calibration-free comparisons and point-cloud/mesh checks. Neural methods are not assumed faster or more accurate for every dataset.
 - Fix the reported Properties exception when filter statistics are saved as JSON pairs rather than dictionaries. Read old formats without changing counts and write a canonical schema.

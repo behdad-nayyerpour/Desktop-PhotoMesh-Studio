@@ -330,3 +330,35 @@ def test_disabling_preselection_matches_all_pairs():
     names=[f"photo{i}.jpg" for i in range(16)]
     pairs=select_pairs(names,[{}]*16,use_desc=False,use_gps=False)
     assert len(pairs)==120 and ("photo0.jpg","photo15.jpg") in pairs
+
+
+def test_headless_native_environment_is_isolated_without_logfile(monkeypatch):
+    from photomesh import fastpipe as fp
+    monkeypatch.setattr(fp,"child_env",lambda *_:{"ENGINE":"isolated"})
+    calls=[]
+    monkeypatch.setattr(fp.subprocess,"run",lambda *a,**k:calls.append(k) or SimpleNamespace(returncode=0))
+    fp._run_logged("colmap",["mapper"],"mapping",None)
+    assert calls[0]["env"]=={"ENGINE":"isolated"}
+
+
+def test_working_size_collision_does_not_merge_different_original_sensors(tmp_path,monkeypatch):
+    from photomesh import fastpipe as fp,colmap
+    monkeypatch.setattr(colmap,"colmap_options",lambda *_:set())
+    steps=fp.fast_align_steps("engine",str(tmp_path),["a.jpg","b.jpg"],
+        [{"width":3200,"height":2400},{"width":4000,"height":3000}],
+        {"accuracy":"High","key_point_limit":2048,"coarse_to_fine":True,"use_gpu":False})
+    labels=[label for label,*_ in steps]
+    assert labels.index("Rescaling key points")<labels.index("Grouping cameras")
+    db=str(tmp_path/"mixed.db")
+    with sqlite3.connect(db) as con:
+        con.executescript("CREATE TABLE cameras(camera_id INTEGER PRIMARY KEY,model INTEGER,width INTEGER,height INTEGER,params BLOB,prior_focal_length INTEGER); CREATE TABLE images(image_id INTEGER PRIMARY KEY,name TEXT,camera_id INTEGER); CREATE TABLE keypoints(image_id INTEGER,rows INTEGER,cols INTEGER,data BLOB);")
+        for cid,name in [(1,"a.jpg"),(2,"b.jpg")]:
+            con.execute("INSERT INTO cameras VALUES(?,?,256,192,?,0)",(cid,2,np.array([307.2,128.,96.,0.]).tobytes()))
+            con.execute("INSERT INTO images VALUES(?,?,?)",(cid,name,cid))
+    dims={"a.jpg":{"orig":(3200,2400),"work":(256,192)},
+          "b.jpg":{"orig":(4000,3000),"work":(256,192)}}
+    fp.rescale_db_to_original(db,dims,"work")
+    groups=fp.merge_identical_cameras(db)
+    assert len(groups)==2
+    with sqlite3.connect(db) as con:
+        assert con.execute("SELECT width,height FROM cameras ORDER BY camera_id").fetchall()==[(3200,2400),(4000,3000)]

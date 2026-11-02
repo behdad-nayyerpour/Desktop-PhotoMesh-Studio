@@ -908,12 +908,14 @@ def fast_align_steps(exe, wd, names, infos, s):
         (f"Detecting points ({'coarse ' if do_fine else ''}{coarse_size if do_fine else fine_size}px)",
          extract(first_db, coarse_size if do_fine else fine_size, coarse_kp if do_fine else fine_kp,
                  first_work if use_cache else None), 15)]
+    if use_cache:
+        # Different sensors can become identical-sized working images. Restore
+        # each original calibration before considering whether they can share it.
+        steps.append(("Rescaling key points", rescale(first_db, first_work), 1))
     if s.get("single_camera", True):
         steps.append(camera_groups_step(first_db, groups=s.get("calibration_groups")))
-    if use_cache:
-        steps.append(("Rescaling key points", rescale(first_db, first_work), 1))
-        if not do_fine:
-            steps.append(("Removing working images", cleanup, 0))
+    if use_cache and not do_fine:
+        steps.append(("Removing working images", cleanup, 0))
     steps += [
         ("Matching points (preselected pairs)", import_matches(first_db, pairs_txt), 15),
     ]
@@ -1106,7 +1108,7 @@ def _run_logged(prog, args, label, logfile):
                 tail = lf.read()[-2000:]
             raise RuntimeError(f"{label} failed (exit {r.returncode}):\n{tail}")
     else:
-        r = subprocess.run([prog] + args, capture_output=True, text=True, env=_env_for(args))
+        r = subprocess.run([prog] + args, capture_output=True, text=True, env=_env_for(args) or child_env(prog))
         if r.returncode != 0:
             raise RuntimeError(f"{label} failed:\n{(r.stdout + r.stderr)[-2000:]}")
 
