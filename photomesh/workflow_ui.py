@@ -35,6 +35,9 @@ def alignment_context(d, parent):
         maximum = max([max(c.width, c.height) for c in cameras] or [0])
         from .colmap import ACCURACY_DOWNSCALE, find_glomap
         side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentData() or d.accuracy.currentText()]) if maximum else 0
+        from .engine import extraction_size
+        requested_side = side
+        side = extraction_size(side, {"feature_method": d.feature_method.currentText()})
         fine = d.feature_method.currentText()=="SIFT" and mode == "Fast" and d.c2f.isChecked() and side > COARSE_MAX_SIZE * 1.25
         kind = d.mapper.currentText()
         if kind == "Auto":
@@ -43,6 +46,10 @@ def alignment_context(d, parent):
         text += f"Two stages: up to 1024 px / {side} px." if fine else f"One stage: {side or 'unknown'} px."
         if mode == "Fast" and d.c2f.isChecked() and side and not fine:
             text += " Target resolution does not require a second stage."
+        if d.feature_method.currentText() == "ALIKED + LightGlue":
+            text += " ALIKED uses at most 2048 px and one extraction worker to bound ONNX memory."
+            if requested_side > side:
+                text += " Keypoints/calibration are restored to original photo coordinates."
         text += f" GPS available: {gps}."
         d.summary.setText(text)
     for control in (d.mode, d.mapper, d.accuracy):

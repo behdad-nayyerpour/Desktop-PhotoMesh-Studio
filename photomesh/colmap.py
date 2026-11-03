@@ -256,7 +256,8 @@ def align_steps(exe, chunk, wd, s, names=None, infos=None):
     sparse = os.path.join(wd, "sparse")
     gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = image_max_dim([c.path for c in chunk.cameras if c.enabled])
-    max_size = max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]])
+    from .engine import extraction_size
+    max_size = extraction_size(max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]]), s)
     fe = ["feature_extractor", "--database_path", db, "--image_path", img_dir,
           "--image_list_path", image_list(wd),
           "--ImageReader.single_camera", "0"]   # identical cameras merged below

@@ -605,8 +605,7 @@ def test_gui_menus_and_toolbar(window):
         assert name in window.actions, name
     a = window.layer_action("shapes")
     assert a.isCheckable() and not a.icon().isNull()
-    tb = [x for x in window.findChildren(type(window.addToolBar("x")))]
-    assert any(a in t.actions() for t in tb)
+    assert a in window.show_items_button.menu().actions()
     window.set_layer_visible("shapes", False)
     assert all(not m.isChecked() for m in window._shape_mirrors)
     window.set_layer_visible("shapes", True)

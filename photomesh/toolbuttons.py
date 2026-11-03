@@ -69,3 +69,48 @@ class ModeButton(QToolButton):
         p.setPen(Qt.NoPen); p.setBrush(col)
         p.drawPolygon(QPolygonF([QPointF(cx - 5, cy - 2.5), QPointF(cx + 5, cy - 2.5), QPointF(cx, cy + 3.5)]))
         p.end()
+
+
+class LayerModeButton(ModeButton):
+    """One menu for visibility and render mode; mirrors Workspace/menu changes."""
+    def __init__(self, parent, entries, title, visibility, icon_size=26):
+        self.visibility = visibility
+        self.title = title
+        super().__init__(parent, entries, title, icon_size)
+        self.setPopupMode(QToolButton.InstantPopup)
+        from PySide6.QtGui import QAction
+        self.hidden_action = QAction("Hidden", self)
+        self.hidden_action.setCheckable(True)
+        self.hidden_action.triggered.connect(self._hide)
+        self.menu().insertAction(self.menu().actions()[0], self.hidden_action)
+        visibility.changed.connect(self._sync_visibility)
+        self._sync_visibility()
+
+    def _hide(self):
+        self.visibility.setChecked(False)
+        self._sync_visibility()  # Also restore the check when Hidden was already selected.
+
+    def set_current(self, action):
+        super().set_current(action)
+        self._sync_visibility()
+
+    def actionEvent(self, event):
+        super().actionEvent(event)
+        if hasattr(self, "visibility"):
+            self._sync_visibility()
+
+    def _sync_visibility(self):
+        # QAction children can be destroyed before toolbar buttons at shutdown.
+        from shiboken6 import isValid
+        if not isValid(self) or not isValid(self.visibility):
+            return
+        if self.current is None:
+            return
+        visible = self.visibility.isChecked()
+        if hasattr(self, "hidden_action") and isValid(self.hidden_action):
+            self.hidden_action.setChecked(not visible)
+        label = self._labels[self.current] if visible else "Hidden"
+        self.setText(f"{self.title}: {label}")
+        self.setToolTip(f"{self.title}: {label}. Choose Hidden or a display mode.")
+        # The default action is a mode command; visibility remains independent.
+        self.setDown(False)

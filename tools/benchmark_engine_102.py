@@ -204,6 +204,32 @@ def measure_cloud_mesh(root,scene):
             "mesh":result,"mesh_seconds":mesh_seconds,"median_surface_distance":float(np.median(distance)),"filters":stats}
 
 
+def measure_large_aliked(exe, root, scene):
+    """Reported 5472px input: native ONNX extraction through Fast's real cache."""
+    from PIL import Image
+    folder = root / "large-aliked"; folder.mkdir()
+    photos = folder / "photos"; photos.mkdir()
+    source = next(iter(scene["photos"].values()))
+    with Image.open(source) as image:
+        image.resize((5472, 3648)).save(photos / "large.jpg")
+    (folder / "image_root.txt").write_text(str(photos), encoding="utf-8")
+    (folder / "image_list.txt").write_text("large.jpg\n", encoding="utf-8")
+    settings = {"feature_method": "ALIKED + LightGlue", "key_point_limit": 2048,
+                "accuracy": "High", "use_gpu": False, "mapper": "Incremental"}
+    steps = fp.fast_align_steps(exe, str(folder), ["large.jpg"],
+                               [{"width": 5472, "height": 3648}], settings)
+    selected = [(label, action, weight) for label, action, weight in steps
+                if label.startswith(("Decoding photos", "Detecting points", "Rescaling key points"))]
+    timing = fp.run_steps(exe, selected, log=lambda *_: None, logfile=str(folder / "native.log"))
+    with closing(sqlite3.connect(str(folder / "database.db"))) as db:
+        dimensions = db.execute("SELECT width,height FROM cameras").fetchone()
+        count = db.execute("SELECT rows FROM keypoints").fetchone()[0]
+    if dimensions != (5472, 3648) or not 0 < count <= 2048:
+        raise AssertionError(f"Large ALIKED output invalid: {dimensions}, {count}")
+    return {"input_size": [5472, 3648], "extraction_max_size": 2048,
+            "original_camera_size": dimensions, "keypoints": count, "stages": timing}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe",required=True)
@@ -224,13 +250,15 @@ def main():
         print(json.dumps(estimated),flush=True); print(json.dumps(estimated_fast),flush=True)
         if estimated_fast["camera_rms_m"]>max(.5,estimated["camera_rms_m"]*1.25):
             raise AssertionError("Coarse/fine calibration-free geometry degraded relative to full-resolution incremental mapping")
+        large_aliked=measure_large_aliked(args.exe,root,scene)
+        print(json.dumps({"large_aliked":large_aliked}),flush=True)
         cloud_mesh=measure_cloud_mesh(root,scene)
         print(json.dumps(cloud_mesh),flush=True)
         # SIFT + LightGlue has distinct weights/options and gets its own real native probe.
         engine.execution_settings(args.exe,{"feature_method":"SIFT + LightGlue","key_point_limit":2048,
                                            "use_gpu":False},str(root),print)
     payload={"engine":engine.PINNED_VERSION,"dataset":"deterministic synthetic calibrated aerial block",
-             "results":results,"cloud_mesh":cloud_mesh,"gpu_reconstruction_tested":False}
+             "results":results,"large_aliked":large_aliked,"cloud_mesh":cloud_mesh,"gpu_reconstruction_tested":False}
     Path(args.output).write_text(json.dumps(payload,indent=2),encoding="utf-8")
     print(json.dumps(payload,indent=2),flush=True)
 
