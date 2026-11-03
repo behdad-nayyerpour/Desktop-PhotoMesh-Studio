@@ -96,10 +96,14 @@ class LayerModeButton(ModeButton):
             self._sync_visibility()
 
     def _sync_visibility(self):
+        # QAction children can be destroyed before toolbar buttons at shutdown.
+        from shiboken6 import isValid
+        if not isValid(self) or not isValid(self.visibility):
+            return
         if self.current is None:
             return
         visible = self.visibility.isChecked()
-        if hasattr(self, "hidden_action"):
+        if hasattr(self, "hidden_action") and isValid(self.hidden_action):
             self.hidden_action.setChecked(not visible)
         label = self._labels[self.current] if visible else "Hidden"
         self.setText(f"{self.title}: {label}")

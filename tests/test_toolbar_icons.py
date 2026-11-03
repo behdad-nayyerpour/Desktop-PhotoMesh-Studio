@@ -100,7 +100,11 @@ for _ in range(10):
 tb = w.main_toolbar
 ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_ext_button"]
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
-                          "overflow": bool(ext and ext[0].isVisible())}), flush=True)
+                          "overflow": bool(ext and ext[0].isVisible()),
+                          "bars": [{"name": bar.objectName(), "hint": bar.sizeHint().width(),
+                                    "overflow": any(b.isVisible() for b in bar.findChildren(QToolButton)
+                                                    if b.objectName() == "qt_toolbar_ext_button")}
+                                   for bar in w.toolbars]}), flush=True)
 os._exit(0)
 """
 
@@ -120,6 +124,7 @@ def test_main_toolbar_fits_1920px_at_150_percent(tmp_path):
     r = json.loads(line[0][3:])
     assert abs(r["dpr"] - 1.5) < 1e-6
     assert r["hint"] <= 1280 - 16 and not r["overflow"], r
+    assert all(bar["hint"] <= 1280 - 16 and not bar["overflow"] for bar in r["bars"]), r
 
 
 def _photo_with_markers(window):
