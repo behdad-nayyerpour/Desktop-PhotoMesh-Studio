@@ -91,8 +91,8 @@ from PySide6.QtCore import Qt, QCoreApplication
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 from PySide6.QtWidgets import QApplication, QToolButton
 app = QApplication([]); app.setOrganizationName("PhotoMeshFitTest"); app.setApplicationName("PhotoMeshFitTest")
-from photomesh.theme import apply_dark_theme, apply_light_theme
-(apply_dark_theme if sys.argv[2] == "dark" else apply_light_theme)(app)                                       # as main.py
+from photomesh.theme import apply_theme
+apply_theme(app, sys.argv[2].capitalize())                                       # as main.py
 from photomesh.mainwindow import MainWindow
 w = MainWindow(); w.resize(1280, 800); w.show()
 for _ in range(10):
