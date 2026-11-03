@@ -118,6 +118,18 @@ def group_capability(exe, command):
     return any(key in colmap_options(exe, command) for key in ("FeatureExtraction.type", "FeatureMatching.type"))
 
 
+# ALIKED allocates dense feature maps before selecting keypoints. The keypoint
+# limit alone cannot bound its multi-GB full-resolution ONNX intermediates.
+ALIKED_MAX_IMAGE_SIZE = 2048
+
+
+def extraction_size(requested, settings):
+    """Bound neural image memory consistently in every alignment pipeline."""
+    if settings.get("feature_method") == "ALIKED + LightGlue":
+        return min(int(requested), ALIKED_MAX_IMAGE_SIZE)
+    return int(requested)
+
+
 def matching_arguments(exe, command, settings, extraction=False):
     """Select compatible feature types and local weights; reject silent substitutions."""
     from .colmap import colmap_options, opt
@@ -140,7 +152,7 @@ def matching_arguments(exe, command, settings, extraction=False):
     if limit <= 0 or limit > 4096:
         raise ValueError("Neural matching requires an explicit feature limit from 1 to 4096")
     if group + ".num_threads" in supported:
-        args += ["--" + group + ".num_threads", "1" if use_gpu else "2"]
+        args += ["--" + group + ".num_threads", "1" if extraction or use_gpu else "2"]
     if method not in ("SIFT + LightGlue", "ALIKED + LightGlue"):
         raise ValueError("Unknown feature method: " + str(method))
     key = group + ".type"

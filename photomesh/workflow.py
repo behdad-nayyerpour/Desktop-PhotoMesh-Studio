@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import tempfile
+import time
 import numpy as np
 
 
@@ -47,22 +48,34 @@ def remap_paths(value, old, new):
     return value
 
 
+def replace_output(source, destination):
+    """Retry transient Windows sharing/access locks, never other I/O failures."""
+    for attempt in range(7):
+        try:
+            os.replace(source, destination)
+            return
+        except OSError as error:
+            if getattr(error, "winerror", None) not in (5, 32, 33) or attempt == 6:
+                raise
+            time.sleep(min(0.1 * 2**attempt, 1.0))
+
+
 def publish_directory(stage, destination):
     """Same-volume rename with rollback; recover interrupted publication first."""
     previous = destination + ".previous"
     if os.path.exists(previous):
         if not os.path.exists(destination):
-            os.replace(previous, destination)
+            replace_output(previous, destination)
         else:
             shutil.rmtree(previous)
     had_old = os.path.exists(destination)
     if had_old:
-        os.replace(destination, previous)
+        replace_output(destination, previous)
     try:
-        os.replace(stage, destination)
+        replace_output(stage, destination)
     except BaseException:
         if had_old:
-            os.replace(previous, destination)
+            replace_output(previous, destination)
         raise
     if had_old:
         shutil.rmtree(previous, ignore_errors=True)
@@ -78,10 +91,11 @@ def product_transaction(function):
         os.makedirs(os.path.dirname(target), exist_ok=True)
         previous = target + ".previous"
         if os.path.exists(previous) and not os.path.exists(target):
-            os.replace(previous, target)
+            replace_output(previous, target)
         os.makedirs(target, exist_ok=True)
         stage = tempfile.mkdtemp(prefix=os.path.basename(target) + ".building-", dir=os.path.dirname(target))
         trial = dict(cfg, out_dir=stage, previous_dir=target)
+        preserve_stage = False
         try:
             result = function(trial, *args, **kwargs)
             if cfg.get("input_warning"):
@@ -95,10 +109,18 @@ def product_transaction(function):
             if os.path.isfile(os.path.join(stage, "info.json")):
                 with open(os.path.join(stage, "info.json"), "w", encoding="utf-8") as fh:
                     json.dump(result, fh, indent=1)
-            publish_directory(stage, target)
+            try:
+                publish_directory(stage, target)
+            except OSError as error:
+                preserve_stage = True
+                raise OSError(
+                    f"Could not publish the completed product. Close applications using {target} "
+                    f"and retry. Completed files were retained at {stage}. "
+                    f"Previous output/backup: {target} / {previous}"
+                ) from error
             return result
         finally:
-            if os.path.isdir(stage):
+            if not preserve_stage and os.path.isdir(stage):
                 shutil.rmtree(stage, ignore_errors=True)
     return run
 
@@ -211,16 +233,16 @@ def publish_outputs(pairs):
     try:
         for source,destination,backup,exists in entries:
             if exists:
-                os.replace(destination,backup)
+                replace_output(destination,backup)
                 moved.append((destination,backup))
         for source,destination,backup,exists in entries:
-            os.replace(source,destination)
+            replace_output(source,destination)
             published.append((source,destination))
     except BaseException:
         for source,destination in reversed(published):
-            os.replace(destination,source)
+            replace_output(destination,source)
         for destination,backup in reversed(moved):
-            os.replace(backup,destination)
+            replace_output(backup,destination)
         raise
     for _,_,backup,exists in entries:
         if exists:

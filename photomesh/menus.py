@@ -69,7 +69,7 @@ MENUS = [
         "-",
         "Perspective/Orthographic*",
         "-",
-        ("Predefined views", ["Top", "Bottom", "Front", "Back", "Left", "Right"]),
+        ("Predefined views", ["Top", "Bottom", "Front", "Back", "Left", "Right", "Isometric"]),
     ]),
     ("&Photo", [
         "Open Next Photo", "Open Previous Photo", "-",

@@ -368,8 +368,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         }
         for key, name in LAYER_ACTIONS.items():
             h[name] = (lambda k: lambda on=True: self._layer_toggled(k, on))(key)
-        for v in ("Top", "Bottom", "Front", "Back", "Left", "Right"):
-            h[v] = (lambda vv: lambda: self.model_view.set_predefined(vv))(v)
+        for v in ("Top", "Bottom", "Front", "Back", "Left", "Right", "Isometric"):
+            h[v] = (lambda vv: lambda: (self.tabs.setCurrentWidget(self.model_view), self.model_view.set_predefined(vv)))(v)
         return h
 
     def _build_menus(self):
@@ -437,88 +437,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.actions.setdefault(name, a)
 
     def _build_toolbar(self):
-        """One compact row of 16 px icon buttons (Metashape-like). Grouped modes
-        (selection tools, point cloud / model display mode, extra show/hide
-        items) are buttons with a dropdown arrow; the last used entry becomes
-        the button's action."""
-        from PySide6.QtCore import QSize
-        from PySide6.QtWidgets import QToolButton, QMenu
-        tb = QToolBar("Toolbar"); tb.setObjectName("toolbar")
-        tb.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        from .icons import TOOLBAR_ICON, MODE_ICON
-        tb.setIconSize(QSize(TOOLBAR_ICON, TOOLBAR_ICON))
-        tb.setStyleSheet("QToolBar{spacing:1px;padding:1px;} QToolButton{padding:2px;margin:0px;}")
-        self.addToolBar(tb)
-        self.main_toolbar = tb
-        st = self.style()
-
-        def act(name, icon, tip=None):
-            a = self.actions[name]
-            a.setIcon(icon if not isinstance(icon, (str, QStyle.StandardPixmap)) else
-                      (layer_icon(icon) if isinstance(icon, str) else st.standardIcon(icon)))
-            a.setToolTip(tip or name.split("/")[-1].rstrip("."))
-            return a
-
-        def add(name, icon, tip=None):
-            tb.addAction(act(name, icon, tip))
-
-        def drop(names_icons, tip, instant=False, icon=None):
-            btn = QToolButton(tb)
-            menu = QMenu(btn)
-            for n, ic in names_icons:
-                if n is None:
-                    menu.addSeparator(); continue
-                menu.addAction(act(n, ic) if ic is not None else self.actions[n])
-            btn.setMenu(menu)
-            btn.setToolTip(tip)
-            if instant:
-                btn.setPopupMode(QToolButton.InstantPopup)
-                btn.setIcon(layer_icon(icon))
-            else:
-                btn.setPopupMode(QToolButton.MenuButtonPopup)
-                btn.setDefaultAction(self.actions[names_icons[0][0]])
-                menu.triggered.connect(lambda a, b=btn: (b.setDefaultAction(a), b.setToolTip(a.toolTip())))
-            tb.addWidget(btn)
-            return btn
-
-        add("New", "file_new"); add("Open...", "file_open"); add("Save", "file_save")
-        tb.addSeparator()
-        add("Undo", "undo"); add("Redo", "redo")
-        tb.addSeparator()
-        add("Zoom In", "zoom_in"); add("Zoom Out", "zoom_out"); add("Reset View", "reset_view")
-        tb.addSeparator()
-        add("Add Photos...", "add_photos", "Add Photos")
-        add("Align Photos...", "align", "Align Photos")
-        add("Build Point Cloud...", "cloud", "Build Point Cloud")
-        add("Build Model...", "mesh", "Build Model")
-        tb.addSeparator()
-        # grouped display modes: larger split buttons (MODE_ICON px icon, short label, wide arrow)
-        from .toolbuttons import ModeButton
-
-        def mode(entries, tip):
-            btn = ModeButton(tb, [(act(n, ic), lab) for n, ic, lab in entries], tip, icon_size=MODE_ICON)
-            tb.addWidget(btn)
-            return btn
-        self.tie_mode_button = mode([("Tie Points - Colors", "tie", "Tie Points")], "Tie points display mode")
-        self.cloud_mode_button = mode([("Point Cloud - Colors", "cloud_colors", "Colors"),
-                                       ("Point Cloud - Solid", "cloud_solid", "Solid")], "Point cloud display mode")
-        self.model_mode_button = mode([("Model - Shaded", "mode_shaded", "Shaded"),
-                                       ("Model - Solid", "mode_solid", "Solid"),
-                                       ("Model - Textured", "mode_textured", "Textured"),
-                                       ("Model - Wireframe", "mode_wireframe", "Wireframe")], "Model display mode")
-        self.mode_buttons = [self.tie_mode_button, self.cloud_mode_button, self.model_mode_button]
-        tb.addSeparator()
-        for key in ("tie", "cloud", "mesh", "ortho", "dem", "cameras", "markers", "shapes", "region", "grid"):
-            tb.addAction(self.layer_action(key))
-            if key == "shapes":
-                tb.addWidget(self._transparency_button(tb))
-        extra = [(f"Model/{LAYER_ACTIONS[k]}", None) for k, _l, _d in LAYERS]
-        self.show_items_button = drop(extra + [(None, None), ("Model/Show All", None), ("Model/Hide All", None)],
-                                      "Show/Hide Items", instant=True, icon="show_items")
-        tb.addSeparator()
-        add("Preferences...", "preferences")
-        ta = self.actions["View/Toolbar"]
-        ta.setChecked(True); ta.toggled.connect(tb.setVisible)
+        from .toolbar import build_toolbar
+        build_toolbar(self)
 
     def _transparency_button(self, tb):
         """Checkable 'Transparent View' button with an opacity slider in its

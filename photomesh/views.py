@@ -856,7 +856,7 @@ class ModelView(QWidget):
         if self.gl is None:
             return
         el, az = {"Top": (90, -90), "Bottom": (-90, -90), "Front": (0, -90), "Back": (0, 90),
-                  "Left": (0, 180), "Right": (0, 0)}[name]
+                  "Left": (0, 180), "Right": (0, 0), "Isometric": (30, 45)}[name]
         self.gl.setCameraPosition(elevation=el, azimuth=az)
         self._sync_gizmo()
 

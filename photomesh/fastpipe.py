@@ -828,6 +828,9 @@ def fast_align_steps(exe, wd, names, infos, s):
     gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = max([i.get("width", 0) for i in infos] + [i.get("height", 0) for i in infos] + [0]) or 3200
     fine_size = max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]])
+    from .engine import extraction_size
+    requested_size = fine_size
+    fine_size = extraction_size(fine_size, s)
     do_fine = s.get("feature_method", "SIFT") == "SIFT" and s.get("coarse_to_fine", True) and fine_size > COARSE_MAX_SIZE * 1.25
     coarse_size = min(COARSE_MAX_SIZE, fine_size)
     cdb, fdb = os.path.join(wd, "coarse.db"), os.path.join(wd, "database.db")
@@ -902,6 +905,9 @@ def fast_align_steps(exe, wd, names, infos, s):
     coarse_kp = min(COARSE_KEYPOINTS, s["key_point_limit"]) if s["key_point_limit"] > 0 else COARSE_KEYPOINTS
     first_work = work_c if do_fine else work_f
     steps = [("Selecting image pairs", preselect, 1)]
+    if fine_size < requested_size:
+        steps.insert(0, ("log", f"ALIKED image limit: {requested_size} -> {fine_size}px to bound ONNX memory; "
+                        "keypoints are restored to original photo coordinates.", 0))
     if use_cache:
         steps.append(("Decoding photos (once, parallel)", decode_once, 6))
     steps += [
