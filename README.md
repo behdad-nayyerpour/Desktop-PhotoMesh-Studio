@@ -15,11 +15,11 @@ Desktop photogrammetry software for turning overlapping aerial photographs into
 
 **Dark theme**
 
-![PhotoMesh Studio 1.0.1 displaying a reconstructed aerial survey in dark mode](screenshot.png)
+![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in dark mode](screenshot.png)
 
 **Light theme**
 
-![PhotoMesh Studio 1.0.1 displaying a reconstructed aerial survey in light mode](screenshot-light.png)
+![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in light mode](screenshot-light.png)
 
 ## Install
 
