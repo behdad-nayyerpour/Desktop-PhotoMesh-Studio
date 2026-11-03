@@ -257,7 +257,7 @@ def test_gui_transparency_toggle_persists(window, no_dialogs, tmp_path):
     a = window.transparency_action
     assert a.isCheckable() and "Transparent" in a.toolTip() and not a.icon().isNull()
     assert a.shortcut().toString() == "Ctrl+Shift+T"
-    tb = [w for w in window.main_toolbar.findChildren(type(window.transparency_button))
+    tb = [w for w in window.display_toolbar.findChildren(type(window.transparency_button))
           if w.objectName() == "transparency_button"]
     assert tb and tb[0].menu() is not None
     a.trigger()                                                         # on
