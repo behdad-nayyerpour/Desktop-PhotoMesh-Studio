@@ -94,7 +94,7 @@ app = QApplication([]); app.setOrganizationName("PhotoMeshFitTest"); app.setAppl
 from photomesh.theme import apply_theme
 apply_theme(app, sys.argv[2].capitalize())                                       # as main.py
 from photomesh.mainwindow import MainWindow
-w = MainWindow(); w.resize(1280, 800); w.show()
+w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(1280, 800); w.show()
 for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
