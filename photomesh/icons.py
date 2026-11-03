@@ -138,6 +138,32 @@ class PainterIconEngine(QIconEngine):
         return [QSize(s, s) for s in (16, 21, 24, 26, 32, 48)]
 
 
+def _view_cube(p, direction):
+    """Visible face denotes the viewing side; reverse views use a turned cube."""
+    top = [(16, 3), (29, 10), (16, 17), (3, 10)]
+    left = [(3, 10), (16, 17), (16, 30), (3, 23)]
+    right = [(16, 17), (29, 10), (29, 23), (16, 30)]
+    selected = {"top": 0, "bottom": 0, "left": 1, "right": 2,
+                "front": 1, "back": 2, "isometric": 0}[direction]
+    p.save()
+    if direction == "bottom":
+        p.translate(0, 33); p.scale(1, -1)
+    elif direction in ("front", "back"):
+        # Reverse the visible arrangement to distinguish the Y faces from X.
+        p.translate(32, 0); p.scale(-1, 1)
+    for index, face in enumerate((top, left, right)):
+        p.setPen(QPen(QColor(65, 80, 95), 1.2))
+        p.setBrush(QColor(55, 180, 250) if index == selected else
+                   (QColor(225, 233, 240) if index == 0 else QColor(175, 190, 205)))
+        p.drawPolygon(QPolygonF([QPointF(x, y) for x, y in face]))
+    if direction in ("front", "back"):
+        p.setPen(QPen(QColor(65, 80, 95), 1.0))
+        p.drawLine(QPointF(16, 17), QPointF(16, 30))
+        # A small rear edge identifies the opposite-facing cube without letters.
+        p.drawLine(QPointF(16, 3), QPointF(16, 8))
+    p.restore()
+
+
 def _draw(key, p):
     S = _SIZE
     if key == "tie":                       # sparse dots
@@ -199,10 +225,10 @@ def _draw(key, p):
         p.setPen(QPen(QColor(250, 250, 250), 1.2)); p.setBrush(Qt.NoBrush); p.drawRect(QRectF(4, 4, 24, 24))
     elif key == "shapes":                  # vector overlay: polygon outline, a polyline and vertices
         poly = [QPointF(5, 9), QPointF(19, 5), QPointF(27, 15), QPointF(17, 27), QPointF(6, 21)]
-        p.setBrush(QBrush(QColor(255, 140, 60, 70)))
+        p.setBrush(QBrush(QColor(165, 112, 65, 230)))
         p.setPen(QPen(QColor(255, 150, 70), 1.8))
         p.drawPolygon(QPolygonF(poly))
-        p.setPen(QPen(QColor(90, 220, 140), 1.6, Qt.DashLine))
+        p.setPen(QPen(QColor(90, 220, 140), 1.6))
         p.drawPolyline(QPolygonF([QPointF(3, 28), QPointF(13, 16), QPointF(29, 24)]))
         _dots(p, [(q.x(), q.y()) for q in poly], QColor(255, 235, 120), 2.0)
     elif key == "transparency":            # see-through surface: a dashed shape behind a translucent sheet
@@ -284,6 +310,13 @@ def _draw(key, p):
         for y in range(5, 29, 4):
             for x in range(5 + (y // 4) % 2 * 2, 29, 4):
                 _dots(p, [(x, y)], cols[k % 4] if key == "cloud_colors" else QColor(200, 200, 212), 1.6); k += 1
+    elif key.startswith("view_"):
+        _view_cube(p, key[5:])
+    elif key in ("layers", "tiled"):
+        for dy, col in ((8, QColor(115, 135, 155)), (4, QColor(165, 185, 205)), (0, QColor(220, 230, 240))):
+            p.setPen(QPen(QColor(70, 85, 100), 1.2)); p.setBrush(col)
+            p.drawPolygon(QPolygonF([QPointF(3, 12 + dy), QPointF(16, 4 + dy),
+                                    QPointF(29, 12 + dy), QPointF(16, 20 + dy)]))
     elif key == "show_items":              # eye
         p.setPen(QPen(QColor(220, 220, 230), 1.6)); p.setBrush(Qt.NoBrush)
         p.drawEllipse(QRectF(3, 9, 26, 14))

@@ -38,7 +38,7 @@ def test_menu_toolbar_share_actions_and_icons_are_16px(window):
     main = [b for b in window.findChildren(QToolBar) if b.objectName() == "toolbar"]
     from photomesh.icons import TOOLBAR_ICON, PANE_ICON
     assert main and main[0].iconSize().width() == TOOLBAR_ICON == main[0].iconSize().height() == 21
-    acts = window.show_items_button.menu().actions()
+    acts = window.display_toolbar.actions() + window.show_items_button.menu().actions()
     for key in ("tie", "cloud", "mesh", "cameras", "markers", "grid", "region"):
         a = window.layer_action(key)
         assert a is window.actions[f"Model/{LAYER_ACTIONS[key]}"]
@@ -229,29 +229,29 @@ def test_view_overlays(window):
     assert tabs[:2] == ["Model", "Ortho"]
 
 
-def test_mode_buttons_are_large_split_buttons(window, tmp_path):
+def test_mode_buttons_keep_uniform_titles_and_track_modes(window, tmp_path):
     from PySide6.QtWidgets import QToolButton
-    from photomesh.toolbuttons import ARROW_W
+    from PySide6.QtCore import Qt
     _populate(window, tmp_path)
     window.wait_view_loaded(30)
     from photomesh.icons import TOOLBAR_ICON, MODE_ICON
     assert window.main_toolbar.iconSize().width() == TOOLBAR_ICON == 21    # was 16 px (+30 %)
     for b in window.mode_buttons:
         assert b.popupMode() == QToolButton.InstantPopup
-        assert b.iconSize().width() == MODE_ICON == 26 and b.text()       # was 20 px (+30 %)
-        assert ARROW_W == 21 and b.sizeHint().width() >= 26 + ARROW_W + 10
+        assert b.iconSize().width() == TOOLBAR_ICON == 21 and b.text()       # was 20 px (+30 %)
+        assert b.toolButtonStyle() == Qt.ToolButtonTextUnderIcon
         assert b.menu() is not None and b.menu().actions()
     mb = window.model_mode_button
     window.show_model_mode("shaded")
-    assert mb.text() == "Mesh: Shaded"
+    assert mb.text() == "Mesh" and "Shaded" in mb.toolTip()
     window.actions["Model - Wireframe"].trigger()                   # from the menu bar
-    assert mb.text() == "Mesh: Wireframe" and mb.defaultAction() is window.actions["Model - Wireframe"]
+    assert mb.text() == "Mesh" and "Wireframe" in mb.toolTip() and mb.defaultAction() is window.actions["Model - Wireframe"]
     window.show_model_mode("solid")                                  # from code
-    assert mb.text() == "Mesh: Solid"
+    assert mb.text() == "Mesh" and "Solid" in mb.toolTip()
     window.actions["Point Cloud - Solid"].trigger()
-    assert window.cloud_mode_button.text() == "Cloud: Solid"
+    assert window.cloud_mode_button.text() == "Cloud" and "Solid" in window.cloud_mode_button.toolTip()
     assert window.layer_states()["cloud"] and not window.layer_states()["mesh"]
-    assert mb.text() == "Mesh: Hidden"
+    assert mb.text() == "Mesh" and "Hidden" in mb.toolTip()
     mb.menu().actions()[-1].trigger()                                 # choose Wireframe from one menu
     assert window.layer_states()["mesh"] and not window.layer_states()["cloud"]
     assert not hasattr(window, "selection_button")   # 0.1.12: selection tools were not implemented

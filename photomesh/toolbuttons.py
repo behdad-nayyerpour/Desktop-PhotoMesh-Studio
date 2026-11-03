@@ -78,6 +78,8 @@ class LayerModeButton(ModeButton):
         self.title = title
         super().__init__(parent, entries, title, icon_size)
         self.setPopupMode(QToolButton.InstantPopup)
+        self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.setStyleSheet("QToolButton{padding:2px 3px;margin:0px;}")
         from PySide6.QtGui import QAction
         self.hidden_action = QAction("Hidden", self)
         self.hidden_action.setCheckable(True)
@@ -110,7 +112,11 @@ class LayerModeButton(ModeButton):
         if hasattr(self, "hidden_action") and isValid(self.hidden_action):
             self.hidden_action.setChecked(not visible)
         label = self._labels[self.current] if visible else "Hidden"
-        self.setText(f"{self.title}: {label}")
+        self.setText(self.title)
         self.setToolTip(f"{self.title}: {label}. Choose Hidden or a display mode.")
         # The default action is a mode command; visibility remains independent.
         self.setDown(False)
+
+    def paintEvent(self, event):
+        # Use Qt's native under-icon layout and menu indicator, with no split gutter.
+        QToolButton.paintEvent(self, event)

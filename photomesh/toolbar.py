@@ -1,25 +1,18 @@
-"""Clearly labelled processing, display and camera-view toolbars."""
+"""Two compact toolbar rows; shared actions keep menus and Workspace in sync."""
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QToolBar, QLabel, QToolButton, QMenu
-from .icons import layer_icon, TOOLBAR_ICON, MODE_ICON
+from PySide6.QtWidgets import QToolBar, QToolButton, QMenu
+from .icons import layer_icon, TOOLBAR_ICON
 from .toolbuttons import LayerModeButton
 
 
 def build_toolbar(window):
-    bars = []
-
-    def bar(title, name, new_row=False):
-        if new_row:
-            window.addToolBarBreak()
+    def row(title, name, style):
         tb = QToolBar(title, window)
         tb.setObjectName(name)
-        tb.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        tb.setToolButtonStyle(style)
         tb.setIconSize(QSize(TOOLBAR_ICON, TOOLBAR_ICON))
+        tb.setStyleSheet("QToolBar{spacing:0px;padding:1px;} QToolButton{padding:2px 3px;margin:0px;}")
         window.addToolBar(tb)
-        label = QLabel(title + "  ")
-        label.setMargin(3)
-        tb.addWidget(label)
-        bars.append(tb)
         return tb
 
     def action(tb, name, icon, label=None):
@@ -31,27 +24,29 @@ def build_toolbar(window):
         tb.addAction(a)
         return a
 
-    files = bar("Project", "toolbar")
-    window.main_toolbar = files
-    for name, icon in (("New", "file_new"), ("Open...", "file_open"), ("Save", "file_save"),
-                       ("Undo", "undo"), ("Redo", "redo")):
-        action(files, name, icon)
-    action(files, "Preferences...", "preferences", "Settings")
-    processing = bar("Processing", "processing_toolbar", True)
-    window.processing_toolbar = processing
+    top = row("Project and processing", "toolbar", Qt.ToolButtonTextBesideIcon)
+    window.main_toolbar = window.processing_toolbar = top
+    for name, icon in (("New", "file_new"), ("Open...", "file_open"), ("Save", "file_save")):
+        action(top, name, icon)
+    top.addSeparator()
+    action(top, "Undo", "undo"); action(top, "Redo", "redo")
+    top.addSeparator()
     for name, icon, label in (
         ("Add Photos...", "add_photos", "Photos"),
-        ("Align Photos...", "align", "Align / Tie Points"),
-        ("Build Point Cloud...", "cloud", "Point Cloud"),
-        ("Build Model...", "mesh", "Mesh"),
+        ("Align Photos...", "align", "Align"),
+        ("Build Point Cloud...", "cloud", "Build Cloud"),
+        ("Build Model...", "mesh", "Build Mesh"),
         ("Build Texture...", "mode_textured", "Texture"),
-        ("Build Tiled Model...", "mesh", "Tiles"),
+        ("Build Tiled Model...", "tiled", "Tiles"),
         ("Build DEM...", "dem", "DEM"),
-        ("Build Orthomosaic...", "ortho", "Orthomosaic")):
-        action(processing, name, icon, label)
+        ("Build Orthomosaic...", "ortho", "Ortho")):
+        action(top, name, icon, label)
+    top.addSeparator()
+    action(top, "Preferences...", "preferences", "Settings")
 
-    display = bar("Display", "display_toolbar", True)
-    window.display_toolbar = display
+    window.addToolBarBreak()
+    bottom = row("Display and views", "display_toolbar", Qt.ToolButtonTextUnderIcon)
+    window.display_toolbar = window.view_toolbar = bottom
 
     def mode(key, title, entries):
         choices = []
@@ -59,9 +54,9 @@ def build_toolbar(window):
             a = window.actions[name]
             a.setIcon(layer_icon(icon))
             choices.append((a, label))
-        button = LayerModeButton(display, choices, title, window.layer_action(key), MODE_ICON)
+        button = LayerModeButton(bottom, choices, title, window.layer_action(key), TOOLBAR_ICON)
         button.setObjectName(key + "_display_button")
-        display.addWidget(button)
+        bottom.addWidget(button)
         return button
 
     window.tie_mode_button = mode("tie", "Tie Points", [
@@ -76,33 +71,53 @@ def build_toolbar(window):
         ("Model - Wireframe", "mode_wireframe", "Wireframe")])
     window.mode_buttons = [window.tie_mode_button, window.cloud_mode_button, window.model_mode_button]
 
-    # Less frequent overlays stay in one labelled menu, not a duplicate row.
-    extras = QToolButton(display)
-    extras.setText("Layers")
-    extras.setIcon(layer_icon("show_items"))
-    extras.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    def layer(key, label):
+        a = window.layer_action(key)
+        a.setIconText(label)
+        bottom.addAction(a)
+
+    layer("ortho", "Ortho"); layer("dem", "DEM")
+    bottom.addSeparator()
+    for key, label in (("cameras", "Cameras"), ("markers", "Markers"), ("shapes", "Shapes"),
+                       ("region", "Region"), ("grid", "Grid")):
+        layer(key, label)
+    window.transparency_action = window.actions["Transparent View"]
+    window.transparency_action.setIconText("Transparency")
+    transparency = window._transparency_button(bottom)
+    transparency.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+    transparency.setIconSize(QSize(TOOLBAR_ICON, TOOLBAR_ICON))
+    bottom.addWidget(transparency)
+
+    extras = QToolButton(bottom)
+    extras.setText("Layers"); extras.setIcon(layer_icon("layers"))
+    extras.setIconSize(QSize(TOOLBAR_ICON, TOOLBAR_ICON))
+    extras.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
     extras.setPopupMode(QToolButton.InstantPopup)
+    extras.setToolTip("Additional layers, labels and view options")
     menu = QMenu(extras)
-    for key in ("tiled", "ortho", "dem", "cameras", "camera_labels", "markers",
-                "marker_labels", "shapes", "region", "grid", "trackball"):
+    for key in ("tiled", "camera_labels", "marker_labels", "trackball"):
         menu.addAction(window.layer_action(key))
+    tiled_modes = menu.addMenu("Tiled model display")
+    for name in ("Textured", "Solid", "Wireframe", "Elevation"):
+        tiled_modes.addAction(window.actions["Tiled Model - " + name])
+    menu.addSeparator()
+    menu.addAction(window.actions["Perspective/Orthographic"])
     menu.addSeparator()
     menu.addAction(window.actions["Model/Show All"])
     menu.addAction(window.actions["Model/Hide All"])
     extras.setMenu(menu)
-    display.addWidget(extras)
+    bottom.addWidget(extras)
     window.show_items_button = extras
-    display.addWidget(window._transparency_button(display))
 
-    view = bar("View", "view_toolbar", True)
-    window.view_toolbar = view
+    bottom.addSeparator()
     for name in ("Top", "Bottom", "Left", "Right", "Front", "Back", "Isometric"):
-        action(view, name, "navigation")
-    view.addSeparator()
-    for name, icon in (("Zoom In", "zoom_in"), ("Zoom Out", "zoom_out"), ("Reset View", "reset_view")):
-        action(view, name, icon)
-    action(view, "Perspective/Orthographic", "navigation", "Orthographic")
-    window.toolbars = bars
+        action(bottom, name, "view_" + name.lower(), "Iso" if name == "Isometric" else name)
+    bottom.addSeparator()
+    for name, icon, label in (("Zoom In", "zoom_in", "Zoom In"),
+                              ("Zoom Out", "zoom_out", "Zoom Out"),
+                              ("Reset View", "reset_view", "Fit")):
+        action(bottom, name, icon, label)
+    window.toolbars = [top, bottom]
     toggle = window.actions["View/Toolbar"]
     toggle.setChecked(True)
-    toggle.toggled.connect(lambda on: [tb.setVisible(on) for tb in bars])
+    toggle.toggled.connect(lambda on: [tb.setVisible(on) for tb in window.toolbars])

@@ -339,7 +339,7 @@ def test_gui_build_export_import_orthomosaic(window, no_dialogs, monkeypatch, sc
     # layer toggle (toolbar / menu / workspace checkbox)
     a = window.layer_action("ortho")
     from PySide6.QtWidgets import QToolBar
-    assert a in window.show_items_button.menu().actions() and any(s.width() == 16 for s in a.icon().availableSizes())
+    assert a in window.display_toolbar.actions() and any(s.width() == 16 for s in a.icon().availableSizes())
     a.setChecked(False); assert window.ortho_view.layers["ortho"].visible is False
     a.setChecked(True); assert window.ortho_view.layers["ortho"].visible is True
     # export from the GUI path (background thread)
