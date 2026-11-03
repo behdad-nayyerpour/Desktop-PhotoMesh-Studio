@@ -326,6 +326,13 @@ def _draw(key, p):
         p.drawLine(QPointF(19, 19), QPointF(28, 28)); p.drawLine(QPointF(9, 13), QPointF(17, 13))
         if key == "zoom_in":
             p.drawLine(QPointF(13, 9), QPointF(13, 17))
+    elif key == "fit_view":
+        p.setPen(QPen(QColor(210, 225, 240), 2.0)); p.setBrush(Qt.NoBrush)
+        for x, y, dx, dy in ((4, 4, 1, 1), (28, 4, -1, 1),
+                             (4, 28, 1, -1), (28, 28, -1, -1)):
+            p.drawLine(QPointF(x, y + 7 * dy), QPointF(x, y))
+            p.drawLine(QPointF(x, y), QPointF(x + 7 * dx, y))
+        p.drawRect(QRectF(11, 11, 10, 10))
     elif key == "reset_view":
         p.setPen(QPen(QColor(90, 165, 255), 2.2)); p.setBrush(Qt.NoBrush)
         p.drawRect(QRectF(6, 6, 20, 20)); p.drawLine(QPointF(16, 2), QPointF(16, 30)); p.drawLine(QPointF(2, 16), QPointF(30, 16))

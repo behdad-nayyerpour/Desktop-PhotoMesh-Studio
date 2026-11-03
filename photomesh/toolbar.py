@@ -116,7 +116,7 @@ def build_toolbar(window):
     bottom.addSeparator()
     for name, icon, label in (("Zoom In", "zoom_in", "Zoom In"),
                               ("Zoom Out", "zoom_out", "Zoom Out"),
-                              ("Reset View", "reset_view", "Fit")):
+                              ("Reset View", "fit_view", "Fit")):
         action(bottom, name, icon, label)
     window.toolbars = [top, bottom]
     toggle = window.actions["View/Toolbar"]
