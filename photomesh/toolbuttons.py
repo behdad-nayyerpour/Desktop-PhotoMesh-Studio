@@ -79,7 +79,7 @@ class LayerModeButton(ModeButton):
         super().__init__(parent, entries, title, icon_size)
         self.setPopupMode(QToolButton.InstantPopup)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.setStyleSheet("QToolButton{padding:2px 3px;margin:0px;}")
+        self.setStyleSheet("QToolButton{padding:2px 1px;margin:0px;}")
         from PySide6.QtGui import QAction
         self.hidden_action = QAction("Hidden", self)
         self.hidden_action.setCheckable(True)

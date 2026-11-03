@@ -46,6 +46,7 @@ def build_toolbar(window):
 
     window.addToolBarBreak()
     bottom = row("Display and views", "display_toolbar", Qt.ToolButtonTextUnderIcon)
+    bottom.setStyleSheet("QToolBar{spacing:0px;padding:1px;} QToolButton{padding:2px 1px;margin:0px;}")
     window.display_toolbar = window.view_toolbar = bottom
 
     def mode(key, title, entries):
