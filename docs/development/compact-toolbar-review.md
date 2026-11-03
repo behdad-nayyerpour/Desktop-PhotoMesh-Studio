@@ -27,8 +27,21 @@ No legacy action, processing feature or project compatibility path is removed.
 Repository-wide baseline maintainability audit remains pending before a release.
 No version bump, Setup build or target-PC execution is included.
 
-Validation planned: existing regression suite on Linux/Windows, warning and menu
+Validation scope: existing regression suite on Linux/Windows, warning and menu
 interaction tests, native text-under-icon layout at 1280 logical px in dark/light
 themes and scale factors 1/1.5/2. Inspect actual CI-rendered screenshots for size,
 spacing, labels and clipping. This is UI work; native-engine benchmarks from the
 previous processing fix are not rerun.
+
+## Validation evidence
+
+Code commit fe5de258e0225ea3530db27fb366010ff858172e, Actions
+[41716099953](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41716099953):
+601 passed / 8 skipped on each of Linux and Windows. Compile, undefined names,
+Windows packaging parser and Mesa OpenGL passed. Dark/light geometry tests at
+1280 logical px and 100%, 150%, 200% scale found no clipped buttons or overflow.
+The actual dark/light screenshots and the conditional warning were inspected.
+Icons remain 21 logical px and text retains the application font; fitting was
+achieved by reducing horizontal padding rather than shrinking text or cropping.
+Existing raster/texture performance gates passed (ratios 1.003 / 0.975).
+Skipped real-data/GPU/local-project checks are not claimed as completed.
