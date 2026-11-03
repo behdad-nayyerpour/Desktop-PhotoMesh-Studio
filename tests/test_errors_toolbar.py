@@ -107,6 +107,8 @@ def test_toolbar_separates_processing_display_and_view(window):
         assert "Hidden" not in button.text() and not button.hidden_action.isChecked()
         button.hidden_action.trigger()
         assert not window.layer_action(key).isChecked()
+        button.hidden_action.trigger()
+        assert button.hidden_action.isChecked() and "Hidden" in button.text()
     window.actions["View/Toolbar"].setChecked(False)
     assert all(tb.isHidden() for tb in window.toolbars)
     window.actions["View/Toolbar"].setChecked(True)

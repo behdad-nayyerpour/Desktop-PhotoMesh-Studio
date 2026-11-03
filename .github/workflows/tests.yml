@@ -124,14 +124,14 @@ jobs:
           [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'packaging/build_release.ps1'), [ref]$parseTokens, [ref]$parseProblems)
           if ($parseProblems.Count) { throw ($parseProblems | Out-String) }
       - name: Prepare pinned CPU engine and offline models
-        if: github.ref == 'refs/heads/codex/fix-errors-toolbar' || github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
+        if: github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
         run: python tools/prepare_engine.py --output engine-fixture --cache engine-downloads --cpu-only
       - name: Native 4.2.1 geometry and feature integration benchmark
-        if: github.ref == 'refs/heads/codex/fix-errors-toolbar' || github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
+        if: github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
         timeout-minutes: 15
         run: python tools/benchmark_engine_102.py --exe engine-fixture/colmap-cpu/bin/colmap.exe
       - name: Upload engine benchmark evidence
-        if: always() && (github.ref == 'refs/heads/codex/fix-errors-toolbar' || github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine))
+        if: always() && (github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine))
         uses: actions/upload-artifact@v4
         with:
           name: engine-benchmark-windows

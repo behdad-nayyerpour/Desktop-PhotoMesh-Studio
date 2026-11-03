@@ -32,3 +32,20 @@ rollback, retaining completed output, GUI visibility synchronization and view
 actions. CI results are recorded in the associated change. No local user PC
 execution, real quarry reconstruction, target-GPU validation or installed Setup
 test has been performed.
+
+## Recorded validation
+
+Commit 24fa2e8ff3bcf5006ed4d66c5814015bbb12c30f, Actions run
+[41702934208](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41702934208):
+593 passed / 8 skipped on each of Linux and Windows. Mesa OpenGL, undefined-name
+checks and Windows packaging parser passed. All four toolbars fit at 1280
+logical pixels / 150% scaling; the actual dark-theme screenshot was inspected.
+Raster/texture timing ratios to the existing baseline were 0.974 / 1.007.
+
+The pinned Windows CPU engine completed the calibrated and unknown-calibration
+synthetic geometry cases. A 5472x3648 input ran through Fast's actual ALIKED
+decode/extract/rescale path at 2048 px in about 10 seconds, returned 134 features,
+and restored the database camera to 5472x3648. This is synthetic integration
+evidence, not a complete reconstruction of the user's 347-photo quarry.
+The later UI-only follow-up fixes the repeated Hidden selection checkmark and
+adds its regression; engine/processing code is unchanged.

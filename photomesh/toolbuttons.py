@@ -81,10 +81,14 @@ class LayerModeButton(ModeButton):
         from PySide6.QtGui import QAction
         self.hidden_action = QAction("Hidden", self)
         self.hidden_action.setCheckable(True)
-        self.hidden_action.triggered.connect(lambda: visibility.setChecked(False))
+        self.hidden_action.triggered.connect(self._hide)
         self.menu().insertAction(self.menu().actions()[0], self.hidden_action)
         visibility.changed.connect(self._sync_visibility)
         self._sync_visibility()
+
+    def _hide(self):
+        self.visibility.setChecked(False)
+        self._sync_visibility()  # Also restore the check when Hidden was already selected.
 
     def set_current(self, action):
         super().set_current(action)
