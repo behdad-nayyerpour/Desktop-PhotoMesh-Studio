@@ -102,13 +102,13 @@ def test_toolbar_separates_processing_display_and_view(window):
     for key, button in zip(("tie", "cloud", "mesh"), window.mode_buttons):
         assert button.popupMode() == QToolButton.InstantPopup
         window.set_layer_visible(key, False)
-        assert "Hidden" in button.toolTip() and button.hidden_action.isChecked()
+        assert button.toolTip().startswith(f"{button.title}: Hidden.") and button.hidden_action.isChecked()
         window.set_layer_visible(key, True)
-        assert "Hidden" not in button.toolTip() and not button.hidden_action.isChecked()
+        assert not button.toolTip().startswith(f"{button.title}: Hidden.") and not button.hidden_action.isChecked()
         button.hidden_action.trigger()
         assert not window.layer_action(key).isChecked()
         button.hidden_action.trigger()
-        assert button.hidden_action.isChecked() and "Hidden" in button.toolTip()
+        assert button.hidden_action.isChecked() and button.toolTip().startswith(f"{button.title}: Hidden.")
     window.actions["View/Toolbar"].setChecked(False)
     assert all(tb.isHidden() for tb in window.toolbars)
     window.actions["View/Toolbar"].setChecked(True)

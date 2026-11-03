@@ -251,7 +251,7 @@ def test_mode_buttons_keep_uniform_titles_and_track_modes(window, tmp_path):
     window.actions["Point Cloud - Solid"].trigger()
     assert window.cloud_mode_button.text() == "Cloud" and "Solid" in window.cloud_mode_button.toolTip()
     assert window.layer_states()["cloud"] and not window.layer_states()["mesh"]
-    assert mb.text() == "Mesh" and "Hidden" in mb.toolTip()
+    assert mb.text() == "Mesh" and mb.toolTip().startswith("Mesh: Hidden.")
     mb.menu().actions()[-1].trigger()                                 # choose Wireframe from one menu
     assert window.layer_states()["mesh"] and not window.layer_states()["cloud"]
     assert not hasattr(window, "selection_button")   # 0.1.12: selection tools were not implemented
