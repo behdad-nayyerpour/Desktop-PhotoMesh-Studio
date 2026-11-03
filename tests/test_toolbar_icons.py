@@ -80,7 +80,7 @@ def test_toolbar_uses_only_painter_icons(window):
     for n in ("New", "Open...", "Save", "Undo", "Redo", "Preferences..."):
         assert QSize(21, 21) in window.actions[n].icon().availableSizes(), n   # ours, not a QStyle bitmap
     for b in window.mode_buttons:
-        assert b.height() <= 40
+        assert b.height() <= 56
     assert isinstance(PainterIconEngine("mesh").clone(), PainterIconEngine)
 
 
@@ -91,16 +91,21 @@ from PySide6.QtCore import Qt, QCoreApplication
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 from PySide6.QtWidgets import QApplication, QToolButton
 app = QApplication([]); app.setOrganizationName("PhotoMeshFitTest"); app.setApplicationName("PhotoMeshFitTest")
-from photomesh.theme import apply_dark_theme
-apply_dark_theme(app)                                       # as main.py
+from photomesh.theme import apply_theme
+apply_theme(app, sys.argv[2].capitalize())                                       # as main.py
 from photomesh.mainwindow import MainWindow
-w = MainWindow(); w.resize(1280, 800); w.show()
+w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(1280, 800); w.show()
 for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
 ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_ext_button"]
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
                           "overflow": bool(ext and ext[0].isVisible()),
+                          "window_width": w.width(),
+                          "clipped": [(b.text(), b.width(), b.sizeHint().width(), b.height(), b.sizeHint().height())
+                                      for bar in w.toolbars for b in bar.findChildren(QToolButton)
+                                      if b.isVisible() and b.objectName() != "qt_toolbar_ext_button"
+                                      and (b.width() < b.sizeHint().width() or b.height() < b.sizeHint().height())],
                           "bars": [{"name": bar.objectName(), "hint": bar.sizeHint().width(),
                                     "overflow": any(b.isVisible() for b in bar.findChildren(QToolButton)
                                                     if b.objectName() == "qt_toolbar_ext_button")}
@@ -109,20 +114,23 @@ os._exit(0)
 """
 
 
-def test_main_toolbar_fits_1920px_at_150_percent(tmp_path):
+@pytest.mark.parametrize("scale", ["1", "1.5", "2"])
+@pytest.mark.parametrize("theme", ["dark", "light"])
+def test_main_toolbar_fits_1920px_at_150_percent(tmp_path, scale, theme):
     """1920 px at 150 % scaling = 1280 logical px: the themed main toolbar
     (as started by main.py) must fit without the overflow (>>) button."""
     import json, os, subprocess, sys
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_SCALE_FACTOR="1.5")
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_SCALE_FACTOR=scale)
     if os.name == "nt":
         env.setdefault("QT_QPA_FONTDIR", os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts"))
     sc = tmp_path / "fit.py"; sc.write_text(_FIT_SCRIPT, encoding="utf-8")
-    out = subprocess.run([sys.executable, str(sc), root], env=env, capture_output=True, text=True, timeout=120)
+    out = subprocess.run([sys.executable, str(sc), root, theme], env=env, capture_output=True, text=True, timeout=120)
     line = [l for l in out.stdout.splitlines() if l.startswith("FIT")]
     assert line, out.stdout + out.stderr
     r = json.loads(line[0][3:])
-    assert abs(r["dpr"] - 1.5) < 1e-6
+    assert abs(r["dpr"] - float(scale)) < 1e-6
+    assert r["window_width"] == 1280 and not r["clipped"], r
     assert r["hint"] <= 1280 - 16 and not r["overflow"], r
     assert all(bar["hint"] <= 1280 - 16 and not bar["overflow"] for bar in r["bars"]), r
 

@@ -86,6 +86,16 @@ class AlignPhotosDialog(_SettingsDialog):
         self.feature_method = _combo(["SIFT", "SIFT + LightGlue", "ALIKED + LightGlue"], "SIFT")
         self.feature_method.setToolTip("SIFT is the tested default. Neural methods require the offline model bundle and a compatible engine; they are checked before processing.")
         self.gform.addRow("Features and matching:", self.feature_method)
+        self.neural_warning = QLabel(
+            "SIFT + LightGlue and ALIKED + LightGlue may take a long time, "
+            "especially on CPU or with many photos.")
+        self.neural_warning.setWordWrap(True)
+        self.neural_warning.setObjectName("neural_time_warning")
+        self.gform.addRow(self.neural_warning)
+        def update_neural_warning(*_):
+            self.neural_warning.setVisible(self.feature_method.currentText() != "SIFT")
+        self.feature_method.currentTextChanged.connect(update_neural_warning)
+        update_neural_warning()
         self.gps_frame = QCheckBox("Apply checked camera GPS to model scale, orientation and location")
         cameras = getattr(getattr(parent, "chunk", None), "cameras", [])
         from .engine import gps_frame_available
