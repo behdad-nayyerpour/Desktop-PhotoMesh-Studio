@@ -50,9 +50,12 @@ On Linux, with dependencies and Qt system libraries installed:
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
-The default GitHub Actions job runs the non-GPU suite. Real photo, CUDA, local
-project, and real OpenGL checks require the corresponding resources and may be
-skipped in CI. The Windows job is available through manual workflow dispatch.
+The Tests workflow runs Linux regression checks on main, working branches and
+version tags. Windows also runs on release branches/tags or explicit manual
+selection. Batch-script changes run CI because they affect source setup/launch.
+Select the native_engine input to run the pinned Windows CPU numerical benchmark.
+The separate Mesa overlay check uses software OpenGL; actual survey, CUDA,
+local-project and driver-specific display checks still need their own resources.
 
 ## Repository map
 
@@ -99,10 +102,20 @@ The root [contributor instructions](../../AGENTS.md) apply to coding agents as
 well. The [1.0.3 baseline review](release-review-103.md) records the repository sweep,
 manual findings, cleanup, validation and remaining target-hardware checks.
 
-## Current candidate validation
+## Release validation and retained tools
 
 [1.0.3 release review](release-review-103.md) is the current consolidated review.
 The temporary toolbar/error/icon preview notes have been removed after their
 relevant findings and evidence were consolidated there. Earlier version-specific
 engine/workflow reports remain historical evidence, as do regression tests.
 
+
+The completed 1.0.3 preview/publication/archive workflows have been retired;
+their successful Actions runs remain linked from the release review. The current
+Tests workflow and production Setup builder are the maintained paths.
+`tools/validate_installed_103.py` is a deliberately version-specific acceptance
+utility for a disposable 1.0.3 installation; it checks installed source identity,
+resources, About and captions. It is not the generic publisher for future versions.
+
+The unreferenced standalone toolbar preview PNG has been removed. The root
+Light/Dark project screenshots are the current user-approved 1.0.3 captures.

@@ -1,18 +1,13 @@
-# Non-GPU test suite. Lean on purpose (private repo: Actions minutes are limited,
-# Windows minutes count double):
-# - main and version-tag pushes run Linux tests;
-# - release/1.0.0 validation runs Linux and Windows;
-# - main + tag pushed together (a release) share one run (same commit);
-# - Windows can also be started by hand (Actions > Tests > Run workflow > windows).
-# COLMAP / GPU / local-data / OpenGL tests are marked and reported as skipped
-# (tests/conftest.py: CI_ONLY_LOCAL). The tests themselves run offline (no-network guard).
+# Regression suite: Linux on main, working branches and version tags.
+# Windows also runs on release branches/tags or explicit manual selection.
+# Native CPU integration is opt-in; real survey/CUDA/display fixtures remain separate.
 name: Tests
 
 on:
   push:
-    branches: [main, "release/1.0.0", "improve/workflow-review", "improve/engine-modernization", "codex/fix-errors-toolbar", "codex/compact-toolbar"]
+    branches: [main, "codex/**", "release/**", "improve/**"]
     tags: ["v*"]
-    paths-ignore: ["**.md", "screenshot*.png", "*.bat"]
+    paths-ignore: ["**.md", "screenshot*.png"]
   workflow_dispatch:
     inputs:
       windows:
@@ -52,7 +47,7 @@ jobs:
       - name: System libraries (Qt offscreen, Open3D)
         run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 libgomp1 xvfb xauth libgl1-mesa-dri libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0 libxcb-randr0
       - name: Install
-        run: pip install -q -r requirements-dev.txt psutil ruff
+        run: pip install -q -r requirements-dev.txt ruff
       - name: Undefined names and invalid exports
         run: ruff check --select F821,F822,F823 photomesh
       - name: Compact toolbar regressions
@@ -111,7 +106,7 @@ jobs:
           { echo '### Tests (Linux)'; echo '```'; if [ -f pytest.txt ]; then grep -E '^(SKIPPED|FAILED|ERROR)|passed|failed' pytest.txt || true; fi; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
   windows:
-    if: (github.event_name == 'workflow_dispatch' && (inputs.windows || inputs.native_engine)) || (github.ref == 'refs/heads/codex/compact-toolbar' || github.ref == 'refs/heads/codex/fix-errors-toolbar' || github.ref == 'refs/heads/release/1.0.0' || github.ref == 'refs/heads/improve/workflow-review' || github.ref == 'refs/heads/improve/engine-modernization')
+    if: (github.event_name == 'workflow_dispatch' && (inputs.windows || inputs.native_engine)) || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
     timeout-minutes: 35
     env:
@@ -125,7 +120,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install
-        run: pip install -q -r requirements-dev.txt psutil
+        run: pip install -q -r requirements-dev.txt
       - name: Tests (no COLMAP / GPU)
         run: python -m pytest -q -rs -p no:cacheprovider tests
 
@@ -137,14 +132,14 @@ jobs:
           [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'packaging/build_release.ps1'), [ref]$parseTokens, [ref]$parseProblems)
           if ($parseProblems.Count) { throw ($parseProblems | Out-String) }
       - name: Prepare pinned CPU engine and offline models
-        if: github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
+        if: github.event_name == 'workflow_dispatch' && inputs.native_engine
         run: python tools/prepare_engine.py --output engine-fixture --cache engine-downloads --cpu-only
       - name: Native 4.2.1 geometry and feature integration benchmark
-        if: github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine)
+        if: github.event_name == 'workflow_dispatch' && inputs.native_engine
         timeout-minutes: 15
         run: python tools/benchmark_engine_102.py --exe engine-fixture/colmap-cpu/bin/colmap.exe
       - name: Upload engine benchmark evidence
-        if: always() && (github.ref == 'refs/heads/improve/engine-modernization' || (github.event_name == 'workflow_dispatch' && inputs.native_engine))
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.native_engine
         uses: actions/upload-artifact@v4
         with:
           name: engine-benchmark-windows

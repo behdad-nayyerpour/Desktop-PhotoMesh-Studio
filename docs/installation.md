@@ -10,7 +10,8 @@
    `%LOCALAPPDATA%\Programs\PhotoMesh Studio`.
 4. Start PhotoMesh Studio from its Start menu or desktop shortcut.
 
-The installer includes Python, its packages, COLMAP, and GLOMAP.
+The installer includes Python, its packages and COLMAP; compatible legacy
+GLOMAP is optional.
 Installation and processing can run offline after the file is downloaded.
 You do not need to install Git or Python separately.
 

@@ -112,3 +112,16 @@ successful originating run/artifact and checks the Setup checksum before upload.
 The public download is [v1.0.3](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.3).
 The repository's full-project screenshots are the user's approved 1.0.3 Light
 and Dark captures. Test artifacts remain historical evidence with limited retention.
+
+## Post-release repository maintenance
+
+After publication, the one-time icon/installer preview, artifact publisher and
+1.0.2 archive workflows were retired, along with the unreferenced toolbar-only
+PNG. Their completed run evidence and the original project screenshots remain.
+The Tests workflow uses branch-family rules rather than obsolete exact branch
+names; batch-helper changes now trigger regression checks. Source setup messages
+use the current Project menu and explain standalone GLOMAP as a legacy fallback,
+without a universal speed claim. Versioned tests, fixtures, licenses, production
+packaging and the standalone installed-1.0.3 validator remain maintained evidence
+or usable entry points. No application source, format, algorithm or public Setup
+is changed by this maintenance.

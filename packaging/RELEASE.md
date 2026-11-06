@@ -3,7 +3,8 @@
 [Packaging overview](README.md) · [Development guide](../docs/development/README.md)
 
 Each release produces one offline file: `PhotoMeshStudio_Setup_<version>.exe`.
-It contains the app, Python, Python packages, COLMAP, and GLOMAP. Users run
+It contains the app, Python, Python packages and COLMAP, with optional legacy
+GLOMAP. Users run
 the new Setup on the existing installation; it replaces the managed app,
 Python, and tools folders. Projects, source photos, and processing results
 should be kept outside the installation folder.
@@ -69,3 +70,8 @@ The public release reuses that exact Setup/checksum. Remaining target-hardware
 checks are recorded in the [release review](../docs/development/release-review-103.md).
 Documentation-only follow-ups do not alter that tested executable or require a
 new Setup; a later source build will include the updated documentation.
+
+The one-time 1.0.3 publication and archive workflows were retired after success;
+use the production builder above for later versions. Historical Actions evidence
+remains in the release review. Retired workflows are recoverable from Git history
+and are not current release instructions.
