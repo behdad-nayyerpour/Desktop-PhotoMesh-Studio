@@ -1,5 +1,5 @@
 """Consistent task progress in the relevant pane and a minimal status bar."""
-from PySide6.QtCore import Qt, Signal, QTimer
+from PySide6.QtCore import Signal, QTimer
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar, QStatusBar, QPushButton
 from .progress import WorkProgress
 

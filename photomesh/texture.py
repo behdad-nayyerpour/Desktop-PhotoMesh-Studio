@@ -474,7 +474,6 @@ def seam_offsets(V, F, L, views, gains, threads, log=print):
     from scipy.sparse.linalg import cg
     m = len(F)
     lab = np.repeat(L, 3); vid = F.ravel()
-    good = lab >= 0
     key = vid.astype(np.int64) * (len(views) + 1) + (lab + 1)
     uk, cid = np.unique(key, return_inverse=True)
     nc = len(uk)
@@ -724,12 +723,12 @@ def pack_fit(uv, comp, size, count, pad, log=print, page_policy="auto"):
 def rasterize(uvp, page, npages, size):
     """Bounded rasterization; large UV triangles are processed in strips, never dropped."""
     import tempfile, atexit
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     lo = np.floor(uvp.min(1) - .5).astype(np.int64)
     hi = np.ceil(uvp.max(1) + .5).astype(np.int64)
     extent = hi - lo
     estimate = float(np.sum(np.minimum(extent[:, 0], size).astype(float) * np.minimum(extent[:, 1], size)))
-    free = available_bytes()
+    free = require_available_bytes()
     if len(extent) and extent.max() <= 256 and estimate * 160 < free * .45:
         return _rasterize_fast(uvp,page,npages,size,lo,hi)
     disk = estimate * 26 > free * .35
@@ -841,8 +840,8 @@ def _rasterize_fast(uvp, page, npages, size, lo, hi):
 
 def unique_texels(arrays,size):
     # Shared-edge texels have exactly one owner, as in the original renderer.
-    from .memguard import available_bytes
-    if len(arrays[0])*32 > available_bytes()*.7:
+    from .memguard import require_available_bytes
+    if len(arrays[0])*32 > require_available_bytes()*.7:
         raise ValueError("Texture sample indices exceed available RAM; use smaller pages or fewer pages")
     key=(arrays[0].astype(np.int64)*size+arrays[1])*size+arrays[2]
     _keys,first=np.unique(key,return_index=True)
@@ -1042,9 +1041,9 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     log(f"Texture: {len(tf) / 1e6:.1f} M texels cover the model ({stages['rasterize atlas']:.1f} s)")
     # ---- fill texels
     t0 = time.perf_counter()
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     scratch = None
-    if count * size * size * 13 > available_bytes() * .4:
+    if count * size * size * 13 > require_available_bytes() * .4:
         import tempfile
         scratch = tempfile.TemporaryDirectory(prefix="texture-pages-", dir=out)
         pages = np.memmap(os.path.join(scratch.name, "rgb.bin"), mode="w+", dtype=np.float32,
@@ -1115,7 +1114,6 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
         best = np.full(n, -1.0 if c["blending"] == "Max intensity" else 1e9, np.float32)
         tord = np.argsort(tf, kind="stable"); tfs = tf[tord]
         fstart = np.searchsorted(tfs, np.arange(m)); fcnt = np.searchsorted(tfs, np.arange(m), "right") - fstart
-        K = best_v.shape[1]
         jobs = []
         for vi in range(len(views)):
             fk = np.argwhere(best_v == vi)

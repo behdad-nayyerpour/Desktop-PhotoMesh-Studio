@@ -28,14 +28,6 @@ def _dark_icons():
 MIN_STROKE_PX = 1.25        # thinnest line, in device pixels, after scaling
 
 
-def _canvas():
-    pm = QPixmap(_SIZE, _SIZE)
-    pm.fill(Qt.transparent)
-    p = QPainter(pm)
-    p.setRenderHint(QPainter.Antialiasing)
-    return pm, p
-
-
 def _dots(p, pts, col, r):
     p.setPen(Qt.NoPen); p.setBrush(QBrush(col))
     for x, y in pts:
@@ -174,7 +166,6 @@ def _view_cube(p, direction):
 
 
 def _draw(key, p):
-    S = _SIZE
     if key == "tie":                       # sparse dots
         _dots(p, [(7, 9), (16, 6), (25, 10), (10, 18), (21, 17), (6, 26), (16, 25), (26, 25)],
               QColor(120, 200, 255), 2.7)

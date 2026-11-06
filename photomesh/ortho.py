@@ -710,7 +710,6 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     done = [0]; stat = {"pixels": 0, "holes": 0, "fallback": 0, "measured": 0, "inferred": 0}
     slock = threading.Lock()
     enc_pool = ThreadPoolExecutor(max(2, threads // 2))
-    mr = int(c["max_res"] or 0)
 
     def sample(vi, X, gain=True):
         v = views[vi]
@@ -797,7 +796,6 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
                     good[ins[~occ]] = True
             final[todo_v[good]] = vt[good]
             todo = np.setdiff1d(todo, todo_v[good], assume_unique=True)
-        nfb = int(((final >= 0) & (final != lab_)).sum())
         colr = np.zeros((n, 3), np.float32)
         have = final >= 0
         if c["blending"] == "Average":
@@ -832,7 +830,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
                 fu = (u - u0).astype(np.float32); fv = (vv - v0).astype(np.float32)
                 corr = np.zeros((n, 3), np.float32); wsum = np.zeros(n, np.float32)
                 fh = full_v.reshape(ny, nx, K); fc = full_c.reshape(ny, nx, K, 3)
-                La = Lavg.reshape(ny, nx, 3); Lcl = Lc.reshape(ny, nx)
+                La = Lavg.reshape(ny, nx, 3)
                 for dy, dx, wgt in ((0, 0, (1 - fu) * (1 - fv)), (0, 1, fu * (1 - fv)),
                                     (1, 0, (1 - fu) * fv), (1, 1, fu * fv)):
                     yy = np.clip(v0 + dy, 0, ny - 1); xx = np.clip(u0 + dx, 0, nx - 1)

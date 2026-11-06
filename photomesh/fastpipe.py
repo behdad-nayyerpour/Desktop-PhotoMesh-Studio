@@ -20,6 +20,8 @@ Original code. Ideas follow well-known published techniques, no proprietary code
 """
 from __future__ import annotations
 
+from .exif import rational as _rat, altitude as _gps_altitude
+
 import hashlib
 import math
 import os
@@ -27,7 +29,7 @@ import re
 import sqlite3
 import subprocess
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 from .engine import child_env
@@ -41,16 +43,6 @@ BA_FUNCTION_TOLERANCE = 1e-6     # relative cost change at which bundle adjustme
 
 
 # ------------------------------------------------------------ image analysis
-def _rat(v):
-    try:
-        return float(v)
-    except Exception:
-        try:
-            return v[0] / v[1]
-        except Exception:
-            return 0.0
-
-
 def _gps(exif):
     try:
         gps = exif.get_ifd(0x8825)
@@ -64,12 +56,7 @@ def _gps(exif):
         return -d if ref in ("S", "W") else d
     lat = dms(gps[2], gps.get(1, "N"))
     lon = dms(gps[4], gps.get(3, "E"))
-    alt = None
-    if 6 in gps:
-        ref = gps.get(5, 0)
-        if isinstance(ref, (bytes, bytearray)):
-            ref = ref[0] if ref else 0
-        alt = _rat(gps[6]) * (-1 if ref == 1 else 1)
+    alt = _gps_altitude(gps)
     return lon, lat, alt
 
 
@@ -227,13 +214,6 @@ def analyze_images(paths, cache_dir, workers=None, progress=None, cancel=None):
         except TypeError:
             progress(i, n)
     return map_images(lambda p: analyze_image(p, cache_dir), list(paths), workers, prog, cancel)
-
-
-def _safe(p, cache_dir):
-    try:
-        return analyze_image(p, cache_dir)
-    except Exception as e:
-        return {"path": p, "error": str(e)}
 
 
 # ------------------------------------------------------------ decode-once cache
@@ -834,7 +814,6 @@ def fast_align_steps(exe, wd, names, infos, s):
     from .colmap import image_dir, image_list
     img_dir = image_dir(wd)
     ilist = image_list(wd)
-    gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = max([i.get("width", 0) for i in infos] + [i.get("height", 0) for i in infos] + [0]) or 3200
     fine_size = max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]])
     from .engine import extraction_size

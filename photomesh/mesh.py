@@ -47,13 +47,13 @@ def _o3d():
 def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
     o3d = _o3d()
     from .workflow import point_count, vertex_blocks, bounds_from_ply, require_points
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     n = point_count(path)
     if not n:
         raise ValueError("Point cloud is empty")
     max_points = max(1000, int(max_points))
     # Normal-sized clouds retain the optimized native loader.
-    if n <= max_points and n * 100 < available_bytes() * .6:
+    if n <= max_points and n * 100 < require_available_bytes() * .6:
         pcd = o3d.io.read_point_cloud(path)
         if voxel:
             pcd = pcd.voxel_down_sample(float(voxel))

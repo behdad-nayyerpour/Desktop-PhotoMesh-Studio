@@ -14,7 +14,7 @@ import copy
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QIcon, QPixmap, QPainter
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QGroupBox, QComboBox,
-                               QDoubleSpinBox, QSpinBox, QCheckBox, QPushButton, QDialogButtonBox, QLabel,
+                               QDoubleSpinBox, QCheckBox, QPushButton, QDialogButtonBox, QLabel,
                                QColorDialog, QSlider, QWidget, QToolButton)
 
 from . import shape_style as SS

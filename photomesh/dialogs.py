@@ -1,5 +1,5 @@
 """Processing settings dialogs, progress dialog and preferences."""
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
     QVBoxLayout, QGroupBox, QLabel, QProgressBar, QPlainTextEdit, QPushButton,
@@ -159,7 +159,7 @@ class AlignPhotosDialog(_SettingsDialog):
 class BuildPointCloudDialog(_SettingsDialog):
     def __init__(self, parent=None):
         super().__init__("Build Point Cloud", parent)
-        from PySide6.QtWidgets import QDoubleSpinBox
+
         self.source = QLabel("Depth maps (CUDA)")
         self.quality = _combo(cm.QUALITY, "Medium")
         self.gform.addRow("Source data:", self.source)

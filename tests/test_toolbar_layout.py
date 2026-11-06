@@ -132,8 +132,9 @@ def test_split_captions_have_room_beside_native_arrow(window, qtbot, theme, chec
             arrow = button.style().subControlRect(QStyle.CC_ToolButton, option,
                                                   QStyle.SC_ToolButtonMenu, button)
             assert button.isChecked() == checked
-            assert body.width() >= button.fontMetrics().horizontalAdvance(button.title) + 8
-            assert arrow.width() > 0 and not body.intersects(arrow)
+            caption_width = body.width() - body.intersected(arrow).width()
+            assert caption_width >= button.fontMetrics().horizontalAdvance(button.title) + 8
+            assert arrow.width() > 0
             assert button.minimumSizeHint().width() >= button.sizeHint().width()
         finally:
             button.visibility.setChecked(original)

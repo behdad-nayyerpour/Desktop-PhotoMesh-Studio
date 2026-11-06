@@ -1,5 +1,5 @@
 """GCP resection for added photographs; existing camera poses never move."""
-import json, os
+import os
 import numpy as np
 from scipy.optimize import least_squares
 from scipy.spatial import ConvexHull

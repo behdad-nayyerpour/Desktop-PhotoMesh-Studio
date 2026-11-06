@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import datetime
 import getpass
-import io
+
 import json
 import os
 import platform

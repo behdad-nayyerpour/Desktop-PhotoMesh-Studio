@@ -14,7 +14,7 @@ import threading
 import time
 import traceback
 
-from PySide6.QtCore import QObject, Signal, QEventLoop, QTimer, Qt
+from PySide6.QtCore import QObject, Signal, QEventLoop, Qt
 
 log = logging.getLogger("photomesh")
 

@@ -5,7 +5,7 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT)); sys.path.insert(0,str(ROOT/"tests"))
 from photomesh import texture, tiles
-BASE="ee3e40e317b9111e3b7bd0c53ba7e174478a6b2c"
+BASE=os.environ.get("PHOTOMESH_BASELINE", "ee3e40e317b9111e3b7bd0c53ba7e174478a6b2c")
 
 
 def baseline(module):
@@ -43,8 +43,17 @@ def main():
         def cfg(name):
             return dict(mesh=scene["mesh"],model=scene["model"],photos=scene["photos"],
                         out_dir=os.path.join(folder,name),size=512,max_res=0,write_glb=False)
-        old.build_texture(cfg("warm-old"),log=lambda *_:None)
-        texture.build_texture(cfg("warm-new"),log=lambda *_:None)
+        old_info=old.build_texture(cfg("warm-old"),log=lambda *_:None)
+        new_info=texture.build_texture(cfg("warm-new"),log=lambda *_:None)
+        from PIL import Image
+        assert old_info["pages"]==new_info["pages"]
+        for page in old_info["pages"]:
+            with Image.open(Path(old_info["dir"])/page) as before_image, Image.open(Path(new_info["dir"])/page) as after_image:
+                np.testing.assert_array_equal(np.asarray(before_image),np.asarray(after_image))
+        with np.load(old_info["uv_npz"]) as before_uv, np.load(new_info["uv_npz"]) as after_uv:
+            assert set(before_uv.files)==set(after_uv.files)
+            for key in before_uv.files: np.testing.assert_array_equal(before_uv[key],after_uv[key])
+        result["synthetic_outputs_equal"]=True
         counter=[0]
         def run(function,label):
             counter[0]+=1

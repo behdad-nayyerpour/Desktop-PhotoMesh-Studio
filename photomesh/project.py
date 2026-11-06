@@ -1,6 +1,8 @@
 """Project data model, saved as JSON (*.pmsx)."""
 from __future__ import annotations
 
+from .exif import rational as _rat, altitude as _gps_altitude
+
 import json
 import os
 from dataclasses import dataclass, field, asdict
@@ -273,16 +275,6 @@ class Project:
         return [c for c in self.datasets if c.workdir and not is_under(c.workdir, base)]
 
 
-def _rat(v):
-    try:
-        return float(v)
-    except Exception:
-        try:
-            return v[0] / v[1]
-        except Exception:
-            return 0.0
-
-
 def read_exif_gps(cam: Camera):
     """Fill lon/lat/alt from EXIF GPS tags if Pillow is available."""
     try:
@@ -299,7 +291,6 @@ def read_exif_gps(cam: Camera):
             cam.lat = dms(gps[2], gps.get(1, "N"))
             cam.lon = dms(gps[4], gps.get(3, "E"))
         if 6 in gps:
-            a = _rat(gps[6])
-            cam.alt = -a if gps.get(5, 0) == 1 else a
+            cam.alt = _gps_altitude(gps)
     except Exception:
         pass

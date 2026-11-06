@@ -12,8 +12,7 @@ from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEvent
 from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
-    QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QStyle,
-    QToolBar, QInputDialog, QApplication, QLabel)
+    QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QInputDialog, QApplication, QLabel)
 
 from . import APP_NAME, APP_VERSION, PROJECT_EXT
 from . import colmap as cm
@@ -24,7 +23,7 @@ from .menus import MENUS, ACTION_LABELS, LEGACY_ACTION_GROUPS
 from .panes import (WorkspacePane, ReferencePane, MarkersPane, PhotosPane, ConsolePane,
                     PropertiesPane, JobsPane, workspace_panel, markers_panel)
 from . import procmeta
-from .plyio import load_ply, save_ply, ply_counts, vertex_normals
+from .plyio import load_ply, ply_counts, vertex_normals
 from .project import Project, ProjectData, IMAGE_EXTS, data_folder
 from .views import ModelView, PhotoView, OrthoView, LAYERS
 from .icons import layer_icon
@@ -1054,13 +1053,15 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _offer_stale_cleanup(self, path):
         """Unfinished copies of an earlier Save As in <name>.files of path
-        (0.1.7 'datasetN.partial', or marked incomplete): ask, then delete them."""
+        (legacy numbered folders or marked incomplete): ask before removal."""
         from . import datafolder as dfo
         root = data_folder(path)
         asked = self.__dict__.setdefault("_stale_asked", set())
         if os.path.normcase(root) in asked:
             return
-        stale = dfo.stale_copies(root)
+        def unreferenced(folder):
+            return not any(dfo.is_under(p, folder) for p in dfo.protected_paths(self.project))
+        stale = [(p, size) for p, size in dfo.stale_copies(root) if unreferenced(p)]
         if not stale:
             return
         asked.add(os.path.normcase(root))
@@ -1069,12 +1070,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         r = QMessageBox.question(self, "Project Data",
                                  f"Found {len(stale)} unfinished copy(ies) of project data left by an earlier, "
                                  f"interrupted or failed Save As ({dfo.fmt_size(size)}):\n{names}\n\n"
-                                 f"They are not used by any project. Delete them to free the space?",
+                                 f"The current project does not reference these folders. Delete them to free the space?",
                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if r != QMessageBox.Yes:
             self.log("Unfinished data copies kept: " + "; ".join(p for p, _b in stale))
             return
-        left = [p for p, _b in stale if not dfo.remove_tree(p)]
+        left = [p for p, _b in stale if not unreferenced(p) or not dfo.remove_tree(p)]
         freed = sum(b for p, b in stale if p not in left)
         self.log(f"Removed unfinished data copies ({dfo.fmt_size(freed)})"
                  + (f"; could not remove: {'; '.join(left)}" if left else ""))

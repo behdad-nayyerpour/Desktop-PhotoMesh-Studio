@@ -5,9 +5,9 @@ import os
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal, QEvent, QPointF
-from PySide6.QtGui import QPixmap, QPainter, QColor, QFont, QWheelEvent, QPen
+from PySide6.QtGui import QPixmap, QPainter, QColor, QWheelEvent, QPen
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QGraphicsView,
-                               QGraphicsScene, QStackedLayout)
+                               QGraphicsScene)
 
 try:
     import pyqtgraph as pg
@@ -575,6 +575,7 @@ class ModelView(QWidget):
         for kind, label, rect in self.overlay.last.get("label_rects", []):
             if kind == "marker" and rect.contains(QPointF(x, y)):
                 return label
+
         from .overlay3d import project
         mvp = self.view_mvp()
         if mvp is None or self.gl is None:
@@ -609,8 +610,7 @@ class ModelView(QWidget):
 
     def _paint_overlay(self, glw):
         """Final pass (called from OverlayGLView.paintGL after all GL items)."""
-        from PySide6.QtGui import QMatrix4x4
-        from .overlay3d import project
+
         w, h = glw.width(), glw.height()
         if w <= 0 or h <= 0:
             return
@@ -1086,8 +1086,8 @@ class PhotoView(QWidget):
         fills [(n,2) polygons], fill_color, fill_opacity, symbol, point_size,
         label_style {size, color, bg, bg_color}, anchors [(u, v, label)],
         hidden_lines, hidden_points [(u, v)] (drawn dashed in the transparent view)."""
-        from PySide6.QtGui import QPen, QBrush, QPainterPath, QPolygonF
-        from PySide6.QtWidgets import QGraphicsItem
+        from PySide6.QtGui import QPen, QBrush, QPainterPath
+
         sc = self.view.scene()
         for it in self._shape_items:
             sc.removeItem(it)

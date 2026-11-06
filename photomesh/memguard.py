@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sys
 import threading
-import time
+
 
 GB = 1024 ** 3
 MB = 1024 ** 2
@@ -36,6 +36,15 @@ def available_bytes():
         return int(ps.virtual_memory().available)
     except Exception:  # pragma: no cover
         return None
+
+
+def require_available_bytes():
+    """A measured budget for algorithms that cannot safely guess free RAM."""
+    amount = available_bytes()
+    if amount is None or amount <= 0:
+        raise ValueError("Available RAM could not be read; processing was stopped before large allocations. "
+                         "Check system memory access and retry.")
+    return amount
 
 
 def total_bytes():

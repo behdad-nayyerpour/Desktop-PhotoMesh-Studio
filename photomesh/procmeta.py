@@ -464,7 +464,6 @@ def properties(dataset, kind, index=None):
         rms = e.get("rms_reprojection_px")
         if rms is None:
             rms = ss.get("rms_reprojection_px")
-        bundle_rms = ((gr.get("bundle") or {}).get("tie_rms_px")) if gr else None
         return [("Tie points", fmt(dataset.tie_point_count or e.get("tie_points"))),
                 ("Accuracy", fmt(p.get("accuracy"))), ("Key point limit", fmt(p.get("key_point_limit"))),
                 ("Tie point limit", fmt(p.get("tie_point_limit"))), ("Preselection", fmt(p.get("preselection"))),
@@ -544,7 +543,6 @@ def properties(dataset, kind, index=None):
         e = meta.get("model") or {}
         p = e.get("params") or {}
         t = getattr(dataset, "texture", None) or {}
-        te = meta.get("texture") or {}
         trows = []
         if t:
             metric = t.get("georef")

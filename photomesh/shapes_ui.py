@@ -5,13 +5,13 @@ from __future__ import annotations
 
 import copy
 import os
-import re
+
 import threading
 import time
 
 import numpy as np
 from PySide6.QtCore import Signal, QObject
-from PySide6.QtWidgets import QFileDialog, QMessageBox, QDialog, QPushButton
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QDialog
 
 from . import shapes as S
 
@@ -437,10 +437,6 @@ class ShapesMixin:
             return None, []
         vis = [i for i, s in enumerate(sset["shapes"]) if sset["layers"][s["layer"]].get("visible", True)]
         return sset, vis
-
-    @staticmethod
-    def _shape_color(sset, s):
-        return s.get("color") or sset["layers"][s["layer"]]["color"]
 
     def shape_style(self, index, ch=None, highlight=None):
         """Resolved display style of shape `index` (shape_style.resolve)."""

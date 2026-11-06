@@ -107,7 +107,6 @@ class MarkerEditMixin:
                 k = self.current_photo
                 if not (0 <= k < len(self.dataset.cameras)):
                     return False
-                stem = g._stem(self.dataset.cameras[k].label)
                 point = next((p for lab, *p in self.photo_view.markers if lab == label), None)
                 return self.pin_marker(label, point[0], point[1]) if point else False
             m.locked = True

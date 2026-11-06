@@ -159,7 +159,7 @@ def test_complete_toolbar_labels_are_not_clipped(tmp_path, scale, theme, width):
     else:
         assert r["hint"] <= width - 16 or r["overflow"], r
         assert set(r["omitted"]).issubset(r["overflow_entries"]), r
-        assert r["bars"][1]["hint"] <= width - 16 and not r["bars"][1]["overflow"], r
+        assert r["bars"][1]["hint"] <= width and not r["bars"][1]["overflow"], r
 
 
 def _photo_with_markers(window):

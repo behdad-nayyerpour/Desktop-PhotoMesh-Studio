@@ -35,7 +35,7 @@ import shutil
 
 import numpy as np
 
-from .plyio import read_header, vertex_layout
+from .plyio import vertex_layout
 
 DXF_MAX_VERTS = 32767
 

@@ -469,13 +469,27 @@ class TiffReader:
     def __init__(self, path):
         self.path = path
         self.fh = open(path, "rb")
+        try:
+            self._load_metadata()
+        except (struct.error, IndexError, KeyError, OverflowError) as error:
+            self.fh.close()
+            raise ValueError("Invalid or truncated TIFF metadata") from error
+        except BaseException:
+            self.fh.close()
+            raise
+
+    def _load_metadata(self):
         self.lock = threading.Lock()
         hdr = self.fh.read(16)
         if hdr[:2] != b"II":
             if hdr[:2] == b"MM":
                 raise ValueError("big-endian TIFF is not supported")
             raise ValueError("not a TIFF file")
+        if len(hdr) < 8:
+            raise ValueError("Truncated TIFF header")
         ver = struct.unpack("<H", hdr[2:4])[0]
+        if ver not in (42, 43):
+            raise ValueError(f"Unsupported TIFF version: {ver}")
         self.big = ver == 43
         off = struct.unpack("<Q", hdr[8:16])[0] if self.big else struct.unpack("<I", hdr[4:8])[0]
         self.levels, self.tags0 = [], None

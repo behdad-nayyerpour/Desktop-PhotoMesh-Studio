@@ -30,6 +30,12 @@ jobs:
           ruff check --select F821,F822,F823 photomesh
       - name: Compare equivalent photo-processing batches
         run: python tools/compare_pool_batches.py
+      - name: Fetch comparison baseline
+        run: git fetch --depth=1 origin 05466142f5ca625c3069aa703903b42b6d842341
+      - name: Compare equivalent texture workloads
+        env:
+          PHOTOMESH_BASELINE: 05466142f5ca625c3069aa703903b42b6d842341
+        run: python tools/benchmark_workflow_101.py
       - name: Repository review inventory
         run: python tools/review_inventory.py
       - uses: actions/upload-artifact@v4
@@ -78,7 +84,10 @@ jobs:
               for checked in (False, True):
                   for button in w.mode_buttons: button.visibility.setChecked(checked)
                   for _ in range(10): app.processEvents()
-                  assert w.display_toolbar.grab().save("preview/layers-" + theme.lower() + ("-on" if checked else "-off") + ".png")
+                  capture = "preview/layers-" + theme.lower() + ("-on" if checked else "-off") + ".png"
+                  assert w.display_toolbar.grab().save(capture)
+                  import base64
+                  print("CAPTURE_IMAGE " + capture + " " + base64.b64encode(open(capture, "rb").read()).decode("ascii"), flush=True)
               from PySide6.QtGui import QImage, QPainter, QColor, QFont
               sheet = QImage(2000, 1200, QImage.Format_ARGB32_Premultiplied)
               sheet.fill(QColor("#202834" if theme == "Dark" else "#E8EDF3"))

@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF, QTimer
-from PySide6.QtGui import QPainter, QColor, QFont, QImage, QPen, QBrush, QGuiApplication
+from PySide6.QtGui import QPainter, QColor, QFont, QImage, QPen, QGuiApplication
 from PySide6.QtWidgets import QWidget, QMenu
 
 from . import geotiff as gt

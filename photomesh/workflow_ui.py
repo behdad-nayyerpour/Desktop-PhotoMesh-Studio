@@ -33,7 +33,7 @@ def alignment_context(d, parent):
         mode = d.mode.currentText()
         d.reference.setEnabled(mode == "Fast" and gps >= 2)
         maximum = max([max(c.width, c.height) for c in cameras] or [0])
-        from .colmap import ACCURACY_DOWNSCALE, find_glomap
+        from .colmap import ACCURACY_DOWNSCALE
         side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentData() or d.accuracy.currentText()]) if maximum else 0
         from .engine import extraction_size
         requested_side = side

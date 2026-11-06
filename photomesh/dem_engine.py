@@ -9,7 +9,7 @@ from .workflow import product_transaction, require_points, region_checked, raste
 @product_transaction
 def build_dem(cfg, log=print, progress=None, cancel=None):
     from . import ortho as o, geotiff as gt
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     c = dict(o.DEM_DEFAULTS); c.update({k:v for k,v in cfg.items() if v is not None})
     started = time.perf_counter(); stages = {}
     def check():
@@ -29,7 +29,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
     try:
         def array(name, shape, dtype, fill=0):
             size = math.prod(shape)*np.dtype(dtype).itemsize
-            if size > available_bytes()*.12:
+            if size > require_available_bytes()*.12:
                 a = np.memmap(os.path.join(scratch.name,name), mode="w+", dtype=dtype, shape=shape)
                 mapped.append(a)
             else: a = np.empty(shape,dtype)
@@ -41,7 +41,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             from .texture import read_mesh
             from .plyio import ply_counts
             vertices,faces=ply_counts(c["mesh"])
-            if vertices*200+faces*300 > available_bytes()*.7:
+            if vertices*200+faces*300 > require_available_bytes()*.7:
                 raise ValueError("Mesh DSM working arrays exceed available RAM; simplify the mesh or use a point-cloud source")
             P,F = read_mesh(c["mesh"])
             from .workflow import require_mesh
@@ -58,9 +58,9 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             from .plyio import ply_counts, read_fast
             npoints = ply_counts(c["cloud"])[0]
             if not npoints: raise ValueError("Point cloud is empty")
-            if c.get("aggregation")=="median" and npoints*64>available_bytes()*.5:
+            if c.get("aggregation")=="median" and npoints*64>require_available_bytes()*.5:
                 raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller source")
-            if npoints*80 < available_bytes()*.4:
+            if npoints*80 < require_available_bytes()*.4:
                 data = read_fast(c["cloud"])
                 if data is not None:
                     v=data["vertex"]; P=np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
@@ -133,7 +133,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                 check()
             has=cnt>0; measured[:]=has.reshape(H,W)
             if aggregate=="median":
-                if npoints*32>available_bytes()*.5:
+                if npoints*32>require_available_bytes()*.5:
                     raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller region")
                 idx=np.concatenate(med_idx); z=np.concatenate(med_z)
                 order=np.argsort(idx,kind="stable"); keys=idx[order]
@@ -155,12 +155,12 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
         interpolation=c.get("interpolation","Enabled")
         if interpolation!="Disabled" and hole.any():
             rows=H if interpolation=="Extrapolated" else min(H,256+2*halo)
-            if W*rows*96 > available_bytes()*.65:
+            if W*rows*96 > require_available_bytes()*.65:
                 raise ValueError("Interpolation halo exceeds available RAM; reduce fill/smoothing distance or use coarser pixels")
             if interpolation=="Extrapolated":
                 # An exact global nearest lookup is necessary for unrestricted fill.
                 # Guard it before allocation rather than failing partway through.
-                if W*H*32 > available_bytes()*.65:
+                if W*H*32 > require_available_bytes()*.65:
                     raise ValueError("Unrestricted extrapolation needs more RAM; use bounded fill, a region or coarser pixels")
                 dist,(iy,ix)=ndimage.distance_transform_edt(hole,return_indices=True)
                 fillmask[:]=hole
@@ -173,7 +173,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                 dem[hole]=proposed[hole]
             else:
                 # Freeze measured values: neighbouring blocks must not use inferred heights as observations.
-                original=dem.copy() if dem.nbytes<available_bytes()*.2 else array("original",(H,W),"f8",np.nan)
+                original=dem.copy() if dem.nbytes<require_available_bytes()*.2 else array("original",(H,W),"f8",np.nan)
                 if original is not dem: original[:]=dem
                 for r0 in range(0,H,256):
                     r1=min(H,r0+256); a=max(0,r0-halo); b=min(H,r1+halo)

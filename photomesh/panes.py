@@ -7,11 +7,11 @@ import io
 import os
 
 from PySide6.QtCore import Qt, Signal, QSize, QItemSelectionModel
-from PySide6.QtGui import QIcon, QPixmap, QImageReader, QColor, QBrush
+from PySide6.QtGui import QIcon, QPixmap, QColor, QBrush
 from PySide6.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QTableWidget, QTableWidgetItem, QListWidget,
     QListWidgetItem, QWidget, QVBoxLayout, QPlainTextEdit, QLineEdit, QMenu,
-    QHeaderView, QLabel, QListView, QAbstractItemView)
+    QHeaderView, QListView, QAbstractItemView)
 
 ROLE = Qt.UserRole
 
@@ -139,7 +139,6 @@ class WorkspacePane(QTreeWidget):
                     parts.append(f"{len(ch.markers):,} markers")
                 if ch.tie_point_count:
                     parts.append(f"{ch.tie_point_count:,} tie points")
-                geo = " [R]" if ch.georef else ""
                 crs = (ch.georef or {}).get("crs") or ch.crs
                 it = root
                 it.setToolTip(0, ("Georeferenced: " + crs) if ch.georef else "Not georeferenced (local frame)")

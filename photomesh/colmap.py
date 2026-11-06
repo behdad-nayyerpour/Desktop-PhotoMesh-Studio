@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 import numpy as np
+from .colmap_io import qvec_to_rot
 from .engine import child_env
 from PySide6.QtCore import QObject, QProcess, Signal, QSettings, Qt, Slot
 
@@ -235,10 +236,7 @@ def image_max_dim(paths) -> int:
 ACCURACY = ["Highest", "High", "Medium", "Low", "Lowest"]
 ACCURACY_DOWNSCALE = {"Highest": 1, "High": 1, "Medium": 2, "Low": 4, "Lowest": 8}
 QUALITY = ["Ultra high", "High", "Medium", "Low", "Lowest"]
-QUALITY_DOWNSCALE = {"Ultra high": 1, "High": 2, "Medium": 4, "Low": 8, "Lowest": 16}
 DEPTH_FILTERING = ["Disabled", "Mild", "Moderate", "Aggressive"]
-DEPTH_MIN_PIXELS = {"Disabled": 2, "Mild": 3, "Moderate": 5, "Aggressive": 8}
-FACE_COUNT_DEPTH = {"High": 11, "Medium": 10, "Low": 9}
 
 
 def align_steps(exe, dataset, wd, s, names=None, infos=None):
@@ -254,7 +252,6 @@ def align_steps(exe, dataset, wd, s, names=None, infos=None):
     img_dir = image_dir(wd)
     db = os.path.join(wd, "database.db")
     sparse = os.path.join(wd, "sparse")
-    gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = image_max_dim([c.path for c in dataset.cameras if c.enabled])
     from .engine import extraction_size
     max_size = extraction_size(max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]]), s)
@@ -297,59 +294,6 @@ def align_steps(exe, dataset, wd, s, names=None, infos=None):
 def point_cloud_path(wd):
     """Fused dense cloud; must live at dense/fused.ply (+ .vis) for delaunay_mesher."""
     return os.path.join(wd, "dense", "fused.ply")
-
-
-def point_cloud_steps(exe, dataset, wd, s):
-    dense = os.path.join(wd, "dense")
-    maxdim = image_max_dim([c.path for c in dataset.cameras if c.enabled])
-    max_size = max(256, maxdim // QUALITY_DOWNSCALE[s["quality"]])
-    pm = ["patch_match_stereo", "--workspace_path", dense]
-    pm += opt(exe, "patch_match_stereo", ["PatchMatchStereo.max_image_size"], max_size)
-    pm += opt(exe, "patch_match_stereo", ["PatchMatchStereo.geom_consistency"], "true")
-    fu = ["stereo_fusion", "--workspace_path", dense,
-          "--output_path", point_cloud_path(wd)]
-    fu += opt(exe, "stereo_fusion", ["StereoFusion.min_num_pixels"],
-              DEPTH_MIN_PIXELS[s["depth_filtering"]])
-    fu += opt(exe, "stereo_fusion", ["StereoFusion.max_image_size"], max_size)
-    return [
-        ("Undistorting images", ["image_undistorter", "--image_path",
-         image_dir(wd), "--input_path", os.path.join(wd, "sparse", "0"),
-         "--output_path", dense, "--output_type", "COLMAP",
-         "--max_image_size", str(max_size)], 10),
-        ("Building depth maps", pm, 75),
-        ("Building point cloud", fu, 15),
-    ]
-
-
-def model_output(wd, s):
-    return os.path.join(wd, "model_poisson.ply" if s["source"] == "Point cloud" else "model_delaunay.ply")
-
-
-def model_steps(exe, dataset, wd, s):
-    dense = os.path.join(wd, "dense")
-    src = s["source"]
-    out = os.path.join(wd, "model_poisson.ply" if src == "Point cloud" else "model_delaunay.ply")
-    if os.path.exists(out):
-        os.remove(out)   # never show a stale mesh if meshing fails
-    steps = []
-    if src == "Point cloud":
-        cloud = getattr(dataset, "point_cloud_ply", "") or point_cloud_path(wd)
-        cmd = ["poisson_mesher", "--input_path", cloud,
-               "--output_path", out]
-        depth = FACE_COUNT_DEPTH.get(s["face_count"], 10)
-        cmd += opt(exe, "poisson_mesher", ["PoissonMeshing.depth"], depth)
-        cmd += opt(exe, "poisson_mesher", ["PoissonMeshing.trim"], 7 if s["interpolation"] == "Enabled" else 10)
-        steps.append(("Generating mesh (Poisson)", cmd, 100))
-    else:
-        if not os.path.isdir(os.path.join(dense, "sparse")):
-            steps.append(("Undistorting images", ["image_undistorter", "--image_path",
-                          image_dir(wd), "--input_path",
-                          os.path.join(wd, "sparse", "0"), "--output_path", dense,
-                          "--output_type", "COLMAP"], 20))
-        itype = "dense" if src == "Depth maps" else "sparse"
-        steps.append(("Generating mesh (Delaunay)", ["delaunay_mesher", "--input_path",
-                      dense if itype == "dense" else os.path.join(dense, "sparse"), "--input_type", itype, "--output_path", out], 80))
-    return steps
 
 
 def image_dir(wd):
@@ -436,14 +380,6 @@ def prepare_images(dataset, wd):
     with open(image_list(wd), "w", encoding="utf-8") as f:
         f.write("\n".join(sorted(mapping.values())) + "\n")
     return mapping
-
-
-def qvec_to_rot(q):
-    w, x, y, z = q
-    return np.array([
-        [1 - 2 * y * y - 2 * z * z, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
-        [2 * x * y + 2 * w * z, 1 - 2 * x * x - 2 * z * z, 2 * y * z - 2 * w * x],
-        [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x * x - 2 * y * y]])
 
 
 def read_images_txt(path):
