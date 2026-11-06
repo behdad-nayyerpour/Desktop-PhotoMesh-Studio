@@ -117,8 +117,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.2 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.2.exe*" --dir released
-          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.2.exe"
+          gh release download v1.0.3 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.3.exe*" --dir released
+          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.3.exe"
           $expected = ((Get-Content "$setupPath.sha256" -Raw).Trim() -split '\s+')[0]
           if ((Get-FileHash $setupPath -Algorithm SHA256).Hash -ne $expected) { throw "Released runtime checksum mismatch" }
           $runtimePath = Join-Path $env:RUNNER_TEMP "PhotoMeshIconRuntime"
@@ -169,8 +169,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Preview installer compilation failed" }
           $digest = (Get-FileHash "preview/PhotoMeshStudio_Setup_1.0.3.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
           "$digest  PhotoMeshStudio_Setup_1.0.3.exe" | Set-Content "preview/PhotoMeshStudio_Setup_1.0.3.exe.sha256"
-          @("PhotoMesh Studio 1.0.3 release candidate; no GitHub Release is published.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.2 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version 1.0.3. New saves use schema 2; keep a separate project copy for older application versions.") | Set-Content "preview/TEST-BUILD.txt"
-      - name: Upgrade the disposable 1.0.2 installation and verify installed 1.0.3
+          @("PhotoMesh Studio 1.0.3 validation build; this workflow does not publish a GitHub Release.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.3 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version 1.0.3. New saves use schema 2; keep a separate project copy for older application versions.") | Set-Content "preview/TEST-BUILD.txt"
+      - name: Upgrade the disposable released installation and verify installed 1.0.3
         shell: pwsh
         run: |
           $upgradeRoot = [IO.Path]::GetFullPath($env:ICON_RUNTIME)
