@@ -1,6 +1,6 @@
 # PhotoMesh Studio 1.0.3 release review
 
-Review date: 2026-11-07. This record replaces the pending baseline maintainability review. Publication remains separate from preparing an installer.
+Review date: 2026-11-07. This record replaces the pending baseline maintainability review. The user approved the installed 1.0.3 appearance and authorized public publication on 2026-11-07.
 
 ## Scope and method
 
@@ -68,7 +68,7 @@ Synthetic checks do not replace installation and a small real project on the tar
 are an artifact ZIP containing `PhotoMeshStudio_Setup_1.0.3.exe`, its checksum,
 native/installed validation JSON and screenshots. The artifact is retained for
 14 days. [Machine-readable review inventory](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547653087)
-is separate. Publication and installed-user acceptance remain pending.
+is separate. The user approved the installed application and supplied current Light/Dark project screenshots on 2026-11-07. Public publication was authorized. That appearance review does not establish full real-data GPU reconstruction.
 
 ## Consolidated preview findings
 
@@ -101,3 +101,14 @@ The later documentation-only cleanup updates the README, guides and review
 status and removes the three superseded preview notes. It does not change
 application sources, runtime or the tested Setup. A future source build includes
 the revised docs; the candidate already downloaded remains byte-for-byte unchanged.
+
+## Public distribution
+
+The public release uses the exact validated candidate Setup and its existing
+checksum, without rebuilding application code after the installed review.
+The publication workflow checks that application/runtime/build inputs match
+validated commit `127c682c6d05d61093843f5a1ed8a23f833005d8`, verifies the
+successful originating run/artifact and checks the Setup checksum before upload.
+The public download is [v1.0.3](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.3).
+The repository's full-project screenshots are the user's approved 1.0.3 Light
+and Dark captures. Test artifacts remain historical evidence with limited retention.

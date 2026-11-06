@@ -1,10 +1,6 @@
 # PhotoMesh Studio
 
-**1.0.3 release candidate** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
-The candidate Setup has passed automated build and upgrade checks; installed-user review is in progress. It has not replaced the public release.
-
-[Download the 1.0.3 candidate](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547844488) (ZIP containing the full Setup and validation records; about 866 MB, available through 2026-11-21).
-For the published installer, use Releases below.
+**Version 1.0.3** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
 
 PhotoMesh Studio is a free desktop photogrammetry application for processing aerial
 imagery locally, without a cloud service.
@@ -20,19 +16,15 @@ and surveying workflows.
 
 ## Screenshots
 
-**Current 1.0.3 toolbar**, captured from the installed candidate:
-
-![PhotoMesh Studio 1.0.3 toolbar with complete layer and transparency captions](docs/images/toolbar-1.0.3.png)
-
-The full-project examples below are from 1.0.2; they have not been relabelled as 1.0.3.
+Project screenshots from the user-reviewed Windows installation of 1.0.3.
 
 **Dark theme**
 
-![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in dark mode](screenshot.png?v=f4ca6d10)
+![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in dark mode](screenshot.png?v=ca492977)
 
 **Light theme**
 
-![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in light mode](screenshot-light.png?v=2f117e4e)
+![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in light mode](screenshot-light.png?v=bf32d86b)
 
 ## Install
 
