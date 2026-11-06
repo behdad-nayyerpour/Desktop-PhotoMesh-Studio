@@ -1069,7 +1069,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if os.path.normcase(root) in asked:
             return
         def unreferenced(folder):
-            return not any(dfo.is_under(p, folder) for p in dfo.protected_paths(self.project))
+            return not dfo.contains_referenced_data(folder, dfo.protected_paths(self.project))
         stale = [(p, size) for p, size in dfo.stale_copies(root) if unreferenced(p)]
         if not stale:
             return
@@ -1162,7 +1162,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                     f"the copy may help.",
                             step="Save project data", worker=False)
             return False
-        for ch, a, b, moved in dfo.apply(res or []):
+        for ch, a, b, moved in dfo.apply(res or [], remove_temporary=False):
+            if dfo.is_temporary(a):
+                self.__dict__.setdefault("_temporary_data_copies", []).append((self.project, a, b))
             self.log(f"{ch.name}: data {'moved' if moved else 'copied'} {a} -> {b}"
                      + (" (without depth maps)" if r == "results" and depth else ""))
         return True
@@ -1190,6 +1192,24 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.log(f"Project saved in a {name} folder: {os.path.dirname(path)}")
         return True
 
+    def _finish_temporary_data_copies(self):
+        """Only a successful metadata save permits removal of migrated temporary results."""
+        from . import datafolder as dfo
+        pending = self.__dict__.pop("_temporary_data_copies", [])
+        protected = [self.project.path] + dfo.protected_paths(self.project)
+        for owner, source, destination in pending:
+            if owner is not self.project:
+                continue
+            if not dfo.is_temporary(source) or not os.path.isdir(destination):
+                continue
+            if dfo.contains_referenced_data(source, protected):
+                self.log(f"Kept temporary data containing referenced files: {source}")
+                continue
+            if dfo.remove_tree(source):
+                self.log(f"Removed migrated temporary data after saving the project: {source}")
+            else:
+                self.log(f"Project saved; temporary source could not be removed: {source}")
+
     def _save_to(self, path, save_as=False):
         """Write the project file (metadata, ~1 MB JSON, well under 1 s) with
         paths relative to its folder. Data outside the project folder is
@@ -1206,6 +1226,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             import traceback
             self.show_error("Save", f"Cannot save project:\n{e}", step="Save project",
                             traceback_text=traceback.format_exc(), worker=False); return False
+        self._finish_temporary_data_copies()
         self._update_title()
         self.log(f"Saved {path} ({time.perf_counter() - t0:.2f} s)")
         return True

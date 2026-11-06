@@ -150,3 +150,65 @@ def test_project_preparation_blocks_switching(window):
         assert window.save_project_as() is False
     finally:
         window._opening = False
+
+
+def test_failed_metadata_save_retains_migrated_temporary_source(window, tmp_path, monkeypatch):
+    from photomesh import datafolder
+    root = tmp_path / "legacy-temp"
+    source = root / "processing"
+    source.mkdir(parents=True)
+    (source / "result.ply").write_bytes(b"original result")
+    destination = tmp_path / "copy.files" / "processing"
+    destination.mkdir(parents=True)
+    (destination / "result.ply").write_bytes(b"original result")
+    monkeypatch.setattr(datafolder, "legacy_temp_root", lambda: str(root))
+    window.dataset.workdir = str(destination)
+    window._temporary_data_copies = [(window.project, str(source), str(destination))]
+    monkeypatch.setattr(window, "_bring_data", lambda *a, **k: True)
+    path = tmp_path / "copy.pmsx"
+    path.write_bytes(b"old project metadata")
+    original_save = window.project.save
+    def fail(_):
+        raise OSError("simulated disk write failure")
+    monkeypatch.setattr(window.project, "save", fail)
+    assert window._save_to(str(path)) is False
+    assert path.read_bytes() == b"old project metadata"
+    assert (source / "result.ply").read_bytes() == b"original result"
+    monkeypatch.setattr(window.project, "save", original_save)
+    assert window._save_to(str(path)) is True
+    assert not source.exists()
+    assert (destination / "result.ply").read_bytes() == b"original result"
+
+
+def test_migration_keeps_source_photos_in_temporary_folder(window, tmp_path, monkeypatch):
+    from photomesh import datafolder
+    from photomesh.project import Camera
+    root = tmp_path / "legacy-temp"
+    source = root / "processing"
+    source.mkdir(parents=True)
+    photo = source / "source.jpg"
+    photo.write_bytes(b"original photograph")
+    destination = tmp_path / "copy.files" / "processing"
+    destination.mkdir(parents=True)
+    monkeypatch.setattr(datafolder, "legacy_temp_root", lambda: str(root))
+    window.dataset.workdir = str(destination)
+    window.dataset.cameras = [Camera(str(photo))]
+    window._temporary_data_copies = [(window.project, str(source), str(destination))]
+    monkeypatch.setattr(window, "_bring_data", lambda *a, **k: True)
+    assert window._save_to(str(tmp_path / "copy.pmsx")) is True
+    assert photo.read_bytes() == b"original photograph"
+
+
+def test_cleanup_protection_follows_linked_photo_targets(tmp_path):
+    from photomesh import datafolder
+    folder = tmp_path / "processing.partial"
+    folder.mkdir()
+    photo = folder / "source.jpg"
+    photo.write_bytes(b"source")
+    alias = tmp_path / "photo-link.jpg"
+    try:
+        alias.symlink_to(photo)
+    except OSError:
+        pytest.skip("Creating symlinks is unavailable for this account")
+    assert datafolder.contains_referenced_data(str(folder), [str(alias)])
+    assert photo.read_bytes() == b"source"

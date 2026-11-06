@@ -369,13 +369,13 @@ def execute(items, report=None, cancelled=None):
     return list(items)
 
 
-def apply(finished):
-    """After execute(): repoint the datasets and remove moved (temporary) sources."""
+def apply(finished, remove_temporary=True):
+    """Repoint copied data; callers may defer temporary-source removal until metadata is committed."""
     out = []
     for it in finished:
         rebase_dataset(it["dataset"], it["src"], it["dst"])
         moved = False
-        if it.get("move") and is_temporary(it["src"]):
+        if remove_temporary and it.get("move") and is_temporary(it["src"]):
             moved = remove_tree(it["src"])
         out.append((it["dataset"], it["src"], it["dst"], moved))
     return out
@@ -401,8 +401,8 @@ def looks_like_workdir(folder):
 
 def stale_copies(root):
     """Unfinished copies of our own Save As inside a data folder root
-    (<name>.files): 0.1.7's 'datasetN.partial' folders with working-folder
-    content, and folders marked INCOMPLETE_MARK. [(path, bytes)]."""
+    (<name>.files): legacy numbered workspaces and new processing folders
+    with working-folder content, or folders marked INCOMPLETE_MARK. [(path, bytes)]."""
     out = []
     if not root or not os.path.isdir(root) or not root.lower().rstrip("\\/").endswith(".files"):
         return out
@@ -498,6 +498,16 @@ def protected_paths(project):
     return keep
 
 
+
+def contains_referenced_data(folder, references):
+    """Protect lexical paths and linked targets before destructive cleanup."""
+    roots = (os.path.abspath(folder), os.path.realpath(folder))
+    for path in references:
+        if path and any(is_under(candidate, root)
+                        for candidate in (path, os.path.realpath(path)) for root in roots):
+            return True
+    return False
+
 def cleanup_candidates(project):
     """[{key, label, note, checked, dataset, paths, bytes}] of intermediate data
     that can be removed, per dataset, plus unfinished copies in the data folder."""
@@ -510,7 +520,7 @@ def cleanup_candidates(project):
         for key, label, rels, checked, note in CLEANUP_PARTS:
             paths = [os.path.join(wd, *r.split("/")) for r in rels]
             paths = [p for p in paths if os.path.lexists(p)
-                     and not any(is_under(k, p) for k in keep)]          # never a product or a photo
+                     and not contains_referenced_data(p, keep)]          # never a product or a photo
             size = sum(_path_size(p) for p in paths)
             if paths and size:
                 out.append({"key": key, "label": label, "note": note, "checked": checked, "dataset": ch.name,
@@ -534,7 +544,7 @@ def delete_parts(parts, project, report=None, cancelled=None):
         if cancelled is not None and cancelled():
             raise InterruptedError("cancelled")
         for p in part["paths"]:
-            if any(is_under(x, p) for x in keep):
+            if contains_referenced_data(p, keep):
                 left.append(p); continue
             size = _path_size(p)
             if os.path.isdir(p) and not os.path.islink(p):
