@@ -12,12 +12,13 @@ replaces an existing EXE installation. No separate Update EXE is produced.
 |---|---|
 | `build_release.ps1` | Stage the app and tested runtime, validate imports, build Setup and its checksum |
 | `release.iss` | Inno Setup definition, managed installation folders, shortcuts, and launch action |
+| `engine-assets.json` | Pinned engine/model download URLs and SHA256 values |
 | `fix_shortcut_icon.ps1` | Repair the icon of an existing shortcut; called by `photomesh/shortcut_icon.py` in source installations |
 | `RELEASE.md` | Installer build and release validation instructions |
 | `README.md` | This overview |
 
 The installer includes the English README, screenshot, and documentation folder
-so **Help > Contents** can open the local guide without a network connection.
+so **Help > Documentation** can open the local guide without a network connection.
 The shortcut repair helper is retained because the application calls it when
 available. Setup itself creates shortcuts with the application icon.
 

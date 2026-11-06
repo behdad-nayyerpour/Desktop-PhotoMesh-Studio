@@ -14,12 +14,12 @@ Dependencies are listed in [requirements.txt](../../requirements.txt).
 Earlier versions arranged menus using publicly documented photogrammetry commands, including
 the *Menu commands* appendix of the public
 [Agisoft Metashape Professional manual](https://www.agisoft.com/pdf/metashape-pro_2_3_en.pdf).
-The current preview groups commands by Project, Edit, Process, Display, Survey,
+Version 1.0.3 groups commands by Project, Edit, Process, Display, Survey,
 Export and Help. Command identifiers remain compatible with earlier scripts;
 their historical paths are aliases, not extra menus.
 PhotoMesh Studio is not affiliated with Agisoft.
 
-Toolbar icons are drawn with Qt. The current preview replaces the Markers,
+Toolbar icons are drawn with Qt. Version 1.0.3 replaces the Markers,
 Ortho and Shapes icons with the user-approved target, mosaic and vector-path
 designs. Other artwork and interface provenance remain under review; this note
 does not certify independent authorship of every asset.

@@ -8,7 +8,7 @@ the new Setup on the existing installation; it replaces the managed app,
 Python, and tools folders. Projects, source photos, and processing results
 should be kept outside the installation folder.
 
-Build from the new repository checkout with Inno Setup 7:
+Build from the repository checkout with Inno Setup (the 1.0.3 candidate was verified with Inno Setup 6):
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File packaging/build_release.ps1 `
@@ -53,3 +53,18 @@ inside the complete Setup and processing needs no network access.
 Native CPU integration and numerical benchmarks are documented in the
 [engine review](../docs/development/engine-modernization-102.md). GPU behavior
 must additionally be checked on target hardware before distributing a release.
+
+## Verified 1.0.3 candidate
+
+[Actions run 42310283579](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579)
+built the complete candidate from `127c682c6d05d61093843f5a1ed8a23f833005d8`.
+It reused the SHA256-verified 1.0.2 runtime, checked runtime identity and staged
+imports, then installed the new Setup over a disposable 1.0.2 installation.
+All 68 application module names and hashes matched; obsolete managed code was
+removed and an external project-metadata fixture was preserved. Installed
+version, About, resources and split-button captions passed.
+
+This is an artifact-only candidate, not a published release. Download links and
+remaining target-hardware checks are in the [release review](../docs/development/release-review-103.md).
+Documentation-only follow-ups do not alter that tested executable or require a
+new Setup; a later source build will include the updated documentation.

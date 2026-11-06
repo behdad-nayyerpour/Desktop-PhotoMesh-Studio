@@ -72,8 +72,8 @@ not part of the normal installation workflow.
 
 ## Documentation and maintained tools
 
-The application opens the root `README.md` through **Help > Contents**.
-The Setup builder includes that README, its screenshot, the `docs` folder,
+The application opens the root `README.md` through **Help > Documentation**.
+The Setup builder includes that README, both project screenshots, the `docs` folder,
 and the root changelog and update guide.
 
 The English changelog remains in `CHANGES.md`; no parallel changelog is maintained.
@@ -98,3 +98,11 @@ workflow interactions alongside correctness, compatibility and performance.
 The root [contributor instructions](../../AGENTS.md) apply to coding agents as
 well. The [1.0.3 baseline review](release-review-103.md) records the repository sweep,
 manual findings, cleanup, validation and remaining target-hardware checks.
+
+## Current candidate validation
+
+[1.0.3 release review](release-review-103.md) is the current consolidated review.
+The temporary toolbar/error/icon preview notes have been removed after their
+relevant findings and evidence were consolidated there. Earlier version-specific
+engine/workflow reports remain historical evidence, as do regression tests.
+

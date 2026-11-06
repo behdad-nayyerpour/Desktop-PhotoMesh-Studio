@@ -30,7 +30,8 @@ Large orthomosaic, texture, optimization and view modules remain maintenance can
 
 ## Acceptance evidence
 
-Final results belong to PR #7 and the workflow for the exact candidate commit:
+The following checks passed for candidate commit `127c682c6d05d61093843f5a1ed8a23f833005d8` in
+[Actions run 42310283579](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579):
 - compilation and static checks; full Linux and Windows regression suites;
 - real native toolbar captures and caption/body/arrow tests;
 - old/new project and XML round trips, failure/cancellation, file preservation and linked-path tests;
@@ -39,3 +40,64 @@ Final results belong to PR #7 and the workflow for the exact candidate commit:
 - copied-runtime checks and installation of the newly built Setup into an isolated runner directory, checking installed source location, version, About and layer controls.
 
 Synthetic checks do not replace installation and a small real project on the target NVIDIA/OpenGL hardware. GPU dense reconstruction, real display rendering and issue #6's user dataset remain target-machine checks. The installer is not published automatically. New project saves use schema 2 and independent reference XML 2.0; older application versions may not read new saves.
+
+## Recorded candidate results
+
+- Linux and Windows: each **680 passed, 8 skipped**. The skips require real
+  survey/project fixtures, CUDA or a real OpenGL display. The runner's Dash
+  plugin produced one unrelated deprecation warning on each platform.
+- Compilation and undefined-name checks passed. The inspected inventory covers
+  68 application modules; selected Ruff static leads are empty. Unreferenced
+  names and large-function candidates remain review leads, not established bugs.
+- Dark/Light caption and body/arrow checks passed at DPI scales 1/1.5/2 and
+  window widths 1280/1920. The installed capture shows complete product and
+  Transparency labels. Shared caption sizing and tighter view/zoom side padding
+  preserve the compact row.
+- Photo outputs/JPEG hashes matched; current/baseline timing ratio was 0.935.
+  Raster arrays and controlled lossless texture/UV outputs matched; timing
+  ratios were 0.981 and 1.016, below the existing 1.08 gate.
+- CPU synthetic reconstruction passed for the calibrated and calibration-free
+  routes, including the large-image ALIKED probe. Calibrated 16-view camera RMS
+  was about 0.012 m for SIFT and 0.041 m for ALIKED/LightGlue; these are synthetic
+  fixture results, not survey accuracy claims.
+- The full Setup upgraded disposable 1.0.2 successfully. Installed version/About,
+  resources and all 68 application source names/hashes matched. Obsolete managed
+  source was removed and an external metadata fixture was unchanged.
+
+[Candidate Setup and validation records](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547844488)
+are an artifact ZIP containing `PhotoMeshStudio_Setup_1.0.3.exe`, its checksum,
+native/installed validation JSON and screenshots. The artifact is retained for
+14 days. [Machine-readable review inventory](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547653087)
+is separate. Publication and installed-user acceptance remain pending.
+
+## Consolidated preview findings
+
+Three temporary preview documents were retired after consolidation here.
+Their historical revisions remain in Git history; they are not current release
+instructions.
+
+- Issues #2/#3: bounded Windows sharing/lock retry retains rollback and completed
+  staged output on persistent publication failure. ALIKED's 2048-pixel extraction
+  bound and one extraction worker prevent the reported full-resolution ONNX
+  allocation route; original camera/keypoint coordinates are restored.
+  Earlier native evidence is in Actions runs 41702934208 and 41716099953.
+- Toolbar review: two rows separated by rules, complete under-icon captions,
+  cube views, additional-only Layers menu, shared visibility actions and an
+  immediate conditional neural-method warning. The final controls supersede the
+  old Hidden submenu design.
+- Independent icons: target, four-tile mosaic and unfilled vector designs share
+  existing Qt rendering/resource consumers. Theme-aware icon cache keys prevent
+  stale palette pixels after switching theme. This does not certify provenance
+  or legal clearance for every asset; retain the [project notes](project-notes.md).
+- Issue #6: nested project output below a common photo root is allowed, while
+  source images inside a mutable workspace, unsafe model names and linked
+  managed outputs are rejected before destructive writes. Synthetic preservation,
+  resume and alias regressions pass; the real user dataset/GPU check remains open.
+- Workflow integration: Project/Edit/Process/Display/Survey/Export/Help reuse
+  authoritative QActions. Historical qualified command names remain aliases for
+  scripts without restoring removed menus or duplicate signals.
+
+The later documentation-only cleanup updates the README, guides and review
+status and removes the three superseded preview notes. It does not change
+application sources, runtime or the tested Setup. A future source build includes
+the revised docs; the candidate already downloaded remains byte-for-byte unchanged.
