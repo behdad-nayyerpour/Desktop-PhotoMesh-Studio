@@ -28,6 +28,8 @@ jobs:
         run: |
           python -m compileall -q photomesh main.py tests
           ruff check --select F821,F822,F823 photomesh
+      - name: Compare equivalent photo-processing batches
+        run: python tools/compare_pool_batches.py
       - name: Full regression suite
         run: python -m pytest -vv -rs --maxfail=10 --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
   preview:

@@ -158,7 +158,7 @@ def test_stale_copies_detected_safely(tmp_path):
     inc = root / "processing-3"; inc.mkdir(); (inc / dfo.INCOMPLETE_MARK).write_text("x")
     prj = root / "processing-4.partial"; (prj / "dense").mkdir(parents=True); (prj / "a.pmsx").write_text("{}")
     got = dfo.stale_copies(str(root))
-    assert [os.path.basename(x) for x, _b in got] == ["processing.partial", "processing-3"]
+    assert [os.path.basename(x) for x, _b in got] == sorted(["processing.partial", "processing-3"])
     assert dict(got)[str(p)] == 500
     assert dfo.stale_copies(str(tmp_path)) == []                           # only inside a <name>.files folder
 

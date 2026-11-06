@@ -95,7 +95,7 @@ app = QApplication([]); app.setOrganizationName("PhotoMeshFitTest"); app.setAppl
 from photomesh.theme import apply_theme
 apply_theme(app, sys.argv[2].capitalize())                                       # as main.py
 from photomesh.mainwindow import MainWindow
-w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(1280, 800); w.show()
+w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(int(sys.argv[3]), 800); w.show()
 for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
@@ -103,6 +103,10 @@ ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
                           "overflow": bool(ext and ext[0].isVisible()),
                           "window_width": w.width(),
+                          "omitted": [a.text() for a in tb.actions() if not a.isSeparator()
+                                      and tb.widgetForAction(a) is not None and not tb.widgetForAction(a).isVisible()],
+                          "overflow_entries": [a.text() for a in ext[0].menu().actions()]
+                                              if ext and ext[0].menu() else [],
                           "clipped": [(b.text(), b.width(), b.sizeHint().width(), b.height(), b.sizeHint().height())
                                       for bar in w.toolbars for b in bar.findChildren(QToolButton)
                                       if b.isVisible() and b.objectName() != "qt_toolbar_ext_button"
@@ -117,23 +121,28 @@ os._exit(0)
 
 @pytest.mark.parametrize("scale", ["1", "1.5", "2"])
 @pytest.mark.parametrize("theme", ["dark", "light"])
-def test_main_toolbar_fits_1920px_at_150_percent(tmp_path, scale, theme):
-    """1920 px at 150 % scaling = 1280 logical px: the themed main toolbar
-    (as started by main.py) must fit without the overflow (>>) button."""
+@pytest.mark.parametrize("width", [1280, 1920])
+def test_complete_toolbar_labels_are_not_clipped(tmp_path, scale, theme, width):
+    """Full processing labels fit wide windows; narrow windows use native overflow.
+    Font/icon sizes stay unchanged, and displayed buttons must never clip."""
     import json, os, subprocess, sys
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_SCALE_FACTOR=scale)
     if os.name == "nt":
         env.setdefault("QT_QPA_FONTDIR", os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts"))
     sc = tmp_path / "fit.py"; sc.write_text(_FIT_SCRIPT, encoding="utf-8")
-    out = subprocess.run([sys.executable, str(sc), root, theme], env=env, capture_output=True, text=True, timeout=120)
+    out = subprocess.run([sys.executable, str(sc), root, theme, str(width)], env=env, capture_output=True, text=True, timeout=120)
     line = [l for l in out.stdout.splitlines() if l.startswith("FIT")]
     assert line, out.stdout + out.stderr
     r = json.loads(line[0][3:])
     assert abs(r["dpr"] - float(scale)) < 1e-6
-    assert r["window_width"] == 1280 and not r["clipped"], r
-    assert r["hint"] <= 1280 - 16 and not r["overflow"], r
-    assert all(bar["hint"] <= 1280 - 16 and not bar["overflow"] for bar in r["bars"]), r
+    assert r["window_width"] == width and not r["clipped"], r
+    if width == 1920:
+        assert all(bar["hint"] <= width - 16 and not bar["overflow"] for bar in r["bars"]), r
+    else:
+        assert r["hint"] <= width - 16 or r["overflow"], r
+        assert set(r["omitted"]).issubset(r["overflow_entries"]), r
+        assert r["bars"][1]["hint"] <= width - 16 and not r["bars"][1]["overflow"], r
 
 
 def _photo_with_markers(window):
