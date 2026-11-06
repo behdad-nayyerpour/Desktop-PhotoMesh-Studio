@@ -119,10 +119,11 @@ def test_split_captions_have_room_beside_native_arrow(window, qtbot, theme, chec
     from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionToolButton
     from photomesh.theme import apply_theme
     apply_theme(QApplication.instance(), theme)
-    for button in window.mode_buttons:
-        original = button.visibility.isChecked()
+    for button in [*window.mode_buttons, window.transparency_button]:
+        action = button.defaultAction()
+        original = action.isChecked()
         try:
-            button.visibility.setChecked(checked)
+            action.setChecked(checked)
             button.ensurePolished()
             button.resize(button.sizeHint())
             option = QStyleOptionToolButton()
@@ -133,8 +134,8 @@ def test_split_captions_have_room_beside_native_arrow(window, qtbot, theme, chec
                                                   QStyle.SC_ToolButtonMenu, button)
             assert button.isChecked() == checked
             caption_width = body.width() - body.intersected(arrow).width()
-            assert caption_width >= button.fontMetrics().horizontalAdvance(button.title) + 8
+            assert caption_width >= button.fontMetrics().horizontalAdvance(button.text()) + 8
             assert arrow.width() > 0
             assert button.minimumSizeHint().width() >= button.sizeHint().width()
         finally:
-            button.visibility.setChecked(original)
+            action.setChecked(original)

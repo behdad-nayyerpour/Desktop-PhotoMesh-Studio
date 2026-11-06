@@ -52,16 +52,19 @@ for theme in ("Dark", "Light"):
         for button in window.mode_buttons:
             button.visibility.setChecked(checked)
         for _ in range(10): app.processEvents()
-        for button in window.mode_buttons:
+        for button in [*window.mode_buttons, window.transparency_button]:
             option = QStyleOptionToolButton()
             button.initStyleOption(option)
             body = button.style().subControlRect(QStyle.CC_ToolButton, option, QStyle.SC_ToolButton, button)
             arrow = button.style().subControlRect(QStyle.CC_ToolButton, option, QStyle.SC_ToolButtonMenu, button)
             room = body.width() - body.intersected(arrow).width()
-            text = button.fontMetrics().horizontalAdvance(button.title)
-            assert room >= text + 8, (theme, checked, button.title, room, text)
-            assert button.text() == button.title and button.isChecked() == checked
+            text = button.fontMetrics().horizontalAdvance(button.text())
+            assert room >= text + 8, (theme, checked, button.text(), room, text)
+            assert button.isChecked() == button.defaultAction().isChecked()
             assert button.iconSize().width() == 21
+            if button is window.transparency_button:
+                measurements.append({"theme": theme, "title": button.text(), "caption_room": room, "text_width": text})
+                continue
             changes = []
             on_change = changes.append
             button.visibility.toggled.connect(on_change)

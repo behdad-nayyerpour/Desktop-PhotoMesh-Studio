@@ -453,7 +453,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         a.setToolTip("Transparent view (Ctrl+Shift+T): model, point clouds, photo and orthomosaic semi-transparent, "
                      "so shapes behind or under the surface are visible. Arrow: opacity.")
         self.transparency_action = a
-        btn = QToolButton(tb); btn.setDefaultAction(a); btn.setPopupMode(QToolButton.MenuButtonPopup)
+        from .toolbuttons import CaptionSplitButton
+        btn = CaptionSplitButton(tb); btn.setDefaultAction(a); btn.setPopupMode(QToolButton.MenuButtonPopup)
+        btn.setStyleSheet("QToolButton{padding:2px 1px;margin:0px;}")
         btn.setObjectName("transparency_button")
         menu = QMenu(btn)
         box = QWidget(menu); h = QHBoxLayout(box); h.setContentsMargins(8, 4, 8, 4)

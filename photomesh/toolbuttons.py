@@ -6,7 +6,25 @@ from PySide6.QtWidgets import QToolButton, QMenu, QStyle, QStyleOptionToolButton
 from shiboken6 import isValid
 
 
-class LayerModeButton(QToolButton):
+class CaptionSplitButton(QToolButton):
+    """Reserve complete caption space beside the native menu indicator."""
+
+    def sizeHint(self):
+        hint = super().sizeHint()
+        option = QStyleOptionToolButton()
+        self.initStyleOption(option)
+        arrow = self.style().pixelMetric(QStyle.PM_MenuButtonIndicator, option, self)
+        # The menu indicator occupies part of the native label rectangle.
+        # Reserve it in addition to the complete caption and breathing room.
+        caption = self.fontMetrics().horizontalAdvance(self.text())
+        hint.setWidth(max(hint.width(), caption + max(arrow, 12) + 16))
+        return hint
+
+    def minimumSizeHint(self):
+        return self.sizeHint()
+
+
+class LayerModeButton(CaptionSplitButton):
     """Share the visibility QAction with menus and Workspace; retain mode while off."""
 
     def __init__(self, parent, entries, title, visibility, icon_size=26):
@@ -29,20 +47,6 @@ class LayerModeButton(QToolButton):
         self.setMenu(menu)
         visibility.changed.connect(self._sync_visibility)
         self._sync_visibility()
-
-    def sizeHint(self):
-        hint = super().sizeHint()
-        option = QStyleOptionToolButton()
-        self.initStyleOption(option)
-        arrow = self.style().pixelMetric(QStyle.PM_MenuButtonIndicator, option, self)
-        # The menu indicator occupies part of the native label rectangle.
-        # Reserve it in addition to the complete caption and breathing room.
-        caption = self.fontMetrics().horizontalAdvance(getattr(self, "title", self.text()))
-        hint.setWidth(max(hint.width(), caption + max(arrow, 12) + 16))
-        return hint
-
-    def minimumSizeHint(self):
-        return self.sizeHint()
 
     def set_current(self, action):
         if action not in self._labels:
