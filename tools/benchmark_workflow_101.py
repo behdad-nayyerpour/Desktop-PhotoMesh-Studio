@@ -42,7 +42,8 @@ def main():
         scene=texsynth.make_scene(os.path.join(folder,"scene"),ghost=True)
         def cfg(name):
             return dict(mesh=scene["mesh"],model=scene["model"],photos=scene["photos"],
-                        out_dir=os.path.join(folder,name),size=512,max_res=0,write_glb=False)
+                        out_dir=os.path.join(folder,name),size=512,max_res=0,write_glb=False,
+                        threads=2,vis_threads=1,format="png")
         old_info=old.build_texture(cfg("warm-old"),log=lambda *_:None)
         new_info=texture.build_texture(cfg("warm-new"),log=lambda *_:None)
         from PIL import Image
