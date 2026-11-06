@@ -1,0 +1,96 @@
+name: Icon preview installer
+on:
+  push:
+    branches: ["codex/independent-layer-icons"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: icon-preview-installer
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install test dependencies
+        run: pip install -q -r requirements-dev.txt psutil
+      - name: Compile and test
+        run: |
+          python -m compileall -q photomesh main.py tests
+          python -m pytest -q -rs -p no:cacheprovider tests
+      - name: Render actual toolbar previews
+        shell: python
+        run: |
+          import os
+          from PySide6.QtCore import Qt, QCoreApplication
+          QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+          from PySide6.QtWidgets import QApplication
+          from photomesh.theme import apply_theme
+          from photomesh.mainwindow import MainWindow
+          app = QApplication([])
+          app.setOrganizationName("PhotoMeshIconReview")
+          app.setApplicationName("PhotoMeshIconReview")
+          apply_theme(app, "Dark")
+          w = MainWindow(); w.resize(1600, 900); w.show()
+          os.makedirs("preview", exist_ok=True)
+          for theme in ("Dark", "Light"):
+              apply_theme(app, theme)
+              for _ in range(10): app.processEvents()
+              assert w.grab().copy(0, 0, 1600, 230).save("preview/toolbar-" + theme.lower() + ".png")
+          os._exit(0)
+      - name: Fetch verified released runtime
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.2 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.2.exe*" --dir released
+          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.2.exe"
+          $expected = ((Get-Content "$setupPath.sha256" -Raw).Trim() -split '\s+')[0]
+          if ((Get-FileHash $setupPath -Algorithm SHA256).Hash -ne $expected) { throw "Released runtime checksum mismatch" }
+          $runtimePath = Join-Path $env:RUNNER_TEMP "PhotoMeshIconRuntime"
+          $installArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=`"$runtimePath`"", '/TASKS=""')
+          $process = Start-Process -FilePath $setupPath -ArgumentList $installArgs -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -ne 0) { throw "Runtime installation failed: $($process.ExitCode)" }
+          "ICON_RUNTIME=$runtimePath" >> $env:GITHUB_ENV
+      - name: Build test installer with the released runtime
+        shell: pwsh
+        run: |
+          $stagePath = Join-Path $env:RUNNER_TEMP "PhotoMeshIconStage"
+          $appPath = Join-Path $stagePath "app"
+          New-Item -ItemType Directory -Force $stagePath, $appPath, "preview" | Out-Null
+          foreach ($part in @("python", "tools")) {
+            Copy-Item -LiteralPath (Join-Path $env:ICON_RUNTIME $part) -Destination (Join-Path $stagePath $part) -Recurse
+          }
+          foreach ($part in @("photomesh", "docs", "packaging", "main.py", "README.md", "CHANGES.md", "UPDATING.md", "requirements.txt", "run.bat", "setup.bat", "screenshot.png", "screenshot-light.png")) {
+            Copy-Item -LiteralPath (Join-Path $PWD $part) -Destination (Join-Path $appPath $part) -Recurse
+          }
+          $runtimeId = Join-Path $env:ICON_RUNTIME "app/runtime.id"
+          if (Test-Path -LiteralPath $runtimeId) { Copy-Item -LiteralPath $runtimeId -Destination (Join-Path $appPath "runtime.id") }
+          & (Join-Path $stagePath "python/python.exe") -c "import photomesh.icons, PySide6; print('Preview runtime imports OK')"
+          if ($LASTEXITCODE -ne 0) { throw "Bundled runtime import failed" }
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $isccPath)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "Inno Setup installation failed" }
+          }
+          & $isccPath "/DAppVersion=1.0.2" "/DStageDir=$stagePath" "/DOutputDir=$PWD/preview" "packaging/release.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Preview installer compilation failed" }
+          Move-Item -LiteralPath "preview/PhotoMeshStudio_Setup_1.0.2.exe" -Destination "preview/PhotoMeshStudio_Test_Icons.exe"
+          $digest = (Get-FileHash "preview/PhotoMeshStudio_Test_Icons.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$digest  PhotoMeshStudio_Test_Icons.exe" | Set-Content "preview/PhotoMeshStudio_Test_Icons.exe.sha256"
+          @("Icon preview build only; no GitHub Release is published.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.2 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version remains 1.0.2; install the released 1.0.2 installer again to restore its original application files.") | Set-Content "preview/TEST-BUILD.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PhotoMeshStudio-Test-Icons
+          path: preview/
+          retention-days: 14
+          if-no-files-found: ignore
