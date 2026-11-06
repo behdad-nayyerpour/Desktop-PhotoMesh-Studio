@@ -607,9 +607,12 @@ def test_gui_menus_and_toolbar(window):
     assert a.isCheckable() and not a.icon().isNull()
     assert a in window.display_toolbar.actions()
     window.set_layer_visible("shapes", False)
-    assert all(not m.isChecked() for m in window._shape_mirrors)
+    assert not a.isChecked()
+    assert window.actions["Photo/Show Shapes"] is a
+    assert window.actions["Ortho/Show Shapes"] is a
     window.set_layer_visible("shapes", True)
-    assert all(m.isChecked() for m in window._shape_mirrors)
+    assert a.isChecked()
+    assert window.actions["Display/Show Shapes"] is a
 
 
 def test_kml_into_local_project_warns(window, no_dialogs, tmp_path):

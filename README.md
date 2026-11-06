@@ -55,12 +55,12 @@ can run on the CPU. The 3D viewer requires an OpenGL-capable driver.
 ## Quick start
 
 1. Save a new project outside the application installation folder.
-2. Choose **Workflow > Add Photos...** or **Add Folder...**.
+2. Choose **Project > Add Photos...** or **Add Photo Folder...**.
 3. Run **Align Photos...**, then inspect the cameras and tie points.
 4. Add ground control and optimize cameras when required.
-5. Run **Build Point Cloud...**, **Build Model...**, and the required texture,
+5. Run **Build Point Cloud...**, **Build Mesh...**, and the required texture,
    DEM, or orthomosaic steps.
-6. Use **File > Export** to save your deliverables.
+6. Use **Export** to save your deliverables.
 
 For settings, marker editing, rebuilding after camera optimization, and contours,
 see the [user guide](docs/user-guide.md).

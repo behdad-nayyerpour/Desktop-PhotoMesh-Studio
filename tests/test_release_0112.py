@@ -67,7 +67,8 @@ def test_log_system_info_writes_line(tmp_path, monkeypatch):
 def test_no_menu_item_without_handler(window):
     assert window.unhandled_actions == []
     assert not hasattr(window, "not_implemented")
-    assert all(a.isEnabled() for a in window.actions.values())
+    assert window.actions["Save"].isEnabled()
+    assert not window.actions["Rotate Left"].isEnabled()  # requires an open photo
 
 
 def test_removed_items_are_gone(window):

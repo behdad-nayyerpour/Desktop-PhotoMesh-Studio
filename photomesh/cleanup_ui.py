@@ -1,4 +1,4 @@
-"""Tools > Clean Up Intermediate Data...: one checkbox per part with its size."""
+"""Project > Clean Up Intermediate Data...: one checkbox per part with its size."""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt

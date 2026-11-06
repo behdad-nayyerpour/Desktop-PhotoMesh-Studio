@@ -210,10 +210,9 @@ def test_export_menu_asks_interval_and_uses_contour_route(window, tmp_path, monk
         return 1.0, True
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(choose))
     monkeypatch.setattr(QInputDialog, "getDouble", staticmethod(interval))
-    file_menu = next(a.menu() for a in window.menuBar().actions() if a.text().replace("&", "") == "File")
-    export_menu = next(a.menu() for a in file_menu.actions() if a.text().replace("&", "") == "Export")
-    labels = [a.text().replace("&", "") for a in export_menu.actions()]
-    assert labels.index("Export Mesh Contours...") == labels.index("Export Model...") + 1
+    export_menu = window.menus["Export"]
+    actions = export_menu.actions()
+    assert actions.index(window.actions["Export Mesh Contours..."]) == actions.index(window.actions["Export Model..."]) + 1
     window.actions["File/Export Mesh Contours..."].trigger()
     assert len(asked) == 1 and len(read_contours(out)) == 4
 

@@ -43,7 +43,7 @@ def _resolve(path: str) -> str:
 
 
 def _find_colmap(check_compatibility=True) -> str | None:
-    """Tools > Preferences path, then the COLMAP shipped next to the app
+    """Project > Preferences path, then the COLMAP shipped next to the app
     (tools/colmap - the tested version, also in the portable package), then PATH."""
     custom = QSettings().value("colmap/path", "", str)
     if custom and os.path.isfile(custom):

@@ -19,8 +19,7 @@ def build_toolbar(window):
         a = window.actions[name]
         a.setIcon(layer_icon(icon))
         a.setToolTip(name.rstrip("."))
-        if label:
-            a.setIconText(label)
+        a.setIconText(label or name.rstrip("."))
         tb.addAction(a)
         return a
 
@@ -104,8 +103,8 @@ def build_toolbar(window):
     menu.addSeparator()
     menu.addAction(window.actions["Perspective/Orthographic"])
     menu.addSeparator()
-    menu.addAction(window.actions["Model/Show All"])
-    menu.addAction(window.actions["Model/Hide All"])
+    menu.addAction(window.actions["Show All"])
+    menu.addAction(window.actions["Hide All"])
     extras.setMenu(menu)
     bottom.addWidget(extras)
     window.show_items_button = extras
@@ -119,6 +118,6 @@ def build_toolbar(window):
                               ("Reset View", "fit_view", "Fit")):
         action(bottom, name, icon, label)
     window.toolbars = [top, bottom]
-    toggle = window.actions["View/Toolbar"]
+    toggle = window.actions["Toolbar"]
     toggle.setChecked(True)
     toggle.toggled.connect(lambda on: [tb.setVisible(on) for tb in window.toolbars])

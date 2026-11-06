@@ -17,12 +17,12 @@ def _names(items):
 
 def test_top_level_menus(window):
     titles = [a.text().replace("&", "") for a in window.menuBar().actions()]
-    assert titles == ["File", "Edit", "View", "Workflow", "Model", "Photo", "Ortho", "Tools", "Help"]
+    assert titles == ["Project", "Edit", "Process", "Display", "Survey", "Export", "Help"]
 
 
 def test_every_menu_item_has_action(window):
     for title, items in MENUS:
-        top = title.strip("&")
+        top = title.replace("&", "")
         for n in _names(items):
             assert f"{top}/{n}" in window.actions, n
 
@@ -67,7 +67,7 @@ def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
     monkeypatch.setattr(cm, "find_colmap", lambda: None)
     monkeypatch.setattr(window, "close", lambda: True)
     for a in {id(a): a for a in window.actions.values()}.values():
-        if a.text() != "New":
+        if a is not window.actions["New"]:
             a.trigger()
     assert len(window.chunk.cameras) == 6
     window.actions["New"].trigger()          # discards (dialog patched)

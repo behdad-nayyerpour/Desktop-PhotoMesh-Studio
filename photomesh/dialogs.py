@@ -255,7 +255,7 @@ class BuildModelDialog(_SettingsDialog):
 
 
 class FilterPointCloudDialog(_SettingsDialog):
-    """Tools > Point Cloud > Filter Point Cloud / Filter by Confidence."""
+    """Process > Filter Point Cloud > Filter Point Cloud / Filter by Confidence."""
     def __init__(self, parent=None, confidence_only=False):
         super().__init__("Filter by Confidence" if confidence_only else "Filter Point Cloud", parent)
         from PySide6.QtWidgets import QDoubleSpinBox
@@ -323,7 +323,7 @@ class GradualSelectionDialog(QDialog):
 
 
 class OptimizeCamerasDialog(_SettingsDialog):
-    """Tools > Optimize Cameras: georeference with markers / camera GPS and
+    """Process > Optimize Cameras: georeference with markers / camera GPS and
     run the GCP-constrained bundle adjustment."""
     def __init__(self, parent=None, settings=None):
         super().__init__("Optimize Cameras", parent)
@@ -368,7 +368,7 @@ def _pair(a, b):
 
 
 class BuildTextureDialog(_SettingsDialog):
-    """Workflow > Build Texture (Metashape-like options, see texture.py)."""
+    """Process > Build Texture (Metashape-like options, see texture.py)."""
     def __init__(self, parent=None, has_uv=False):
         super().__init__("Build Texture", parent)
         st = QSettings()
@@ -418,7 +418,7 @@ class BuildTextureDialog(_SettingsDialog):
 
 
 class BuildTiledModelDialog(_SettingsDialog):
-    """Workflow > Build Tiled Model (see tiles.py)."""
+    """Process > Build Tiled Model (see tiles.py)."""
     def __init__(self, parent=None, sources=("Model",), default_pixel=0.0, unit="m"):
         super().__init__("Build Tiled Model", parent)
         from PySide6.QtWidgets import QDoubleSpinBox
@@ -650,7 +650,7 @@ class _RegionBox(QGroupBox):
 
 
 class BuildDEMDialog(_SettingsDialog):
-    """Workflow > Build DEM (from the point cloud or the mesh, see ortho.py)."""
+    """Process > Build DEM (from the point cloud or the mesh, see ortho.py)."""
     def __init__(self, parent=None, sources=("Point cloud",), crs="", unit="m", bounds=None):
         super().__init__("Build DEM", parent)
         st = QSettings()
@@ -678,7 +678,7 @@ class BuildDEMDialog(_SettingsDialog):
 
 
 class BuildOrthomosaicDialog(_SettingsDialog):
-    """Workflow > Build Orthomosaic (Metashape-like options, see ortho.py)."""
+    """Process > Build Orthomosaic (Metashape-like options, see ortho.py)."""
     def __init__(self, parent=None, surfaces=("Mesh",), crs="", unit="m", gsd=0.0, bounds=None, plan=None):
         super().__init__("Build Orthomosaic", parent)
         from PySide6.QtWidgets import QRadioButton
@@ -779,7 +779,7 @@ class BuildOrthomosaicDialog(_SettingsDialog):
 
 
 class ExportRasterDialog(_SettingsDialog):
-    """File > Export > Export Orthomosaic / Export DEM - raster options."""
+    """Export > Export Orthomosaic / Export DEM - raster options."""
     def __init__(self, parent=None, kind="ortho", info=None):
         super().__init__("Export DEM" if kind == "dem" else "Export Orthomosaic", parent)
         st = QSettings()
@@ -838,7 +838,7 @@ class ExportRasterDialog(_SettingsDialog):
 
 
 class ImportShapesDialog(_SettingsDialog):
-    """File > Import > Import Shapes... - layer, source coordinate system and heights."""
+    """Project > Import Data > Import Shapes... - layer, source coordinate system and heights."""
     SRC = ["From file (.prj / KML / GeoJSON)", "Project coordinate system (world)",
            "Project local coordinates (add offset)", "WGS 84 (EPSG::4326)", "WGS 84 / UTM zone", "Custom (WKT / EPSG)"]
     SRC_KEYS = ["file", "project", "local", "wgs84", "utm", "custom"]
@@ -894,7 +894,7 @@ class ImportShapesDialog(_SettingsDialog):
 
 
 class ExportShapesDialog(_SettingsDialog):
-    """File > Export > Export Shapes... - format, coordinate system, layers."""
+    """Export > Export Shapes... - format, coordinate system, layers."""
     FMTS = ["Shapefile (*.shp)", "AutoCAD DXF R12 (*.dxf)", "GeoJSON (*.geojson)"]
 
     def __init__(self, parent=None, layers=(), systems=()):

@@ -20,7 +20,7 @@ from . import colmap as cm
 from .dialogs import (AlignPhotosDialog, BuildPointCloudDialog, BuildModelDialog,
                       BuildTextureDialog, BuildTiledModelDialog, ProgressDialog, PreferencesDialog,
                       BuildDEMDialog, BuildOrthomosaicDialog, ExportRasterDialog)
-from .menus import MENUS
+from .menus import MENUS, ACTION_LABELS, LEGACY_ACTION_GROUPS
 from .panes import (WorkspacePane, ReferencePane, MarkersPane, PhotosPane, ConsolePane,
                     PropertiesPane, JobsPane, workspace_panel, markers_panel)
 from . import procmeta
@@ -33,7 +33,7 @@ from .bgjob import BackgroundJob, run_modal
 
 _log = logging.getLogger("photomesh")
 
-# layer key -> Model > Show/Hide Items action
+# Layer key -> stable command ID, independent of menu placement.
 LAYER_ACTIONS = {"tie": "Show Tie Points", "cloud": "Show Point Cloud", "mesh": "Show Model",
                  "tiled": "Show Tiled Model", "ortho": "Show Orthomosaic", "dem": "Show DEM",
                  "cameras": "Show Cameras", "camera_labels": "Show Camera Labels",
@@ -375,66 +375,71 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _build_menus(self):
         handlers = self._handlers()
         self.unhandled_actions = []
+        self.menus = {}
         mb = self.menuBar()
         for title, items in MENUS:
-            self._fill_menu(mb.addMenu(title), items, handlers, title.strip("&"))
-        # panes / toolbar toggles reflect dock visibility
+            top = title.replace("&", "")
+            menu = mb.addMenu(title)
+            self.menus[top] = menu
+            self._fill_menu(menu, items, handlers, top)
+            menu.aboutToShow.connect(self._update_menu_actions)
+        # Preserve script/action lookup IDs without retaining the previous layout.
+        for group, names in LEGACY_ACTION_GROUPS.items():
+            for name in names:
+                if name in self.actions:
+                    self.actions.setdefault(f"{group}/{name}", self.actions[name])
         for name, dock in self.docks.items():
-            a = self.actions.get(f"View/{name}")
-            if a:
-                a.setChecked(dock.isVisible())
-                a.toggled.connect(dock.setVisible)
-                dock.visibilityChanged.connect(lambda vis, a=a, d=dock: a.setChecked(not d.isHidden()))
-        # layer toggles: restore last state, mirror them in View > Layers
+            action = self.actions[name]
+            action.setChecked(dock.isVisible())
+            action.toggled.connect(dock.setVisible)
+            dock.visibilityChanged.connect(lambda vis, a=action, d=dock: a.setChecked(not d.isHidden()))
         st = QSettings()
-        view_menu = next(a.menu() for a in mb.actions() if a.text().strip("&") == "View")
-        layers_menu = view_menu.addMenu("Layers")
         for key, label, default in LAYERS:
-            a = self.actions[f"Model/{LAYER_ACTIONS[key]}"]
-            a.setIcon(layer_icon(key))
-            a.setToolTip(f"Show/hide {label.lower()}  (Model > Show/Hide Items > {LAYER_ACTIONS[key]})")
+            action = self.layer_action(key)
+            action.setIcon(layer_icon(key))
+            action.setToolTip(f"Show/hide {label.lower()} (Display > Layers and Labels)")
             on = st.value(f"view/show_{key}", default, bool)
-            a.blockSignals(True); a.setChecked(on); a.blockSignals(False)
+            action.blockSignals(True); action.setChecked(on); action.blockSignals(False)
             self.model_view.set_visible(key, on)
-            layers_menu.addAction(a)
-        self.workspace.vis = {k: self.layer_action(k).isChecked() for k in LAYER_ACTIONS}
-        layers_menu.addSeparator()
-        layers_menu.addAction(self.actions["Model/Show All"]); layers_menu.addAction(self.actions["Model/Hide All"])
+        self.workspace.vis = {key: self.layer_action(key).isChecked() for key in LAYER_ACTIONS}
+
+    def _update_menu_actions(self):
+        """Photo-only commands need their input; they are not placeholder tools."""
+        opened = bool(self.photo_view.path)
+        for name in ("Rotate Right", "Rotate Left"):
+            self.actions[name].setEnabled(opened)
+        for name in ("Open Next Photo", "Open Previous Photo"):
+            self.actions[name].setEnabled(bool(self.chunk.cameras))
 
     def _fill_menu(self, menu, items, handlers, top):
-        for it in items:
-            if it == "-":
+        for item in items:
+            if item == "-":
                 menu.addSeparator()
-            elif isinstance(it, tuple):
-                self._fill_menu(menu.addMenu(it[0]), it[1], handlers, top)
+            elif isinstance(item, tuple):
+                self._fill_menu(menu.addMenu(item[0]), item[1], handlers, top)
             else:
-                checkable = it.endswith("*")
-                name = it.rstrip("*")
-                a = QAction(name, self)
-                a.setCheckable(checkable)
-                if name in SHORTCUTS and top in ("File", "Edit", "View", "Workflow", "Help", "Photo"):
-                    a.setShortcut(QKeySequence(SHORTCUTS[name]))
-                fn = handlers.get(name)
-                if top in ("Photo", "Ortho") and name == "Show Shapes":
-                    # mirrors Model > Show/Hide Items > Show Shapes (one layer for all views)
-                    fn = lambda on=True: self.set_layer_visible("shapes", on)
-                    self._shape_mirrors = getattr(self, "_shape_mirrors", []) + [a]
-                if fn is not None:
-                    fn = self._safe(name, fn)
-                    if checkable:
-                        a.toggled.connect(fn)
-                    else:
-                        a.triggered.connect(lambda _=False, f=fn: f())
-                elif top == "View" and name in self.docks or name == "Toolbar":
-                    pass
-                else:
-                    # every menu entry must do something (0.1.12: no "not implemented" placeholders)
-                    _log.warning("menu item without a handler: %s > %s", top, name)
-                    self.unhandled_actions.append(f"{top}/{name}")
-                    a.setEnabled(False)
-                menu.addAction(a)
-                self.actions.setdefault(f"{top}/{name}", a)
-                self.actions.setdefault(name, a)
+                name = item.rstrip("*")
+                action = self.actions.get(name)
+                if action is None:
+                    fn = handlers.get(name)
+                    if fn is None and name not in self.docks and name != "Toolbar":
+                        _log.warning("menu item without a handler: %s > %s", top, name)
+                        self.unhandled_actions.append(f"{top}/{name}")
+                        continue
+                    action = QAction(ACTION_LABELS.get(name, name), self)
+                    action.setObjectName("command:" + name)
+                    action.setCheckable(item.endswith("*"))
+                    if name in SHORTCUTS:
+                        action.setShortcut(QKeySequence(SHORTCUTS[name]))
+                    if fn is not None:
+                        fn = self._safe(name, fn)
+                        if action.isCheckable():
+                            action.toggled.connect(fn)
+                        else:
+                            action.triggered.connect(lambda _=False, f=fn: f())
+                    self.actions[name] = action
+                menu.addAction(action)
+                self.actions[f"{top}/{name}"] = action
 
     def _build_toolbar(self):
         from .toolbar import build_toolbar
@@ -444,8 +449,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Checkable 'Transparent View' button with an opacity slider in its
         dropdown (default 40%); the state is restored at start-up."""
         from PySide6.QtWidgets import QToolButton, QMenu, QWidgetAction, QSlider, QLabel, QWidget, QHBoxLayout
-        a = self.actions["Tools/Transparent View"] if "Tools/Transparent View" in self.actions else \
-            self.actions["Transparent View"]
+        a = self.actions["Transparent View"]
         a.setIcon(layer_icon("transparency"))
         a.setShortcut(QKeySequence("Ctrl+Shift+T")); a.setShortcutContext(Qt.ApplicationShortcut)
         a.setToolTip("Transparent view (Ctrl+Shift+T): model, point clouds, photo and orthomosaic semi-transparent, "
@@ -554,6 +558,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.photos.refresh(self.chunk)
         self._update_title()
         self._update_stale_banners()
+        self._update_menu_actions()
 
     def _apply_default_view(self):
         choice = QSettings().value("ui/default_view", "Point cloud", str)
@@ -718,7 +723,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
     def layer_action(self, key):
-        return self.actions[f"Model/{LAYER_ACTIONS[key]}"]
+        return self.actions[LAYER_ACTIONS[key]]
 
     def _layer_toggled(self, key, on):
         """Single sink for every way of toggling a layer (menu, toolbar, Workspace checkbox)."""
@@ -728,9 +733,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if key in ("markers", "marker_labels") and getattr(self, "photo_view", None) is not None:
             self.photo_view.set_visible(key, on)
         if key == "shapes":
-            for m in getattr(self, "_shape_mirrors", []):
-                if m.isChecked() != on:
-                    m.blockSignals(True); m.setChecked(on); m.blockSignals(False)
             try:
                 self._update_photo_shapes()
             except Exception as e:  # noqa: BLE001
@@ -974,7 +976,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             if result.get("ambiguous"):
                 self._warn_ambiguous(result["ambiguous"])
             if missing:
-                msg = f"{missing} photo(s) are unavailable. Use Tools > Change Image Paths to locate them."
+                msg = f"{missing} photo(s) are unavailable. Use Project > Relocate Photos to locate them."
                 self.log(msg)
                 if QMessageBox.question(self, "Missing Photos", msg + "\n\nLocate the photos now?",
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
@@ -1346,6 +1348,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.photo_view.open(c.path, f"{c.label}   ({k + 1}/{len(cams)})   "
                                           f"{'aligned' if c.aligned else 'not aligned'}")
             self.tabs.setCurrentWidget(self.photo_view)
+            self._update_menu_actions()
             try:
                 self._update_photo_markers()
             except Exception as e:
@@ -1529,7 +1532,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 "This command uses COLMAP as its reconstruction engine, but no 'colmap' "
                 "executable was found.\n\nWindows: download COLMAP (CUDA build) from\n"
                 "https://github.com/colmap/colmap/releases, unzip it (e.g. C:\\COLMAP) and add "
-                "that folder to PATH, or set the path in Tools > Preferences > Advanced.")
+                "that folder to PATH, or set the path in Project > Preferences > Advanced.")
             self.statusBar().showMessage("COLMAP not found", 6000)
         return exe
 
@@ -2009,7 +2012,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.statusBar().showMessage("Textured model loaded", 3000)
 
     def import_texture(self, folder=None, quiet=False):
-        """File > Import > Import Texture...: attach an existing Build Texture output
+        """Project > Import Data > Import Texture...: attach an existing Build Texture output
         folder (info.json + uv.npz + texture_N pages) to the current model without
         rebuilding it. The folder must belong to this exact mesh (same face count)."""
         ch = self.chunk
@@ -2055,7 +2058,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return True
 
     def import_tiled_model(self, folder=None, quiet=False):
-        """File > Import > Import Tiled Model...: attach an existing Build Tiled Model
+        """Project > Import Data > Import Tiled Model...: attach an existing Build Tiled Model
         output folder (tileset.json + photomesh_tiles.json + tiles/)."""
         ch = self.chunk
         if not folder:
@@ -2234,7 +2237,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return dst
 
     def export_contours(self):
-        """Independent File > Export command, next to Export Model."""
+        """Export > Mesh Contours command, next to Mesh."""
         src = self.chunk.model_ply
         if not src or not os.path.exists(src):
             QMessageBox.information(self, "Export Mesh Contours", "Build a model first.")
@@ -2380,7 +2383,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.ortho_view.set_markers(markers)
 
     def show_ortho(self, kind):
-        """Model > Orthomosaic / DEM (and the Workspace rows): show the layer in the Ortho tab."""
+        """Display > Ortho Product > Orthomosaic / DEM (and the Workspace rows): show the layer in the Ortho tab."""
         if not self._has_layer(kind):
             self.statusBar().showMessage(("No orthomosaic" if kind == "ortho" else "No DEM") + " - build it first", 4000)
             return
@@ -2547,7 +2550,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return dict(s, pixel_size=sug, max_dimension=0)
 
     def import_raster(self, kind, path=None, quiet=False):
-        """File > Import > Import Orthomosaic... / Import DEM...: a PhotoMesh output folder
+        """Project > Import Data > Import Orthomosaic... / Import DEM...: a PhotoMesh output folder
         (info.json) or any georeferenced GeoTIFF (ModelPixelScale + ModelTiepoint)."""
         from .ortho import read_info
         title = "Import Orthomosaic" if kind == "ortho" else "Import DEM"
@@ -2627,7 +2630,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
     def clean_up_data(self):
-        """Tools > Clean Up Intermediate Data...: sizes per part, checkboxes,
+        """Project > Clean Up Intermediate Data...: sizes per part, checkboxes,
         confirmation; finished products and photos are never deleted."""
         from . import datafolder as dfo
         from .cleanup_ui import CleanupDialog
@@ -2712,7 +2715,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
 def apply_dialog_setting():
-    """Tools > Preferences > 'Use built-in file dialogs' (or PHOTOMESH_QT_DIALOGS=1):
+    """Project > Preferences > 'Use built-in file dialogs' (or PHOTOMESH_QT_DIALOGS=1):
     use Qt's own file dialogs instead of the Windows shell dialogs, which can hang
     on some systems (broken shell extensions, offline network/cloud drives)."""
     on = QSettings().value("ui/qt_file_dialogs", False, bool) or os.environ.get("PHOTOMESH_QT_DIALOGS", "").lower() in ("1", "true", "yes", "on")

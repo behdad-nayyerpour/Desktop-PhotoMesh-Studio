@@ -2,22 +2,22 @@
 
 [Documentation](README.md) · [Installation](installation.md)
 
-1. *Workflow → Add Photos…* / *Add Folder…* — photos are analysed in parallel
+1. *Project → Add Photos…* / *Add Photo Folder…* — photos are analysed in parallel
    (EXIF GPS, thumbnails, global descriptors) and appear in **Photos**,
    **Workspace** and **Reference** panes.
-2. *Workflow → Align Photos…* — image resolution, matching mode (**Fast** default /
+2. *Process → Align Photos…* — image resolution, matching mode (**Fast** default /
    Exhaustive / Sequential), **camera estimation** (Auto / Global / Incremental /
    Hierarchical), coarse-to-fine, key point limit, guided matching…
    Result: camera positions + tie points in the **Model** view.
-3. *Workflow → Build Point Cloud…* — Quality + Depth filtering (CUDA).
-4. *Workflow → Build Model…* — Source (Point cloud / Delaunay from fused cloud and visibility),
+3. *Process → Build Point Cloud…* — Quality + Depth filtering (CUDA).
+4. *Process → Build Mesh…* — Source (Point cloud / Delaunay from fused cloud and visibility),
    trimming and target triangle count.
-5. *File → Save* stores a `*.pmsx` project (JSON); results live in
+5. *Project → Save* stores a `*.pmsx` project (JSON); results live in
    `<project>.files/`.
 
 ## Dense cloud, filtering, mesh and ground control
 
-**Build Point Cloud** (Workflow menu) – own parallel undistortion (photos are read in
+**Build Point Cloud** (Process menu) – own parallel undistortion (photos are read in
 place and never written to; downscaled undistorted copies go to `<workdir>\dense`),
 quality Ultra/High/Medium/Low/Lowest = 1/2/4/8/16× downscale, one undistorted
 pinhole camera per camera group, PatchMatch neighbours chosen from the sparse model
@@ -27,37 +27,37 @@ filter; fusion consistency checks remain active, then outlier filtering (minimum
 per point, terrain sanity check, statistical and radius outlier removal; scipy
 cKDTree, multi-threaded). Depth maps can be reused when the settings are unchanged.
 
-**Tools > Point Cloud > Filter Point Cloud / Filter by Confidence**, **Model >
-Gradual Selection** (tie points: reprojection error, reconstruction uncertainty,
+**Process > Filter Point Cloud > Filter Point Cloud / Filter by Confidence**, **Process >
+Clean Tie Points** (tie points: reprojection error, reconstruction uncertainty,
 image count, projection accuracy).
 
-**Build Model** – Poisson (Open3D) with strong/moderate trimming or permitted extrapolation,
+**Build Mesh** – Poisson (Open3D) with strong/moderate trimming or permitted extrapolation,
 or Delaunay from the fused cloud and visibility data; face count
 High/Medium/Low (points/5, /15, /45 as in Metashape) or Custom, quadric decimation,
 removal of faces bridging gaps, long-edge faces and small components; automatic
 voxel downsampling with an enforced point limit and bounded large-file loading.
 A manual voxel that exceeds the limit is reported rather than silently changed.
 
-**Ground control** – File > Import > Import Markers / Import Reference reads
+**Ground control** – Project > Import Data > Import Markers reads
 Metashape reference exports (`# CoordinateSystem:` + `#Label X Y Z ...`, as
 exported by Metashape), plain label/X/Y/Z[/accuracy] text or CSV, Metashape
 markers XML (with photo projections and pinned flags) and survey XML.
 Coordinate systems: local (metres), WGS84 lon/lat/alt and UTM (own conversion,
 no PROJ data needed). The **Markers** pane lists reference, error (m), projections and
 pixel error; the check box switches control ↔ check point. In the Photo view,
-right-click to place the selected marker or edit an existing marker. **Tools > Markers > Refine Markers** predicts every marker in every photo and
+right-click to place the selected marker or edit an existing marker. **Survey > Refine Markers** predicts every marker in every photo and
 refines it locally (template from a pinned placement, else a checkerboard-corner
-detector, multi-view consensus). **Tools > Optimize Cameras** runs a robust Helmert
+detector, multi-view consensus). **Process > Optimize Cameras** runs a robust Helmert
 fit followed by a GCP-constrained bundle adjustment (Levenberg–Marquardt with Schur
 complement: poses, f/cx/cy/k1-k3/p1/p2 per camera group, tie points, markers;
 accuracies as in Metashape: markers 0.005 m, projections 0.5 px, tie points 1 px,
 camera GPS 10 m). Check points are not used in the adjustment. The report
-(File > Export > Export Markers) contains X/Y/Z/total error and pixel error per
+(Export > Markers) contains X/Y/Z/total error and pixel error per
 marker and the control/check RMSE.
 
 ## Texture and tiled model
 
-**Workflow → Build Texture** (Diffuse map from Images). Mapping mode Generic /
+**Process → Build Texture** (Diffuse map from Images). Mapping mode Generic /
 Adaptive orthophoto / Orthophoto / Keep uv; blending Mosaic (default) / Average /
 Max intensity / Min intensity / Disabled; texture size × count (count is an upper
 bound: pages are never filled with texels upsampled past the photo resolution);
@@ -81,7 +81,7 @@ Output in `<project>.files/…/texture/`: `model_textured.obj/.mtl`, `texture_N.
 `3D Model (N faces, …, Texture 8192x8192)`; Properties lists texel size vs photo
 ground resolution (cm/pix when the chunk is georeferenced, model units otherwise).
 
-**Workflow → Build Tiled Model** from the model (with its texture, or vertex colours)
+**Process → Build Tiled Model** from the model (with its texture, or vertex colours)
 or from the point cloud. Adaptive quadtree on the ground plane (z when georeferenced,
 otherwise the mean camera up direction), leaves keep every original face, parents
 are quadric-decimated with locked borders; every tile has its own atlas baked from
@@ -91,7 +91,7 @@ for our viewer, which streams levels by screen-space error (16 px). Georeference
 UTM/WGS84 chunks get an ENU→ECEF root transform (Cesium places them on the globe);
 local-CRS chunks are written in local metres.
 
-**File → Import → Import Texture… / Import Tiled Model…** attach an existing output
+**Project → Import Data → Import Texture… / Import Tiled Model…** attach an existing output
 folder without rebuilding (e.g. a texture built from the command line or copied from
 another PC). Import Texture needs the folder with `info.json`, `uv.npz` and
 `texture_N.jpg` and refuses a texture of a different mesh (face count must match);
@@ -104,7 +104,7 @@ tiled model 45 s (106 tiles, 5 levels); point-cloud tiles from 27.8 M points 12 
 
 ## Export mesh contours to DXF
 
-After building a model, choose **File > Export > Export Mesh Contours...**,
+After building a model, choose **Export > Mesh Contours (DXF)...**,
 next to Export Model. Select a DXF destination and enter the contour interval
 when prompted.
 The export intersects the mesh triangles with horizontal planes at integer
@@ -150,7 +150,7 @@ Rebuild notices above the Model and Ortho views indicate outdated products.
 For a final result after bundle adjustment:
 
 1. Save the project.
-2. Run **Workflow > Build Point Cloud...** with **Reuse depth maps** off.
+2. Run **Process > Build Point Cloud...** with **Reuse depth maps** off.
 3. Rebuild the mesh with **Build Model...**.
 4. Rebuild the DEM if it is used as the orthomosaic surface.
 5. Rebuild the orthomosaic and any required texture or tiled model.
@@ -161,12 +161,12 @@ added again.
 
 ## Orthomosaic and DEM
 
-Use **Workflow > Build DEM...** to create an elevation raster from the mesh or
+Use **Process > Build DEM...** to create an elevation raster from the mesh or
 point cloud. Use **Build Orthomosaic...** with the required Mesh or DEM surface.
 
 The Ortho tab displays an actual orthomosaic or DEM after one has been built
 or imported; it does not substitute the sparse point cloud for a raster.
-Use **File > Export** to export orthomosaic and DEM products.
+Use **Export** to export orthomosaic and DEM products.
 
 ## Progress and background work
 

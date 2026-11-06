@@ -4,7 +4,7 @@
 
 ## COLMAP is not found
 
-Open **Tools > Preferences** and check the configured executable path.
+Open **Project > Preferences** and check the configured executable path.
 Source installations must supply COLMAP separately; the complete Setup includes it.
 
 ## Build Point Cloud requires CUDA
@@ -33,7 +33,7 @@ level or none. Check model scale, units, and vertical orientation before export.
 
 ## Photos are missing after moving a project
 
-Use **Tools > Change Image Paths...**, select the new photo folder, then save.
+Use **Project > Relocate Photos...**, select the new photo folder, then save.
 Copy the complete project results as well as the `.pmsx` file.
 See [moving projects](installation.md#move-a-project-to-another-computer).
 

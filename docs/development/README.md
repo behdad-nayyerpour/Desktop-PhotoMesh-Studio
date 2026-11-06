@@ -21,7 +21,7 @@ The Setup EXE is the simpler option for normal application use.
 ## Reconstruction tools
 
 Source installations need a separate COLMAP installation.
-Select its path in **Tools > Preferences > Advanced**, add it to PATH, or place
+Select its path in **Project > Preferences > Advanced**, add it to PATH, or place
 it in `tools\colmap` next to the application.
 Get builds from [COLMAP releases](https://github.com/colmap/colmap/releases)
 and choose one compatible with your GPU and NVIDIA driver.
