@@ -113,6 +113,7 @@ if ext and ext[0].isVisible():
             popup.close()
     QTimer.singleShot(100, inspect_overflow)
     QTest.mouseClick(ext[0], Qt.LeftButton)
+    QTest.qWait(150)
     for _ in range(10): app.processEvents()
     # Some Qt styles expand the toolbar instead of opening a popup.
     if not overflow_entries:
