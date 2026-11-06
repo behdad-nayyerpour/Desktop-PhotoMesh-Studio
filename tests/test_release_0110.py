@@ -1,7 +1,7 @@
 """0.1.10: findings of an external code review, each reproduced first:
 1 Build Model must not lose the old model (prerequisites, failure, cancel),
 2 duplicate photo file names must map to the right camera,
-3 Project.load must restore the active chunk."""
+3 Project.load must restore the active dataset."""
 import json
 import os
 import shutil
@@ -45,34 +45,34 @@ def _wd_with_model(tmp_path):
     return wd, old, open(old, "rb").read()
 
 
-# ------------------------------------------------------------ 3: active chunk
-def test_load_restores_active_chunk(tmp_path):
-    from photomesh.project import Project, Chunk
-    prj = Project(); prj.chunks = [Chunk(name="A"), Chunk(name="B")]; prj.active = 1
-    prj.chunks[1].texture = {"dir": "x"}                   # product dicts used to shadow the root data
+# ------------------------------------------------------------ 3: active dataset
+def test_load_restores_active_dataset(tmp_path):
+    from photomesh.project import Project, ProjectData
+    prj = Project(); prj.datasets = [ProjectData(name="A"), ProjectData(name="B")]; prj.active = 1
+    prj.datasets[1].texture = {"dir": "x"}                   # product dicts used to shadow the root data
     p = str(tmp_path / "p.pmsx"); prj.save(p)
     q = Project.load(p)
-    assert q.active == 1 and q.chunk.name == "B"
+    assert q.active == 1 and q.dataset.name == "B"
 
 
 @pytest.mark.parametrize("active", ["1", 7, -3, None, 1.5, [1], True])
 def test_load_invalid_active_falls_back(tmp_path, active):
-    from photomesh.project import Project, Chunk
-    prj = Project(); prj.chunks = [Chunk(name="A"), Chunk(name="B")]
+    from photomesh.project import Project, ProjectData
+    prj = Project(); prj.datasets = [ProjectData(name="A"), ProjectData(name="B")]
     p = str(tmp_path / "p.pmsx"); prj.save(p)
     d = json.load(open(p)); d["active"] = active; json.dump(d, open(p, "w"))
     q = Project.load(p)
     assert isinstance(q.active, int) and not isinstance(q.active, bool) and 0 <= q.active < 2
-    assert q.chunk.name in ("A", "B")
+    assert q.dataset.name in ("A", "B")
 
 
-def test_load_project_without_chunks(tmp_path):
+def test_load_project_without_datasets(tmp_path):
     from photomesh.project import Project
     p = str(tmp_path / "p.pmsx")
-    for d in ({"format": "photomesh-studio/1", "active": 3, "chunks": []}, {"format": "photomesh-studio/1"}):
+    for d in ({"format": "photomesh-studio/1", "active": 3, "datasets": []}, {"format": "photomesh-studio/1"}):
         json.dump(d, open(p, "w"))
         q = Project.load(p)
-        assert q.active == 0 and q.chunk is not None and len(q.chunks) == 1
+        assert q.active == 0 and q.dataset is not None and len(q.datasets) == 1
 
 
 # ------------------------------------------------------------ 1: Build Model keeps the old model
@@ -135,7 +135,7 @@ def test_successful_mesh_build_replaces_model(tmp_path):
 def _gui_project(tmp_path, window, monkeypatch, cloud_ok):
     from photomesh import colmap as cm, dialogs
     from photomesh.project import Project, Camera
-    prj = Project(); prj.path = str(tmp_path / "p.pmsx"); ch = prj.chunk
+    prj = Project(); prj.path = str(tmp_path / "p.pmsx"); ch = prj.dataset
     ch.cameras = [Camera(path=str(tmp_path / "a.jpg"), aligned=True, est=[0, 0, 0])]
     wd = prj.default_workdir(ch); os.makedirs(os.path.join(wd, "dense"), exist_ok=True)
     ch.model_ply = _mesh_ply(os.path.join(wd, "model.ply"), 5); ch.face_count = 5
@@ -156,7 +156,7 @@ def _gui_project(tmp_path, window, monkeypatch, cloud_ok):
     monkeypatch.setattr(dialogs.BuildModelDialog, "exec", lambda self: 1)
     monkeypatch.setattr(dialogs.BuildModelDialog, "settings",
                         lambda self: {"source": "Point cloud", "face_count": "Low", "interpolation": "Enabled"})
-    return window.chunk, open(ch.model_ply, "rb").read()
+    return window.dataset, open(ch.model_ply, "rb").read()
 
 
 def _wait_done(window, qtbot):
@@ -194,17 +194,17 @@ def test_gui_build_model_replaces_and_marks_products_outdated(window, no_dialogs
 
 
 # ------------------------------------------------------------ 2: duplicate photo names
-def _dup_chunk(tmp_path):
+def _dup_dataset(tmp_path):
     """Two different photos called IMG_001.JPG in two folders + one unique."""
     from PIL import Image
-    from photomesh.project import Camera, Chunk
+    from photomesh.project import Camera, ProjectData
     paths = []
     for sub, col in (("f1", (255, 0, 0)), ("f2", (0, 0, 255))):
         d = tmp_path / "photos" / sub; d.mkdir(parents=True, exist_ok=True)
         Image.new("RGB", (16, 12), col).save(d / "IMG_001.JPG"); paths.append(str(d / "IMG_001.JPG"))
     Image.new("RGB", (16, 12), (0, 255, 0)).save(tmp_path / "photos" / "f2" / "IMG_002.JPG")
     paths.append(str(tmp_path / "photos" / "f2" / "IMG_002.JPG"))
-    return Chunk(cameras=[Camera(path=p) for p in paths])
+    return ProjectData(cameras=[Camera(path=p) for p in paths])
 
 
 def _sparse(wd, names):
@@ -225,7 +225,7 @@ def _sparse(wd, names):
 
 def test_prepare_images_names_duplicates_uniquely(tmp_path):
     from photomesh import colmap as cm
-    ch = _dup_chunk(tmp_path); wd = str(tmp_path / "wd")
+    ch = _dup_dataset(tmp_path); wd = str(tmp_path / "wd")
     m = cm.prepare_images(ch, wd)
     assert sorted(m.values()) == ["IMG_001.JPG", "IMG_001_1.JPG", "IMG_002.JPG"]
 
@@ -234,7 +234,7 @@ def test_photo_map_maps_duplicate_names_to_their_own_photo(tmp_path):
     """The texture/ortho input {COLMAP name: photo} must point each name to its own file."""
     from photomesh import colmap as cm
     from photomesh.photonames import photo_map, assign_names
-    ch = _dup_chunk(tmp_path); wd = str(tmp_path / "wd")
+    ch = _dup_dataset(tmp_path); wd = str(tmp_path / "wd")
     m = cm.prepare_images(ch, wd); assign_names(ch, m)
     pm, ambiguous = photo_map(ch)
     assert ambiguous == [] and len(pm) == 3
@@ -246,7 +246,7 @@ def test_texture_views_use_the_right_photo_for_duplicate_names(tmp_path):
     from photomesh import colmap as cm
     from photomesh.photonames import photo_map, assign_names
     from photomesh.texture import load_views
-    ch = _dup_chunk(tmp_path); wd = str(tmp_path / "wd")
+    ch = _dup_dataset(tmp_path); wd = str(tmp_path / "wd")
     m = cm.prepare_images(ch, wd); assign_names(ch, m)
     md = _sparse(wd, [m[c.path] for c in ch.cameras])
     views = load_views(md, photo_map(ch)[0], lambda s: None)
@@ -256,10 +256,10 @@ def test_texture_views_use_the_right_photo_for_duplicate_names(tmp_path):
 def test_alignment_reload_gives_duplicates_their_own_pose(window, no_dialogs, tmp_path):
     from photomesh import colmap as cm
     from photomesh.photonames import assign_names
-    ch = _dup_chunk(tmp_path); wd = str(tmp_path / "wd")
+    ch = _dup_dataset(tmp_path); wd = str(tmp_path / "wd")
     m = cm.prepare_images(ch, wd); assign_names(ch, m)
     names = [m[c.path] for c in ch.cameras]; _sparse(wd, names)
-    window.project.chunks = [ch]; window.project.active = 0
+    window.project.datasets = [ch]; window.project.active = 0
     window._reload_alignment(ch, wd)
     xs = [round(c.est[0], 6) for c in ch.cameras]
     assert xs == [0.0, 1.0, 2.0]                 # pose k has centre x = k
@@ -269,16 +269,16 @@ def test_photo_names_survive_save_open_and_folder_move(tmp_path):
     from photomesh import colmap as cm
     from photomesh.photonames import photo_map, assign_names
     from photomesh.project import Project
-    ch = _dup_chunk(tmp_path)
-    prj = Project(); prj.chunks = [ch]; prj.path = str(tmp_path / "p.pmsx")
+    ch = _dup_dataset(tmp_path)
+    prj = Project(); prj.datasets = [ch]; prj.path = str(tmp_path / "p.pmsx")
     m = cm.prepare_images(ch, prj.default_workdir(ch)); assign_names(ch, m)
     prj.save(prj.path)
     q = Project.load(prj.path)
-    assert photo_map(q.chunk)[0] == photo_map(ch)[0]
+    assert photo_map(q.dataset)[0] == photo_map(ch)[0]
     # move the whole folder (photos are below the project folder -> relative paths)
     moved = str(tmp_path.parent / (tmp_path.name + "_moved")); shutil.move(str(tmp_path), moved)
     r = Project.load(os.path.join(moved, "p.pmsx"))
-    pm = photo_map(r.chunk)[0]
+    pm = photo_map(r.dataset)[0]
     assert pm["IMG_001.JPG"].endswith(os.path.join("f1", "IMG_001.JPG")) and pm["IMG_001.JPG"].startswith(moved)
     assert pm["IMG_001_1.JPG"].endswith(os.path.join("f2", "IMG_001.JPG"))
 
@@ -286,7 +286,7 @@ def test_photo_names_survive_save_open_and_folder_move(tmp_path):
 def test_photo_names_survive_relink(tmp_path):
     from photomesh import colmap as cm
     from photomesh.photonames import photo_map, assign_names
-    ch = _dup_chunk(tmp_path)
+    ch = _dup_dataset(tmp_path)
     m = cm.prepare_images(ch, str(tmp_path / "wd")); assign_names(ch, m)
     new = tmp_path / "new"; shutil.copytree(tmp_path / "photos", new)
     for c in ch.cameras:                                    # what Change Image Paths does: only path changes
@@ -302,7 +302,7 @@ def test_old_project_names_recovered_from_links_or_flagged(tmp_path):
     (never silently mismatched) and reported."""
     from photomesh import colmap as cm
     from photomesh.photonames import photo_map, recover_names
-    ch = _dup_chunk(tmp_path); wd = str(tmp_path / "wd")
+    ch = _dup_dataset(tmp_path); wd = str(tmp_path / "wd")
     m = cm.prepare_images(ch, wd)                            # links in wd/images, names not stored (old project)
     linked = all(os.path.samefile(c.path, os.path.join(wd, "images", m[c.path]))
                  for c in ch.cameras)
@@ -323,8 +323,8 @@ def test_old_project_names_recovered_from_links_or_flagged(tmp_path):
 
 def test_unique_names_without_stored_names_still_work(tmp_path):
     from photomesh.photonames import photo_map
-    from photomesh.project import Camera, Chunk
-    ch = Chunk(cameras=[Camera(path=str(tmp_path / "a" / "X.JPG")), Camera(path=str(tmp_path / "a" / "Y.JPG"))])
+    from photomesh.project import Camera, ProjectData
+    ch = ProjectData(cameras=[Camera(path=str(tmp_path / "a" / "X.JPG")), Camera(path=str(tmp_path / "a" / "Y.JPG"))])
     assert photo_map(ch) == ({"X.JPG": ch.cameras[0].path, "Y.JPG": ch.cameras[1].path}, [])
 
 
@@ -332,11 +332,11 @@ def test_relink_never_picks_the_other_photo_with_same_name_and_size(tmp_path):
     """Save As re-links photo copies in images\\ to originals: two photos with the
     same name and size (e.g. uncompressed TIFFs) must not be confused."""
     from photomesh import datafolder
-    from photomesh.project import Camera, Chunk
+    from photomesh.project import Camera, ProjectData
     a = tmp_path / "f1" / "IMG.TIF"; b = tmp_path / "f2" / "IMG.TIF"
     for p, x in ((a, b"A"), (b, b"B")):
         p.parent.mkdir(); p.write_bytes(x * 100)
-    ch = Chunk(cameras=[Camera(path=str(a)), Camera(path=str(b))])
+    ch = ProjectData(cameras=[Camera(path=str(a)), Camera(path=str(b))])
     copy = tmp_path / "images" / "IMG.TIF"; copy.parent.mkdir(); copy.write_bytes(b"B" * 100)   # plain copy of b
     dst = tmp_path / "out.TIF"
     # Some Windows sandboxes deny both hard links and symlinks. The copy
@@ -354,28 +354,28 @@ def test_relink_never_picks_the_other_photo_with_same_name_and_size(tmp_path):
 
 def test_gui_old_project_with_ambiguous_names_warns(window, no_dialogs, tmp_path):
     from photomesh.project import Project
-    ch = _dup_chunk(tmp_path)
+    ch = _dup_dataset(tmp_path)
     for c in ch.cameras:
         c.aligned = True; c.est = [0, 0, 0]
-    prj = Project(); prj.chunks = [ch]; prj.path = str(tmp_path / "old.pmsx")
+    prj = Project(); prj.datasets = [ch]; prj.path = str(tmp_path / "old.pmsx")
     prj.default_workdir(ch); prj.save(prj.path)                        # no names, no links: 0.1.9 project
     msgs = []
     window.log = lambda m, *a, **k: msgs.append(m)
     window.open_project(prj.path)
     assert any("IMG_001.JPG" in m and "Align Photos again" in m for m in msgs)
-    pm = window._photo_map(window.chunk)
+    pm = window._photo_map(window.dataset)
     assert set(pm) == {"IMG_002.JPG"}
 
 
 def test_gui_old_project_names_recovered_on_open(window, no_dialogs, tmp_path):
     from photomesh import colmap as cm
     from photomesh.project import Project
-    ch = _dup_chunk(tmp_path)
-    prj = Project(); prj.chunks = [ch]; prj.path = str(tmp_path / "old.pmsx")
+    ch = _dup_dataset(tmp_path)
+    prj = Project(); prj.datasets = [ch]; prj.path = str(tmp_path / "old.pmsx")
     m = cm.prepare_images(ch, prj.default_workdir(ch))
     for c in ch.cameras:
         c.aligned = True; c.est = [0, 0, 0]
     prj.save(prj.path)
     window.open_project(prj.path)
-    assert {c.path: c.colmap_name for c in window.chunk.cameras} == m
+    assert {c.path: c.colmap_name for c in window.dataset.cameras} == m
     assert window.project.modified                                    # saved with the names on next Save

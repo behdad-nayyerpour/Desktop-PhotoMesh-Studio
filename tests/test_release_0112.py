@@ -126,7 +126,6 @@ def test_shortcuts_kept(window):
     from PySide6.QtGui import QKeySequence
     for name, seq in (("Save", QKeySequence.Save), ("Undo", QKeySequence.Undo), ("Open...", QKeySequence.Open)):
         assert window.actions[name].shortcut() == QKeySequence(seq), name
-    assert window.actions["Full Screen"].shortcut().toString() == "F11"
     assert window.actions["Open Next Photo"].shortcut().toString() == "PgDown"
     assert window.actions["Contents"].shortcut().toString() == "F1"
     assert window.transparency_action.shortcut().toString() == "Ctrl+Shift+T"

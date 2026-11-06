@@ -241,7 +241,7 @@ DEPTH_MIN_PIXELS = {"Disabled": 2, "Mild": 3, "Moderate": 5, "Aggressive": 8}
 FACE_COUNT_DEPTH = {"High": 11, "Medium": 10, "Low": 9}
 
 
-def align_steps(exe, chunk, wd, s, names=None, infos=None):
+def align_steps(exe, dataset, wd, s, names=None, infos=None):
     """Steps for Align Photos. s = settings dict from AlignPhotosDialog.
 
     s["mode"]: "Fast" (fastpipe: preselected pairs + coarse-to-fine, default),
@@ -255,7 +255,7 @@ def align_steps(exe, chunk, wd, s, names=None, infos=None):
     db = os.path.join(wd, "database.db")
     sparse = os.path.join(wd, "sparse")
     gpu = "1" if s.get("use_gpu", True) else "0"
-    maxdim = image_max_dim([c.path for c in chunk.cameras if c.enabled])
+    maxdim = image_max_dim([c.path for c in dataset.cameras if c.enabled])
     from .engine import extraction_size
     max_size = extraction_size(max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]]), s)
     fe = ["feature_extractor", "--database_path", db, "--image_path", img_dir,
@@ -275,7 +275,7 @@ def align_steps(exe, chunk, wd, s, names=None, infos=None):
         m += opt(exe, matcher, ["FeatureMatching.guided_matching",
                                 "SiftMatching.guided_matching"], "1")
     from .fastpipe import mapper_steps, camera_groups_step
-    n_img = len([c for c in chunk.cameras if getattr(c, "enabled", True)])
+    n_img = len([c for c in dataset.cameras if getattr(c, "enabled", True)])
     if os.path.exists(db):
         os.remove(db)
     os.makedirs(sparse, exist_ok=True)
@@ -299,9 +299,9 @@ def point_cloud_path(wd):
     return os.path.join(wd, "dense", "fused.ply")
 
 
-def point_cloud_steps(exe, chunk, wd, s):
+def point_cloud_steps(exe, dataset, wd, s):
     dense = os.path.join(wd, "dense")
-    maxdim = image_max_dim([c.path for c in chunk.cameras if c.enabled])
+    maxdim = image_max_dim([c.path for c in dataset.cameras if c.enabled])
     max_size = max(256, maxdim // QUALITY_DOWNSCALE[s["quality"]])
     pm = ["patch_match_stereo", "--workspace_path", dense]
     pm += opt(exe, "patch_match_stereo", ["PatchMatchStereo.max_image_size"], max_size)
@@ -325,7 +325,7 @@ def model_output(wd, s):
     return os.path.join(wd, "model_poisson.ply" if s["source"] == "Point cloud" else "model_delaunay.ply")
 
 
-def model_steps(exe, chunk, wd, s):
+def model_steps(exe, dataset, wd, s):
     dense = os.path.join(wd, "dense")
     src = s["source"]
     out = os.path.join(wd, "model_poisson.ply" if src == "Point cloud" else "model_delaunay.ply")
@@ -333,7 +333,7 @@ def model_steps(exe, chunk, wd, s):
         os.remove(out)   # never show a stale mesh if meshing fails
     steps = []
     if src == "Point cloud":
-        cloud = getattr(chunk, "point_cloud_ply", "") or point_cloud_path(wd)
+        cloud = getattr(dataset, "point_cloud_ply", "") or point_cloud_path(wd)
         cmd = ["poisson_mesher", "--input_path", cloud,
                "--output_path", out]
         depth = FACE_COUNT_DEPTH.get(s["face_count"], 10)
@@ -367,7 +367,7 @@ def image_list(wd):
     return os.path.join(wd, "image_list.txt")
 
 
-def prepare_images(chunk, wd):
+def prepare_images(dataset, wd):
     """Tell COLMAP which photos to use. Returns {photo path: COLMAP image name}.
 
     If all enabled photos live in one folder (the normal case) COLMAP reads
@@ -376,7 +376,7 @@ def prepare_images(chunk, wd):
     exposed in <wd>/images via hard links (same volume), symlinks, or copies.
     """
     os.makedirs(wd, exist_ok=True)
-    cams = [c for c in chunk.cameras if c.enabled]
+    cams = [c for c in dataset.cameras if c.enabled]
     dirs = {os.path.dirname(os.path.abspath(c.path)) for c in cams}
     names = [os.path.basename(c.path) for c in cams]
     if len(dirs) == 1 and len(set(n.lower() for n in names)) == len(names):

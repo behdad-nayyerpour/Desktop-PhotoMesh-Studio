@@ -3,7 +3,7 @@
 Own implementation (numpy + scipy + Open3D's Embree ray caster), no third-party
 texturing code:
 
-1. Cameras: the chunk's current sparse model (same frame as the mesh - after
+1. Cameras: the project's current sparse model (same frame as the mesh - after
    Optimize Cameras both are in the georeferenced frame), original photos read
    at a working resolution (JPEG DCT down-scaling, e.g. 5280 -> 2640 px), full
    camera model incl. radial/tangential distortion, any number of sensors.
@@ -57,7 +57,7 @@ DEFAULTS = {"mapping": "Generic", "blending": "Mosaic", "size": 8192, "count": 1
             "ghost_threshold": 45.0, "page_policy": "limit"}
 
 
-SAMPLE_CHUNK = 1_000_000   # texels projected at once per photo (bounds float64 temporaries)
+SAMPLE_BLOCK = 1_000_000   # texels projected at once per photo (bounds float64 temporaries)
 
 
 # ------------------------------------------------------------------ images
@@ -1064,26 +1064,26 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     done = [0]
     def sample_view(vi, sel):
         """Colours of texels `sel` from photo vi. The float64 texel positions and
-        projections are made in chunks (SAMPLE_CHUNK texels), not for all texels
+        projections are made in blocks (SAMPLE_BLOCK texels), not for all texels
         of the photo at once (millions per photo on big pages, x ~200 bytes)."""
         v = views[vi]
         img = load_image(v.path, mr)
         h, w = img.shape[:2]
         out_c = np.empty((len(sel), 3), np.float32)
-        for a in range(0, len(sel), SAMPLE_CHUNK):
-            part = sel[a:a + SAMPLE_CHUNK]
+        for a in range(0, len(sel), SAMPLE_BLOCK):
+            part = sel[a:a + SAMPLE_BLOCK]
             uv_, _z = v.project(texel_points(part))
             out_c[a:a + len(part)] = bilinear(img, uv_[:, 0] * w / v.W, uv_[:, 1] * h / v.H)
             del uv_, _z
         del img
         return out_c
-    # threads that sample photos hold one decoded photo + one chunk each: cap by free RAM
+    # threads that sample photos hold one decoded photo + one block each: cap by free RAM
     from .memguard import cap_workers, MB
     _cw = views[0].cam if views else None
     _photo = (int(_cw.width) * int(_cw.height) * 3 * 2) if _cw is not None else 0
     if mr and _cw is not None and max(_cw.width, _cw.height) > mr:
         _photo = int(_photo * (mr / max(_cw.width, _cw.height)) ** 2)
-    sample_threads = cap_workers(min(threads, 6), _photo + SAMPLE_CHUNK * 220 + 50 * MB)
+    sample_threads = cap_workers(min(threads, 6), _photo + SAMPLE_BLOCK * 220 + 50 * MB)
     if sample_threads < min(threads, 6):
         log(f"Texture: {sample_threads} photo sampling threads (limited by free RAM)")
     if c["blending"] in ("Mosaic", "Disabled"):
@@ -1327,12 +1327,12 @@ def write_obj(path, V, F, uvp, page, size, textures, offset=None):
             _write_rows(fh, "f", arr, "%d/%d %d/%d %d/%d", grouped=True)
 
 
-def _write_rows(fh, tag, arr, fmt, grouped=False, chunk=200000):
+def _write_rows(fh, tag, arr, fmt, grouped=False, block=200000):
     n = len(arr)
     cols = arr.shape[1]
     line = f"{tag} " + (fmt if grouped else " ".join([fmt] * cols)) + "\n"
-    for s in range(0, n, chunk):
-        blk = arr[s:s + chunk]
+    for s in range(0, n, block):
+        blk = arr[s:s + block]
         fh.write((line * len(blk)) % tuple(blk.ravel()))
 
 

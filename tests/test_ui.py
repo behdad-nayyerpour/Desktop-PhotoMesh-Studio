@@ -51,10 +51,10 @@ def test_trigger_every_action(window, no_dialogs, monkeypatch, colmap_present):
 
 def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
     window.add_photos(sorted(str(p) for p in image_dir.iterdir()))
-    assert len(window.chunk.cameras) == 6
+    assert len(window.dataset.cameras) == 6
     assert window.photos.count() == 6
     assert window.reference.data_row_count == 6
-    cam = window.chunk.cameras[0]
+    cam = window.dataset.cameras[0]
     assert cam.lat == pytest.approx(40.18, abs=1e-3) and cam.lon == pytest.approx(44.51, abs=1e-3)
     from conftest import wait_thumbnails
     wait_thumbnails(window)
@@ -69,16 +69,16 @@ def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
     for a in {id(a): a for a in window.actions.values()}.values():
         if a is not window.actions["New"]:
             a.trigger()
-    assert len(window.chunk.cameras) == 6
+    assert len(window.dataset.cameras) == 6
     window.actions["New"].trigger()          # discards (dialog patched)
-    assert window.chunk.cameras == []
+    assert window.dataset.cameras == []
     assert no_dialogs == []
 
 
 
 @pytest.mark.parametrize("transition", ["new", "open"])
 def test_project_switch_clears_photo_and_ortho_views(window, image_dir, tmp_path, transition):
-    from photomesh.project import Chunk, Project
+    from photomesh.project import ProjectData, Project
 
     photo = sorted(image_dir.iterdir())[0]
     window.photo_view.open(str(photo), "Previous project")
@@ -111,7 +111,7 @@ def test_duplicate_photos_ignored(window, image_dir):
     paths = sorted(str(p) for p in image_dir.iterdir())
     window.add_photos(paths)
     window.add_photos(paths)
-    assert len(window.chunk.cameras) == 6
+    assert len(window.dataset.cameras) == 6
 
 
 def test_project_roundtrip(window, image_dir, tmp_path, monkeypatch):
@@ -121,24 +121,24 @@ def test_project_roundtrip(window, image_dir, tmp_path, monkeypatch):
     ply = tmp_path / "cloud.ply"
     save_ply(str(ply), np.random.rand(500, 3).astype(np.float32), np.random.rand(500, 3))
     window.load_result("cloud", str(ply))
-    assert window.chunk.point_count == 500
+    assert window.dataset.point_count == 500
     out = tmp_path / "test.pmsx"
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(out), "")))
     assert window.save_project()
     window.open_project(str(out))
-    assert len(window.chunk.cameras) == 6 and window.chunk.point_count == 500
+    assert len(window.dataset.cameras) == 6 and window.dataset.point_count == 500
     from photomesh import APP_NAME, APP_VERSION
     assert window.windowTitle() == f"{APP_NAME} {APP_VERSION} - test"
 
 
-def test_workspace_has_one_project_without_chunk_actions(window):
-    assert len(window.project.chunks) == 1
-    assert not hasattr(window, "merge_chunks")
-    assert "Merge Chunks..." not in window.actions and "Append..." not in window.actions
-    assert "add_chunk" not in window.ws_actions
+def test_workspace_has_one_project_without_dataset_actions(window):
+    assert len(window.project.datasets) == 1
+    assert not hasattr(window, "merge_datasets")
+    assert "Merge Datasets..." not in window.actions and "Append..." not in window.actions
+    assert "add_dataset" not in window.ws_actions
     with pytest.raises(ValueError):
-        window._workspace_action("Add Chunk", -1)
-    assert len(window.project.chunks) == 1
+        window._workspace_action("Add ProjectData", -1)
+    assert len(window.project.datasets) == 1
 
 
 def test_import_mesh_and_modes(window, tmp_path):
@@ -147,7 +147,7 @@ def test_import_mesh_and_modes(window, tmp_path):
     f = np.array([[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]])
     p = tmp_path / "m.ply"; save_ply(str(p), v, faces=f)
     window.load_result("model", str(p))
-    assert window.chunk.face_count == 4
+    assert window.dataset.face_count == 4
     for m in ("Model - Shaded", "Model - Solid", "Model - Wireframe", "Model - Textured"):
         window.actions[m].trigger()
 
@@ -175,7 +175,7 @@ def test_align_requires_colmap(window, no_dialogs, image_dir, monkeypatch, tmp_p
 def test_console_python(window):
     window.console.inp.setText("1+2"); window.console._run()
     assert "3" in window.console.out.toPlainText()
-    window.console.inp.setText("x = len(project.chunks)"); window.console._run()
+    window.console.inp.setText("x = len(project.datasets)"); window.console._run()
     window.console.inp.setText("raise ValueError('boom')"); window.console._run()
     assert "ValueError: boom" in window.console.out.toPlainText()
 
@@ -199,7 +199,7 @@ def test_dense_without_cuda_warns(window, no_dialogs, monkeypatch, tmp_path):
     monkeypatch.setattr(QMessageBox, "warning", staticmethod(lambda *a, **k: msgs.append(a[1])))
     monkeypatch.setattr(cm, "find_colmap", lambda: "colmap")
     monkeypatch.setattr(cm, "has_cuda", lambda exe: False)
-    window.chunk.cameras = [type("C", (), {"aligned": True})()]
+    window.dataset.cameras = [type("C", (), {"aligned": True})()]
     window.build_point_cloud()
     assert msgs == ["Build Point Cloud"]
-    window.chunk.cameras = []
+    window.dataset.cameras = []

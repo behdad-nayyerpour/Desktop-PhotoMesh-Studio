@@ -35,7 +35,7 @@ def test_gl_target_never_receives_font_glyph_draws(qapp, dpr):
 
 
 def test_marker_errors_are_exactly_two_inline_nonentity_rows(window):
-    ch = window.chunk
+    ch = window.dataset
     ch.markers = [g.Marker("A").to_dict(), g.Marker("B").to_dict(),
                   g.Marker("C", enabled=False).to_dict(), g.Marker("D", disabled=True).to_dict()]
     ch.georef = {"rows": [{"label": "A", "total": 3., "pix": 2., "n": 1},
@@ -67,7 +67,7 @@ def test_marker_errors_are_exactly_two_inline_nonentity_rows(window):
 def test_camera_error_footer_is_under_error_column_and_not_a_camera(window):
     east, north = g.utm_forward(np.array([40.]), np.array([44.]), 38, False)
     E, N = float(east[0]), float(north[0])
-    ch = window.chunk
+    ch = window.dataset
     ch.crs = "EPSG:32638"
     ch.georef = {"crs": ch.crs, "offset": [0., 0., 0.]}
     ch.cameras = [Camera("A.jpg", lon=44., lat=40., alt=100., est=[E+3, N+4, 100.]),

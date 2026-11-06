@@ -101,7 +101,7 @@ def test_fast_steps_structure(tmp_path, monkeypatch):
 def test_exhaustive_mode_steps(tmp_path, monkeypatch):
     monkeypatch.setattr(cm, "colmap_options", lambda exe, c: set())
     monkeypatch.setattr(cm, "image_max_dim", lambda p: 2000)
-    class C:  # minimal chunk
+    class C:  # minimal dataset
         cameras = []
     steps = cm.align_steps("colmap", C, str(tmp_path), {"mode": "Exhaustive", "accuracy": "Medium",
                                                      "key_point_limit": 0, "use_gpu": False})

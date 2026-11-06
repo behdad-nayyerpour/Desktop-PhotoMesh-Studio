@@ -25,12 +25,12 @@ class _Relay(QObject):
 
 
 class ShapesMixin:
-    """Mixed into MainWindow; needs project, chunk, model_view, ortho_view,
+    """Mixed into MainWindow; needs project, dataset, model_view, ortho_view,
     photo_view, workspace, properties, log(), set_modified(), _sparse_model()."""
 
     # ------------------------------------------------------------ data
     def _shapes_init(self):
-        self._shape_cache = {}           # chunk id -> (key, sset)
+        self._shape_cache = {}           # dataset id -> (key, sset)
         self._shapes_ver = 0
         self._photo_shape_cache = {}
         self._sampler_cache = {}
@@ -39,22 +39,22 @@ class ShapesMixin:
         self._shape_relay.occlusionReady.connect(self._occlusion_ready)
         self._shape_relay.photoOcclusionReady.connect(self._photo_occlusion_ready)
         self.selected_shape = None
-        self.workspace.shape_provider = lambda ci: self._shape_set(self.project.chunks[ci])
+        self.workspace.shape_provider = lambda ci: self._shape_set(self.project.datasets[ci])
         self.ortho_view.shapeClicked.connect(self._shape_clicked)
 
     def _shapes_file(self, ch):
-        """Shape data of a chunk: <project>.files/shapes/<chunk>.json (the
+        """Shape data of a dataset: <project>.files/shapes/<dataset>.json (the
         project's data folder; older projects keep their stored path).
         Unsaved projects: raises ProjectNotSaved (callers ask to save first)."""
-        safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", ch.name or "chunk")
+        safe = "project"
         if not self.project.path:
             from .project import ProjectNotSaved
             raise ProjectNotSaved("Save the project before importing shapes.")
         return os.path.join(self.project.data_dir, "shapes", f"{safe}.json")
 
     def _shape_set(self, ch=None):
-        """The chunk's shapes (loaded from its shapes.json, cached by file time)."""
-        ch = ch or self.chunk
+        """The dataset's shapes (loaded from its shapes.json, cached by file time)."""
+        ch = ch or self.dataset
         info = ch.shapes or {}
         p = info.get("path")
         if not p or not os.path.exists(p):
@@ -94,11 +94,11 @@ class ShapesMixin:
         self._photo_shape_cache.clear()
 
     def _frame(self, ch=None):
-        return S.Frame.from_chunk(ch or self.chunk)
+        return S.Frame.from_dataset(ch or self.dataset)
 
     def _project_bounds_world(self, ch=None):
         """World XY extent of the project (orthomosaic / DEM, else camera centres)."""
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         for d in (ch.orthomosaic, ch.dem):
             b = (d or {}).get("bounds")
             if b:
@@ -112,7 +112,7 @@ class ShapesMixin:
 
     def _surfaces(self, ch=None):
         """Available draping surfaces: [(name, kind, path)] (DEM first)."""
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         out = []
         if (ch.dem or {}).get("path") and os.path.exists(ch.dem["path"]):
             out.append(("DEM", "raster", ch.dem["path"]))
@@ -124,7 +124,7 @@ class ShapesMixin:
         return out
 
     def _sampler(self, name=None, ch=None):
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         surf = self._surfaces(ch)
         if not surf:
             return None
@@ -146,7 +146,7 @@ class ShapesMixin:
         far-away warning without asking (scripts / tests)."""
         if not self._require_saved("Import Shapes"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if path is None:
             from PySide6.QtCore import QSettings
             st = QSettings()
@@ -269,7 +269,7 @@ class ShapesMixin:
     # ------------------------------------------------------------ export / remove
     def export_shapes(self, path=None, options=None):
         """File > Export > Export Shapes... - SHP / DXF / GeoJSON in world coordinates."""
-        ch = self.chunk
+        ch = self.dataset
         sset = self._shape_set(ch)
         if not sset or not sset["shapes"]:
             if options is None:
@@ -307,11 +307,11 @@ class ShapesMixin:
     def remove_shapes(self, confirm=True):
         """Tools > Shapes > Remove Shapes (the shapes leave the project; the
         imported source files are not touched)."""
-        ch = self.chunk
+        ch = self.dataset
         if not ch.shapes:
             self.statusBar().showMessage("No shapes", 3000); return False
         if confirm and QMessageBox.question(self, "Remove Shapes",
-                                            f"Remove all {ch.shapes.get('count', 0)} shapes from the chunk?") \
+                                            f"Remove all {ch.shapes.get('count', 0)} shapes from the project?") \
                 != QMessageBox.Yes:
             return False
         self.log(f"Removed {ch.shapes.get('count', 0)} shapes")
@@ -322,7 +322,7 @@ class ShapesMixin:
         return True
 
     def remove_shape_layer(self, name):
-        ch = self.chunk
+        ch = self.dataset
         sset = self._shape_set(ch)
         if not sset:
             return
@@ -341,7 +341,7 @@ class ShapesMixin:
         self.set_modified(); self.update_shape_views()
 
     def set_shape_layer_visible(self, name, on):
-        ch = self.chunk
+        ch = self.dataset
         hid = set((ch.shapes or {}).get("hidden") or [])
         (hid.discard if on else hid.add)(name)
         ch.shapes = dict(ch.shapes or {}, hidden=sorted(hid))
@@ -351,7 +351,7 @@ class ShapesMixin:
 
     # ------------------------------------------------------------ measurement / properties
     def shape_metrics(self, index, ch=None):
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         sset = self._shape_set(ch)
         if not sset or not (0 <= index < len(sset["shapes"])):
             return None
@@ -383,20 +383,6 @@ class ShapesMixin:
         for k, v in (s.get("attrs") or {}).items():
             rows.append((f"[{k}]", v))
         return rows
-
-    def measure_shape(self, index=None):
-        """Tools > Shapes > Measure Shape... - metrics of the selected shape."""
-        if index is None:
-            index = self.selected_shape
-        sset = self._shape_set()
-        if index is None or not sset or not (0 <= index < len(sset["shapes"])):
-            self.statusBar().showMessage("Select a shape (Workspace or Ortho view) first", 4000); return None
-        rows = self._shape_rows(self.chunk, index)
-        txt = "\n".join(f"{k}: {v}" for k, v in rows)
-        self.log("Measure Shape:\n" + txt)
-        if not getattr(self, "_headless", False):
-            QMessageBox.information(self, "Measure Shape", txt)
-        return dict(rows)
 
     def _shape_properties(self, info, ch):
         kind = info["kind"]
@@ -440,7 +426,7 @@ class ShapesMixin:
         if index < 0:
             self.selected_shape = None; self.update_shape_views(photo_only=True); return
         self.selected_shape = index
-        rows = self._shape_rows(self.chunk, index)
+        rows = self._shape_rows(self.dataset, index)
         self.properties.show_props({k: ("" if v is None else v) for k, v in rows})
         self.statusBar().showMessage(f"Shape: {rows[0][1]} ({rows[1][1]})", 4000)
 
@@ -459,7 +445,7 @@ class ShapesMixin:
     def shape_style(self, index, ch=None, highlight=None):
         """Resolved display style of shape `index` (shape_style.resolve)."""
         from . import shape_style as SS
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         sset = self._shape_set(ch)
         hl = (index == self.selected_shape) if highlight is None else highlight
         return SS.resolve(sset, index, ch.shapes, highlight=hl)
@@ -479,7 +465,7 @@ class ShapesMixin:
     def update_shape_views(self, photo_only=False, model_only=False):
         """Push the (visible) shapes into the Model view, the Ortho view and the
         open photo, each drawn with its style (layer style < per-shape override)."""
-        ch = self.chunk
+        ch = self.dataset
         sset, vis = self._visible_shapes(ch)
         frame = self._frame(ch)
         styles = {i: self.shape_style(i, ch) for i in vis} if sset else {}
@@ -606,7 +592,7 @@ class ShapesMixin:
         All shapes are projected together (S.project_batch): one transform of
         all vertices, frame culling of whole segments, one ray cast for the
         occlusion - instead of a Python loop with a ray cast per shape."""
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         sset, vis = self._visible_shapes(ch)
         if not sset or not vis:
             return []
@@ -694,13 +680,13 @@ class ShapesMixin:
 
     def layer_style(self, name, ch=None):
         from . import shape_style as SS
-        return SS.layer_style((ch or self.chunk).shapes, name)
+        return SS.layer_style((ch or self.dataset).shapes, name)
 
     def set_layer_style(self, name, style, commit=True):
         """Store / apply a layer style (None = defaults); commit marks the
         project modified (the style is saved with the project)."""
         from . import shape_style as SS
-        ch = self.chunk
+        ch = self.dataset
         if not ch.shapes:
             return
         ch.shapes = SS.set_layer_style(ch.shapes, name, style)
@@ -709,7 +695,7 @@ class ShapesMixin:
     def set_shape_style(self, index, style, commit=True):
         """Per-shape override (None removes it -> layer style)."""
         from . import shape_style as SS
-        ch = self.chunk
+        ch = self.dataset
         sset = self._shape_set(ch)
         if not sset or not (0 <= index < len(sset["shapes"])):
             return
@@ -778,12 +764,12 @@ class ShapesMixin:
         occlusion test unless it is cached; the occluded version is computed
         in a background thread (ray casts) and replaces it when ready."""
         k = getattr(self, "current_photo", -1)
-        if self.photo_view.path is None or not (0 <= k < len(self.chunk.cameras)):
+        if self.photo_view.path is None or not (0 <= k < len(self.dataset.cameras)):
             return
-        if not self.layer_action("shapes").isChecked() or not self.chunk.shapes:
+        if not self.layer_action("shapes").isChecked() or not self.dataset.shapes:
             self.photo_view.set_shapes([]); return
         t0 = time.perf_counter()
-        ch = self.chunk
+        ch = self.dataset
         scene_ready = self._occl["scene"] is not None and self._occl["key"] == self._occl_key(ch)
         sync = not scene_ready or getattr(self, "_headless_occlusion", False)
         cached = None
@@ -796,14 +782,14 @@ class ShapesMixin:
         dt = time.perf_counter() - t0
         self._photo_shapes_timing = dt
         if dt > 0.3:
-            self.log(f"Shapes on {self.chunk.cameras[k].label}: {dt:.2f} s")
+            self.log(f"Shapes on {self.dataset.cameras[k].label}: {dt:.2f} s")
         if scene_ready and cached is None and not sync:
             self._start_photo_occlusion(k)
 
     def _start_photo_occlusion(self, k):
         """Occluded shapes for photo k in a background thread (one batched ray
         cast); the result is drawn if photo / shapes / selection are unchanged."""
-        ch = self.chunk
+        ch = self.dataset
         tag = (k, self._shapes_ver, self.selected_shape, id(ch))
         self._photo_occl_tag = tag
         if getattr(self, "_photo_occl_busy", None) == tag:
@@ -828,7 +814,7 @@ class ShapesMixin:
             self.busy_indicator.background("photo-occlusion")
         if isinstance(res, Exception):
             self.log(f"Shapes overlay on the photo (occlusion): {res}"); return
-        cur = (getattr(self, "current_photo", -1), self._shapes_ver, self.selected_shape, id(self.chunk))
+        cur = (getattr(self, "current_photo", -1), self._shapes_ver, self.selected_shape, id(self.dataset))
         if tag != cur:                       # another photo / shapes / selection meanwhile
             return
         if self.photo_view.path is None or not self.layer_action("shapes").isChecked():
@@ -850,7 +836,7 @@ class ShapesMixin:
         return (p, os.path.getmtime(p)) if p and os.path.exists(p) else None
 
     def _start_occlusion_scene(self):
-        ch = self.chunk
+        ch = self.dataset
         key = self._occl_key(ch)
         if key is None or not ch.shapes or self._occl["key"] == key or self._occl["busy"]:
             return

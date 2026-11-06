@@ -95,7 +95,7 @@ def test_photo_move_click_pins_same_marker(window, tmp_path, qtbot):
     qtbot.mouseClick(view.view.viewport(), Qt.LeftButton, pos=QPoint(100, 100))
     point = _marker(window, label)["projections"]["img_0001"]
     assert np.allclose(point[:2], [scene.x(), scene.y()]) and point[2]
-    assert len(window.chunk.markers) == 1 and view._moving_marker is None
+    assert len(window.dataset.markers) == 1 and view._moving_marker is None
 
 
 def test_ortho_hit_testing_and_escape(window, qtbot):
@@ -113,7 +113,7 @@ def test_ortho_hit_testing_and_escape(window, qtbot):
 
 
 def test_control_check_groups_and_rmse_are_independent_of_ignore(window):
-    ch = window.chunk
+    ch = window.dataset
     ch.markers = [g.Marker("A", enabled=True).to_dict(), g.Marker("B", enabled=True).to_dict(),
                   g.Marker("C", enabled=False).to_dict(), g.Marker("D", disabled=True).to_dict()]
     ch.georef = {"rows": [{"label": "A", "total": 3., "pix": 2.},
@@ -135,7 +135,7 @@ def test_control_check_groups_and_rmse_are_independent_of_ignore(window):
 
 
 def test_camera_updates_mark_visible_products_stale_and_imports_stay_valid(window):
-    ch = window.chunk
+    ch = window.dataset
     ch.model_ply = "existing-model.ply"
     ch.orthomosaic = {"path": "ortho.tif"}
     ch.dem = {"path": "external.tif", "format": "imported"}
@@ -183,8 +183,8 @@ def test_moving_marker_changes_estimate_without_overwriting_reference_xyz(window
 
 
 def test_estimated_world_marker_offset_is_applied_once(window):
-    window.chunk.georef = {"offset": [1000., 2000., 0.]}
-    window.chunk.markers = [g.Marker("G1", est=[1110., 2100., 0.]).to_dict()]
+    window.dataset.georef = {"offset": [1000., 2000., 0.]}
+    window.dataset.markers = [g.Marker("G1", est=[1110., 2100., 0.]).to_dict()]
     window._update_ortho_markers()
     assert window.ortho_view.markers == [("G1", 1110., 2100.)]
 

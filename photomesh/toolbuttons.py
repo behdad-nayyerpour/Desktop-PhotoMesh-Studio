@@ -1,122 +1,61 @@
-"""Toolbar buttons for grouped modes (Metashape-like split buttons).
-
-A ModeButton is a QToolButton in MenuButtonPopup mode: the left part runs the
-current mode, the right part (a clearly visible, >= 14 px wide arrow area)
-opens the list of modes. The button shows the current mode's icon and a short
-text label, and follows mode changes made anywhere (menus, toolbar, code)."""
+"""Native split buttons: primary click toggles a layer, arrow selects its style."""
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, QSize, QPointF
-from PySide6.QtGui import QPainter, QColor, QPolygonF
-from PySide6.QtWidgets import QToolButton, QMenu, QStyle, QStyleOptionToolButton
-
-ARROW_W = 21          # width of the dropdown-arrow area, px (was 16; +30 %)
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtWidgets import QToolButton, QMenu
+from shiboken6 import isValid
 
 
-class ModeButton(QToolButton):
-    def __init__(self, parent, entries, tip, icon_size=26, show_text=True):
-        """entries: [(QAction, short_label)]; the first one is the initial mode."""
+class LayerModeButton(QToolButton):
+    """Share the visibility QAction with menus and Workspace; retain mode while off."""
+
+    def __init__(self, parent, entries, title, visibility, icon_size=26):
         super().__init__(parent)
-        self.current = None
-        self._labels = {}
-        self._show_text = show_text
-        self.setObjectName("modeButton")
-        self._labels = {a: lab for a, lab in entries}
-        self._tip = tip
-        self._show_text = show_text
-        menu = QMenu(self)
-        for a, _lab in entries:
-            menu.addAction(a)
-            a.triggered.connect(lambda _=False, act=a: self.set_current(act))
-        self.setMenu(menu)
+        self.visibility = visibility
+        self.title = title
+        self._labels = dict(entries)
+        self.current = entries[0][0]
+        self.setDefaultAction(visibility)
         self.setPopupMode(QToolButton.MenuButtonPopup)
+        self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.setIconSize(QSize(icon_size, icon_size))
-        self.setToolButtonStyle(Qt.ToolButtonTextBesideIcon if show_text else Qt.ToolButtonIconOnly)
         self.setAutoRaise(True)
-        # an explicit style sheet so the toolbar's compact one doesn't squeeze the arrow area
-        self.setStyleSheet(
-            f"QToolButton#modeButton{{padding:3px {ARROW_W + 4}px 3px 4px;margin:0px 1px;border:1px solid transparent;"
-            f"border-radius:2px;}}"
-            f"QToolButton#modeButton:hover{{border:1px solid #8a8a8a;background:rgba(127,127,127,40);}}"
-            f"QToolButton#modeButton::menu-button{{width:{ARROW_W}px;border-left:1px solid rgba(127,127,127,90);}}"
-            f"QToolButton#modeButton::menu-arrow{{image:none;width:0px;height:0px;}}")
-        self.current = None
-        self.set_current(entries[0][0])
+        self.setStyleSheet("QToolButton{padding:2px 1px;margin:0px;}")
+        menu = QMenu(self)
+        for action, _label in entries:
+            action.setCheckable(True)
+            menu.addAction(action)
+            action.triggered.connect(lambda _=False, selected=action: self.set_current(selected))
+        self.setMenu(menu)
+        visibility.changed.connect(self._sync_visibility)
+        self._sync_visibility()
 
     def set_current(self, action):
         if action not in self._labels:
             return
         self.current = action
-        self.setDefaultAction(action)
-        # setDefaultAction copies the long action text; show the short label instead
-        self.setText(self._labels[action] if self._show_text else "")
-        self.setToolTip(f"{self._tip}: {action.text()}  (click the arrow for other modes)")
-
-    def actionEvent(self, ev):
-        super().actionEvent(ev)
-        if getattr(self, "current", None) is not None:          # keep the short label if the action changes
-            self.setText(self._labels.get(self.current, "") if self._show_text else "")
+        self._sync_visibility()
 
     def labels(self):
-        return [self._labels[a] for a in self._labels]
-
-    def paintEvent(self, ev):
-        super().paintEvent(ev)
-        # draw our own, always-visible arrow in the menu-button area
-        p = QPainter(self); p.setRenderHint(QPainter.Antialiasing)
-        x0 = self.width() - ARROW_W; cx = x0 + ARROW_W / 2; cy = self.height() / 2 + 1
-        col = self.palette().buttonText().color() if self.isEnabled() else QColor(140, 140, 140)
-        p.setPen(Qt.NoPen); p.setBrush(col)
-        p.drawPolygon(QPolygonF([QPointF(cx - 5, cy - 2.5), QPointF(cx + 5, cy - 2.5), QPointF(cx, cy + 3.5)]))
-        p.end()
-
-
-class LayerModeButton(ModeButton):
-    """One menu for visibility and render mode; mirrors Workspace/menu changes."""
-    def __init__(self, parent, entries, title, visibility, icon_size=26):
-        self.visibility = visibility
-        self.title = title
-        super().__init__(parent, entries, title, icon_size)
-        self.setPopupMode(QToolButton.InstantPopup)
-        self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.setStyleSheet("QToolButton{padding:2px 1px;margin:0px;}")
-        from PySide6.QtGui import QAction
-        self.hidden_action = QAction("Hidden", self)
-        self.hidden_action.setCheckable(True)
-        self.hidden_action.triggered.connect(self._hide)
-        self.menu().insertAction(self.menu().actions()[0], self.hidden_action)
-        visibility.changed.connect(self._sync_visibility)
-        self._sync_visibility()
-
-    def _hide(self):
-        self.visibility.setChecked(False)
-        self._sync_visibility()  # Also restore the check when Hidden was already selected.
-
-    def set_current(self, action):
-        super().set_current(action)
-        self._sync_visibility()
+        return list(self._labels.values())
 
     def actionEvent(self, event):
         super().actionEvent(event)
-        if hasattr(self, "visibility"):
+        if getattr(self, "current", None) is not None:
             self._sync_visibility()
 
     def _sync_visibility(self):
-        # QAction children can be destroyed before toolbar buttons at shutdown.
-        from shiboken6 import isValid
-        if not isValid(self) or not isValid(self.visibility):
+        if not isValid(self) or not isValid(self.visibility) or not isValid(self.current):
             return
-        if self.current is None:
-            return
-        visible = self.visibility.isChecked()
-        if hasattr(self, "hidden_action") and isValid(self.hidden_action):
-            self.hidden_action.setChecked(not visible)
-        label = self._labels[self.current] if visible else "Hidden"
         self.setText(self.title)
-        self.setToolTip(f"{self.title}: {label}. Choose Hidden or a display mode.")
-        # The default action is a mode command; visibility remains independent.
-        self.setDown(False)
-
-    def paintEvent(self, event):
-        # Use Qt's native under-icon layout and menu indicator, with no split gutter.
-        QToolButton.paintEvent(self, event)
+        self.setIcon(self.current.icon())
+        self.setChecked(self.visibility.isChecked())
+        state = "On" if self.visibility.isChecked() else "Off"
+        self.setToolTip(f"{self.title}: {state}, {self._labels[self.current]}. "
+                        "Click to show/hide; arrow selects a display style.")
+        for action in self._labels:
+            if not isValid(action):
+                continue
+            previous = action.blockSignals(True)
+            action.setChecked(action is self.current)
+            action.blockSignals(previous)

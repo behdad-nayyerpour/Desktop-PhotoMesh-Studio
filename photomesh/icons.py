@@ -267,10 +267,6 @@ def _draw(key, p):
         p.setPen(QPen(QColor(30, 30, 30, 160), 1.0)); p.setBrush(Qt.NoBrush)
         for k in range(1, 5):
             p.drawEllipse(QPointF(16, 18), 13 - 2.4 * k, 11 - 2.0 * k)
-    elif key == "chunk":                   # stacked sheets
-        for k, col in enumerate((QColor(90, 130, 190), QColor(120, 165, 225), QColor(170, 205, 250))):
-            p.setPen(QPen(QColor(40, 60, 90), 1.2)); p.setBrush(QBrush(col))
-            p.drawRect(QRectF(4 + 3 * k, 4 + 4 * k, 20, 15))
     elif key == "workspace":
         p.setPen(QPen(QColor(120, 90, 30), 1.2)); p.setBrush(QBrush(QColor(235, 190, 80)))
         p.drawRect(QRectF(3, 10, 26, 17)); p.drawRect(QRectF(3, 6, 11, 5))

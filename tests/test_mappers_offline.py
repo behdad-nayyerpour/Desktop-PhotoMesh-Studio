@@ -254,17 +254,17 @@ DATA = os.environ.get("PM_TESTDATA", "")
 @pytest.mark.parametrize("mapper", ["Global", "Incremental"])
 def test_real_align_offline(tmp_path, mapper):
     """Real COLMAP/GLOMAP alignment (Low accuracy) with the network blocked."""
-    from benchmark import _Chunk
+    from benchmark import _ProjectData
     if mapper == "Global" and not cm.find_glomap():
         pytest.skip("GLOMAP not bundled")
     exe = cm.find_colmap()
     paths = sorted(glob.glob(os.path.join(DATA, "*.[jJ][pP][gG]")))
     infos = fp.analyze_images(paths, str(tmp_path / "c"))
     wd = str(tmp_path / "wd")
-    mapping = cm.prepare_images(_Chunk(paths), wd)
+    mapping = cm.prepare_images(_ProjectData(paths), wd)
     s = {"mode": "Fast", "accuracy": "Medium", "key_point_limit": 8000, "use_gpu": cm.has_cuda(exe),
          "mapper": mapper}
-    steps = cm.align_steps(exe, _Chunk(paths), wd, s, names=[mapping[p] for p in paths],
+    steps = cm.align_steps(exe, _ProjectData(paths), wd, s, names=[mapping[p] for p in paths],
                            infos=[infos[p] for p in paths])
     log = []
     fp.run_steps(exe, steps, log=log.append, logfile=str(tmp_path / "log.txt"))
@@ -470,6 +470,6 @@ def test_extractor_never_uses_colmap_single_camera(tmp_path, monkeypatch):
 
 def test_unaligned_photos_reported(window, image_dir):
     window.add_photos(sorted(str(p) for p in image_dir.iterdir()))
-    cams = window.chunk.cameras
+    cams = window.dataset.cameras
     window._report_unaligned(cams[:2], len(cams))
     assert f"{len(cams) - 2}/{len(cams)} photos aligned" in window.statusBar().details

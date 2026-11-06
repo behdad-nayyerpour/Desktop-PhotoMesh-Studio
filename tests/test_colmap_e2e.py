@@ -32,7 +32,7 @@ def test_align_gui(window, no_dialogs, monkeypatch, tmp_path, mode):
     QTimer.singleShot(600_000, loop.quit)
     if getattr(window.runner, "busy", False):
         loop.exec()
-    ch = window.chunk
+    ch = window.dataset
     assert ch.aligned_count() >= len(ch.cameras) * 0.8
     assert ch.tie_point_count > 1000
     assert no_dialogs == []
@@ -72,19 +72,19 @@ def test_dense_and_mesh_gui(window, no_dialogs, monkeypatch, tmp_path):
     window.project.path = str(tmp_path / "dense.pmsx")
     window.add_photos(sorted(glob.glob(os.path.join(DATA, "*.[jJ][pP][gG]"))))
     window.align_photos(); _wait(window)
-    assert window.chunk.aligned_count() >= 9
+    assert window.dataset.aligned_count() >= 9
     window.build_point_cloud(); _wait(window)
-    assert window.chunk.point_count > 10_000, "dense point cloud missing"
+    assert window.dataset.point_count > 10_000, "dense point cloud missing"
     window.build_model(); _wait(window)
     # face_count "Low" = points / 45 (Metashape semantics) -> ~1k faces on this small set
-    assert window.chunk.face_count > 500, "poisson mesh missing"
-    faces_poisson = window.chunk.face_count
+    assert window.dataset.face_count > 500, "poisson mesh missing"
+    faces_poisson = window.dataset.face_count
     src["v"] = "Depth maps"
     window.build_model(); _wait(window)
-    assert window.chunk.face_count > 500, "delaunay mesh missing"
+    assert window.dataset.face_count > 500, "delaunay mesh missing"
     # both methods write <workdir>/model.ply; Delaunay leaves its raw mesh in dense/
-    assert window.chunk.model_ply.endswith("model.ply")
-    assert os.path.exists(os.path.join(os.path.dirname(window.chunk.model_ply), "dense", "delaunay_raw.ply"))
-    print(f"\nDENSE: points={window.chunk.point_count} poisson_faces={faces_poisson} "
-          f"delaunay_faces={window.chunk.face_count}")
+    assert window.dataset.model_ply.endswith("model.ply")
+    assert os.path.exists(os.path.join(os.path.dirname(window.dataset.model_ply), "dense", "delaunay_raw.ply"))
+    print(f"\nDENSE: points={window.dataset.point_count} poisson_faces={faces_poisson} "
+          f"delaunay_faces={window.dataset.face_count}")
     assert no_dialogs == [] and warnings == [], (no_dialogs, warnings)

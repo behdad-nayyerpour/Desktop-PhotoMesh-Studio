@@ -39,7 +39,7 @@ def main():
     w.project.path = out   # results go to <project>.files
     w.add_photos(sorted(glob.glob(os.path.join(sys.argv[1], "*.[jJ][pP][gG]"))))
     w.align_photos(); wait(w)
-    ch = w.chunk
+    ch = w.dataset
     print(f"aligned {ch.aligned_count()}/{len(ch.cameras)}, tie points {ch.tie_point_count}", flush=True)
     if dense:
         w.build_point_cloud(); wait(w)

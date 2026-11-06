@@ -43,7 +43,7 @@ def _xyz(r):
 def test_ply_mesh_world_roundtrip(mesh, tmp_path):
     p, V, F = mesh
     dst = str(tmp_path / "w.ply")
-    ex.export_ply_world(p, dst, OFF, chunk=777)                   # several chunks
+    ex.export_ply_world(p, dst, OFF, dataset=777)                   # several datasets
     r = read_fast(dst)
     assert r["vertex"].dtype["x"] == np.dtype("<f8")
     assert np.abs(_xyz(r) - (V + OFF)).max() < 1e-6
@@ -70,7 +70,7 @@ def test_cloud_world_with_normals_confidence(tmp_path):
     p = str(tmp_path / "c.ply")
     pcfilter.write_cloud(p, xyz.astype(np.float32), rgb, nrm, conf)
     dst = str(tmp_path / "cw.ply")
-    ex.export_ply_world(p, dst, OFF, chunk=1000)
+    ex.export_ply_world(p, dst, OFF, dataset=1000)
     c0, c1 = pcfilter.read_cloud(p), pcfilter.read_cloud(dst)
     assert np.abs(c1["xyz"] - (c0["xyz"] + OFF)).max() < 1e-6
     assert np.array_equal(c1["rgb"], c0["rgb"]) and np.array_equal(c1["normals"], c0["normals"])
@@ -189,7 +189,7 @@ def test_dxf_points(tmp_path):
     p = str(tmp_path / "c.ply")
     pcfilter.write_cloud(p, xyz, None)
     dst = str(tmp_path / "c.dxf")
-    ex.export_dxf_points(p, dst, OFF, chunk=700)
+    ex.export_dxf_points(p, dst, OFF, dataset=700)
     ents = [e for e in ex.read_dxf_entities(dst) if e[0] == "POINT"]
     P = np.array([[float(g[10][0]), float(g[20][0]), float(g[30][0])] for _, g in ents])
     assert len(P) == 2500 and np.abs(P - (xyz.astype(np.float64) + OFF)).max() < 1e-6

@@ -470,7 +470,7 @@ class ModelView(QWidget):
         return self.layers.get("tiled")
 
     def set_z_up(self, z_up):
-        """Georeferenced chunks are already Z-up; COLMAP frames are y-down."""
+        """Georeferenced datasets are already Z-up; COLMAP frames are y-down."""
         self.flip = np.ones(3, np.float32) if z_up else FLIP.copy()
 
     def _add(self, key, items):

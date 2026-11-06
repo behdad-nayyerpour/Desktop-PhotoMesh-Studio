@@ -1,7 +1,7 @@
-"""Processing metadata of a chunk (what Metashape shows in the Workspace tree
+"""Processing metadata of a dataset (what Metashape shows in the Workspace tree
 and the Properties pane): parameters, durations, timestamps and software
 version of every processing step, stored in the project (.pmsx) under
-Chunk.meta.
+ProjectData.meta.
 
 - record(...)  : called by the app when a step finishes.
 - backfill(...): for projects processed before this existed (e.g. by the
@@ -82,16 +82,16 @@ def filtering_records(value):
     return records
 
 
-def record(chunk, step, params=None, seconds=None, stages=None, **results):
+def record(dataset, step, params=None, seconds=None, stages=None, **results):
     """Store metadata of a step that just ran in the app."""
-    meta = dict(getattr(chunk, "meta", None) or {})
+    meta = dict(getattr(dataset, "meta", None) or {})
     entry = {"params": dict(params or {}), "seconds": seconds, "stages": dict(stages or {}),
              "date": now_iso(), "software": software(), "source": "recorded"}
     entry.update(results)
     if step == "point_cloud":
         entry["filtering"]=filtering_records(entry.get("filtering"))
     meta[step] = entry
-    chunk.meta = meta
+    dataset.meta = meta
     return entry
 
 
@@ -146,7 +146,7 @@ def _load_json(p):
         return None
 
 
-def _backfill_alignment(dirs, chunk):
+def _backfill_alignment(dirs, dataset):
     for p in _find(dirs, ["benchmark_log*.txt", "align_log*.txt"]):
         t = read_text(p)
         if "registered" not in t and "Matching" not in t:
@@ -175,7 +175,7 @@ def _backfill_alignment(dirs, chunk):
             e["pairs"], e["verified_pairs"] = int(m.group(1)), int(m.group(2))
             e["registered"], e["tie_points"] = int(m.group(3)), int(m.group(4))
             e["rms_reprojection_px"] = float(m.group(5))
-        e.setdefault("tie_points", chunk.tie_point_count or None)
+        e.setdefault("tie_points", dataset.tie_point_count or None)
         e.setdefault("rms_reprojection_px", None)
         e["max_reprojection_px"] = None
         e["mean_key_points"] = None
@@ -229,11 +229,11 @@ def _backfill_dense(dirs, workdir):
     return dm, fuse
 
 
-def _backfill_cloud(dirs, workdir, chunk, fuse):
-    path = chunk.point_cloud_ply
+def _backfill_cloud(dirs, workdir, dataset, fuse):
+    path = dataset.point_cloud_ply
     if not path:
         return None
-    e = {"params": {}, "filtering": [], "points": chunk.point_count or None, "seconds": None,
+    e = {"params": {}, "filtering": [], "points": dataset.point_count or None, "seconds": None,
          "source": None, "software": None, "date": None}
     e.update(fuse or {})
     for p in _find(dirs, ["filter*.txt", "dense_benchmark*.txt"]):
@@ -263,11 +263,11 @@ def _backfill_cloud(dirs, workdir, chunk, fuse):
     return e
 
 
-def _backfill_model(dirs, workdir, chunk):
-    path = chunk.model_ply
+def _backfill_model(dirs, workdir, dataset):
+    path = dataset.model_ply
     if not path:
         return None
-    e = {"params": {}, "faces": chunk.face_count or None, "vertices": None, "seconds": None,
+    e = {"params": {}, "faces": dataset.face_count or None, "vertices": None, "seconds": None,
          "source": None, "software": None, "date": None}
     for p in _find(dirs, ["mesh*.txt", "dense_benchmark*.txt"]):
         t = read_text(p)
@@ -290,21 +290,21 @@ def _backfill_model(dirs, workdir, chunk):
     return e
 
 
-def backfill(chunk, project_path=None):
-    """Fill chunk.meta entries that are missing, from logs next to the project.
+def backfill(dataset, project_path=None):
+    """Fill dataset.meta entries that are missing, from logs next to the project.
     Returns the list of steps that were added (empty if nothing changed)."""
-    wd = chunk.workdir
+    wd = dataset.workdir
     if not wd or not os.path.isdir(wd):
         return []
-    meta = dict(getattr(chunk, "meta", None) or {})
+    meta = dict(getattr(dataset, "meta", None) or {})
     dirs = [wd, os.path.dirname(os.path.abspath(wd))]
     if project_path:
         dirs.append(os.path.dirname(os.path.abspath(project_path)))
     dirs = list(dict.fromkeys(dirs))
     added = []
     try:
-        if "alignment" not in meta and chunk.tie_point_count:
-            e = _backfill_alignment(dirs, chunk)
+        if "alignment" not in meta and dataset.tie_point_count:
+            e = _backfill_alignment(dirs, dataset)
             if e:
                 meta["alignment"] = e; added.append("alignment")
         fuse = None
@@ -312,21 +312,21 @@ def backfill(chunk, project_path=None):
             dm, fuse = _backfill_dense(dirs, wd)
             if dm and "depth_maps" not in meta:
                 meta["depth_maps"] = dm; added.append("depth_maps")
-        if "point_cloud" not in meta and chunk.point_cloud_ply:
-            e = _backfill_cloud(dirs, wd, chunk, fuse)
+        if "point_cloud" not in meta and dataset.point_cloud_ply:
+            e = _backfill_cloud(dirs, wd, dataset, fuse)
             if e:
                 dm = meta.get("depth_maps") or {}
                 e["params"].setdefault("quality", (dm.get("params") or {}).get("quality"))
                 e["params"].setdefault("depth_filtering", (dm.get("params") or {}).get("depth_filtering"))
                 meta["point_cloud"] = e; added.append("point_cloud")
-        if "model" not in meta and chunk.model_ply:
-            e = _backfill_model(dirs, wd, chunk)
+        if "model" not in meta and dataset.model_ply:
+            e = _backfill_model(dirs, wd, dataset)
             if e:
                 meta["model"] = e; added.append("model")
     except Exception as ex:  # a broken log must never stop the project from opening
         meta.setdefault("_backfill_error", str(ex))
     if added:
-        chunk.meta = meta
+        dataset.meta = meta
     return added
 
 
@@ -408,10 +408,10 @@ def _common(e):
             ("Metadata source", fmt(e.get("source")))]
 
 
-def camera_groups(chunk):
+def camera_groups(dataset):
     """Sensor groups by image size: [(label, aligned, total)]."""
     groups = {}
-    for c in chunk.cameras:
+    for c in dataset.cameras:
         key = (c.width, c.height) if c.width and c.height else None
         g = groups.setdefault(key, [0, 0])
         g[1] += 1
@@ -422,17 +422,17 @@ def camera_groups(chunk):
     return out
 
 
-def properties(chunk, kind, index=None):
+def properties(dataset, kind, index=None):
     """[(name, value)] for the Properties pane."""
-    meta = getattr(chunk, "meta", None) or {}
-    gr = chunk.georef or {}
-    if kind == "chunk":
-        rows = [("Chunk", chunk.name), ("Images", f"{len(chunk.cameras):,}"),
-                ("Aligned", f"{chunk.aligned_count():,}/{len(chunk.cameras):,}"),
-                ("Markers", f"{len(chunk.markers or []):,}"),
-                ("Tie points", fmt(chunk.tie_point_count or None)),
-                ("Coordinate system", gr.get("crs") or chunk.crs or "Local (not georeferenced)"),
-                ("Georeferenced", "Yes" if gr else "No"), ("Working folder", chunk.workdir or UNKNOWN)]
+    meta = getattr(dataset, "meta", None) or {}
+    gr = dataset.georef or {}
+    if kind == "dataset":
+        rows = [("ProjectData", dataset.name), ("Images", f"{len(dataset.cameras):,}"),
+                ("Aligned", f"{dataset.aligned_count():,}/{len(dataset.cameras):,}"),
+                ("Markers", f"{len(dataset.markers or []):,}"),
+                ("Tie points", fmt(dataset.tie_point_count or None)),
+                ("Coordinate system", gr.get("crs") or dataset.crs or "Local (not georeferenced)"),
+                ("Georeferenced", "Yes" if gr else "No"), ("Working folder", dataset.workdir or UNKNOWN)]
         if gr.get("similarity"):
             import numpy as np
             M = np.asarray(gr["similarity"], float)
@@ -442,13 +442,13 @@ def properties(chunk, kind, index=None):
                      ("Coordinate offset", ", ".join(f"{v:.1f}" for v in gr.get("offset") or []))]
         return rows
     if kind in ("cameras", "group"):
-        rows = [("Images", f"{len(chunk.cameras):,}"), ("Aligned", f"{chunk.aligned_count():,}"),
-                ("Disabled", f"{sum(1 for c in chunk.cameras if not c.enabled):,}")]
-        for label, a, n, _k in camera_groups(chunk):
+        rows = [("Images", f"{len(dataset.cameras):,}"), ("Aligned", f"{dataset.aligned_count():,}"),
+                ("Disabled", f"{sum(1 for c in dataset.cameras if not c.enabled):,}")]
+        for label, a, n, _k in camera_groups(dataset):
             rows.append((f"Camera group {label}", f"{a}/{n} aligned"))
         return rows
     if kind == "markers":
-        ms = chunk.markers or []
+        ms = dataset.markers or []
         rows = [("Markers", f"{len(ms):,}"), ("Control", f"{sum(1 for m in ms if m.get('enabled', True)):,}"),
                 ("Check", f"{sum(1 for m in ms if not m.get('enabled', True)):,}"),
                 ("Projections", f"{sum(len(m.get('projections', {})) for m in ms):,}")]
@@ -465,7 +465,7 @@ def properties(chunk, kind, index=None):
         if rms is None:
             rms = ss.get("rms_reprojection_px")
         bundle_rms = ((gr.get("bundle") or {}).get("tie_rms_px")) if gr else None
-        return [("Tie points", fmt(chunk.tie_point_count or e.get("tie_points"))),
+        return [("Tie points", fmt(dataset.tie_point_count or e.get("tie_points"))),
                 ("Accuracy", fmt(p.get("accuracy"))), ("Key point limit", fmt(p.get("key_point_limit"))),
                 ("Tie point limit", fmt(p.get("tie_point_limit"))), ("Preselection", fmt(p.get("preselection"))),
                 ("Matching time", fmt_time(e.get("matching_seconds"))),
@@ -487,7 +487,7 @@ def properties(chunk, kind, index=None):
     if kind == "cloud":
         e = meta.get("point_cloud") or {}
         p = e.get("params") or {}
-        rows = [("Points", fmt(chunk.point_count or e.get("points"))), ("Quality", fmt(p.get("quality"))),
+        rows = [("Points", fmt(dataset.point_count or e.get("points"))), ("Quality", fmt(p.get("quality"))),
                 ("Depth filtering", fmt(p.get("depth_filtering"))),
                 ("Depth maps generation time", fmt_time((meta.get("depth_maps") or {}).get("seconds"))),
                 ("Fusion time", fmt_time(e.get("fusion_seconds"))),
@@ -499,11 +499,11 @@ def properties(chunk, kind, index=None):
             rows.append((f"Filter: {item['filter']}",f"{count:,} points removed" if count is not None else UNKNOWN))
         if not filtering:
             rows.append(("Filtering steps",UNKNOWN))
-        rows += [("File size", fmt_size(e.get("file_size") or file_info(chunk.point_cloud_ply)["file_size"])),
-                 ("File", chunk.point_cloud_ply)] + _common(e)
+        rows += [("File size", fmt_size(e.get("file_size") or file_info(dataset.point_cloud_ply)["file_size"])),
+                 ("File", dataset.point_cloud_ply)] + _common(e)
         return rows
     if kind == "tiled":
-        t = getattr(chunk, "tiled_model", None) or {}
+        t = getattr(dataset, "tiled_model", None) or {}
         e = meta.get("tiled_model") or {}
         return [("Levels", fmt(t.get("levels"))), ("Tiles", fmt(t.get("tiles"))),
                 ("Pixel size", pixel_size_text(t.get("pixel_size"), t.get("georef"))),
@@ -512,13 +512,13 @@ def properties(chunk, kind, index=None):
                 ("Size", fmt_size(t.get("bytes"))), ("Processing time", fmt_time(t.get("seconds"))),
                 ("Folder", t.get("dir") or UNKNOWN)] + _common(e)
     if kind in ("ortho", "dem"):
-        t = (getattr(chunk, "orthomosaic", None) if kind == "ortho" else getattr(chunk, "dem", None)) or {}
+        t = (getattr(dataset, "orthomosaic", None) if kind == "ortho" else getattr(dataset, "dem", None)) or {}
         e = meta.get("orthomosaic" if kind == "ortho" else "dem") or {}
-        geo = t.get("georef", bool(chunk.georef))
+        geo = t.get("georef", bool(dataset.georef))
         b = t.get("bounds")
         rows = [("Size", f"{t.get('width', 0):,} x {t.get('height', 0):,} px"),
                 ("Resolution", pixel_size_text(t.get("pixel_size"), geo)),
-                ("Coordinate system", t.get("crs") or (chunk.georef or {}).get("crs") or chunk.crs
+                ("Coordinate system", t.get("crs") or (dataset.georef or {}).get("crs") or dataset.crs
                  or ("Local Coordinates (m)" if geo else "Local (not georeferenced)")),
                 ("Extent X", f"{b[0]:.3f} .. {b[2]:.3f}" if b else UNKNOWN),
                 ("Extent Y", f"{b[1]:.3f} .. {b[3]:.3f}" if b else UNKNOWN)]
@@ -543,7 +543,7 @@ def properties(chunk, kind, index=None):
     if kind == "model":
         e = meta.get("model") or {}
         p = e.get("params") or {}
-        t = getattr(chunk, "texture", None) or {}
+        t = getattr(dataset, "texture", None) or {}
         te = meta.get("texture") or {}
         trows = []
         if t:
@@ -555,20 +555,20 @@ def properties(chunk, kind, index=None):
                      ("Photo ground resolution", pixel_size_text(t.get("source_gsd"), metric)),
                      ("Untextured faces", fmt(t.get("faces_untextured"))),
                      ("Texturing time", fmt_time(t.get("seconds"))), ("Texture file", t.get("obj") or UNKNOWN)]
-        return trows + [("Faces", fmt(chunk.face_count or e.get("faces"))), ("Vertices", fmt(e.get("vertices"))),
+        return trows + [("Faces", fmt(dataset.face_count or e.get("faces"))), ("Vertices", fmt(e.get("vertices"))),
                 ("Source data", fmt(p.get("source"))), ("Surface type", fmt(p.get("surface_type"))),
                 ("Face count", fmt(p.get("face_count"))), ("Interpolation", fmt(p.get("interpolation"))),
                 ("Processing time", fmt_time(e.get("seconds"))),
-                ("File size", fmt_size(e.get("file_size") or file_info(chunk.model_ply)["file_size"])),
-                ("File", chunk.model_ply)] + _common(e)
+                ("File size", fmt_size(e.get("file_size") or file_info(dataset.model_ply)["file_size"])),
+                ("File", dataset.model_ply)] + _common(e)
     return []
 
 
-def summary(chunk, kind):
+def summary(dataset, kind):
     """Text in parentheses after a tree row name (Metashape style)."""
-    meta = getattr(chunk, "meta", None) or {}
+    meta = getattr(dataset, "meta", None) or {}
     if kind == "tie":
-        return f"{chunk.tie_point_count:,} points"
+        return f"{dataset.tie_point_count:,} points"
     if kind == "depth":
         e = meta.get("depth_maps") or {}
         p = e.get("params") or {}
@@ -578,19 +578,19 @@ def summary(chunk, kind):
         return ", ".join(x for x in parts if x) or UNKNOWN
     if kind == "cloud":
         q = ((meta.get("point_cloud") or {}).get("params") or {}).get("quality")
-        return f"{chunk.point_count:,} points" + (f", {q} quality" if q else "")
+        return f"{dataset.point_count:,} points" + (f", {q} quality" if q else "")
     if kind == "model":
         q = ((meta.get("model") or {}).get("params") or {}).get("face_count")
-        t = getattr(chunk, "texture", None) or {}
+        t = getattr(dataset, "texture", None) or {}
         tex = f", Texture {t['size']}x{t['size']}" + (f" x {t['count']}" if t.get("count", 1) > 1 else "") \
             if t.get("size") else ""
-        return f"{chunk.face_count:,} faces" + (f", {q} face count" if q else "") + tex
+        return f"{dataset.face_count:,} faces" + (f", {q} face count" if q else "") + tex
     if kind == "tiled":
-        t = getattr(chunk, "tiled_model", None) or {}
+        t = getattr(dataset, "tiled_model", None) or {}
         return f"{t.get('levels', '?')} levels, {pixel_size_text(t.get('pixel_size'), t.get('georef'))}"
     if kind in ("ortho", "dem"):
-        t = (getattr(chunk, "orthomosaic", None) if kind == "ortho" else getattr(chunk, "dem", None)) or {}
-        geo = t.get("georef", bool(chunk.georef))
+        t = (getattr(dataset, "orthomosaic", None) if kind == "ortho" else getattr(dataset, "dem", None)) or {}
+        geo = t.get("georef", bool(dataset.georef))
         return f"{t.get('width', 0):,} x {t.get('height', 0):,}, {pixel_size_text(t.get('pixel_size'), geo)}"
     return ""
 

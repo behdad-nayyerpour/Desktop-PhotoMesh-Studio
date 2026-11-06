@@ -27,7 +27,7 @@ def _scene(window, tmp_path, centres=((100, 100, 60), (120, 100, 60), (140, 100,
     window.project.path = str(tmp_path / "proj.pmsx")      # processing needs a saved project
     from PIL import Image
     from photomesh.project import Camera
-    ch = window.chunk
+    ch = window.dataset
     wd = tmp_path / "work"; (wd / "sparse" / "0").mkdir(parents=True)
     ch.workdir = str(wd)
     cam = cio.Camera(1, 1000, 800, np.array([1000.0, 1000.0, 500.0, 400.0]))
@@ -52,7 +52,7 @@ def _scene(window, tmp_path, centres=((100, 100, 60), (120, 100, 60), (140, 100,
 
 
 def _marker(window, label):
-    return next(m for m in window.chunk.markers if m["label"] == label)
+    return next(m for m in window.dataset.markers if m["label"] == label)
 
 
 def test_add_marker_on_photo_pins_and_predicts_other_photos(window, tmp_path):
@@ -81,7 +81,7 @@ def test_add_marker_falls_back_to_tie_points_and_reports_no_surface(window, tmp_
     lab = window.add_marker_at_photo(500.0, 400.0, k=0)            # ray hits tie point (100, 100, 0)
     assert "img_0002" in _marker(window, lab)["projections"]
     assert window.add_marker_at_ray(np.array([500.0, 500, 50]), np.array([0.0, 0, -1])) is None
-    assert len(window.chunk.markers) == 1
+    assert len(window.dataset.markers) == 1
 
 
 def test_add_marker_from_model_view_ray(window, tmp_path):
@@ -141,12 +141,12 @@ def test_markers_table_edits_validate_and_undo(window, tmp_path):
     assert window.edit_marker_cell(lab, 0, "point 2") is False    # duplicate label
     assert window.edit_marker_cell(lab, 0, "  ") is False         # empty label
     assert window.edit_marker_cell(lab, 0, "GCP 7")
-    assert [m["label"] for m in window.chunk.markers] == ["GCP 7", "point 2"]
-    assert window.undo_markers() and [m["label"] for m in window.chunk.markers] == [lab, "point 2"]
-    assert window.undo_markers() and len(window.chunk.markers) == 1        # Add Marker undone
-    assert window.redo_markers() and len(window.chunk.markers) == 2
+    assert [m["label"] for m in window.dataset.markers] == ["GCP 7", "point 2"]
+    assert window.undo_markers() and [m["label"] for m in window.dataset.markers] == [lab, "point 2"]
+    assert window.undo_markers() and len(window.dataset.markers) == 1        # Add Marker undone
+    assert window.redo_markers() and len(window.dataset.markers) == 2
     window.actions["Edit/Undo"].trigger()                          # Edit > Undo is wired
-    assert len(window.chunk.markers) == 1
+    assert len(window.dataset.markers) == 1
 
 
 def test_table_double_click_edit_goes_through_signal(window, tmp_path, qtbot):
@@ -162,7 +162,7 @@ def test_table_double_click_edit_goes_through_signal(window, tmp_path, qtbot):
     pane.item(0, 3).setText("101.5")                               # what the cell editor commits
     qtbot.waitUntil(lambda: window._ref_pending.get(lab) == [None, None, 101.5], timeout=2000)
     pane.item(0, 0).setText("renamed")
-    qtbot.waitUntil(lambda: window.chunk.markers[0]["label"] == "renamed", timeout=2000)
+    qtbot.waitUntil(lambda: window.dataset.markers[0]["label"] == "renamed", timeout=2000)
     assert window._ref_pending.get("renamed") == [None, None, 101.5]
 
 
@@ -179,9 +179,9 @@ def test_rename_remove_filter_and_workspace_menu(window, tmp_path):
     window._workspace_action("marker:Reset Filter:", window.project.active)
     assert window.photos.visible_indices() == [0, 1, 2]
     window._workspace_action("marker:Remove Marker:G1", window.project.active)
-    assert [m["label"] for m in window.chunk.markers] == ["G2"]
-    assert window.undo_markers() and [m["label"] for m in window.chunk.markers] == ["G1", "G2"]
-    assert window.remove_markers(["G1", "G2"], confirm=False) == 2 and window.chunk.markers == []
+    assert [m["label"] for m in window.dataset.markers] == ["G2"]
+    assert window.undo_markers() and [m["label"] for m in window.dataset.markers] == ["G1", "G2"]
+    assert window.remove_markers(["G1", "G2"], confirm=False) == 2 and window.dataset.markers == []
     rows = []
     window.workspace.refresh(window.project)
     assert not any(it.text(0).startswith("Markers (") for it in window.workspace._iter())

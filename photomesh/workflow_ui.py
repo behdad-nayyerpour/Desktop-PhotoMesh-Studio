@@ -20,7 +20,7 @@ def number(lo, hi, value, decimals=2):
 
 
 def alignment_context(d, parent):
-    cameras = [c for c in getattr(getattr(parent, "chunk", None), "cameras", []) if c.enabled]
+    cameras = [c for c in getattr(getattr(parent, "dataset", None), "cameras", []) if c.enabled]
     gps = sum(all(v is not None and math.isfinite(v) for v in (c.lon, c.lat, c.alt)) for c in cameras)
     d.reference.setChecked(gps >= 2); d.reference.setEnabled(gps >= 2)
     d.reference.setToolTip(f"{gps}/{len(cameras)} photos have complete GPS; pair selection only, not georeferencing.")
@@ -97,7 +97,7 @@ def dense_context(d, parent):
     d.keep_depth.setToolTip("Keep depth/normal maps for later reuse; unchecked removes them only after a valid cloud is published.")
     d.reuse.setToolTip("Reuse only when cameras, photos and all depth-computation parameters match.")
     text = "Depth maps are temporary unless Keep is checked. Processing reports dimensions, disk needs and removals per filter."
-    ch = getattr(parent, "chunk", None)
+    ch = getattr(parent, "dataset", None)
     if ch and ch.workdir:
         from .dense import depth_maps_size
         size, files = depth_maps_size(os.path.join(ch.workdir, "dense"))
@@ -120,7 +120,7 @@ def mesh_context(d, parent):
     d.source.setItemText(1, "Delaunay (fused cloud + visibility)")
     d.custom.setMaximum(2147483647)
     from .mesh import target_faces
-    ch = getattr(parent, "chunk", None)
+    ch = getattr(parent, "dataset", None)
     d.input_points = getattr(ch, "point_count", 0)
     if ch and ch.point_cloud_ply and os.path.isfile(ch.point_cloud_ply):
         from .plyio import ply_counts
@@ -172,7 +172,7 @@ def texture_context(d, parent, has_uv):
         keep = d.mapping.currentText() == "Keep uv"
         d.count.setEnabled(not keep); d.auto_pages.setEnabled(not keep)
         if keep:
-            ch = getattr(parent, "chunk", None)
+            ch = getattr(parent, "dataset", None)
             actual=int((getattr(ch, "texture", {}) or {}).get("count", d.count.value()))
             d.count.setMaximum(max(64,actual)); d.count.setValue(actual)
         else:
@@ -212,7 +212,7 @@ def tiles_context(d, parent):
         if not points and old in [d.fmt.itemText(i) for i in range(d.fmt.count())]:
             d.fmt.setCurrentText(old)
         d.fmt.blockSignals(False)
-        ch=getattr(parent,"chunk",None)
+        ch=getattr(parent,"dataset",None)
         count=getattr(ch,"point_count" if points else "face_count",0)
         leaves=math.ceil(count/max(d.tile_faces.value(),1))
         text=f"{count:,} source {'points' if points else 'triangles'}; at least {leaves:,} leaf tiles. "
@@ -273,7 +273,7 @@ def dem_context(d, parent):
 
 
 def ortho_context(d, parent):
-    ch=getattr(parent,"chunk",None)
+    ch=getattr(parent,"dataset",None)
     if not getattr(ch,"georef",None):
         d.proj.setText("Local coordinates (model units) - top view in camera-derived projection frame")
     d.hole_distance = number(0, 1e6, 0, 4)
@@ -289,7 +289,7 @@ def ortho_context(d, parent):
     d.r_pix.toggled.connect(update); d.blending.currentTextChanged.connect(update)
     d.holes.toggled.connect(update)
     def surface(*_):
-        ch = getattr(parent, "chunk", None)
+        ch = getattr(parent, "dataset", None)
         if ch and d.surface.currentText() == "DEM" and ch.dem.get("bounds"):
             off = ch.dem.get("offset") or [0, 0, 0]
             b = ch.dem["bounds"]
@@ -322,7 +322,7 @@ def prepare_source_plans(window, sources):
     from .workflow import file_stamp, vertex_blocks, require_points
     from .bgjob import run_modal
     import numpy as np
-    ch=window.chunk
+    ch=window.dataset
     local_frame=not ch.georef and bool(ch.aligned_count())
     model=window._model_dir() if local_frame else None
     photos=window._photo_map(ch) if local_frame else None
@@ -359,7 +359,7 @@ def prepare_source_plans(window, sources):
 
 def source_status(d,parent,selector=None,kind=None):
     """Expose outdated inputs without silently treating them as current products."""
-    ch=getattr(parent,"chunk",None)
+    ch=getattr(parent,"dataset",None)
     if ch is None: return
     label=note(d,"",True)
     acknowledgement=QCheckBox("Use this outdated source anyway (rebuilding it is recommended)")

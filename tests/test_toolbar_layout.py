@@ -50,3 +50,58 @@ def test_cube_view_icons_are_distinct_from_cursor_and_each_other(qapp):
     # the diagonal viewing direction. Opposite sides must remain distinguishable.
     for first, second in ((0, 1), (2, 3), (4, 5)):
         assert images[first] != images[second]
+
+
+def test_split_layer_body_toggles_once_and_arrow_only_opens_menu(window, qtbot):
+    from PySide6.QtCore import QPoint, QTimer
+    from PySide6.QtWidgets import QStyle, QStyleOptionToolButton
+    for button in window.mode_buttons:
+        action = button.visibility
+        original = action.isChecked()
+        changes = []
+        on_change = changes.append
+        action.toggled.connect(on_change)
+        try:
+            qtbot.mouseClick(button, Qt.LeftButton, pos=QPoint(8, 8))
+            assert action.isChecked() != original and button.isChecked() == action.isChecked()
+            assert changes == [not original]
+            selected = button.current
+            qtbot.mouseClick(button, Qt.LeftButton, pos=QPoint(8, 8))
+            assert action.isChecked() == original and button.current is selected
+            assert changes == [not original, original]
+            opened = []
+            on_open = lambda values=opened: values.append(True)
+            button.menu().aboutToShow.connect(on_open)
+            option = QStyleOptionToolButton()
+            button.initStyleOption(option)
+            arrow = button.style().subControlRect(QStyle.CC_ToolButton, option,
+                                                  QStyle.SC_ToolButtonMenu, button)
+            assert not arrow.isEmpty()
+            QTimer.singleShot(50, button.menu().close)
+            qtbot.mouseClick(button, Qt.LeftButton, pos=arrow.center())
+            qtbot.waitUntil(lambda: bool(opened))
+            assert action.isChecked() == original
+            assert changes == [not original, original]
+            assert all(a.text() != "Hidden" for a in button.menu().actions())
+        finally:
+            action.toggled.disconnect(on_change)
+            button.menu().close()
+            action.setChecked(original)
+
+
+def test_processing_labels_are_complete_and_approved(window):
+    expected = ["Add Photos", "Align Photos", "Build Cloud", "Build Mesh", "Build Texture",
+                "Build Tiled Model", "Build DEM", "Build Orthomosaic"]
+    ids = ["Add Photos...", "Align Photos...", "Build Point Cloud...", "Build Model...",
+           "Build Texture...", "Build Tiled Model...", "Build DEM...", "Build Orthomosaic..."]
+    assert [window.actions[name].iconText() for name in ids] == expected
+
+
+def test_removed_commands_have_no_handlers_or_shortcuts(window):
+    from photomesh.mainwindow import SHORTCUTS
+    for name in ("Full Screen", "Measure Shape..."):
+        assert name not in window.actions
+        assert name not in window._handlers()
+        assert name not in SHORTCUTS
+    assert not hasattr(window, "toggle_full_screen")
+    assert not hasattr(window, "measure_shape")

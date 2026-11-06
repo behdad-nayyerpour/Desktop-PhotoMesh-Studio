@@ -59,10 +59,10 @@ def test_add_photos_never_decodes_on_gui_thread(window, image_dir, monkeypatch):
     monkeypatch.setattr(Image.Image, "load", load)
     paths = sorted(str(p) for p in image_dir.iterdir())
     window.add_photos(paths)
-    assert len(window.chunk.cameras) == 6 and window.photos.count() == 6
+    assert len(window.dataset.cameras) == 6 and window.photos.count() == 6
     assert [b for b in bad if not b.endswith(".png") and "thumb" not in b] == []
     wait_thumbnails(window)
-    assert all(os.path.exists(c.thumb) for c in window.chunk.cameras)
+    assert all(os.path.exists(c.thumb) for c in window.dataset.cameras)
     # icons updated from the small thumbnails
     assert not window.photos.item(0).icon().isNull()
 
@@ -81,7 +81,7 @@ def test_add_photos_many_stays_responsive(window, tmp_path):
     dt = time.perf_counter() - t0
     wait_thumbnails(window)
     t.stop()
-    assert len(window.chunk.cameras) == 120
+    assert len(window.dataset.cameras) == 120
     assert window.reference.data_row_count == 120
     gaps = [b - a for a, b in zip(ticks, ticks[1:])]
     assert gaps and max(gaps) < 1.0, max(gaps)
@@ -92,7 +92,7 @@ def test_add_photos_cancel_adds_nothing(window, image_dir, monkeypatch):
     from photomesh import mainwindow
     monkeypatch.setattr(mainwindow, "run_modal", lambda *a, **k: ({}, True, None))
     assert window.add_photos(sorted(str(p) for p in image_dir.iterdir())) == []
-    assert window.chunk.cameras == []
+    assert window.dataset.cameras == []
 
 
 def test_add_photos_persian_path(window, tmp_path):
@@ -102,7 +102,7 @@ def test_add_photos_persian_path(window, tmp_path):
         p = str(d / f"تصویر_{i}.jpg"); _make_image(p, i, gps=(40.18, 44.51, 1000)); paths.append(p)
     window.add_photos(paths)
     wait_thumbnails(window)
-    cams = window.chunk.cameras
+    cams = window.dataset.cameras
     assert len(cams) == 3 and all(c.width == 640 and c.lat for c in cams)
     assert all(os.path.exists(c.thumb) for c in cams)
 
@@ -112,7 +112,7 @@ def test_add_folder_scandir(window, image_dir, monkeypatch):
     (image_dir / "notes.txt").write_text("x")
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", staticmethod(lambda *a, **k: str(image_dir)))
     window.add_folder()
-    assert len(window.chunk.cameras) == 6
+    assert len(window.dataset.cameras) == 6
 
 
 def test_open_log_folder_action_and_qt_dialog_setting(window, monkeypatch, tmp_path):

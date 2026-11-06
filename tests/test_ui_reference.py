@@ -9,19 +9,19 @@ def test_import_markers_and_place(window, image_dir, tmp_path, no_dialogs):
     p = tmp_path / "GCP.txt"; p.write_text(GCP_TXT, encoding="utf-8")
     window.import_markers(str(p))
     n = window.markers_pane.rowCount()
-    assert n >= 3 and window.chunk.crs.startswith("LOCAL_CS")
+    assert n >= 3 and window.dataset.crs.startswith("LOCAL_CS")
     window.open_photo(0)
     window.markers_pane.selectRow(0)
     window.place_marker(12.5, 34.0)
     lab = window.markers_pane.item(0, 0).text()
-    m = [m for m in window.chunk.markers if m["label"] == lab][0]
+    m = [m for m in window.dataset.markers if m["label"] == lab][0]
     assert list(m["projections"].values()) == [[12.5, 34.0, True]]
     assert any(x[0] == lab and x[3] == "pinned" for x in window.photo_view.markers)
     window.remove_marker_projection(lab)
-    m = [m for m in window.chunk.markers if m["label"] == lab][0]
+    m = [m for m in window.dataset.markers if m["label"] == lab][0]
     assert m["projections"] == {}
     window.toggle_marker(lab, False)
-    assert not [m for m in window.chunk.markers if m["label"] == lab][0]["enabled"]
+    assert not [m for m in window.dataset.markers if m["label"] == lab][0]["enabled"]
     window.add_marker()
     assert window.markers_pane.rowCount() == n + 1
 

@@ -2,7 +2,7 @@
 from types import SimpleNamespace
 
 from photomesh import colmap
-from photomesh.project import Camera, Chunk
+from photomesh.project import Camera, ProjectData
 
 
 def test_has_cuda_requires_a_readable_banner(monkeypatch):
@@ -32,14 +32,14 @@ def test_prepare_images_refreshes_reused_name(tmp_path):
     (old / "same.jpg").write_bytes(b"old photo")
     (new / "same.jpg").write_bytes(b"new photo")
     (other / "other.jpg").write_bytes(b"another photo")
-    chunk = Chunk(cameras=[Camera(path=str(old / "same.jpg")),
+    dataset = ProjectData(cameras=[Camera(path=str(old / "same.jpg")),
                            Camera(path=str(other / "other.jpg"))])
     workdir = str(tmp_path / "work")
-    colmap.prepare_images(chunk, workdir)
+    colmap.prepare_images(dataset, workdir)
     assert (tmp_path / "work" / "images" / "same.jpg").read_bytes() == b"old photo"
 
-    chunk.cameras[0].path = str(new / "same.jpg")
-    colmap.prepare_images(chunk, workdir)
+    dataset.cameras[0].path = str(new / "same.jpg")
+    colmap.prepare_images(dataset, workdir)
     assert (tmp_path / "work" / "images" / "same.jpg").read_bytes() == b"new photo"
 
 
@@ -53,7 +53,7 @@ def test_prepare_images_reuses_unchanged_copies(tmp_path, monkeypatch):
     photo.write_bytes(b"first")
     (right / "other.jpg").write_bytes(b"other")
     (replacement / "same.jpg").write_bytes(b"newer")
-    chunk = Chunk(cameras=[Camera(path=str(photo)), Camera(path=str(right / "other.jpg"))])
+    dataset = ProjectData(cameras=[Camera(path=str(photo)), Camera(path=str(right / "other.jpg"))])
     wd = str(tmp_path / "work")
     monkeypatch.setattr(colmap.os, "link", lambda *args: (_ for _ in ()).throw(OSError("no links")))
     monkeypatch.setattr(colmap.os, "symlink", lambda *args: (_ for _ in ()).throw(OSError("no symlinks")))
@@ -65,23 +65,23 @@ def test_prepare_images_reuses_unchanged_copies(tmp_path, monkeypatch):
         return real_copy(src, dst)
 
     monkeypatch.setattr(colmap.shutil, "copy2", copy)
-    colmap.prepare_images(chunk, wd)
+    colmap.prepare_images(dataset, wd)
     assert len(copies) == 2
-    colmap.prepare_images(chunk, wd)
+    colmap.prepare_images(dataset, wd)
     assert len(copies) == 2
 
     photo.write_bytes(b"fresh")
-    colmap.prepare_images(chunk, wd)
+    colmap.prepare_images(dataset, wd)
     assert len(copies) == 3
     staged = tmp_path / "work" / "images" / "same.jpg"
     assert staged.read_bytes() == b"fresh"
 
-    chunk.cameras[0].path = str(replacement / "same.jpg")
-    colmap.prepare_images(chunk, wd)
+    dataset.cameras[0].path = str(replacement / "same.jpg")
+    colmap.prepare_images(dataset, wd)
     assert len(copies) == 4
     assert staged.read_bytes() == b"newer"
 
     staged.write_bytes(b"wrong")
-    colmap.prepare_images(chunk, wd)
+    colmap.prepare_images(dataset, wd)
     assert len(copies) == 5
     assert staged.read_bytes() == b"newer"

@@ -79,7 +79,7 @@ re-texturing with other settings is ~40 % faster.
 Output in `<project>.files/…/texture/`: `model_textured.obj/.mtl`, `texture_N.jpg`,
 `model_textured.glb`, `uv.npz`, `info.json`. The workspace row reads
 `3D Model (N faces, …, Texture 8192x8192)`; Properties lists texel size vs photo
-ground resolution (cm/pix when the chunk is georeferenced, model units otherwise).
+ground resolution (cm/pix when the dataset is georeferenced, model units otherwise).
 
 **Process → Build Tiled Model** from the model (with its texture, or vertex colours)
 or from the point cloud. Adaptive quadtree on the ground plane (z when georeferenced,
@@ -88,8 +88,8 @@ are quadric-decimated with locked borders; every tile has its own atlas baked fr
 the full model. Output `tiled/`: Cesium 3D Tiles `tileset.json` + `tiles/*.b3dm`
 (or `.glb` for 3D Tiles 1.1, `.pnts` for point clouds) and `photomesh_tiles.json`
 for our viewer, which streams levels by screen-space error (16 px). Georeferenced
-UTM/WGS84 chunks get an ENU→ECEF root transform (Cesium places them on the globe);
-local-CRS chunks are written in local metres.
+UTM/WGS84 datasets get an ENU→ECEF root transform (Cesium places them on the globe);
+local-CRS datasets are written in local metres.
 
 **Project → Import Data → Import Texture… / Import Tiled Model…** attach an existing output
 folder without rebuilding (e.g. a texture built from the command line or copied from
@@ -188,9 +188,9 @@ not enable/disable the photo for alignment. Selecting a row only selects it.
 Uncheck a marker to use it as a check point instead of a control point.
 Ignored markers are excluded independently of that classification.
 
-Workspace lists the project's photos and products directly, without a Chunk row
-or Add/Merge/Duplicate/Delete Chunk commands. Version 1.0 opens one dataset per
-project. A legacy multi-chunk file is rejected with instructions to separate its
+Workspace lists the project's photos and products directly, without a ProjectData row
+or Add/Merge/Duplicate/Delete ProjectData commands. Version 1.0 opens one dataset per
+project. A legacy multi-dataset file is rejected with instructions to separate its
 datasets in an older version; its original file is not modified.
 
 **Preferences > Theme** applies Dark/Light immediately and remembers the choice.
@@ -322,3 +322,24 @@ large datasets should retain appropriate preselection to limit the workload.
 Cloud Properties accepts historical pair-list and dictionary filter statistics.
 Opening an older project does not require rebuilding its point cloud for this
 metadata display fix.
+
+
+## Project and reference file compatibility
+
+New saves use project schema 2 with project-data records and a `processing`
+working folder for new results. Earlier project files are read by their record
+structure; opening them does not rewrite the source file or move existing
+photos/results. Save As copies working data to the new layout using the normal
+space check, cancellation and transactional-copy safeguards.
+
+Marker XML exports now use PhotoMesh reference XML version 2.0
+(`photomesh-reference` / `dataset`). Legacy camera/marker XML and survey XML
+remain readable by their record structure. The new XML export is not the
+vendor-specific Metashape export schema; use CSV for exchange when required.
+Reference coordinates, accuracies, control/check state and pinned projections
+are retained.
+
+Layer buttons for Tie Points, Cloud and Mesh have a checked primary part for
+visibility and a separate arrow for render styles. Turning a layer off retains
+its selected style. Shape metrics remain in Properties; the separate measurement
+command and full-screen mode have been removed.

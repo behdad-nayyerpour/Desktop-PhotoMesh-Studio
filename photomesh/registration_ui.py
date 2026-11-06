@@ -9,7 +9,7 @@ class RegistrationMixin:
     def register_selected_photos(self, indices=None):
         if not self._require_saved("Align Selected Photos"):
             return
-        ch=self.chunk
+        ch=self.dataset
         if indices is None:
             indices=[item.data(256) for item in self.photos.selectedItems()]
         indices=sorted(set(int(i) for i in indices or []))
@@ -83,11 +83,11 @@ class RegistrationMixin:
             self._update_photo_shapes()
 
 
-def expose_registration_photos(chunk,folder,photos):
+def expose_registration_photos(dataset,folder,photos):
     """Stable aliases: adding a duplicate basename never renames an existing camera."""
     selected={p["index"]:p["name"] for p in photos}
     aliases={}
-    for index,camera in enumerate(chunk.cameras):
+    for index,camera in enumerate(dataset.cameras):
         name=selected.get(index) or camera.colmap_name
         if name:
             if name in aliases and os.path.normcase(aliases[name])!=os.path.normcase(camera.path):

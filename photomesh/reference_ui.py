@@ -71,12 +71,12 @@ def products_after_georef(ch, M, log=print):
 class ReferenceMixin:
     # ------------------------------------------------------------ helpers
     def _model_dir(self, ch=None):
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         wd = ch.workdir or (self.project.default_workdir(ch) if self.project.path else "")
         return os.path.join(wd, "sparse", "0") if wd else ""
 
     def _sparse_model(self):
-        """COLMAP model of the active chunk (cached by file time)."""
+        """COLMAP model of the active dataset (cached by file time)."""
         from . import colmap_io as cio
         d = self._model_dir()
         f = os.path.join(d, "images.bin")
@@ -88,7 +88,7 @@ class ReferenceMixin:
         return self._model_cache[1]
 
     def _marker_objs(self):
-        return [g.Marker(**m) for m in (self.chunk.markers or [])]
+        return [g.Marker(**m) for m in (self.dataset.markers or [])]
 
     def _snap(self):
         if hasattr(self, "_markers_snapshot"):
@@ -96,23 +96,23 @@ class ReferenceMixin:
 
     def _invalidate_marker_error_rows(self, markers):
         """Old residuals must not be presented as measurements of edited placements."""
-        before = {m["label"]: m for m in self.chunk.markers or []}
+        before = {m["label"]: m for m in self.dataset.markers or []}
         changed = {m.label for m in markers if m.label not in before or
                    before[m.label].get("ref") != m.ref or
                    before[m.label].get("projections", {}) != m.projections}
-        if changed and self.chunk.georef:
-            self.chunk.georef["rows"] = [row for row in self.chunk.georef.get("rows", [])
+        if changed and self.dataset.georef:
+            self.dataset.georef["rows"] = [row for row in self.dataset.georef.get("rows", [])
                                         if row["label"] not in changed]
-            self.chunk.georef["control_rmse"] = self.chunk.georef["check_rmse"] = None
+            self.dataset.georef["control_rmse"] = self.dataset.georef["check_rmse"] = None
 
     def _store_markers(self, ms):
         self._invalidate_marker_error_rows(ms)
-        self.chunk.markers = [m.to_dict() for m in ms]
+        self.dataset.markers = [m.to_dict() for m in ms]
         self.set_modified()
         if hasattr(self, "_refresh_markers_pane"):
             self._refresh_markers_pane()
         else:
-            self.markers_pane.refresh(self.chunk)
+            self.markers_pane.refresh(self.dataset)
         self._update_view_markers()
 
     def _marker_model_xyz(self, m, model, names):
@@ -123,10 +123,10 @@ class ReferenceMixin:
         X, _n = g.triangulate_marker(model, m.projections, names)
         if X is not None:
             return X
-        gr = self.chunk.georef or {}
+        gr = self.dataset.georef or {}
         if gr.get("offset") is not None and m.ref is not None:
             try:
-                crs = g.CRS.parse(self.chunk.crs)
+                crs = g.CRS.parse(self.dataset.crs)
                 X = crs.to_metric(np.atleast_2d(np.asarray(m.ref, float)), gr.get("zone"))[0]
                 return X - np.asarray(gr["offset"], float)
             except Exception:
@@ -135,7 +135,7 @@ class ReferenceMixin:
         return X
 
     def _marker_positions(self):
-        """Model-frame positions of the active chunk's markers (list of xyz).
+        """Model-frame positions of the active dataset's markers (list of xyz).
         Safe to call from the view-loader thread. Results are cached per
         marker (projections/reference/model), so after an edit only that
         marker is re-triangulated instead of all of them (~2 s for 98)."""
@@ -146,8 +146,8 @@ class ReferenceMixin:
             model = None
         if model is None:
             return None
-        key0 = (self._model_cache[0], _json.dumps(self.chunk.georef.get("offset") if self.chunk.georef else None),
-                self.chunk.crs)
+        key0 = (self._model_cache[0], _json.dumps(self.dataset.georef.get("offset") if self.dataset.georef else None),
+                self.dataset.crs)
         cache = getattr(self, "_marker_xyz_cache", None)
         if cache is None or cache[0] != key0:
             cache = self._marker_xyz_cache = (key0, {})
@@ -167,7 +167,7 @@ class ReferenceMixin:
         if not items:
             self.model_view.set_markers(None); return
         from .marker_style import marker_state
-        self.model_view.marker_states = {m["label"]: marker_state(m) for m in self.chunk.markers}
+        self.model_view.marker_states = {m["label"]: marker_state(m) for m in self.dataset.markers}
         self.model_view.set_markers(np.array([x for _l, x, _e in items]), labels=[l for l, _x, _e in items],
                                     control=[e for _l, _x, e in items])
 
@@ -183,7 +183,7 @@ class ReferenceMixin:
 
     def _update_photo_markers(self):
         k = getattr(self, "current_photo", -1)
-        cams = self.chunk.cameras
+        cams = self.dataset.cameras
         if not (0 <= k < len(cams)) or self.photo_view.path is None:
             return
         stem = g._stem(cams[k].label)
@@ -212,21 +212,21 @@ class ReferenceMixin:
     def place_marker(self, u, v):
         label = self.markers_pane.current_label()
         k = self.current_photo
-        if not label or not (0 <= k < len(self.chunk.cameras)):
+        if not label or not (0 <= k < len(self.dataset.cameras)):
             return
         ms = self._marker_objs()
         self._snap()
         for m in ms:
             if m.label == label:
-                stem = g._stem(self.chunk.cameras[k].label)
+                stem = g._stem(self.dataset.cameras[k].label)
                 m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
                 m.projections[stem] = [float(u), float(v), True]
         self._store_markers(ms)
-        self.log(f"Marker {label} placed on {self.chunk.cameras[k].label} at ({u:.1f}, {v:.1f})")
+        self.log(f"Marker {label} placed on {self.dataset.cameras[k].label} at ({u:.1f}, {v:.1f})")
 
     def remove_marker_projection(self, label):
         k = self.current_photo
-        stem = g._stem(self.chunk.cameras[k].label)
+        stem = g._stem(self.dataset.cameras[k].label)
         ms = self._marker_objs()
         self._snap()
         for m in ms:
@@ -240,7 +240,7 @@ class ReferenceMixin:
         for m in ms:
             if m.label == label:
                 m.enabled = enabled
-        self.chunk.markers = [m.to_dict() for m in ms]
+        self.dataset.markers = [m.to_dict() for m in ms]
         self.set_modified()
         self._update_view_markers()
 
@@ -266,8 +266,8 @@ class ReferenceMixin:
         except Exception as e:
             QMessageBox.warning(self, "Import Markers", f"Cannot read {path}:\n{e}"); return
         ms = g.merge_markers(self._marker_objs(), new)
-        if crs is not None and (crs.kind != "local" or not self.chunk.crs):
-            self.chunk.crs = crs.name if crs.kind != "local" else 'LOCAL_CS["Local Coordinates (m)"]'
+        if crs is not None and (crs.kind != "local" or not self.dataset.crs):
+            self.dataset.crs = crs.name if crs.kind != "local" else 'LOCAL_CS["Local Coordinates (m)"]'
         self._store_markers(ms)
         nproj = sum(len(m.projections) for m in new)
         self.log(f"Imported {len(new)} markers ({nproj} photo projections) from {path}; "
@@ -275,17 +275,17 @@ class ReferenceMixin:
         self.docks["Reference"].raise_()
 
     def export_markers(self):
-        rows = (self.chunk.georef or {}).get("rows")
-        if not self.chunk.markers:
+        rows = (self.dataset.georef or {}).get("rows")
+        if not self.dataset.markers:
             QMessageBox.information(self, "Export Markers", "No markers."); return
         dst = QFileDialog.getSaveFileName(self, "Export Markers", "markers.txt",
                                           "Reference report (*.txt);;Markers XML (*.xml)")[0]
         if not dst:
             return
         if dst.lower().endswith(".xml"):
-            g.write_markers_xml(dst, self._marker_objs(), self.chunk.crs or "")
+            g.write_markers_xml(dst, self._marker_objs(), self.dataset.crs or "")
         else:
-            crs = g.CRS.parse(self.chunk.crs)
+            crs = g.CRS.parse(self.dataset.crs)
             if rows:
                 g.write_report(dst, rows, crs)
             else:
@@ -301,7 +301,7 @@ class ReferenceMixin:
         if not self._require_saved("Optimize Cameras"):
             return None
         from .dialogs import OptimizeCamerasDialog
-        ch = self.chunk
+        ch = self.dataset
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
         defaults = dict(ch.reference_settings)
@@ -440,7 +440,7 @@ class ReferenceMixin:
     def refine_markers(self):
         if not self._require_saved("Refine Markers"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if not ch.markers or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Refine Markers", "Align photos and import markers first."); return
         wd = self.project.default_workdir(ch)
@@ -474,7 +474,7 @@ class ReferenceMixin:
         if not self._require_saved("Filter Point Cloud"):
             return None
         from .dialogs import FilterPointCloudDialog
-        ch = self.chunk
+        ch = self.dataset
         if not ch.point_cloud_ply or not os.path.exists(ch.point_cloud_ply):
             QMessageBox.information(self, "Filter Point Cloud", "Build or import a point cloud first."); return
         dlg = FilterPointCloudDialog(self, confidence_only)
@@ -510,7 +510,7 @@ class ReferenceMixin:
         from .dialogs import GradualSelectionDialog
         from . import colmap_io as cio
         from . import pcfilter as pf
-        ch = self.chunk
+        ch = self.dataset
         model = self._sparse_model() if os.path.isdir(self._model_dir()) else None
         if model is None:
             QMessageBox.information(self, "Gradual Selection", "Align photos first."); return

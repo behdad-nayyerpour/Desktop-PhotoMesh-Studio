@@ -71,7 +71,7 @@ class ShapeStyleDialog(QDialog):
         super().__init__(win)
         self.win = win
         self.setWindowTitle("Shape Settings")
-        self._start = copy.deepcopy(win.chunk.shapes)        # Cancel restores this
+        self._start = copy.deepcopy(win.dataset.shapes)        # Cancel restores this
         self._loading = False
         self.shape = shape
         v = QVBoxLayout(self)
@@ -188,7 +188,7 @@ class ShapeStyleDialog(QDialog):
             self._loading = True; self.target_box.setCurrentIndex(0); self._loading = False
         st = self.win.layer_style(self.layer())
         if self.target_is_shape():
-            st.update(SS.shape_override(self.win.chunk.shapes, self.shape))
+            st.update(SS.shape_override(self.win.dataset.shapes, self.shape))
             self.shape_label.setText(f"Shape: {shape_name(sset['shapes'][self.shape], self.shape)}")
         else:
             n = sum(1 for s in sset["shapes"] if s["layer"] == self._layer_index())
@@ -212,7 +212,7 @@ class ShapeStyleDialog(QDialog):
             lc = layer.get("color") or [255, 140, 0]
             for b in (self.line_color, self.fill_color, self.label_color):
                 b.fallback = QColor(*[int(c) for c in lc[:3]])
-            if "line_width" not in (SS.clean(((self.win.chunk.shapes or {}).get("styles") or {}).get(layer["name"]))) \
+            if "line_width" not in (SS.clean(((self.win.dataset.shapes or {}).get("styles") or {}).get(layer["name"]))) \
                     and layer.get("width") is not None and st.get("line_width") == SS.DEFAULTS["line_width"]:
                 st = dict(st, line_width=float(layer["width"]))
         self.line_color.set_color(st["line_color"])
@@ -258,7 +258,7 @@ class ShapeStyleDialog(QDialog):
 
     def apply(self):
         self._store(True)
-        self._start = copy.deepcopy(self.win.chunk.shapes)
+        self._start = copy.deepcopy(self.win.dataset.shapes)
         self.win.log(f"Shape style: {'shape ' + str(self.shape) if self.target_is_shape() else 'layer ' + self.layer()}"
                      f" {SS.diff(self.values()) or 'defaults'}")
 
@@ -281,7 +281,7 @@ class ShapeStyleDialog(QDialog):
             self.win.set_layer_style(self.layer(), None, commit=False)
 
     def reject(self):
-        if self.win.chunk.shapes != self._start:
-            self.win.chunk.shapes = copy.deepcopy(self._start)
+        if self.win.dataset.shapes != self._start:
+            self.win.dataset.shapes = copy.deepcopy(self._start)
             self.win._styles_changed(False)
         super().reject()

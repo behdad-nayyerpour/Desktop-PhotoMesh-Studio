@@ -3,9 +3,9 @@ Open3D's Embree ray caster; no third-party photogrammetry code).
 
 Frames
 ------
-All processing happens in the *projection frame*: for a georeferenced chunk
-that is the chunk's local frame (world - offset, z up), so X/Y are the
-project CRS easting/northing minus the offset. For a chunk that is not
+All processing happens in the *projection frame*: for a georeferenced dataset
+that is the dataset's local frame (world - offset, z up), so X/Y are the
+project CRS easting/northing minus the offset. For a dataset that is not
 georeferenced, the projection frame is the local frame rotated so that z is
 the mean "up" of the cameras (top view). Every file written (GeoTIFF tags,
 world files, DEM heights) carries REAL world coordinates: local + offset.
@@ -410,7 +410,7 @@ def grid_labels(best_s, best_v, ny, nx, smooth=0.8, colg=None, beta=0.0, iters=1
 @product_transaction
 def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     """cfg: mesh (PLY), dem (GeoTIFF from build_dem, for surface 'DEM'), model
-    (COLMAP sparse dir), photos {name: path}, out_dir, georef (chunk.georef
+    (COLMAP sparse dir), photos {name: path}, out_dir, georef (dataset.georef
     dict or {}), crs + ORTHO_DEFAULTS keys. Returns the info dict (info.json)."""
     from .texture import load_views, read_mesh, load_image, sharpness, bilinear, exposure_gains, ghost_filter
     c = dict(ORTHO_DEFAULTS); c.update({k: v for k, v in cfg.items() if v is not None})

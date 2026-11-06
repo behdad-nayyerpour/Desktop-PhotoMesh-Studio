@@ -258,7 +258,7 @@ def test_delaunay_does_not_require_gpu_for_existing_fusion(window,tmp_path,monke
     from photomesh import dialogs,mesh_steps
     from photomesh.project import Camera
     window.project.path=str(tmp_path/"project.pmsx")
-    window.chunk.cameras=[Camera(str(tmp_path/"a.jpg"),aligned=True,est=[0,0,10])]
+    window.dataset.cameras=[Camera(str(tmp_path/"a.jpg"),aligned=True,est=[0,0,10])]
     monkeypatch.setattr(window,"_need_colmap",lambda:"engine")
     monkeypatch.setattr(window,"_cuda_available",lambda *_:pytest.fail("Delaunay meshing is a CPU task"))
     monkeypatch.setattr(dialogs.BuildModelDialog,"exec",lambda *_:1)

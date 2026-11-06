@@ -84,13 +84,13 @@ def test_reuse_with_kept_depth_maps_still_reuses(tmp_path):
 def test_save_as_results_only_skips_depth_maps(tmp_path):
     from photomesh import datafolder as dfo
     prj = _processed(tmp_path / "a")
-    depth = _add_depth(prj.chunk.workdir)
+    depth = _add_depth(prj.dataset.workdir)
     items = dfo.plan(prj, str(tmp_path / "b" / "c.pmsx"))
     assert items[0]["parts"]["depth"] == depth and items[0]["bytes"] >= depth
     items[0]["skip_depth"] = True
     assert dfo.item_bytes(items[0]) == items[0]["bytes"] - depth
     done = dfo.apply(dfo.execute(items))
-    nw = prj.chunk.workdir
+    nw = prj.dataset.workdir
     for sub in ("depth_maps", "normal_maps", "consistency_graphs"):
         assert os.listdir(os.path.join(nw, "dense", "stereo", sub)) == []
     assert os.path.exists(os.path.join(nw, "dense", "point_cloud.ply"))
@@ -101,22 +101,22 @@ def test_save_as_results_only_skips_depth_maps(tmp_path):
 def test_photo_copies_are_relinked_to_originals(tmp_path):
     from photomesh import datafolder as dfo
     prj = _processed(tmp_path / "a")
-    wd = prj.chunk.workdir
+    wd = prj.dataset.workdir
     img = os.path.join(wd, "images", "IMG_0.JPG")
-    os.remove(img); shutil.copy2(prj.chunk.cameras[0].path, img)            # a plain copy (cross-drive case)
+    os.remove(img); shutil.copy2(prj.dataset.cameras[0].path, img)            # a plain copy (cross-drive case)
     assert os.stat(img).st_nlink == 1
     items = dfo.plan(prj, str(tmp_path / "b" / "c.pmsx"))
     assert items[0]["parts"]["photo_copies"] >= os.path.getsize(img)
     dfo.apply(dfo.execute(items))
-    new = os.path.join(prj.chunk.workdir, "images", "IMG_0.JPG")
-    assert open(new, "rb").read() == open(prj.chunk.cameras[0].path, "rb").read()  # valid if links are blocked
+    new = os.path.join(prj.dataset.workdir, "images", "IMG_0.JPG")
+    assert open(new, "rb").read() == open(prj.dataset.cameras[0].path, "rb").read()  # valid if links are blocked
 
 
 def test_gui_save_as_offers_results_only_by_default(window, no_dialogs, tmp_path, monkeypatch):
     from PySide6.QtWidgets import QFileDialog
     from photomesh import choice
     prj = _processed(tmp_path / "a")
-    _add_depth(prj.chunk.workdir, size=100000)
+    _add_depth(prj.dataset.workdir, size=100000)
     window.open_project(prj.path)
     new = tmp_path / "b" / "n.pmsx"; new.parent.mkdir()
     asked = []
@@ -127,15 +127,15 @@ def test_gui_save_as_offers_results_only_by_default(window, no_dialogs, tmp_path
     keys = [key for key, _l in a[3]]
     assert k["default"] == "results" and keys == ["results", "all", "keep", "cancel"]
     assert "Depth maps: 878.9 KB" in a[2] and "can be recomputed" in a[2]
-    assert os.listdir(os.path.join(window.chunk.workdir, "dense", "stereo", "depth_maps")) == []
-    assert os.listdir(os.path.join(prj.chunk.workdir, "dense", "stereo", "depth_maps"))      # original kept
+    assert os.listdir(os.path.join(window.dataset.workdir, "dense", "stereo", "depth_maps")) == []
+    assert os.listdir(os.path.join(prj.dataset.workdir, "dense", "stereo", "depth_maps"))      # original kept
     # "Copy everything"
     other = tmp_path / "c" / "m.pmsx"; other.parent.mkdir()
     window.open_project(prj.path)
     monkeypatch.setattr(choice, "ask_choice", lambda *a, **k: "all")
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(other), "")))
     assert window.save_project_as()
-    assert len(os.listdir(os.path.join(window.chunk.workdir, "dense", "stereo", "depth_maps"))) == 3
+    assert len(os.listdir(os.path.join(window.dataset.workdir, "dense", "stereo", "depth_maps"))) == 3
 
 
 def test_ask_choice_returns_clicked_key(qtbot, monkeypatch):
@@ -151,14 +151,14 @@ def test_ask_choice_returns_clicked_key(qtbot, monkeypatch):
 def test_stale_copies_detected_safely(tmp_path):
     from photomesh import datafolder as dfo
     root = tmp_path / "Test-Lot3-Drone.files"
-    p = root / "chunk0.partial"; (p / "dense").mkdir(parents=True); (p / "dem").mkdir()
+    p = root / "processing.partial"; (p / "dense").mkdir(parents=True); (p / "dem").mkdir()
     (p / "dense" / "x.bin").write_bytes(b"1" * 500)
-    (root / "chunk1.partial").mkdir()                                      # empty, not workdir-like: no
+    (root / "processing-2.partial").mkdir()                                      # empty, not workdir-like: no
     mine = root / "notes.partial"; (mine / "dense").mkdir(parents=True)      # not our name pattern: no
-    inc = root / "chunk2"; inc.mkdir(); (inc / dfo.INCOMPLETE_MARK).write_text("x")
-    prj = root / "chunk3.partial"; (prj / "dense").mkdir(parents=True); (prj / "a.pmsx").write_text("{}")
+    inc = root / "processing-3"; inc.mkdir(); (inc / dfo.INCOMPLETE_MARK).write_text("x")
+    prj = root / "processing-4.partial"; (prj / "dense").mkdir(parents=True); (prj / "a.pmsx").write_text("{}")
     got = dfo.stale_copies(str(root))
-    assert [os.path.basename(x) for x, _b in got] == ["chunk0.partial", "chunk2"]
+    assert [os.path.basename(x) for x, _b in got] == ["processing.partial", "processing-3"]
     assert dict(got)[str(p)] == 500
     assert dfo.stale_copies(str(tmp_path)) == []                           # only inside a <name>.files folder
 
@@ -168,16 +168,16 @@ def test_gui_offers_to_remove_stale_partial(window, no_dialogs, tmp_path, monkey
     prj = _processed(tmp_path / "a")
     window.open_project(prj.path)
     new = tmp_path / "b" / "Test-Lot3-Drone.pmsx"
-    stale = tmp_path / "b" / "Test-Lot3-Drone.files" / "chunk0.partial"
+    stale = tmp_path / "b" / "Test-Lot3-Drone.files" / "processing.partial"
     (stale / "dense").mkdir(parents=True); (stale / "dense" / "big.bin").write_bytes(b"0" * 9000)
     asked = []
     monkeypatch.setattr(QMessageBox, "question",
                         staticmethod(lambda *a, **k: asked.append(a[2]) or QMessageBox.Yes))
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(new), "")))
     assert window.save_project_as()
-    assert any("unfinished copy" in q and "chunk0.partial" in q for q in asked)
-    assert not stale.exists() and os.path.isdir(window.chunk.workdir)
-    assert window.chunk.workdir.endswith("chunk0")
+    assert any("unfinished copy" in q and "processing.partial" in q for q in asked)
+    assert not stale.exists() and os.path.isdir(window.dataset.workdir)
+    assert window.dataset.workdir.endswith("processing")
 
 
 def test_declined_stale_is_kept(window, no_dialogs, tmp_path, monkeypatch):
@@ -185,7 +185,7 @@ def test_declined_stale_is_kept(window, no_dialogs, tmp_path, monkeypatch):
     prj = _processed(tmp_path / "a")
     window.open_project(prj.path)
     new = tmp_path / "b" / "x.pmsx"
-    stale = tmp_path / "b" / "x.files" / "chunk0.partial"; (stale / "sparse").mkdir(parents=True)
+    stale = tmp_path / "b" / "x.files" / "processing.partial"; (stale / "sparse").mkdir(parents=True)
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.No))
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(new), "")))
     assert window.save_project_as() and stale.exists()
@@ -225,41 +225,41 @@ def test_gui_warns_for_synced_folder(window, no_dialogs, tmp_path, monkeypatch):
 def test_cleanup_candidates_and_protection(tmp_path):
     from photomesh import datafolder as dfo
     prj = _processed(tmp_path / "a")
-    wd = prj.chunk.workdir
+    wd = prj.dataset.workdir
     depth = _add_depth(wd)
     os.makedirs(os.path.join(wd, "dense", "images")); open(os.path.join(wd, "dense", "images", "u.jpg"), "wb").write(b"u" * 300)
     open(os.path.join(wd, "database.db"), "wb").write(b"q" * 200)
-    stale = os.path.join(dfo.data_folder(prj.path), "chunk0.partial"); os.makedirs(os.path.join(stale, "dense"))
+    stale = os.path.join(dfo.data_folder(prj.path), "processing.partial"); os.makedirs(os.path.join(stale, "dense"))
     open(os.path.join(stale, "dense", "z"), "wb").write(b"z" * 50)
     parts = {p["key"]: p for p in dfo.cleanup_candidates(prj)}
     assert set(parts) == {"depth", "undistorted", "database", "stale"}
     assert parts["depth"]["bytes"] == depth and parts["depth"]["checked"] and parts["stale"]["checked"]
     assert not parts["undistorted"]["checked"] and not parts["database"]["checked"]
     # a product inside a part: that part is not offered / not deleted
-    prj.chunk.orthomosaic = {"path": os.path.join(wd, "dense", "images", "u.jpg")}
+    prj.dataset.orthomosaic = {"path": os.path.join(wd, "dense", "images", "u.jpg")}
     assert "undistorted" not in {p["key"] for p in dfo.cleanup_candidates(prj)}
     freed, left = dfo.delete_parts([parts["undistorted"], parts["depth"], parts["stale"]], prj)
     assert left == [os.path.join(wd, "dense", "images")] and freed == depth + 50
     assert os.path.exists(os.path.join(wd, "dense", "images", "u.jpg"))
     assert os.path.isdir(os.path.join(wd, "dense", "stereo", "depth_maps")) and not os.path.exists(stale)
     assert os.path.exists(os.path.join(wd, "dense", "point_cloud.ply"))
-    assert all(os.path.exists(c.path) for c in prj.chunk.cameras)
+    assert all(os.path.exists(c.path) for c in prj.dataset.cameras)
 
 
 def test_gui_cleanup(window, no_dialogs, tmp_path, monkeypatch):
     from PySide6.QtWidgets import QMessageBox
     from photomesh import cleanup_ui
     prj = _processed(tmp_path / "a")
-    depth = _add_depth(prj.chunk.workdir)
+    depth = _add_depth(prj.dataset.workdir)
     window.open_project(prj.path)
     seen = []
     monkeypatch.setattr(cleanup_ui.CleanupDialog, "exec", lambda self: seen.append(self.total.text()) or 1)
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.No))
-    assert window.clean_up_data() is None and len(os.listdir(os.path.join(window.chunk.workdir, "dense", "stereo", "depth_maps")))
+    assert window.clean_up_data() is None and len(os.listdir(os.path.join(window.dataset.workdir, "dense", "stereo", "depth_maps")))
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.Yes))
     assert window.clean_up_data() == depth
     assert seen and seen[0].startswith("Selected:") and no_dialogs == []
-    assert os.listdir(os.path.join(window.chunk.workdir, "dense", "stereo", "depth_maps")) == []
+    assert os.listdir(os.path.join(window.dataset.workdir, "dense", "stereo", "depth_maps")) == []
     infos = []
     monkeypatch.setattr(QMessageBox, "information", staticmethod(lambda *a, **k: infos.append(a[2])))
     assert window.clean_up_data() is None and "no intermediate data" in infos[0]
@@ -268,9 +268,9 @@ def test_gui_cleanup(window, no_dialogs, tmp_path, monkeypatch):
 def test_cleanup_dialog_selection(qtbot):
     from PySide6.QtCore import Qt
     from photomesh.cleanup_ui import CleanupDialog
-    parts = [{"key": "depth", "label": "Depth maps", "note": "n", "checked": True, "chunk": "Chunk 1",
+    parts = [{"key": "depth", "label": "Depth maps", "note": "n", "checked": True, "dataset": "Project",
               "paths": ["/x"], "bytes": 2 * 1024 ** 3},
-             {"key": "database", "label": "DB", "note": "n", "checked": False, "chunk": "Chunk 1",
+             {"key": "database", "label": "DB", "note": "n", "checked": False, "dataset": "Project",
               "paths": ["/y"], "bytes": 1024}]
     d = CleanupDialog(parts); qtbot.addWidget(d)
     assert [p["key"] for p in d.selected()] == ["depth"] and "2.0 GB" in d.total.text()

@@ -223,7 +223,7 @@ def _box(bmin, bmax):
 
 
 def _root_transform(georef, center_model):
-    """ENU -> ECEF matrix (column-major) for UTM / WGS84-georeferenced chunks."""
+    """ENU -> ECEF matrix (column-major) for UTM / WGS84-georeferenced datasets."""
     if not georef or georef.get("crs_kind") not in ("utm", "wgs84"):
         return None
     from .georef import utm_inverse, geodetic_to_ecef, enu_basis
@@ -288,7 +288,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
           "extras": {"up_frame_rotation": Rup.tolist(), "georeferenced": metric,
                      "crs": processing_crs(georef) if georef else "local (not georeferenced)",
                      # tile vertices are in the local frame; world = Rup.T @ p + world_offset
-                     # (UTM / WGS84 chunks are also placed on the globe by root.transform)
+                     # (UTM / WGS84 datasets are also placed on the globe by root.transform)
                      "world_offset": [float(x) for x in georef.get("offset")]
                      if georef and georef.get("offset") is not None else None}}
     with open(os.path.join(tmp, "tileset.json"), "w", encoding="utf-8") as fh:

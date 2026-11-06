@@ -1,8 +1,8 @@
 """Project data folder: everything a project computes lives in <name>.files
-next to <name>.pmsx (one sub-folder per chunk), so the project folder can be
+next to <name>.pmsx (one sub-folder per dataset), so the project folder can be
 copied/moved as a whole. Photos are referenced, never copied.
 
-Save As to a new location copies the chunks' working folders into the new
+Save As to a new location copies the datasets' working folders into the new
 data folder (free disk space checked first, progress + cancel). The copy is
 written straight into its final, new folder - never renamed afterwards: on
 Windows a folder whose files are still open (OneDrive / Dropbox sync, virus
@@ -21,13 +21,13 @@ import stat
 import tempfile
 import time
 
-from .project import data_folder, is_under, CHUNK_PATHS, PRODUCT_PATHS, CAMERA_PATHS
+from .project import data_folder, is_under, DATA_PATHS, PRODUCT_PATHS, CAMERA_PATHS
 
 MB = 1024 * 1024
 LINK_DIRS = ("images",)        # COLMAP photo links (hard/sym links to the photos): re-linked, not duplicated
 SPACE_MARGIN = 256 * MB
 DEPTH_REL = ("dense/stereo/depth_maps", "dense/stereo/normal_maps", "dense/stereo/consistency_graphs")
-PARTIAL_RE = re.compile(r"^chunk\d+[x\d_]*\.partial$", re.I)      # 0.1.7 Save As leftovers
+PARTIAL_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*\.partial$", re.I)      # 0.1.7 Save As leftovers
 WORKDIR_ENTRIES = {"dense", "sparse", "sparse_txt", "database.db", "coarse.db", "image_root.txt", "image_list.txt",
                    "images", "tie_points.ply", "texture", "tiled", "orthomosaic", "dem", "model.ply",
                    "model_poisson.ply", "cache", "shapes", "mesh.json"}
@@ -163,11 +163,11 @@ def unique_target(root, name):
     return d
 
 
-def photo_index(chunk):
-    """{file name (lower case): [photo paths]} of the chunk's photos, to
+def photo_index(dataset):
+    """{file name (lower case): [photo paths]} of the dataset's photos, to
     re-link plain copies in images/ to the originals."""
     idx = {}
-    for c in getattr(chunk, "cameras", []) or []:
+    for c in getattr(dataset, "cameras", []) or []:
         if c.path:                                  # the COLMAP name when known (exact), else the file name
             idx.setdefault((getattr(c, "colmap_name", "") or os.path.basename(c.path)).lower(), []).append(c.path)
     return idx
@@ -175,27 +175,27 @@ def photo_index(chunk):
 
 def plan(project, new_path, save_as=True):
     """Working folders to bring into the data folder of new_path:
-    [{chunk, src, dst, bytes, files, move}]. Save As: every working folder
+    [{dataset, src, dst, bytes, files, move}]. Save As: every working folder
     not already inside the new project's folder; Save: only those outside
     the project folder (old absolute-path projects / temporary folder)."""
     base = os.path.dirname(os.path.abspath(new_path))
     root = data_folder(new_path)
     items, taken = [], set()
-    for i, ch in enumerate(project.chunks):
+    for i, ch in enumerate(project.datasets):
         wd = ch.workdir
         if not wd or not os.path.isdir(wd):
             continue
         inside = is_under(wd, root) if save_as else is_under(wd, base)
         if inside:
             continue
-        name = f"chunk{i}"
+        name = "processing" if i == 0 else f"processing-{i + 1}"
         dst = unique_target(root, name)
         while os.path.normcase(dst) in taken:
             name += "x"; dst = unique_target(root, name)
         taken.add(os.path.normcase(dst))
         parts = breakdown(wd, exclude=dst)
         size = parts["depth"] + parts["photo_copies"] + parts["other"]
-        items.append({"chunk": ch, "src": os.path.abspath(wd), "dst": dst, "bytes": size, "files": parts["files"],
+        items.append({"dataset": ch, "src": os.path.abspath(wd), "dst": dst, "bytes": size, "files": parts["files"],
                       "parts": parts, "skip_depth": False, "photos": photo_index(ch),
                       "move": is_temporary(wd)})
     return items
@@ -302,9 +302,9 @@ def remap(obj, old, new):
     return fix(obj)
 
 
-def rebase_chunk(ch, old, new):
-    """Point every path of the chunk that lies in old (working folder) to new."""
-    for k in CHUNK_PATHS:
+def rebase_dataset(ch, old, new):
+    """Point every path of the dataset that lies in old (working folder) to new."""
+    for k in DATA_PATHS:
         setattr(ch, k, remap(getattr(ch, k), old, new))
     for name, _keys in PRODUCT_PATHS:
         remap(getattr(ch, name), old, new)
@@ -370,14 +370,14 @@ def execute(items, report=None, cancelled=None):
 
 
 def apply(finished):
-    """After execute(): repoint the chunks and remove moved (temporary) sources."""
+    """After execute(): repoint the datasets and remove moved (temporary) sources."""
     out = []
     for it in finished:
-        rebase_chunk(it["chunk"], it["src"], it["dst"])
+        rebase_dataset(it["dataset"], it["src"], it["dst"])
         moved = False
         if it.get("move") and is_temporary(it["src"]):
             moved = remove_tree(it["src"])
-        out.append((it["chunk"], it["src"], it["dst"], moved))
+        out.append((it["dataset"], it["src"], it["dst"], moved))
     return out
 
 
@@ -401,7 +401,7 @@ def looks_like_workdir(folder):
 
 def stale_copies(root):
     """Unfinished copies of our own Save As inside a data folder root
-    (<name>.files): 0.1.7's 'chunkN.partial' folders with working-folder
+    (<name>.files): 0.1.7's 'datasetN.partial' folders with working-folder
     content, and folders marked INCOMPLETE_MARK. [(path, bytes)]."""
     out = []
     if not root or not os.path.isdir(root) or not root.lower().rstrip("\\/").endswith(".files"):
@@ -483,8 +483,8 @@ def _path_size(p):
 def protected_paths(project):
     """Finished products and photos: never deleted by the clean-up."""
     keep = []
-    for ch in project.chunks:
-        for k in CHUNK_PATHS:
+    for ch in project.datasets:
+        for k in DATA_PATHS:
             v = getattr(ch, k, "")
             if isinstance(v, str) and v:
                 keep.append(v)
@@ -499,11 +499,11 @@ def protected_paths(project):
 
 
 def cleanup_candidates(project):
-    """[{key, label, note, checked, chunk, paths, bytes}] of intermediate data
-    that can be removed, per chunk, plus unfinished copies in the data folder."""
+    """[{key, label, note, checked, dataset, paths, bytes}] of intermediate data
+    that can be removed, per dataset, plus unfinished copies in the data folder."""
     out = []
     keep = protected_paths(project)
-    for i, ch in enumerate(project.chunks):
+    for i, ch in enumerate(project.datasets):
         wd = ch.workdir
         if not wd or not os.path.isdir(wd):
             continue
@@ -513,14 +513,14 @@ def cleanup_candidates(project):
                      and not any(is_under(k, p) for k in keep)]          # never a product or a photo
             size = sum(_path_size(p) for p in paths)
             if paths and size:
-                out.append({"key": key, "label": label, "note": note, "checked": checked, "chunk": ch.name,
+                out.append({"key": key, "label": label, "note": note, "checked": checked, "dataset": ch.name,
                             "paths": paths, "bytes": size})
     if project.path:
         for p, size in stale_copies(data_folder(project.path)):
             if not any(is_under(k, p) for k in keep):
                 out.append({"key": "stale", "label": f"Unfinished copy {os.path.basename(p)}",
                             "note": "left by an interrupted or failed Save As; not used", "checked": True,
-                            "chunk": "", "paths": [p], "bytes": size})
+                            "dataset": "", "paths": [p], "bytes": size})
     return out
 
 

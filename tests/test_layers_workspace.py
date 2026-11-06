@@ -9,11 +9,11 @@ from photomesh.views import LAYERS
 
 
 def _populate(window, tmp_path, n_cam=8):
-    """Synthetic aligned + georeferenced chunk with tie points, cloud and mesh."""
+    """Synthetic aligned + georeferenced dataset with tie points, cloud and mesh."""
     from photomesh.plyio import save_ply
     from photomesh.project import Camera
     rng = np.random.default_rng(3)
-    ch = window.chunk
+    ch = window.dataset
     ch.workdir = str(tmp_path / "wd"); os.makedirs(ch.workdir, exist_ok=True)
     ch.cameras = [Camera(path=f"/p/IMG_{k:03d}.JPG", aligned=k != 0, est=list(rng.normal(size=3)),
                          rot=np.eye(3).tolist(), width=4000, height=3000) for k in range(n_cam)]
@@ -132,16 +132,16 @@ def test_workspace_rows_metashape_style(window, tmp_path):
     assert not any(r.startswith(("Tie Points", "Point Cloud", "3D Model", "Depth Maps")) for r in rows)
     _populate(window, tmp_path)
     rows = [it.text(0) for it in window.workspace._iter()]
-    chunk = rows[0]
-    assert "8 images" in chunk and not any(r.startswith("Chunk ") for r in rows)
+    dataset = rows[0]
+    assert "8 images" in dataset and not any(r.startswith("ProjectData ") for r in rows)
     assert "Images (7/8 aligned)" in rows
     assert "Markers (3)" in rows
     assert any(r.startswith("Tie Points (500 points") for r in rows)
     assert any(r.startswith("Point Cloud (5,000 points") for r in rows)
     assert any(r.startswith("3D Model (80 faces") for r in rows)
     assert any(r.endswith("(NA)") for r in rows) and any("(check)" in r for r in rows)
-    chunk_item = next(i for i in window.workspace._iter() if i.text(0) == chunk)
-    assert chunk_item.font(0).bold()
+    dataset_item = next(i for i in window.workspace._iter() if i.text(0) == dataset)
+    assert dataset_item.font(0).bold()
     for k in ("cameras", "markers", "tie", "cloud", "mesh"):
         it = window.workspace._layer_items[k]
         assert it.checkState(0) in (Qt.Checked, Qt.Unchecked) and not it.icon(0).isNull()
@@ -163,20 +163,20 @@ def test_workspace_selection_fills_properties(window, tmp_path):
 
 def test_record_roundtrips_through_pmsx(tmp_path):
     from photomesh import procmeta
-    from photomesh.project import Project, Chunk
-    p = Project(); p.chunks = [Chunk()]
-    e = procmeta.record(p.chunks[0], "model", params={"face_count": "High"}, seconds=3.2,
+    from photomesh.project import Project, ProjectData
+    p = Project(); p.datasets = [ProjectData()]
+    e = procmeta.record(p.datasets[0], "model", params={"face_count": "High"}, seconds=3.2,
                         stages={"Meshing": 3.0}, faces=10, vertices=7)
     assert e["software"] and e["date"]
     path = str(tmp_path / "x.pmsx"); p.save(path)
     q = Project.load(path)
-    m = q.chunks[0].meta["model"]
+    m = q.datasets[0].meta["model"]
     assert m["faces"] == 10 and m["params"]["face_count"] == "High" and m["seconds"] == 3.2
 
 
 def test_backfill_from_utf16_logs_keeps_unknowns(tmp_path):
     from photomesh import procmeta
-    from photomesh.project import Chunk
+    from photomesh.project import ProjectData
     root = tmp_path / "bench"; wd = root / "fast"; (wd / "dense").mkdir(parents=True)
     (root / "benchmark_log.txt").write_text(
         "== fast / mapper glomap -> glomap\nPair preselection: 1,000 of 5,000\nKept 18000 best features per photo\n"
@@ -185,7 +185,7 @@ def test_backfill_from_utf16_logs_keeps_unknowns(tmp_path):
     mesh = wd / "model.ply"; mesh.write_bytes(b"ply\n")
     (root / "mesh_local.txt").write_text(f"Poisson depth 10\nMesh: 1,000 vertices, 2,000 faces (4.5 s) -> {mesh}\n",
                                          encoding="utf-16")
-    ch = Chunk(workdir=str(wd), tie_point_count=500, model_ply=str(mesh), face_count=2000)
+    ch = ProjectData(workdir=str(wd), tie_point_count=500, model_ply=str(mesh), face_count=2000)
     added = procmeta.backfill(ch, str(root / "p.pmsx"))
     assert "alignment" in added and "model" in added
     a = ch.meta["alignment"]
@@ -201,18 +201,18 @@ def test_backfill_from_utf16_logs_keeps_unknowns(tmp_path):
 
 
 def test_open_backfills_in_memory_without_writing(window, tmp_path):
-    from photomesh.project import Project, Chunk
+    from photomesh.project import Project, ProjectData
     root = tmp_path / "bench"; wd = root / "fast"; wd.mkdir(parents=True)
     (root / "benchmark_log.txt").write_text("Matching   1.0 s\nTOTAL   2.0 s\n", encoding="utf-16")
-    p = Project(); p.chunks = [Chunk(workdir=str(wd), tie_point_count=10)]
+    p = Project(); p.datasets = [ProjectData(workdir=str(wd), tie_point_count=10)]
     path = str(root / "p.pmsx"); p.save(path)
     before = open(path, "rb").read(); mtime = os.path.getmtime(path)
     window.open_project(path)
-    assert "alignment" in window.chunk.meta
+    assert "alignment" in window.dataset.meta
     assert window.project.modified                                    # saved on next Save
     assert open(path, "rb").read() == before and os.path.getmtime(path) == mtime
     window.save_project()
-    assert "alignment" in json.load(open(path, encoding="utf-8"))["chunks"][0]["meta"]
+    assert "alignment" in json.load(open(path, encoding="utf-8"))["datasets"][0]["meta"]
 
 
 def test_view_overlays(window):
@@ -237,7 +237,7 @@ def test_mode_buttons_keep_uniform_titles_and_track_modes(window, tmp_path):
     from photomesh.icons import TOOLBAR_ICON, MODE_ICON
     assert window.main_toolbar.iconSize().width() == TOOLBAR_ICON == 21    # was 16 px (+30 %)
     for b in window.mode_buttons:
-        assert b.popupMode() == QToolButton.InstantPopup
+        assert b.popupMode() == QToolButton.MenuButtonPopup
         assert b.iconSize().width() == TOOLBAR_ICON == 21 and b.text()       # was 20 px (+30 %)
         assert b.toolButtonStyle() == Qt.ToolButtonTextUnderIcon
         assert b.menu() is not None and b.menu().actions()
@@ -245,13 +245,14 @@ def test_mode_buttons_keep_uniform_titles_and_track_modes(window, tmp_path):
     window.show_model_mode("shaded")
     assert mb.text() == "Mesh" and "Shaded" in mb.toolTip()
     window.actions["Model - Wireframe"].trigger()                   # from the menu bar
-    assert mb.text() == "Mesh" and "Wireframe" in mb.toolTip() and mb.defaultAction() is window.actions["Model - Wireframe"]
+    assert mb.text() == "Mesh" and "Wireframe" in mb.toolTip() and mb.defaultAction() is window.layer_action("mesh")
+    assert mb.current is window.actions["Model - Wireframe"]
     window.show_model_mode("solid")                                  # from code
     assert mb.text() == "Mesh" and "Solid" in mb.toolTip()
     window.actions["Point Cloud - Solid"].trigger()
     assert window.cloud_mode_button.text() == "Cloud" and "Solid" in window.cloud_mode_button.toolTip()
     assert window.layer_states()["cloud"] and not window.layer_states()["mesh"]
-    assert mb.text() == "Mesh" and mb.toolTip().startswith("Mesh: Hidden.")
+    assert mb.text() == "Mesh" and mb.toolTip().startswith("Mesh: Off,")
     mb.menu().actions()[-1].trigger()                                 # choose Wireframe from one menu
     assert window.layer_states()["mesh"] and not window.layer_states()["cloud"]
     assert not hasattr(window, "selection_button")   # 0.1.12: selection tools were not implemented

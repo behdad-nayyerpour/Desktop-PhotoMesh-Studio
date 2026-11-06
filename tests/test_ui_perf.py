@@ -11,10 +11,10 @@ import time
 import numpy as np
 
 
-def _big_chunk(window, n_cam=641, n_mark=98):
+def _big_dataset(window, n_cam=641, n_mark=98):
     from photomesh.project import Camera
     rng = np.random.default_rng(0)
-    ch = window.chunk
+    ch = window.dataset
     ch.cameras = []
     for k in range(n_cam):
         c = Camera(path=f"C:/photos/DJI_{k:04d}.JPG", aligned=True, lat=34 + rng.random(), lon=50 + rng.random(),
@@ -30,7 +30,7 @@ def _big_chunk(window, n_cam=641, n_mark=98):
 
 
 def test_save_is_fast_on_large_project(window, tmp_path):
-    _big_chunk(window)
+    _big_dataset(window)
     window.refresh_all()
     t = time.perf_counter(); window.refresh_all(); t_refresh = time.perf_counter() - t
     assert window.reference.data_row_count == 641 and window.markers_pane.data_row_count == 98
@@ -42,15 +42,15 @@ def test_save_is_fast_on_large_project(window, tmp_path):
     assert t_refresh < 2.0, f"pane refresh took {t_refresh:.2f} s"
     assert not os.path.exists(str(tmp_path / "big.pmsx.tmp"))      # atomic write, no leftovers
     d = json.load(open(tmp_path / "big.pmsx", encoding="utf-8"))
-    assert len(d["chunks"][0]["cameras"]) == 641 and len(d["chunks"][0]["markers"]) == 98
+    assert len(d["datasets"][0]["cameras"]) == 641 and len(d["datasets"][0]["markers"]) == 98
     assert "*" not in window.windowTitle()
 
 
 def test_reference_table_refill_stays_linear(window):
     """Refill time must not blow up with row count (was quadratic)."""
-    from photomesh.project import Chunk, Camera
+    from photomesh.project import ProjectData, Camera
     def timed(n):
-        ch = Chunk(cameras=[Camera(path=f"/p/{k}.jpg", lat=1.0, lon=2.0, alt=3.0, est=[1, 2, 3]) for k in range(n)])
+        ch = ProjectData(cameras=[Camera(path=f"/p/{k}.jpg", lat=1.0, lon=2.0, alt=3.0, est=[1, 2, 3]) for k in range(n)])
         window.reference.refresh(ch)
         best = 1e9
         for _ in range(3):                    # best of 3: robust to other load on the machine
@@ -70,7 +70,7 @@ def test_view_loads_in_background(window, tmp_path):
     t = time.perf_counter()
     window.load_result("cloud", str(p))
     t_call = time.perf_counter() - t
-    assert window.chunk.point_count == n                       # from the header
+    assert window.dataset.point_count == n                       # from the header
     assert window.wait_view_loaded(60)
     assert window.ortho_view.pts is not None and len(window.ortho_view.pts) > 1000
     assert t_call < 1.0, f"load_result blocked {t_call:.2f} s"

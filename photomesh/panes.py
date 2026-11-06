@@ -76,11 +76,11 @@ class WorkspacePane(QTreeWidget):
     Only products that exist get a row. Product rows that are also
     3D-view layers carry a visibility checkbox (synced with the layer toggles);
     double-click shows the item."""
-    cameraActivated = Signal(int, int)      # chunk index, camera index
-    contextAction = Signal(str, int)        # action, chunk index
+    cameraActivated = Signal(int, int)      # dataset index, camera index
+    contextAction = Signal(str, int)        # action, dataset index
     selectionInfo = Signal(dict)
     layerToggled = Signal(str, bool)        # layer key, visible
-    showRequested = Signal(str, int)        # row kind, chunk index
+    showRequested = Signal(str, int)        # row kind, dataset index
     markerActivated = Signal(str)
 
     def __init__(self, parent=None):
@@ -97,7 +97,7 @@ class WorkspacePane(QTreeWidget):
         self.vis = {}
         self._layer_items = {}
         self._filling = False
-        self.shape_provider = None      # callable(chunk index) -> shape set (shapes.py) or None
+        self.shape_provider = None      # callable(dataset index) -> shape set (shapes.py) or None
 
     @staticmethod
     def _icon(key):
@@ -129,10 +129,10 @@ class WorkspacePane(QTreeWidget):
         self.setUpdatesEnabled(False)
         try:
             self.clear(); self._layer_items = {}
-            n_img = len(project.chunk.cameras)
+            n_img = len(project.dataset.cameras)
             name = os.path.splitext(os.path.basename(project.path))[0] if project.path else "Untitled"
             root = self._item(self, f"{name} ({n_img:,} images)", ("project", project.active), "workspace", bold=True)
-            for ci, ch in [(project.active, project.chunk)]:
+            for ci, ch in [(project.active, project.dataset)]:
                 active = ci == project.active
                 parts = [f"{len(ch.cameras):,} images"]
                 if ch.markers:
@@ -315,7 +315,7 @@ class WorkspacePane(QTreeWidget):
             d = items[0].data(0, ROLE)
             if d[0] == "workspace":
                 return
-            self.selectionInfo.emit({"kind": d[0], "chunk": d[1], "index": d[2] if len(d) > 2 else None})
+            self.selectionInfo.emit({"kind": d[0], "dataset": d[1], "index": d[2] if len(d) > 2 else None})
 
     def _menu(self, pos):
         item = self.itemAt(pos)
@@ -339,8 +339,6 @@ class WorkspacePane(QTreeWidget):
                          "shape": "Shape Style..."}[d[0]])
             m.addAction("Export Shapes...")
             m.addAction("Remove Layer" if d[0] == "shape_layer" else "Remove Shapes")
-            if d[0] == "shape":
-                m.addAction("Measure Shape...")
         a = m.exec(self.viewport().mapToGlobal(pos))
         if a:
             if a.text() == "Open Photo":
@@ -359,8 +357,6 @@ class WorkspacePane(QTreeWidget):
                 self.contextAction.emit(f"shape_style:shape:{d[2]}", ci)
             elif a.text() == "Shape Settings...":
                 self.contextAction.emit("shape_style:all:", ci)
-            elif a.text() == "Measure Shape...":
-                self.contextAction.emit(f"measure_shape:{d[2]}", ci)
             elif a.text() in ("Rename Marker...", "Remove Marker", "Filter Photos by Markers", "Reset Filter",
                               "Add Marker"):
                 labels = [r[2] for r in self.selected_roles() if r[0] == "marker"] or \
@@ -417,7 +413,7 @@ class ReferencePane(QTableWidget):
         if not self._filling and item.column() == 0 and item.data(ROLE) is not None:
             self.cameraReferenceToggled.emit(item.data(ROLE), item.checkState() == Qt.Checked)
 
-    def refresh(self, chunk):
+    def refresh(self, dataset):
         import math
         import numpy as np
         from .georef import CRS
@@ -429,14 +425,14 @@ class ReferencePane(QTableWidget):
         try:
             with bulk_fill(self):
                 self.clearContents()
-                self.data_row_count = len(chunk.cameras)
+                self.data_row_count = len(dataset.cameras)
                 self.setRowCount(self.data_row_count + 1)
-                geo = chunk.georef or {}
+                geo = dataset.georef or {}
                 try:
-                    crs = CRS.parse(geo.get("crs") or chunk.crs)
+                    crs = CRS.parse(geo.get("crs") or dataset.crs)
                 except ValueError:
                     crs = CRS()
-                for row, camera in enumerate(chunk.cameras):
+                for row, camera in enumerate(dataset.cameras):
                     est = list(camera.est) if camera.est is not None else [None] * 3
                     ref = [camera.lon, camera.lat, camera.alt]
                     err = None
@@ -454,7 +450,7 @@ class ReferencePane(QTableWidget):
                     if err is not None and camera.use_reference and camera.enabled:
                         errors.append(err)
                     values = [camera.label, _fmt(ref[0]), _fmt(ref[1]), _fmt(ref[2], 3),
-                              _fmt((chunk.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
+                              _fmt((dataset.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
                               _fmt(err, 3), *[_fmt(v, 3) for v in est]]
                     for col, value in enumerate(values):
                         item = QTableWidgetItem(value)
@@ -519,17 +515,17 @@ class MarkersPane(QTableWidget):
         if c not in self.EDITABLE and self.item(r, 0) and self.item(r, 0).data(ROLE) is not None:
             self.markerActivated.emit(self.item(r, 0).data(ROLE) or self.item(r, 0).text())
 
-    def refresh(self, chunk):
+    def refresh(self, dataset):
         self._busy = True
         try:
             with bulk_fill(self):
-                self._fill(chunk)
+                self._fill(dataset)
         finally:
             self._busy = False
 
-    def _fill(self, chunk):
-        ms = getattr(chunk, "markers", None) or []
-        rows = {r.get("label"): r for r in (getattr(chunk, "georef", {}) or {}).get("rows", [])}
+    def _fill(self, dataset):
+        ms = getattr(dataset, "markers", None) or []
+        rows = {r.get("label"): r for r in (getattr(dataset, "georef", {}) or {}).get("rows", [])}
         selected = set(self.selected_labels())
         self.clearContents()
         self.data_row_count = len(ms)
@@ -750,9 +746,9 @@ class PhotosPane(QListWidget):
     def visible_indices(self):
         return [self.item(r).data(ROLE) for r in range(self.count()) if not self.item(r).isHidden()]
 
-    def refresh(self, chunk):
+    def refresh(self, dataset):
         """Marker edits leave existing items, selection and scroll position intact."""
-        identity = tuple(c.path for c in chunk.cameras)
+        identity = tuple(c.path for c in dataset.cameras)
         same = getattr(self, "_photo_identity", None) == identity
         selected = {it.data(ROLE) for it in self.selectedItems()}
         current = self.currentRow()
@@ -762,7 +758,7 @@ class PhotosPane(QListWidget):
         try:
             if not same:
                 self.clear()
-            for k, camera in enumerate(chunk.cameras):
+            for k, camera in enumerate(dataset.cameras):
                 item = self.item(k) if same else QListWidgetItem()
                 if not same:
                     item.setData(ROLE, k)

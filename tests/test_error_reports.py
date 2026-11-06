@@ -109,7 +109,7 @@ def _project(tmp_path):
     from photomesh.project import Project, Camera
     pr = Project()
     pr.path = str(tmp_path / "site" / "job.pmsx")
-    ch = pr.chunk
+    ch = pr.dataset
     photos = tmp_path / "photos"
     ch.cameras = [Camera(path=str(photos / f"DJI_{i:04d}.JPG"), aligned=i < 7, lat=40.18 + i * 1e-4,
                          lon=44.51, alt=1000.0, width=5472, height=3648) for i in range(10)]
@@ -128,7 +128,7 @@ SYS = {"os": "Windows 11 Pro (build 10.0.26100, AMD64)", "cpu": "Intel(R) Core(T
 
 def _failed(tmp_path, n_log=40, **kw):
     pr = _project(tmp_path)
-    wd = pr.chunk.workdir
+    wd = pr.dataset.workdir
     log = [f"{wd}\\dense\\stereo: depth map {i}/640 for DJI_{i:04d}.JPG" for i in range(n_log)]
     log += ["Traceback (most recent call last):", '  File "x.py", line 3, in <module>', "    a = [0] * 10**12",
             "MemoryError"]

@@ -115,7 +115,7 @@ class Frame:
         self.crs_text, self.georeferenced = crs_text, georeferenced
 
     @classmethod
-    def from_chunk(cls, ch):
+    def from_dataset(cls, ch):
         from .georef import CRS
         gr = getattr(ch, "georef", None) or {}
         crs_text = gr.get("crs") or getattr(ch, "crs", "") or ""
@@ -1774,6 +1774,6 @@ def _occluded(scene, Xc, R, t, tol):
     rays = np.empty((len(Xw), 6), np.float32)
     rays[:, :3] = C; rays[:, 3:] = d / np.maximum(dist, 1e-12)[:, None]
     th = np.empty(len(Xw))
-    for a in range(0, len(Xw), 65536):                   # chunks: the GUI thread gets the GIL between them
+    for a in range(0, len(Xw), 65536):                   # datasets: the GUI thread gets the GIL between them
         th[a:a + 65536] = scene.cast_rays(o3d.core.Tensor(rays[a:a + 65536]))["t_hit"].numpy()
     return np.isfinite(th) & (th < dist * (1.0 - tol) - 0.05)

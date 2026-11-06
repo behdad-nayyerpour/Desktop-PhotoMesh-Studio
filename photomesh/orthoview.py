@@ -99,7 +99,7 @@ class OrthoView(QWidget):
     tileReady = Signal(int, object, object)        # generation, key, QImage
     heightReady = Signal(int, object)
     coordinatesChanged = Signal(str)
-    shapeClicked = Signal(int)                     # index into the chunk's shape set, -1 = nothing hit
+    shapeClicked = Signal(int)                     # index into the dataset's shape set, -1 = nothing hit
     workChanged = Signal(str, int, int, bool)
     markerAction = Signal(str, str)
     moveMarkerRequested = Signal(str, float, float, object)

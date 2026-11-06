@@ -55,3 +55,14 @@ installed menu review and real-project validation of #6 remain pending.
 No merge, public release or new version is authorized at this stage.
 
 README screenshots still show the last public version; refreshed menu/toolbar captures are provided with this test artifact, pending the user's installed review before any public screenshot or release update.
+
+
+## Toolbar and project terminology revision (test build)
+
+Remove Full Screen and its shortcut, and the inactive Measure Shape command. Keep shared shape metrics used by Properties. Layer buttons use Qt split-button behavior: the body toggles the shared visibility action and the arrow selects rendering styles. Use complete processing labels without increasing font or icon sizes.
+
+Project records now use ProjectData/datasets and new managed workspaces use processing names. New saves use photomesh-studio/2; legacy record containers and existing result paths remain readable without rewriting the source on open. Older application versions may not read new saves. Save a separate copy when testing.
+
+At the user's explicit request, XML export is now the independent photomesh-reference version 2.0 schema. Legacy XML import identifies the reference container structurally; CSV remains available for exchange. This is an intentional export-format change, not a claim of vendor XML compatibility.
+
+Validation added for schema round trips, legacy product-only records, workspace plans, XML accuracy/projection preservation, ordered process batches and worker-loss fallback, native arrow/body behavior, complete labels, and command removal. Full Linux/Windows suite results must be checked on the revision commit before delivery. This preview does not replace the pending whole-application audit or real-project verification of issue #6. No merge or public release is authorized.

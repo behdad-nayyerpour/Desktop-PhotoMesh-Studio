@@ -201,9 +201,9 @@ def test_not_georeferenced_up_rotation(scene, generic, tmp_path):
 
 
 # ------------------------------------------------------------------ GUI
-def _setup_chunk(window, scene, tmp_path, georef=False):
+def _setup_dataset(window, scene, tmp_path, georef=False):
     from photomesh.plyio import ply_counts
-    ch = window.chunk
+    ch = window.dataset
     ch.add_photos(sorted(scene["photos"].values()))
     wd = str(tmp_path / "work"); ch.workdir = wd
     shutil.copytree(scene["model"], os.path.join(wd, "sparse", "0"))
@@ -237,16 +237,16 @@ def test_gui_build_texture_and_tiles(window, no_dialogs, monkeypatch, scene, tmp
     monkeypatch.setattr(dialogs.BuildTiledModelDialog, "exec", lambda self: 1)
     t0 = dialogs.BuildTiledModelDialog.settings
     monkeypatch.setattr(dialogs.BuildTiledModelDialog, "settings", lambda self: dict(t0(self), tile_faces=3000))
-    ch = _setup_chunk(window, scene, tmp_path, georef)
+    ch = _setup_dataset(window, scene, tmp_path, georef)
     window.actions["Build Texture..."].trigger(); _wait(window)
-    assert ch.texture.get("size") == 1024, window.chunk.log
+    assert ch.texture.get("size") == 1024, window.dataset.log
     assert os.path.exists(ch.texture["obj"])
     assert "Texture 1024x1024" in pm.summary(ch, "model")
     rows = dict(pm.properties(ch, "model"))
     assert rows["Mapping mode"] == "Generic" and ("cm/pix" in rows["Texel size"]) == georef
     window.actions["Build Tiled Model..."].trigger(); _wait(window)
     t = ch.tiled_model
-    assert t.get("levels", 0) >= 2, window.chunk.log
+    assert t.get("levels", 0) >= 2, window.dataset.log
     txt = pm.summary(ch, "tiled")
     assert ("cm/pix" in txt) == georef and ("not georeferenced" in txt) == (not georef)
     labels = []
@@ -292,7 +292,7 @@ def test_gui_build_texture_and_tiles(window, no_dialogs, monkeypatch, scene, tmp
     window.project.path = str(tmp_path / "p.pmsx"); window.project.save(window.project.path)
     from photomesh.project import Project
     p2 = Project.load(window.project.path)
-    assert p2.chunks[0].texture["size"] == 1024 and p2.chunks[0].tiled_model["levels"] == t["levels"]
+    assert p2.datasets[0].texture["size"] == 1024 and p2.datasets[0].tiled_model["levels"] == t["levels"]
     # rebuilding the model invalidates the texture
     window.load_result("model", ch.model_ply)
     assert ch.texture   # same mesh -> kept
@@ -306,7 +306,7 @@ def test_gui_import_texture_and_tiles(window, no_dialogs, scene, generic, tilese
     """File > Import Texture / Import Tiled Model attach existing output folders
     (copied elsewhere, as when the outputs came from a run outside the project)."""
     from photomesh import procmeta as pm
-    ch = _setup_chunk(window, scene, tmp_path, georef=True)
+    ch = _setup_dataset(window, scene, tmp_path, georef=True)
     tex = str(tmp_path / "moved_tex"); shutil.copytree(generic["dir"], tex)
     assert window.import_texture(tex, quiet=True)
     assert ch.texture["dir"] == os.path.abspath(tex) and ch.texture["uv_npz"].startswith(os.path.abspath(tex))
@@ -323,7 +323,7 @@ def test_gui_import_texture_and_tiles(window, no_dialogs, scene, generic, tilese
     # survives save / load
     window.project.path = str(tmp_path / "imp.pmsx"); window.project.save(window.project.path)
     from photomesh.project import Project
-    c2 = Project.load(window.project.path).chunks[0]
+    c2 = Project.load(window.project.path).datasets[0]
     assert c2.texture["size"] == 1024 and c2.tiled_model["tiles"] == tileset["tiles"]
     # a texture of another mesh / a wrong folder is refused and nothing changes
     old = dict(ch.texture)
@@ -345,7 +345,7 @@ def test_real_project_texture(tmp_path):
     """Texture a real processed project (read-only: outputs go to tmp_path)."""
     from photomesh.project import Project
     prj = Project.load(SCEAUX)
-    ch = prj.chunks[prj.active]
+    ch = prj.datasets[prj.active]
     wd = prj.default_workdir(ch)
     photos = {os.path.basename(c.path): c.path for c in ch.cameras}
     info = tx.build_texture(dict(mesh=ch.model_ply, model=os.path.join(wd, "sparse", "0"), photos=photos,

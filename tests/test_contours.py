@@ -199,7 +199,7 @@ def test_export_menu_asks_interval_and_uses_contour_route(window, tmp_path, monk
     src, out = tmp_path / "model.ply", tmp_path / "ui.dxf"
     V, F = plane()
     save_ply(str(src), V.astype(np.float32), faces=F)
-    window.chunk.model_ply = str(src)
+    window.dataset.model_ply = str(src)
     asked = []
     def choose(*args):
         assert args[1] == "Export Mesh Contours"
@@ -222,7 +222,7 @@ def test_interval_dialog_cancel_does_not_export(window, tmp_path, monkeypatch):
     src, out = tmp_path / "model.ply", tmp_path / "cancel_ui.dxf"
     V, F = plane()
     save_ply(str(src), V.astype(np.float32), faces=F)
-    window.chunk.model_ply = str(src)
+    window.dataset.model_ply = str(src)
     monkeypatch.setattr(QInputDialog, "getDouble", staticmethod(lambda *a: (1.0, False)))
     assert window.export_model_to(str(out), "contours") is None
     assert not out.exists()

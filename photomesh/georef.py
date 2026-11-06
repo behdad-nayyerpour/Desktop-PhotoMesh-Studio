@@ -288,7 +288,7 @@ def _guess_crs(markers):
 
 
 def read_markers_xml(path):
-    """Metashape marker XML (document/chunk/markers + frames with locations) or
+    """Legacy marker XML (camera/marker records and frame locations) or
     survey XML (<surveydata><markers><marker name><gcp x y z checkpoint>).
     Returns (markers, CRS)."""
     root = ET.parse(path).getroot()
@@ -305,12 +305,17 @@ def read_markers_xml(path):
                     m.projections[im.get("name") or im.get("label")] = [float(im.get("x")), float(im.get("y")), True]
             out.append(m)
         return out, crs
-    chunk = root.find(".//chunk") if root.tag != "chunk" else root
-    cams = {c.get("id"): c.get("label") for c in chunk.iter("camera") if c.get("label")}
-    crs_el = chunk.find("reference")
+    # Locate the record container by its documented children, independent of
+    # the container's legacy vendor-specific name.
+    dataset = next((node for node in root.iter()
+                    if node.find("markers") is not None and node.find("cameras") is not None), None)
+    if dataset is None:
+        raise ValueError("Marker XML has no camera and marker record container")
+    cams = {c.get("id"): c.get("label") for c in dataset.iter("camera") if c.get("label")}
+    crs_el = dataset.find("reference")
     crs = CRS.parse(crs_el.text if crs_el is not None and crs_el.text else "")
     byid = {}
-    for mk in chunk.find("markers") if chunk.find("markers") is not None else []:
+    for mk in dataset.find("markers") if dataset.find("markers") is not None else []:
         ref = mk.find("reference")
         r = [float(ref.get(k)) for k in ("x", "y", "z")] if ref is not None and ref.get("x") else None
         m = Marker(mk.get("label"), r)
@@ -319,7 +324,7 @@ def read_markers_xml(path):
             if ref.get("sx"):
                 m.acc = [float(ref.get("sx")), float(ref.get("sz") or ref.get("sx"))]
         byid[mk.get("id")] = m
-    for fm in chunk.iter("frame"):
+    for fm in dataset.iter("frame"):
         for mk in fm.iter("marker"):
             m = byid.get(mk.get("marker_id"))
             if m is None:
@@ -333,12 +338,12 @@ def read_markers_xml(path):
 
 
 def write_markers_xml(path, markers, crs_text=""):
-    """Markers with reference and photo projections in the Metashape markers
-    XML layout (readable by read_markers_xml and by Metashape's Import Markers)."""
+    """PhotoMesh reference XML, preserving reference accuracy and photo projections.
+    CSV is available for exchange with applications requiring other XML schemas."""
     photos = sorted({p for m in markers for p in m.projections})
     pid = {p: i for i, p in enumerate(photos)}
-    doc = ET.Element("document", version="1.5.0")
-    ch = ET.SubElement(doc, "chunk", label="Chunk 1")
+    doc = ET.Element("photomesh-reference", version="2.0")
+    ch = ET.SubElement(doc, "dataset", label="Project")
     cams = ET.SubElement(ch, "cameras")
     for p, i in pid.items():
         ET.SubElement(cams, "camera", id=str(i), label=p)
@@ -1210,7 +1215,7 @@ def _reverse_winding_stream(src, dst, path, faces_at):
         done += k
 
 
-def transform_ply(path, M, out=None, chunk=2_000_000):
+def transform_ply(path, M, out=None, block_size=2_000_000):
     """Apply a 4x4 similarity to the vertices (and normals) of a PLY file.
 
     Never rewrites the file in place: the result goes to `out`, by default a
@@ -1218,8 +1223,8 @@ def transform_ply(path, M, out=None, chunk=2_000_000):
     the original is never left half-written. The input is read with plain file
     I/O, not a memory map: on Windows a mapped file cannot be truncated or
     replaced, which made the old in-place rewrite fail with
-    'OSError: [Errno 22] Invalid argument'. Binary PLYs are streamed in chunks
-    of `chunk` vertices (bounded memory); the rest of the file (faces) is
+    'OSError: [Errno 22] Invalid argument'. Binary PLYs are streamed in blocks
+    of `block_size` vertices (bounded memory); the rest of the file (faces) is
     copied verbatim.
 
     A transform with a reflection (det < 0) also reverses the triangle winding
@@ -1252,7 +1257,7 @@ def transform_ply(path, M, out=None, chunk=2_000_000):
                     dst.write(head)
                     done = 0
                     while done < n:
-                        k = min(chunk, n - done)
+                        k = min(block_size, n - done)
                         v = np.fromfile(src, dtype=dt, count=k)
                         if len(v) != k:
                             raise ValueError(f"{path}: truncated vertex data ({done + len(v)} of {n})")

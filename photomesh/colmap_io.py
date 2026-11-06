@@ -203,7 +203,7 @@ def write_points3D(path, P: Points):
     hb = head.tobytes(); trb = tr.tobytes()
     with open(path, "wb") as f:
         f.write(struct.pack("<Q", n))
-        # interleave headers and tracks in chunks to bound memory
+        # interleave headers and tracks in datasets to bound memory
         step = 200_000
         for s in range(0, n, step):
             e = min(n, s + step)

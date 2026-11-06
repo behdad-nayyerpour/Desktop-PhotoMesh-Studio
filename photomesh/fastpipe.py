@@ -137,7 +137,12 @@ def read_header(path: str) -> dict:
     return {"path": path, "width": w, "height": h, "lon": lon, "lat": lat, "alt": alt}
 
 
-def pool_map(fn, jobs, workers, chunksize=4):
+def _pool_batch(fn, batch):
+    """One picklable task per batch, preserving bounded process-queue overhead."""
+    return [fn(job) for job in batch]
+
+
+def pool_map(fn, jobs, workers, batch_size=4):
     """Ordered map over worker processes ('spawn'); if the pool cannot start or
     breaks (e.g. antivirus kills the worker processes), redo it in threads."""
     import multiprocessing as mp
@@ -147,9 +152,13 @@ def pool_map(fn, jobs, workers, chunksize=4):
     done = 0
     try:
         with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
-            for r in ex.map(fn, jobs, chunksize=chunksize):
-                done += 1
-                yield r
+            from itertools import repeat
+            size = max(1, int(batch_size))
+            batches = (jobs[start:start + size] for start in range(0, len(jobs), size))
+            for results in ex.map(_pool_batch, repeat(fn), batches):
+                for result in results:
+                    done += 1
+                    yield result
             return
     except (BrokenProcessPool, OSError) as e:
         import sys

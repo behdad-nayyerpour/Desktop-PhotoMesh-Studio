@@ -67,16 +67,16 @@ def best_match(old_path, idx):
     return max(cands, key=lambda c: (_trail_score(old_path, c), -len(c)))
 
 
-def missing_cameras(chunk):
-    return [k for k, c in enumerate(chunk.cameras) if not os.path.exists(c.path)]
+def missing_cameras(dataset):
+    return [k for k, c in enumerate(dataset.cameras) if not os.path.exists(c.path)]
 
 
-def relink_chunk(chunk, folder, only_missing=True, idx=None):
+def relink_dataset(dataset, folder, only_missing=True, idx=None):
     """Point photos at their copies below `folder`. Returns (relinked, not_found)
     where not_found lists the labels that had no match (left unchanged)."""
     idx = index_folder(folder) if idx is None else idx
     n, nf = 0, []
-    for c in chunk.cameras:
+    for c in dataset.cameras:
         if only_missing and os.path.exists(c.path):
             continue
         m = best_match(c.path, idx)
@@ -85,17 +85,17 @@ def relink_chunk(chunk, folder, only_missing=True, idx=None):
         if os.path.normcase(os.path.abspath(m)) != os.path.normcase(os.path.abspath(c.path)):
             c.path = m; n += 1
     if n:
-        _update_image_root(chunk)
+        _update_image_root(dataset)
     return n, nf
 
 
-def _update_image_root(chunk):
-    """COLMAP's image folder for an already processed chunk (workdir/image_root.txt)."""
-    wd = chunk.workdir
+def _update_image_root(dataset):
+    """COLMAP's image folder for an already processed dataset (workdir/image_root.txt)."""
+    wd = dataset.workdir
     f = os.path.join(wd, "image_root.txt") if wd else ""
     if not f or not os.path.exists(f):
         return
-    dirs = {os.path.dirname(os.path.abspath(c.path)) for c in chunk.cameras if c.enabled}
+    dirs = {os.path.dirname(os.path.abspath(c.path)) for c in dataset.cameras if c.enabled}
     try:
         cur = open(f, encoding="utf-8").read().strip()
     except OSError:

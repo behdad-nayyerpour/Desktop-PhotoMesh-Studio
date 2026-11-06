@@ -31,14 +31,14 @@ def build_toolbar(window):
     action(top, "Undo", "undo"); action(top, "Redo", "redo")
     top.addSeparator()
     for name, icon, label in (
-        ("Add Photos...", "add_photos", "Photos"),
-        ("Align Photos...", "align", "Align"),
+        ("Add Photos...", "add_photos", "Add Photos"),
+        ("Align Photos...", "align", "Align Photos"),
         ("Build Point Cloud...", "cloud", "Build Cloud"),
         ("Build Model...", "mesh", "Build Mesh"),
-        ("Build Texture...", "mode_textured", "Texture"),
-        ("Build Tiled Model...", "tiled", "Tiles"),
-        ("Build DEM...", "dem", "DEM"),
-        ("Build Orthomosaic...", "ortho", "Ortho")):
+        ("Build Texture...", "mode_textured", "Build Texture"),
+        ("Build Tiled Model...", "tiled", "Build Tiled Model"),
+        ("Build DEM...", "dem", "Build DEM"),
+        ("Build Orthomosaic...", "ortho", "Build Orthomosaic")):
         action(top, name, icon, label)
     top.addSeparator()
     action(top, "Preferences...", "preferences", "Settings")

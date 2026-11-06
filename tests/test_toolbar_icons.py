@@ -15,10 +15,9 @@ def _opaque_bbox(img):
 
 
 def test_icon_sizes_are_30_percent_larger():
-    from photomesh import icons, toolbuttons
+    from photomesh import icons
     assert icons.TOOLBAR_ICON == round(16 * 1.3) and icons.PANE_ICON == round(16 * 1.3)
     assert icons.SELECT_ICON == round(16 * 1.3) and icons.MODE_ICON == round(20 * 1.3)
-    assert toolbuttons.ARROW_W == round(16 * 1.3)
 
 
 @pytest.mark.parametrize("dpr", [1.0, 1.25, 1.5, 2.0])
