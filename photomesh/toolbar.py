@@ -15,12 +15,14 @@ def build_toolbar(window):
         window.addToolBar(tb)
         return tb
 
-    def action(tb, name, icon, label=None):
+    def action(tb, name, icon, label=None, compact=False):
         a = window.actions[name]
         a.setIcon(layer_icon(icon))
         a.setToolTip(name.rstrip("."))
         a.setIconText(label or name.rstrip("."))
         tb.addAction(a)
+        if compact:
+            tb.widgetForAction(a).setStyleSheet("QToolButton{padding:2px 0px;margin:0px;}")
         return a
 
     top = row("Project and processing", "toolbar", Qt.ToolButtonTextBesideIcon)
@@ -111,12 +113,12 @@ def build_toolbar(window):
 
     bottom.addSeparator()
     for name in ("Top", "Bottom", "Left", "Right", "Front", "Back", "Isometric"):
-        action(bottom, name, "view_" + name.lower(), "Iso" if name == "Isometric" else name)
+        action(bottom, name, "view_" + name.lower(), "Iso" if name == "Isometric" else name, compact=True)
     bottom.addSeparator()
     for name, icon, label in (("Zoom In", "zoom_in", "Zoom In"),
                               ("Zoom Out", "zoom_out", "Zoom Out"),
                               ("Reset View", "fit_view", "Fit")):
-        action(bottom, name, icon, label)
+        action(bottom, name, icon, label, compact=True)
     window.toolbars = [top, bottom]
     toggle = window.actions["Toolbar"]
     toggle.setChecked(True)
