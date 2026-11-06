@@ -72,6 +72,16 @@ def main():
     target = ROOT / "review"
     target.mkdir(exist_ok=True)
     (target / "inventory.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    details = {key: value for key, value in report.items() if key != "application_modules"}
+    details["static_leads"] = [{"code": item["code"], "path": Path(item["filename"]).relative_to(ROOT).as_posix(),
+                               "line": item["location"]["row"], "message": item["message"]}
+                              for item in failures]
+    details["modules"] = [{"path": module["path"], "lines": module["lines"],
+                          "functions": len(module["functions"]),
+                          "file_mutations": module["file_mutations"]} for module in modules]
+    print("AUDIT_DETAILS_START", flush=True)
+    print(json.dumps(details, indent=2), flush=True)
+    print("AUDIT_DETAILS_END", flush=True)
     print(json.dumps({key: len(value) if isinstance(value, list) else value
                       for key, value in report.items() if key != "note"}), flush=True)
 
