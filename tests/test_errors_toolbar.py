@@ -94,8 +94,9 @@ def test_publication_does_not_retry_disk_errors(monkeypatch):
 
 def test_toolbar_separates_processing_display_and_view(window):
     from PySide6.QtWidgets import QToolButton
-    process_names = {a.text() for a in window.processing_toolbar.actions()}
-    assert {"Align Photos...", "Build Point Cloud...", "Build Model..."} <= process_names
+    process_actions = window.processing_toolbar.actions()
+    assert all(window.actions[name] in process_actions for name in
+               ("Align Photos...", "Build Point Cloud...", "Build Model..."))
     display_actions = window.display_toolbar.actions()
     for key in ("tie", "cloud", "mesh"):
         assert window.layer_action(key) not in display_actions
