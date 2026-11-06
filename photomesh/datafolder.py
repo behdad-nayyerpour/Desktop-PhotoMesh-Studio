@@ -481,8 +481,9 @@ def _path_size(p):
 
 
 def protected_paths(project):
-    """Finished products and photos: never deleted by the clean-up."""
-    keep = []
+    """Project metadata, finished products and photos: never deleted by cleanup."""
+    project_path = getattr(project, "path", "")
+    keep = [project_path] if project_path else []
     for ch in project.datasets:
         for k in DATA_PATHS:
             v = getattr(ch, k, "")
@@ -527,7 +528,7 @@ def cleanup_candidates(project):
                             "paths": paths, "bytes": size})
     if project.path:
         for p, size in stale_copies(data_folder(project.path)):
-            if not any(is_under(k, p) for k in keep):
+            if not contains_referenced_data(p, keep):
                 out.append({"key": "stale", "label": f"Unfinished copy {os.path.basename(p)}",
                             "note": "left by an interrupted or failed Save As; not used", "checked": True,
                             "dataset": "", "paths": [p], "bytes": size})

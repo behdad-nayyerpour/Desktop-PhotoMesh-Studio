@@ -136,7 +136,7 @@ def test_running_pipeline_keeps_project_context_and_save_paths(window, tmp_path)
         event = QCloseEvent()
         window.closeEvent(event)
         assert not event.isAccepted()
-        assert "processing" in window.statusBar().currentMessage()
+        assert "processing" in window.statusBar().details
     finally:
         window.runner = original_runner
 
@@ -212,3 +212,79 @@ def test_cleanup_protection_follows_linked_photo_targets(tmp_path):
         pytest.skip("Creating symlinks is unavailable for this account")
     assert datafolder.contains_referenced_data(str(folder), [str(alias)])
     assert photo.read_bytes() == b"source"
+
+
+def test_cleanup_protection_includes_project_metadata(tmp_path):
+    from photomesh import datafolder
+    from photomesh.project import Project
+    folder = tmp_path / "processing.partial"
+    folder.mkdir()
+    path = folder / "project.pmsx"
+    project = Project()
+    project.path = str(path)
+    project.save(str(path))
+    assert datafolder.contains_referenced_data(str(folder), datafolder.protected_paths(project))
+
+
+def test_legacy_raw_cloud_is_restored_after_failed_fusion(tmp_path):
+    from photomesh.dense import LegacyCloudBackup
+    dense = tmp_path / "dense"
+    dense.mkdir()
+    raw = dense / "fused.ply"
+    raw.write_bytes(b"previous cloud")
+    visibility = dense / "fused.ply.vis"
+    visibility.write_bytes(b"previous visibility")
+    backup = LegacyCloudBackup(str(raw), str(tmp_path))
+    backup.prepare()
+    raw.unlink()
+    visibility.unlink()
+    raw.write_bytes(b"partial replacement")
+    visibility.write_bytes(b"partial visibility")
+    backup.restore()
+    assert raw.read_bytes() == b"previous cloud"
+    assert visibility.read_bytes() == b"previous visibility"
+    assert not list(dense.glob("*.preserved-*"))
+
+
+def test_current_filtered_cloud_needs_no_legacy_copy(tmp_path):
+    from photomesh.dense import LegacyCloudBackup
+    cloud = tmp_path / "point_cloud.ply"
+    cloud.write_bytes(b"current product")
+    backup = LegacyCloudBackup(str(cloud), str(tmp_path))
+    backup.prepare()
+    assert backup.entries == []
+    backup.discard()
+    assert cloud.read_bytes() == b"current product"
+
+
+def test_legacy_cloud_preparation_failure_leaves_no_hardlink_backups(tmp_path):
+    from photomesh.dense import LegacyCloudBackup
+    folder = tmp_path / "dense"
+    folder.mkdir()
+    cloud = folder / "fused.ply"
+    cloud.write_bytes(b"previous cloud")
+    backup = LegacyCloudBackup(str(cloud), str(tmp_path))
+    backup.prepare()
+    backup.restore()
+    backup.restore()
+    assert cloud.read_bytes() == b"previous cloud"
+    assert not list(folder.glob("*.preserved-*"))
+
+
+def test_legacy_cloud_backup_recognizes_file_aliases(tmp_path):
+    from photomesh.dense import LegacyCloudBackup
+    folder = tmp_path / "dense"
+    folder.mkdir()
+    raw = folder / "fused.ply"
+    raw.write_bytes(b"previous cloud")
+    alias = tmp_path / "referenced-cloud.ply"
+    try:
+        os.link(raw, alias)
+    except OSError:
+        pytest.skip("Hard links are unavailable on this filesystem")
+    backup = LegacyCloudBackup(str(alias), str(tmp_path))
+    backup.prepare()
+    raw.unlink()
+    raw.write_bytes(b"incomplete")
+    backup.restore()
+    assert raw.read_bytes() == alias.read_bytes() == b"previous cloud"

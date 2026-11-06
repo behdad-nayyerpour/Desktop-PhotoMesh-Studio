@@ -896,8 +896,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     # ---------------------------------------------------------------- File
     def _can_change_project(self):
         if self._opening or (self.runner is not None and getattr(self.runner, "busy", False)):
-            self.statusBar().showMessage(
-                "Wait for processing to finish or cancel it before saving, switching or closing the project.", 8000)
+            message = "Wait for processing to finish or cancel it before saving, switching or closing the project."
+            self.statusBar().showMessage(message, 8000)
+            QMessageBox.information(self, "Processing in progress", message)
             return False
         return True
 
@@ -1196,7 +1197,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Only a successful metadata save permits removal of migrated temporary results."""
         from . import datafolder as dfo
         pending = self.__dict__.pop("_temporary_data_copies", [])
-        protected = [self.project.path] + dfo.protected_paths(self.project)
+        protected = dfo.protected_paths(self.project)
         for owner, source, destination in pending:
             if owner is not self.project:
                 continue
@@ -1840,14 +1841,23 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         dlg = BuildPointCloudDialog(self)
         if not dlg.exec():
             return
-        from .dense import dense_steps
+        from .dense import dense_steps, LegacyCloudBackup
         wd = self.project.default_workdir(ch)
         s = dlg.settings()
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
         if ch.georef:
             s["filters"].setdefault("up", [0.0, 0.0, 1.0])
-        steps = [("Preparing point cloud", lambda: dense_steps(exe, wd, s, cm.image_dir(wd)), 1)]
+        source_backup = LegacyCloudBackup(ch.point_cloud_ply, wd)
+        def prepare():
+            source_backup.prepare()
+            return dense_steps(exe, wd, s, cm.image_dir(wd))
+        def loaded():
+            self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply"))
+            retained = source_backup.discard()
+            if retained:
+                self.log("Build Point Cloud succeeded; backup files retained: " + "; ".join(retained))
+        steps = [("Preparing point cloud", prepare, 1)]
         self.log(f"Build Point Cloud: quality={s['quality']}, depth filtering={s['depth_filtering']}, "
                  f"{s['max_sources']} neighbour photos, workdir={wd}")
         def meta(dt, stages):
@@ -1879,7 +1889,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                             filtering=filter_statistics.get("filters",[]),
                             **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
-                  lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s, engine_exe=exe)
+                  loaded, meta, params=s, on_fail=source_backup.restore, engine_exe=exe)
 
     def build_model(self):
         if not self._require_saved("Build Model"):

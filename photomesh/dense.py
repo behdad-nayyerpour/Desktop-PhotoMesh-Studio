@@ -1119,3 +1119,79 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
         ("gate", fusion_gate, 0),
         ("Filtering point cloud", [PYTHON, "filter_cloud", fcfg], 6),
     ] + tail
+
+
+class LegacyCloudBackup:
+    """Preserve older projects that reference the raw fusion output directly."""
+
+    def __init__(self, cloud, workspace):
+        raw = os.path.join(workspace, "dense", "fused.ply")
+        same_source = False
+        if cloud and os.path.isfile(cloud):
+            try:
+                same_source = os.path.samefile(cloud, raw)
+            except OSError:
+                same_source = False
+        self.paths = [raw, raw + ".vis"] if same_source else []
+        self.entries = []
+        self.ready = False
+
+    def prepare(self):
+        import shutil
+        import uuid
+        if self.ready:
+            return
+        try:
+            for path in self.paths:
+                backup = None
+                if os.path.exists(path):
+                    backup = path + ".preserved-" + uuid.uuid4().hex
+                    self.entries.append((path, backup))
+                    try:
+                        if os.path.islink(path):
+                            raise OSError("Copy linked input")
+                        os.link(path, backup)
+                    except OSError:
+                        shutil.copy2(path, backup)
+                else:
+                    self.entries.append((path, None))
+            self.ready = True
+        except BaseException as error:
+            retained = self.discard()
+            if retained:
+                error.add_note("Backup files retained: " + "; ".join(retained))
+            raise
+
+    def restore(self):
+        if not self.ready:
+            return
+        from .workflow import replace_output
+        failed = []
+        for path, backup in self.entries:
+            try:
+                if backup is not None:
+                    replace_output(backup, path)
+                    # Renaming two names for the same inode may be a no-op.
+                    if os.path.exists(backup):
+                        os.remove(backup)
+                elif os.path.exists(path):
+                    os.remove(path)
+            except OSError:
+                failed.append((path, backup))
+        self.entries = failed
+        self.ready = bool(failed)
+        if failed:
+            raise RuntimeError("Previous cloud backup retained; close programs using these files: "
+                               + "; ".join(str(backup or path) for path, backup in failed))
+
+    def discard(self):
+        retained = []
+        for _path, backup in self.entries:
+            if backup is not None and os.path.exists(backup):
+                try:
+                    os.remove(backup)
+                except OSError:
+                    retained.append(backup)
+        self.entries = []
+        self.ready = False
+        return retained
