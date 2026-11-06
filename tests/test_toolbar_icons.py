@@ -100,13 +100,28 @@ for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
 ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_ext_button"]
+overflow_entries = []
+if ext and ext[0].isVisible():
+    from PySide6.QtCore import QTimer
+    from PySide6.QtTest import QTest
+    def inspect_overflow():
+        popup = app.activePopupWidget()
+        if popup is not None:
+            overflow_entries.extend(a.text() for a in popup.actions())
+            popup.close()
+    QTimer.singleShot(100, inspect_overflow)
+    QTest.mouseClick(ext[0], Qt.LeftButton)
+    for _ in range(10): app.processEvents()
+    # Some Qt styles expand the toolbar instead of opening a popup.
+    if not overflow_entries:
+        overflow_entries.extend(a.text() for a in tb.actions()
+                                if tb.widgetForAction(a) is not None and tb.widgetForAction(a).isVisible())
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
                           "overflow": bool(ext and ext[0].isVisible()),
                           "window_width": w.width(),
                           "omitted": [a.text() for a in tb.actions() if not a.isSeparator()
                                       and tb.widgetForAction(a) is not None and not tb.widgetForAction(a).isVisible()],
-                          "overflow_entries": [a.text() for a in ext[0].menu().actions()]
-                                              if ext and ext[0].menu() else [],
+                          "overflow_entries": overflow_entries,
                           "clipped": [(b.text(), b.width(), b.sizeHint().width(), b.height(), b.sizeHint().height())
                                       for bar in w.toolbars for b in bar.findChildren(QToolButton)
                                       if b.isVisible() and b.objectName() != "qt_toolbar_ext_button"
