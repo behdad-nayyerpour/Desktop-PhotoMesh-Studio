@@ -3,8 +3,12 @@
 **Source version 1.0.2** — offline engine compatibility checks, maintained global mapping, optional neural matching, and explicit GPS framing.
 Windows installers are published separately in Releases; check their version before downloading.
 
-Desktop photogrammetry software for turning overlapping aerial photographs into
-3D point clouds, textured meshes, orthomosaics, elevation models, and DXF contours.
+PhotoMesh Studio is a free desktop photogrammetry application for processing aerial
+imagery locally, without a cloud service.
+
+Built with Python and PySide6, it uses COLMAP for photo alignment and dense
+reconstruction, alongside application code for project management, visualization,
+and surveying workflows.
 
 **[Download for Windows](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)** ·
 [User guide](docs/user-guide.md) · [Installation](docs/installation.md) ·
@@ -77,10 +81,14 @@ see the [user guide](docs/user-guide.md).
 
 ## Project
 
-PhotoMesh Studio is built with Python, PySide6, and pyqtgraph. Reconstruction uses
-[COLMAP](https://colmap.github.io/) and
-[GLOMAP](https://github.com/colmap/glomap), with the project's own `fastpipe` pipeline.
+PhotoMesh Studio uses [COLMAP](https://colmap.github.io/) for reconstruction,
+with the application's `fastpipe` orchestration pipeline and a Python/PySide6
+interface using pyqtgraph.
 
-The interface follows publicly documented photogrammetry workflows.
-PhotoMesh Studio is an independent project and is not affiliated with Agisoft.
-See [project notes and third-party components](docs/development/project-notes.md).
+Optional components include LightGlue and ALIKED for local feature matching,
+and [GLOMAP](https://github.com/colmap/glomap) for compatible legacy workflows.
+Third-party components retain their respective licenses.
+
+PhotoMesh Studio is an independent project and is not affiliated with or endorsed
+by Agisoft. See [project notes and third-party components](docs/development/project-notes.md)
+for interface references and component information.
