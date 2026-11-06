@@ -152,7 +152,53 @@ jobs:
             Copy-Item -LiteralPath (Join-Path $PWD $part) -Destination (Join-Path $appPath $part) -Recurse
           }
           $runtimeId = Join-Path $env:ICON_RUNTIME "app/runtime.id"
-          if (Test-Path -LiteralPath $runtimeId) { Copy-Item -LiteralPath $runtimeId -Destination (Join-Path $appPath "runtime.id") }
+          if (-not (Test-Path -LiteralPath $runtimeId)) { throw "Verified runtime identity is missing" }
+          Copy-Item -LiteralPath $runtimeId -Destination (Join-Path $appPath "runtime.id")
+          $runtimeIdentity = (Get-Content -LiteralPath $runtimeId -Raw).Trim()
+          if ($runtimeIdentity -notmatch '^[0-9a-fA-F]{64}
+          $env:PHOTOMESH_STAGE_APP = $appPath
+          & (Join-Path $stagePath "python/python.exe") -c "import os, sys; sys.path.insert(0, os.environ['PHOTOMESH_STAGE_APP']); import photomesh, PySide6, psutil, pyproj; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PHOTOMESH_STAGE_APP']).resolve()); assert photomesh.APP_VERSION == '1.0.3'; from photomesh.memguard import require_available_bytes; print('Staged runtime OK:', photomesh.APP_VERSION, require_available_bytes())"
+          if ($LASTEXITCODE -ne 0) { throw "Bundled runtime import failed" }
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $isccPath)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "Inno Setup installation failed" }
+          }
+          & $isccPath /Qp "/DAppVersion=1.0.3" "/DStageDir=$stagePath" "/DOutputDir=$PWD/preview" "packaging/release.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Preview installer compilation failed" }
+          $digest = (Get-FileHash "preview/PhotoMeshStudio_Setup_1.0.3.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$digest  PhotoMeshStudio_Setup_1.0.3.exe" | Set-Content "preview/PhotoMeshStudio_Setup_1.0.3.exe.sha256"
+          @("PhotoMesh Studio 1.0.3 release candidate; no GitHub Release is published.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.2 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version 1.0.3. New saves use schema 2; keep a separate project copy for older application versions.") | Set-Content "preview/TEST-BUILD.txt"
+      - name: Upgrade the disposable 1.0.2 installation and verify installed 1.0.3
+        shell: pwsh
+        run: |
+          $upgradeRoot = [IO.Path]::GetFullPath($env:ICON_RUNTIME)
+          $temporaryRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\') + '\'
+          if (-not $upgradeRoot.StartsWith($temporaryRoot, [StringComparison]::OrdinalIgnoreCase)) { throw "Upgrade fixture must stay within runner temporary files" }
+          $obsoleteProbe = Join-Path $upgradeRoot "app/photomesh/obsolete_release_probe.py"
+          "obsolete release fixture" | Set-Content -LiteralPath $obsoleteProbe
+          $userFixture = Join-Path $env:RUNNER_TEMP "PhotoMesh103UserData"
+          New-Item -ItemType Directory -Force $userFixture | Out-Null
+          $retainedFile = Join-Path $userFixture "project.pmsx"
+          "external user metadata fixture" | Set-Content -LiteralPath $retainedFile
+          $beforeHash = (Get-FileHash -LiteralPath $retainedFile -Algorithm SHA256).Hash
+          $setup103 = Join-Path $PWD "preview/PhotoMeshStudio_Setup_1.0.3.exe"
+          $upgradeArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=`"$upgradeRoot`"", '/TASKS=""')
+          $upgradeProcess = Start-Process -FilePath $setup103 -ArgumentList $upgradeArgs -Wait -PassThru -WindowStyle Hidden
+          if ($upgradeProcess.ExitCode -ne 0) { throw "1.0.3 upgrade installation failed" }
+          if (Test-Path -LiteralPath $obsoleteProbe) { throw "Obsolete application file survived upgrade" }
+          if ((Get-FileHash -LiteralPath $retainedFile -Algorithm SHA256).Hash -ne $beforeHash) { throw "External project metadata changed during upgrade" }
+          & (Join-Path $upgradeRoot "python/python.exe") "tools/validate_installed_103.py" (Join-Path $upgradeRoot "app") (Join-Path $PWD "preview")
+          if ($LASTEXITCODE -ne 0) { throw "Installed application acceptance failed" }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PhotoMeshStudio-1.0.3-Candidate
+          path: preview/
+          retention-days: 14
+          if-no-files-found: ignore
+) { throw "Invalid runtime identity" }
+          @("PhotoMesh Studio 1.0.3", "Runtime ID: $runtimeIdentity", "Commit: ${{ github.sha }}") | Set-Content -LiteralPath (Join-Path $appPath "release_manifest.txt") -Encoding ascii
           $env:PHOTOMESH_STAGE_APP = $appPath
           & (Join-Path $stagePath "python/python.exe") -c "import os, sys; sys.path.insert(0, os.environ['PHOTOMESH_STAGE_APP']); import photomesh, PySide6, psutil, pyproj; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PHOTOMESH_STAGE_APP']).resolve()); assert photomesh.APP_VERSION == '1.0.3'; from photomesh.memguard import require_available_bytes; print('Staged runtime OK:', photomesh.APP_VERSION, require_available_bytes())"
           if ($LASTEXITCODE -ne 0) { throw "Bundled runtime import failed" }

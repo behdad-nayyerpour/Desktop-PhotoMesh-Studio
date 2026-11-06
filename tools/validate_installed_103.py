@@ -16,6 +16,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox, QStyle, QStyleOptionToo
 from PySide6.QtGui import QFont, QFontDatabase, QRawFont
 import photomesh
 assert photomesh.APP_VERSION == "1.0.3"
+assert "PhotoMesh Studio 1.0.3" in (app_root / "release_manifest.txt").read_text(encoding="ascii")
 assert Path(photomesh.__file__).resolve().is_relative_to(app_root)
 assert (app_root / "photomesh" / "resources" / "photomesh.ico").is_file()
 assert (app_root / "packaging" / "fix_shortcut_icon.ps1").is_file()
