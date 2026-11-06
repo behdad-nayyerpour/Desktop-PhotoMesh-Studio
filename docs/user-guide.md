@@ -335,7 +335,8 @@ space check, cancellation and transactional-copy safeguards.
 Marker XML exports now use PhotoMesh reference XML version 2.0
 (`photomesh-reference` / `dataset`). Legacy camera/marker XML and survey XML
 remain readable by their record structure. The new XML export is not the
-vendor-specific Metashape export schema; use CSV for exchange when required.
+vendor-specific Metashape export schema. Text/CSV import and tab-separated
+reference-report export remain available for exchanging references.
 Reference coordinates, accuracies, control/check state and pinned projections
 are retained.
 

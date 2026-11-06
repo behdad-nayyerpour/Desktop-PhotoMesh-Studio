@@ -6,14 +6,13 @@ Maintainability review is required for every new application version. Include it
 in the work plan at the start and check it again after the final implementation.
 It complements functional tests; it is not established by a green CI result.
 
-## Pending baseline audit
+## Baseline review
 
-The 1.0.2 engine work reviewed its changed paths and integration behavior.
-A complete repository-wide maintainability and duplication audit remains
-**pending**. Schedule that audit as part of the next application version, before
-its release. Do not describe earlier versions as having passed that full audit.
-Retain an explicit list of unresolved findings rather than silently treating
-them as completed.
+The repository-wide baseline sweep and targeted contract review were performed
+for [1.0.3](release-review-103.md), with explicit scope, findings and remaining
+hardware checks. Earlier versions did not establish that baseline. Each later
+version still requires the review below; a green test run is not proof of the
+absence of duplication, dead code or bugs.
 
 ## Review before each release
 

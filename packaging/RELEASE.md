@@ -37,7 +37,7 @@ the target hardware. The automated test suite does not exercise a full
 COLMAP/GPU reconstruction. The EXE is not code signed.
 
 
-## Pinned engines in 1.0.2
+## Engine bundle retained from 1.0.2
 
 The builder prepares COLMAP 4.2.1 CPU/CUDA engines plus the local ALIKED/LightGlue
 models with fixed SHA256 digests. The tested source COLMAP is retained as a legacy

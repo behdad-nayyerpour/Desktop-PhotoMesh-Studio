@@ -1,6 +1,6 @@
 # PhotoMesh Studio
 
-**Source version 1.0.2** — offline engine compatibility checks, maintained global mapping, optional neural matching, and explicit GPS framing.
+**Source version 1.0.3** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
 Windows installers are published separately in Releases; check their version before downloading.
 
 PhotoMesh Studio is a free desktop photogrammetry application for processing aerial
@@ -16,6 +16,8 @@ and surveying workflows.
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
 
 ## Screenshots
+
+Example project captures from 1.0.2. Current toolbar captures accompany the 1.0.3 installer candidate.
 
 **Dark theme**
 

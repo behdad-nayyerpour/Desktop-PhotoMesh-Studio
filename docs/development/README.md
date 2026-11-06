@@ -96,5 +96,5 @@ Every application version includes the [maintainability and release quality
 checklist](release-quality.md). Review duplication, dead code, readability and
 workflow interactions alongside correctness, compatibility and performance.
 The root [contributor instructions](../../AGENTS.md) apply to coding agents as
-well. A full baseline maintainability audit is pending and belongs in the next
-application version's plan before release.
+well. The [1.0.3 baseline review](release-review-103.md) records the repository sweep,
+manual findings, cleanup, validation and remaining target-hardware checks.
