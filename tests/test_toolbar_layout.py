@@ -111,3 +111,29 @@ def test_layer_button_initialization_does_not_invoke_commands(window, no_dialogs
     assert no_dialogs == []
     for button in window.mode_buttons:
         assert button.isChecked() == button.visibility.isChecked()
+
+
+@pytest.mark.parametrize("theme", ["Dark", "Light"])
+@pytest.mark.parametrize("checked", [False, True])
+def test_split_captions_have_room_beside_native_arrow(window, qtbot, theme, checked):
+    from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionToolButton
+    from photomesh.theme import apply_theme
+    apply_theme(QApplication.instance(), theme)
+    for button in window.mode_buttons:
+        original = button.visibility.isChecked()
+        try:
+            button.visibility.setChecked(checked)
+            button.ensurePolished()
+            button.resize(button.sizeHint())
+            option = QStyleOptionToolButton()
+            button.initStyleOption(option)
+            body = button.style().subControlRect(QStyle.CC_ToolButton, option,
+                                                 QStyle.SC_ToolButton, button)
+            arrow = button.style().subControlRect(QStyle.CC_ToolButton, option,
+                                                  QStyle.SC_ToolButtonMenu, button)
+            assert button.isChecked() == checked
+            assert body.width() >= button.fontMetrics().horizontalAdvance(button.title) + 8
+            assert arrow.width() > 0 and not body.intersects(arrow)
+            assert button.minimumSizeHint().width() >= button.sizeHint().width()
+        finally:
+            button.visibility.setChecked(original)

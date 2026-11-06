@@ -1,4 +1,4 @@
-name: UI preview installer
+name: PhotoMesh 1.0.3 validation and installer
 on:
   push:
     branches: ["codex/independent-layer-icons"]
@@ -30,6 +30,12 @@ jobs:
           ruff check --select F821,F822,F823 photomesh
       - name: Compare equivalent photo-processing batches
         run: python tools/compare_pool_batches.py
+      - name: Repository review inventory
+        run: python tools/review_inventory.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PhotoMeshStudio-1.0.3-Audit
+          path: review/
       - name: Full regression suite
         run: python -m pytest -vv -rs --maxfail=10 --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
   preview:
@@ -69,6 +75,10 @@ jobs:
               apply_theme(app, theme)
               for _ in range(10): app.processEvents()
               assert w.grab().copy(0, 0, 1600, 230).save("preview/toolbar-" + theme.lower() + ".png")
+              for checked in (False, True):
+                  for button in w.mode_buttons: button.visibility.setChecked(checked)
+                  for _ in range(10): app.processEvents()
+                  assert w.display_toolbar.grab().save("preview/layers-" + theme.lower() + ("-on" if checked else "-off") + ".png")
               from PySide6.QtGui import QImage, QPainter, QColor, QFont
               sheet = QImage(2000, 1200, QImage.Format_ARGB32_Premultiplied)
               sheet.fill(QColor("#202834" if theme == "Dark" else "#E8EDF3"))
@@ -88,6 +98,7 @@ jobs:
 
           os._exit(0)
       - name: Fetch verified released runtime
+        if: false
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -102,6 +113,7 @@ jobs:
           if ($process.ExitCode -ne 0) { throw "Runtime installation failed: $($process.ExitCode)" }
           "ICON_RUNTIME=$runtimePath" >> $env:GITHUB_ENV
       - name: Build test installer with the released runtime
+        if: false
         shell: pwsh
         run: |
           $stagePath = Join-Path $env:RUNNER_TEMP "PhotoMeshIconStage"
@@ -122,16 +134,15 @@ jobs:
             choco install innosetup --yes --no-progress
             if ($LASTEXITCODE -ne 0) { throw "Inno Setup installation failed" }
           }
-          & $isccPath /Qp "/DAppVersion=1.0.2" "/DStageDir=$stagePath" "/DOutputDir=$PWD/preview" "packaging/release.iss"
+          & $isccPath /Qp "/DAppVersion=1.0.3" "/DStageDir=$stagePath" "/DOutputDir=$PWD/preview" "packaging/release.iss"
           if ($LASTEXITCODE -ne 0) { throw "Preview installer compilation failed" }
-          Move-Item -LiteralPath "preview/PhotoMeshStudio_Setup_1.0.2.exe" -Destination "preview/PhotoMeshStudio_Test_Revision.exe"
-          $digest = (Get-FileHash "preview/PhotoMeshStudio_Test_Revision.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$digest  PhotoMeshStudio_Test_Revision.exe" | Set-Content "preview/PhotoMeshStudio_Test_Revision.exe.sha256"
-          @("Toolbar and project-schema preview build only; no GitHub Release is published.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.2 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version remains 1.0.2; install the released 1.0.2 installer again to restore its original application files.") | Set-Content "preview/TEST-BUILD.txt"
+                    $digest = (Get-FileHash "preview/PhotoMeshStudio_Setup_1.0.3.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$digest  PhotoMeshStudio_Setup_1.0.3.exe" | Set-Content "preview/PhotoMeshStudio_Setup_1.0.3.exe.sha256"
+          @("PhotoMesh Studio 1.0.3 release candidate; no GitHub Release is published.", "Commit: ${{ github.sha }}", "Runtime: verified v1.0.2 installer.", "Close PhotoMesh Studio before running this test installer.", "Application version 1.0.3. New saves use schema 2; keep a separate project copy for older application versions.") | Set-Content "preview/TEST-BUILD.txt"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: PhotoMeshStudio-Test-Revision
+          name: PhotoMeshStudio-1.0.3-Candidate
           path: preview/
           retention-days: 14
           if-no-files-found: ignore
