@@ -15,6 +15,22 @@ and surveying workflows.
 [Changelog](CHANGES.md) ·
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
 
+## 1.0.3 candidate under review
+
+Version 1.0.3 is being tested before publication; the main-branch source and
+published installer remain 1.0.2. [Review the 1.0.3 changes and validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/pull/7).
+Linux and Windows each passed 680 tests; the complete candidate Setup and a
+disposable upgrade from 1.0.2 passed. Real-project/GPU acceptance remains pending.
+
+[Download the candidate Setup and validation records](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547844488)
+(about 866 MB; temporary artifact ZIP containing the full Setup).
+Keep a separate project copy when testing: new saves use schema 2 and new
+reference XML exports use the independent PhotoMesh format.
+
+Installed 1.0.3 toolbar preview:
+
+![PhotoMesh Studio 1.0.3 candidate toolbar with complete captions](docs/images/toolbar-1.0.3.png)
+
 ## Screenshots
 
 **Dark theme**
