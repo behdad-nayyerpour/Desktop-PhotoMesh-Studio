@@ -80,7 +80,7 @@ def test_undistort_and_workspace(tmp_path):
         c = m.cameras[im.camera_id]
         Image.fromarray(rng.integers(0, 255, (c.height, c.width, 3), dtype=np.uint8)).save(photos / im.name)
     with pytest.raises(RuntimeError):
-        dense.prepare_workspace(str(model_dir), str(photos), str(photos / "dense"), "Low", workers=1)
+        dense.prepare_workspace(str(model_dir), str(photos), str(photos), "Low", workers=1)
     r = dense.prepare_workspace(str(model_dir), str(photos), str(tmp_path / "dense"), "High",
                                 max_sources=4, workers=2)
     assert r["undistorted"] == 8 and r["factor"] == 2
