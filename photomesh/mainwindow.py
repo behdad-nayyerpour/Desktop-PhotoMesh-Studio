@@ -765,7 +765,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return bool(path and os.path.exists(path)) or self.model_view.has_layer(key)
 
     def _solo(self, key):
-        """Like Metashape's view-mode buttons: show one data layer, hide the others."""
+        """Show one reconstruction layer and hide the others."""
         for k in ("tie", "cloud", "mesh", "tiled"):
             self.set_layer_visible(k, k == key)
         self.tabs.setCurrentWidget(self.model_view)
@@ -845,7 +845,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _workspace_action(self, action, ci):
         if action in ("Add ProjectData", "Set as Active ProjectData", "Rename ProjectData...", "Duplicate ProjectData", "Remove ProjectData"):
-            raise ValueError("ProjectData management is not supported; use one project per dataset.")
+            raise ValueError("Multiple data groups are not supported; use a separate project for each survey.")
         if action.startswith("register_camera:"):
             clicked=int(action.split(":")[1])
             indices=[role[2] for role in self.workspace.selected_roles() if role[0]=="camera"]

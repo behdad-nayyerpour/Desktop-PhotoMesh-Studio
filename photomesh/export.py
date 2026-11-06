@@ -8,7 +8,7 @@ coordinates in Rhino / AutoCAD / GIS:
 
 * PLY    - vertex x, y, z written as 'double' (float64); every other property
            and element (normals, colours, confidence, faces) copied unchanged.
-           Binary files are streamed in datasets (27.8M-point clouds fit in a few
+           Binary files are streamed in blocks (27.8M-point clouds fit in a few
            hundred MB of RAM at most).
 * OBJ    - vertices = local + offset, printed with 6 decimals (1 micrometre).
 * DXF    - ASCII DXF R12 written by our own streaming writer (no dependency).
@@ -91,7 +91,7 @@ def _world_dtype(dt):
     return np.dtype([(n, end + "f8") if n in ("x", "y", "z") else (n, dt.fields[n][0]) for n in dt.names])
 
 
-def export_ply_world(src, dst, offset=None, dataset=2_000_000, log=None):
+def export_ply_world(src, dst, offset=None, block_size=2_000_000, log=None):
     """Copy a PLY (cloud or mesh) adding `offset` to x, y, z (as double)."""
     if offset is None:
         if os.path.abspath(src) != os.path.abspath(dst):
@@ -109,7 +109,7 @@ def export_ply_world(src, dst, offset=None, dataset=2_000_000, log=None):
             out.write(_world_header(head, off))
             done = 0
             while done < n:
-                v = np.fromfile(fh, dtype=dt, count=min(dataset, n - done))
+                v = np.fromfile(fh, dtype=dt, count=min(block_size, n - done))
                 if not len(v):
                     raise ValueError(f"{src}: truncated vertex data")
                 o = np.empty(len(v), odt)
@@ -152,9 +152,9 @@ def _dxf_head(layer):
 _DXF_TAIL = "0\nENDSEC\n0\nEOF\n"
 
 
-def _rows(fh, fmt, arr, dataset=100_000):
-    for s in range(0, len(arr), dataset):
-        blk = arr[s:s + dataset]
+def _rows(fh, fmt, arr, block_size=100_000):
+    for s in range(0, len(arr), block_size):
+        blk = arr[s:s + block_size]
         fh.write((fmt * len(blk)) % tuple(blk.ravel().tolist()))
 
 
@@ -201,7 +201,7 @@ def export_dxf_mesh(src, dst, offset=None, log=None):
     return write_dxf_mesh(dst, V, F, offset, log=log)
 
 
-def export_dxf_points(src, dst, offset=None, layer="PhotoMesh_Points", dataset=1_000_000, log=None):
+def export_dxf_points(src, dst, offset=None, layer="PhotoMesh_Points", block_size=1_000_000, log=None):
     """Point cloud as POINT entities (streamed for binary PLYs)."""
     off = np.asarray(offset, np.float64) if offset is not None else np.zeros(3)
     fmt = "0\nPOINT\n8\n" + layer + "\n10\n%.17g\n20\n%.17g\n30\n%.17g\n"
@@ -213,7 +213,7 @@ def export_dxf_points(src, dst, offset=None, layer="PhotoMesh_Points", dataset=1
             if lay is not None:
                 _h, dt, n = lay
                 while n_out < n:
-                    v = np.fromfile(fh, dtype=dt, count=min(dataset, n - n_out))
+                    v = np.fromfile(fh, dtype=dt, count=min(block_size, n - n_out))
                     if not len(v):
                         break
                     P = np.column_stack([v["x"], v["y"], v["z"]]).astype(np.float64) + off

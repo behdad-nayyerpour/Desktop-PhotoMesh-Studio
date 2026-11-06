@@ -27,7 +27,7 @@ MB = 1024 * 1024
 LINK_DIRS = ("images",)        # COLMAP photo links (hard/sym links to the photos): re-linked, not duplicated
 SPACE_MARGIN = 256 * MB
 DEPTH_REL = ("dense/stereo/depth_maps", "dense/stereo/normal_maps", "dense/stereo/consistency_graphs")
-PARTIAL_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*\.partial$", re.I)      # 0.1.7 Save As leftovers
+PARTIAL_RE = re.compile(r"^(?:processing(?:-\d+)?|[A-Za-z]+\d+)\.partial$", re.I)      # 0.1.7 Save As leftovers
 WORKDIR_ENTRIES = {"dense", "sparse", "sparse_txt", "database.db", "coarse.db", "image_root.txt", "image_list.txt",
                    "images", "tie_points.ply", "texture", "tiled", "orthomosaic", "dem", "model.ply",
                    "model_poisson.ply", "cache", "shapes", "mesh.json"}

@@ -105,3 +105,9 @@ def test_removed_commands_have_no_handlers_or_shortcuts(window):
         assert name not in SHORTCUTS
     assert not hasattr(window, "toggle_full_screen")
     assert not hasattr(window, "measure_shape")
+
+
+def test_layer_button_initialization_does_not_invoke_commands(window, no_dialogs):
+    assert no_dialogs == []
+    for button in window.mode_buttons:
+        assert button.isChecked() == button.visibility.isChecked()

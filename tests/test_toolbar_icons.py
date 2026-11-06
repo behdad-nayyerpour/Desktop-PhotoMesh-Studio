@@ -85,7 +85,8 @@ def test_toolbar_uses_only_painter_icons(window):
 
 
 _FIT_SCRIPT = r"""
-import json, os, sys
+import json, os, sys, faulthandler
+faulthandler.dump_traceback_later(20, exit=True)
 sys.path.insert(0, sys.argv[1])
 from PySide6.QtCore import Qt, QCoreApplication
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)

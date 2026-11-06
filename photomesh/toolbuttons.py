@@ -49,7 +49,6 @@ class LayerModeButton(QToolButton):
             return
         self.setText(self.title)
         self.setIcon(self.current.icon())
-        self.setChecked(self.visibility.isChecked())
         state = "On" if self.visibility.isChecked() else "Off"
         self.setToolTip(f"{self.title}: {state}, {self._labels[self.current]}. "
                         "Click to show/hide; arrow selects a display style.")

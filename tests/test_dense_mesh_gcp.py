@@ -383,7 +383,7 @@ def test_ply_readers_do_not_memory_map(tmp_path):
 
 @pytest.mark.parametrize("fmt", ["binary_little_endian", "binary_big_endian", "ascii"])
 def test_transform_ply_streams_mesh_with_normals(tmp_path, fmt):
-    """ProjectDataed streaming transform: vertices + normals transformed, faces and
+    """Block-based streaming transform: vertices + normals transformed, faces and
     colours copied unchanged, identical to a reference computed in memory."""
     from plyfile import PlyData, PlyElement
     from photomesh import georef as g
@@ -404,7 +404,7 @@ def test_transform_ply_streams_mesh_with_normals(tmp_path, fmt):
             text=(fmt == "ascii"), byte_order="<" if fmt != "binary_big_endian" else ">").write(str(p))
     R = Rotation.from_euler("xyz", [10, 20, 30], degrees=True).as_matrix()
     M = np.eye(4); M[:3, :3] = 2.5 * R; M[:3, 3] = [100, -50, 7]
-    g.transform_ply(str(p), M, dataset=97)
+    g.transform_ply(str(p), M, block_size=97)
     assert os.listdir(tmp_path) == ["m.ply"]
     with open(p, "rb") as fh:
         out = PlyData.read(fh, mmap=False)
