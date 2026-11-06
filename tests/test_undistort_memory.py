@@ -262,3 +262,78 @@ def test_peak_monitor_reports():
     r = mon.stop()
     del a
     assert r["peak_tree"] > 0 and r["min_available"] is None or r["min_available"] > 0
+
+
+def test_project_below_photo_root_builds_without_changing_originals(tmp_path):
+    """Issue #6: project.files/dense below a common photo root is valid."""
+    from PIL import Image
+    model, model_dir, photos = _workspace(tmp_path)
+    names = [im.name for im in model.images.values()]
+    before = {name: open(os.path.join(photos, name), "rb").read() for name in names}
+    workspace = os.path.join(photos, "project.files", "dense")
+    result = dense.prepare_workspace(model_dir, photos, workspace, "High", workers=1, log=lambda *_: None)
+    assert result["undistorted"] == len(names)
+    assert all(open(os.path.join(photos, name), "rb").read() == before[name] for name in names)
+    with Image.open(os.path.join(workspace, "images", names[0])) as image:
+        cam = model.cameras[model.images[1].camera_id]
+        assert image.size == dense.output_size(cam.width, cam.height, 2)
+    resumed = dense.prepare_workspace(model_dir, photos, workspace, "High", workers=1, log=lambda *_: None)
+    assert resumed["undistorted"] == 0 and resumed["reused"] == len(names)
+
+
+def test_workspace_validation_precedes_cleanup(tmp_path):
+    """A referenced photo inside the workspace must survive rejected planning."""
+    model = synthetic_model()
+    wd = tmp_path / "project.files"
+    source = wd / "dense" / "stereo" / "depth_maps" / "original.jpg"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"original photo must survive")
+    next(iter(model.images.values())).name = "project.files/dense/stereo/depth_maps/original.jpg"
+    model_dir = wd / "sparse" / "0"
+    cio.write_model(str(model_dir), model)
+    (wd / "dense" / "workspace.json").write_text("{}")
+    with pytest.raises(RuntimeError, match="Source photo must be outside"):
+        dense.dense_steps("colmap", str(wd), {"quality": "High"}, str(tmp_path))
+    assert source.read_bytes() == b"original photo must survive"
+    assert not (wd / "dense" / "prepare.json").exists()
+
+
+@pytest.mark.parametrize("name", ["../original.jpg", "/original.jpg", "C:/original.jpg", "sub/../../original.jpg", "sub\\\\..\\\\original.jpg"])
+def test_workspace_rejects_unsafe_sparse_names_before_writing(tmp_path, name):
+    model = synthetic_model()
+    next(iter(model.images.values())).name = name
+    model_dir = tmp_path / "sparse"
+    cio.write_model(str(model_dir), model)
+    workspace = tmp_path / "dense"
+    with pytest.raises(RuntimeError, match="Unsafe photo name"):
+        dense.prepare_workspace(str(model_dir), str(tmp_path / "photos"), str(workspace), workers=1)
+    assert not workspace.exists()
+
+
+def test_workspace_rejects_output_directory_alias(tmp_path):
+    workspace = tmp_path / "dense"
+    workspace.mkdir()
+    photos = tmp_path / "photos"
+    photos.mkdir()
+    try:
+        (workspace / "images").symlink_to(photos, target_is_directory=True)
+    except OSError:
+        pytest.skip("Directory symlinks are unavailable")
+    with pytest.raises(RuntimeError, match="subfolder must not be a link"):
+        dense.validate_workspace_paths(str(photos), str(workspace), ["original.jpg"])
+
+
+def test_workspace_rejects_original_reached_through_source_alias(tmp_path):
+    workspace = tmp_path / "dense"
+    workspace.mkdir()
+    original = workspace / "original.jpg"
+    original.write_bytes(b"keep")
+    photos = tmp_path / "photos"
+    photos.mkdir()
+    try:
+        (photos / "alias.jpg").symlink_to(original)
+    except OSError:
+        pytest.skip("File symlinks are unavailable")
+    with pytest.raises(RuntimeError, match="Source photo must be outside"):
+        dense.validate_workspace_paths(str(photos), str(workspace), ["alias.jpg"])
+    assert original.read_bytes() == b"keep"
