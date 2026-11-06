@@ -894,7 +894,16 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.set_modified(); self.reload_view()
 
     # ---------------------------------------------------------------- File
+    def _can_change_project(self):
+        if self._opening or (self.runner is not None and getattr(self.runner, "busy", False)):
+            self.statusBar().showMessage(
+                "Wait for processing to finish or cancel it before saving, switching or closing the project.", 8000)
+            return False
+        return True
+
     def _confirm_discard(self):
+        if not self._can_change_project():
+            return False
         if not self.project.modified:
             return True
         r = QMessageBox.question(self, APP_NAME, "Save changes to the current project?",
@@ -1185,6 +1194,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Write the project file (metadata, ~1 MB JSON, well under 1 s) with
         paths relative to its folder. Data outside the project folder is
         offered to be copied into <name>.files first (see _bring_data)."""
+        if not self._can_change_project():
+            return False
         import time
         if not self._bring_data(path, save_as):
             return False
@@ -1200,6 +1211,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return True
 
     def save_project_as(self):
+        if not self._can_change_project():
+            return False
         path = QFileDialog.getSaveFileName(self, "Save As", self.project.path or "", PROJECT_FILTER)[0]
         if not path:
             return False

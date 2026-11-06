@@ -119,3 +119,34 @@ def test_exif_altitude_agrees_between_photo_import_paths(monkeypatch, reference,
     project.read_exif_gps(camera)
     assert (camera.lon, camera.lat, camera.alt) == (2.0, 1.0, expected)
     assert fastpipe._gps(Exif()) == (camera.lon, camera.lat, camera.alt)
+
+
+def test_running_pipeline_keeps_project_context_and_save_paths(window, tmp_path):
+    from types import SimpleNamespace
+    from PySide6.QtGui import QCloseEvent
+    original_project, original_runner = window.project, window.runner
+    path = tmp_path / "unchanged.pmsx"
+    path.write_bytes(b"existing project")
+    try:
+        window.runner = SimpleNamespace(busy=True)
+        window.new_project()
+        assert window.project is original_project
+        assert window._save_to(str(path)) is False
+        assert path.read_bytes() == b"existing project"
+        event = QCloseEvent()
+        window.closeEvent(event)
+        assert not event.isAccepted()
+        assert "processing" in window.statusBar().currentMessage()
+    finally:
+        window.runner = original_runner
+
+
+def test_project_preparation_blocks_switching(window):
+    original = window.project
+    try:
+        window._opening = True
+        window.new_project()
+        assert window.project is original
+        assert window.save_project_as() is False
+    finally:
+        window._opening = False
