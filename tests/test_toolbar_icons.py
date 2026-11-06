@@ -100,6 +100,8 @@ for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
 ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_ext_button"]
+omitted = [a.text() for a in tb.actions() if not a.isSeparator()
+           and tb.widgetForAction(a) is not None and not tb.widgetForAction(a).isVisible()]
 overflow_entries = []
 if ext and ext[0].isVisible():
     from PySide6.QtCore import QTimer
@@ -119,8 +121,7 @@ if ext and ext[0].isVisible():
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
                           "overflow": bool(ext and ext[0].isVisible()),
                           "window_width": w.width(),
-                          "omitted": [a.text() for a in tb.actions() if not a.isSeparator()
-                                      and tb.widgetForAction(a) is not None and not tb.widgetForAction(a).isVisible()],
+                          "omitted": omitted,
                           "overflow_entries": overflow_entries,
                           "clipped": [(b.text(), b.width(), b.sizeHint().width(), b.height(), b.sizeHint().height())
                                       for bar in w.toolbars for b in bar.findChildren(QToolButton)
