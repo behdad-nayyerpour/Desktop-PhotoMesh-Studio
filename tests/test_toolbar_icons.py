@@ -32,7 +32,7 @@ def test_icons_are_rendered_at_device_pixels_not_upscaled(qapp, dpr):
 
 
 def test_icons_fill_the_box_and_have_contrast(qapp):
-    from PySide6.QtGui import QColor
+    from PySide6.QtGui import QColor, QPalette
     from photomesh.icons import render_image
     bg = QColor(58, 58, 61)                                    # toolbar background (theme)
     for key in ("file_new", "file_open", "file_save", "undo", "redo", "preferences", "tie", "cloud", "mesh",
@@ -46,7 +46,8 @@ def test_icons_fill_the_box_and_have_contrast(qapp):
                 c = img.pixelColor(x, y)
                 if c.alpha() > 200:
                     l = 0.3 * c.red() + 0.59 * c.green() + 0.11 * c.blue()
-                    best = max(best, abs(l - (0.3 * bg.red() + 0.59 * bg.green() + 0.11 * bg.blue())))
+                    background = qapp.palette().color(QPalette.Window) if key == "markers" else bg
+                    best = max(best, abs(l - (0.3 * background.red() + 0.59 * background.green() + 0.11 * background.blue())))
         assert best > 70, key
 
 
@@ -185,3 +186,32 @@ def test_photo_markers_hidden_from_the_toolbar_toggle(window):
     assert pv._overlay == []
     window.layer_action("markers").trigger()
     assert pv._overlay and len(_texts(pv)) == 3
+
+
+@pytest.mark.parametrize("size", [16, 21, 26, 32, 42])
+@pytest.mark.parametrize("key", ["markers", "marker_labels", "ortho", "shapes"])
+def test_layer_icon_cache_tracks_theme_and_preserves_margins(qapp, key, size):
+    """The same icon engine must update after a palette switch, without clipping."""
+    from PySide6.QtGui import QIcon, QPalette, QColor
+    from photomesh.icons import PainterIconEngine
+    old = QPalette(qapp.palette())
+    engine = PainterIconEngine(key)
+    images = []
+    try:
+        for background in ("#FFFFFF", "#292F38", "#FFFFFF"):
+            palette = QPalette(old)
+            palette.setColor(QPalette.Window, QColor(background))
+            qapp.setPalette(palette)
+            image = engine._image(size, QIcon.Normal)
+            images.append(image)
+            assert not image.isNull()
+            # Geometry and its antialiased outline stay inside the image.
+            for edge in range(size):
+                assert image.pixelColor(edge, 0).alpha() < 40
+                assert image.pixelColor(edge, size - 1).alpha() < 40
+                assert image.pixelColor(0, edge).alpha() < 40
+                assert image.pixelColor(size - 1, edge).alpha() < 40
+        assert images[0] != images[1]
+        assert images[0] == images[2]
+    finally:
+        qapp.setPalette(old)
