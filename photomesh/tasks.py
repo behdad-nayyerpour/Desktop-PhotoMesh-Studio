@@ -146,7 +146,7 @@ def _result(cfg, info):
 
 
 def model_up(model_dir, georef):
-    """Up direction of the chunk: z when georeferenced, else minus the mean
+    """Up direction of the dataset: z when georeferenced, else minus the mean
     camera viewing direction of the COLMAP model (aerial blocks)."""
     import numpy as np
     if georef or not model_dir or not os.path.exists(os.path.join(model_dir, "images.bin")):

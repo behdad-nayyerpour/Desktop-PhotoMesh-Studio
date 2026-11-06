@@ -21,7 +21,7 @@ The Setup EXE is the simpler option for normal application use.
 ## Reconstruction tools
 
 Source installations need a separate COLMAP installation.
-Select its path in **Tools > Preferences > Advanced**, add it to PATH, or place
+Select its path in **Project > Preferences > Advanced**, add it to PATH, or place
 it in `tools\colmap` next to the application.
 Get builds from [COLMAP releases](https://github.com/colmap/colmap/releases)
 and choose one compatible with your GPU and NVIDIA driver.
@@ -72,8 +72,8 @@ not part of the normal installation workflow.
 
 ## Documentation and maintained tools
 
-The application opens the root `README.md` through **Help > Contents**.
-The Setup builder includes that README, its screenshot, the `docs` folder,
+The application opens the root `README.md` through **Help > Documentation**.
+The Setup builder includes that README, both project screenshots, the `docs` folder,
 and the root changelog and update guide.
 
 The English changelog remains in `CHANGES.md`; no parallel changelog is maintained.
@@ -96,5 +96,13 @@ Every application version includes the [maintainability and release quality
 checklist](release-quality.md). Review duplication, dead code, readability and
 workflow interactions alongside correctness, compatibility and performance.
 The root [contributor instructions](../../AGENTS.md) apply to coding agents as
-well. A full baseline maintainability audit is pending and belongs in the next
-application version's plan before release.
+well. The [1.0.3 baseline review](release-review-103.md) records the repository sweep,
+manual findings, cleanup, validation and remaining target-hardware checks.
+
+## Current candidate validation
+
+[1.0.3 release review](release-review-103.md) is the current consolidated review.
+The temporary toolbar/error/icon preview notes have been removed after their
+relevant findings and evidence were consolidated there. Earlier version-specific
+engine/workflow reports remain historical evidence, as do regression tests.
+

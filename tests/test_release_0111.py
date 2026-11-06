@@ -94,11 +94,11 @@ def test_default_pixel_size_ignores_a_texture_gsd_from_the_old_frame(scene, tmp_
 
 
 def test_georeferencing_rescales_the_texture_and_marks_rasters_outdated(tmp_path):
-    from photomesh.project import Chunk
+    from photomesh.project import ProjectData
     from photomesh.reference_ui import products_after_georef, GEOREF_STALE
     d = tmp_path / "tex"; d.mkdir()
     (d / "info.json").write_text(json.dumps({"source_gsd": 0.0021, "texel_size": 0.003, "pages": []}))
-    ch = Chunk(name="c")
+    ch = ProjectData(name="c")
     ch.texture = {"dir": str(d), "source_gsd": 0.0021, "texel_size": 0.003}
     ch.orthomosaic = {"format": "photomesh-ortho/1", "width": 10}
     ch.dem = {"format": "imported", "width": 10}
@@ -129,7 +129,7 @@ def test_task_message_replaces_generic_failure():
 # ------------------------------------------------------------ GUI: build, then rebuild
 def _setup(window, scene, tmp_path):
     from photomesh.plyio import ply_counts
-    ch = window.chunk
+    ch = window.dataset
     ch.add_photos(sorted(scene["photos"].values()))
     wd = str(tmp_path / "work"); ch.workdir = wd
     shutil.copytree(scene["model"], os.path.join(wd, "sparse", "0"))
@@ -162,12 +162,12 @@ def test_rebuild_after_georeferencing_with_old_texture(window, no_dialogs, monke
     true = ortho.estimate_gsd(window._model_dir(ch), scene["mesh"], GEO)
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     first = dict(ch.orthomosaic)
-    assert first.get("width") and first["pixel_size"] == pytest.approx(true), window.chunk.log
+    assert first.get("width") and first["pixel_size"] == pytest.approx(true), window.dataset.log
     # a texture measured in the pre-georeferencing units (10x smaller)
     ch.texture = {"source_gsd": true / 10, "texel_size": true / 10}
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     o = ch.orthomosaic
-    assert o["pixel_size"] == pytest.approx(true) and o["width"] == first["width"], window.chunk.log
+    assert o["pixel_size"] == pytest.approx(true) and o["width"] == first["width"], window.dataset.log
     assert window.ortho_view.has_raster("ortho") and no_dialogs == []
 
 
@@ -184,7 +184,7 @@ def test_too_large_is_caught_before_the_build_starts(window, no_dialogs, monkeyp
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     assert asked and "Use a pixel size of" in asked[0], asked
     o = ch.orthomosaic
-    assert o.get("width") and o["pixel_size"] > 0.0002 and o["width"] * o["height"] < 3e9, window.chunk.log
+    assert o.get("width") and o["pixel_size"] > 0.0002 and o["width"] * o["height"] < 3e9, window.dataset.log
     # Cancel in the question: nothing starts, the result stays
     monkeypatch.setattr(choice, "ask_choice", lambda *a, **k: "cancel")
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
@@ -215,7 +215,7 @@ def test_failed_rebuild_keeps_and_shows_the_previous_orthomosaic(window, no_dial
     ch = _setup(window, scene, tmp_path)
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     o = dict(ch.orthomosaic)
-    assert o.get("width"), window.chunk.log
+    assert o.get("width"), window.dataset.log
     far = [OFF[0] + 900, OFF[1] + 900, OFF[0] + 950, OFF[1] + 950]
     monkeypatch.setattr(dialogs.BuildOrthomosaicDialog, "settings",
                         lambda self: dict(s0(self), pixel_size=0.05, region=far))

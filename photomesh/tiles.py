@@ -21,14 +21,14 @@ from __future__ import annotations
 import json
 import math
 import os
-import shutil
+
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
 from . import gltf
-from .workflow import product_transaction, file_stamp, publish_directory, processing_crs
+from .workflow import product_transaction, file_stamp, processing_crs
 from .texture import (plane_basis, rasterize, pack, split_large, charts_from_labels, face_adjacency,
                       dilate, bilinear)
 
@@ -223,7 +223,7 @@ def _box(bmin, bmax):
 
 
 def _root_transform(georef, center_model):
-    """ENU -> ECEF matrix (column-major) for UTM / WGS84-georeferenced chunks."""
+    """ENU -> ECEF matrix (column-major) for UTM / WGS84-georeferenced datasets."""
     if not georef or georef.get("crs_kind") not in ("utm", "wgs84"):
         return None
     from .georef import utm_inverse, geodetic_to_ecef, enu_basis
@@ -288,7 +288,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
           "extras": {"up_frame_rotation": Rup.tolist(), "georeferenced": metric,
                      "crs": processing_crs(georef) if georef else "local (not georeferenced)",
                      # tile vertices are in the local frame; world = Rup.T @ p + world_offset
-                     # (UTM / WGS84 chunks are also placed on the globe by root.transform)
+                     # (UTM / WGS84 datasets are also placed on the globe by root.transform)
                      "world_offset": [float(x) for x in georef.get("offset")]
                      if georef and georef.get("offset") is not None else None}}
     with open(os.path.join(tmp, "tileset.json"), "w", encoding="utf-8") as fh:
@@ -322,10 +322,10 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
     from .texture import read_mesh
     t0 = time.perf_counter()
     from .plyio import ply_counts
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     vertices,faces=ply_counts(c["mesh"])
     geometry_budget=vertices*200+faces*300
-    if geometry_budget>available_bytes()*.7:
+    if geometry_budget>require_available_bytes()*.7:
         raise ValueError("Mesh-tile working arrays exceed available RAM; simplify the source mesh")
     V, F = read_mesh(c["mesh"])
     from .workflow import require_mesh
@@ -344,7 +344,7 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
             for page_name in tinfo["pages"]:
                 with Image.open(os.path.join(tdir,page_name)) as image:
                     page_bytes+=image.width*image.height*3
-                    if geometry_budget+page_bytes>available_bytes()*.7:
+                    if geometry_budget+page_bytes>require_available_bytes()*.7:
                         z.close()
                         raise ValueError("Source texture pages exceed available RAM; rebuild texture with fewer/smaller pages")
                     pages.append(np.asarray(image.convert("RGB")))
@@ -359,9 +359,9 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
         m = load_ply(c["mesh"], max_points=0)
         if m["colors"] is not None:
             baker_args = dict(vcol=m["colors"][:, :3] * 255)
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     estimate=V.nbytes*6+F.nbytes*8+sum(image.nbytes for image in baker_args.get("pages",[]))
-    if estimate>available_bytes()*.75:
+    if estimate>require_available_bytes()*.75:
         raise ValueError("Source geometry/texture exceeds the working-memory budget; simplify the source or reduce texture pages")
     baker = Baker(V, F, **baker_args)
     P = V[F]
@@ -461,9 +461,9 @@ def _build_mesh(c, tmp, Rup, up, log, prog, cancel, stages):
 def _build_points(c, tmp, Rup, log, prog, cancel=None):
     from .pcfilter import read_cloud
     from .plyio import ply_counts
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     count,_ = ply_counts(c["cloud"])
-    if count*200 > available_bytes()*.7:
+    if count*200 > require_available_bytes()*.7:
         raise ValueError("Point-tile working arrays exceed available RAM; reduce or split the source cloud")
     cl = read_cloud(c["cloud"])
     X = cl.pop("xyz")
@@ -479,7 +479,6 @@ def _build_points(c, tmp, Rup, log, prog, cancel=None):
     root = quadtree(X[:, :2], lim, int(c["max_depth"]))
     nodes = list(walk(root))
     rng = np.random.default_rng(0)
-    spacing = None
     def write(n, idx):
         P = X[idx]; n.bmin, n.bmax = P.min(0), P.max(0); n.count = len(idx)
         n.file = f"{n.key}.pnts"

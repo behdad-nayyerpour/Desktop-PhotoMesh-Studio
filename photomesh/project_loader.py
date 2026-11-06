@@ -8,41 +8,41 @@ from .photonames import recover_names, photo_map
 
 def prepare_project(path, report, cancelled):
     project = Project.load(path)
-    if len(project.chunks) != 1:
-        raise ValueError("This legacy project contains multiple chunks. Open it with an older release "
+    if len(project.datasets) != 1:
+        raise ValueError("This legacy project contains multiple datasets. Open it with an older release "
                          "and save each dataset as a separate project before using version 1.0. "
                          "The original file has not been changed.")
     notes = []
     report(1, 4, "Reading project and checking paths")
     if cancelled():
         return None
-    chunk = project.chunk
-    added = procmeta.backfill(chunk, project.path)
+    dataset = project.dataset
+    added = procmeta.backfill(dataset, project.path)
     if added:
         project.modified = True
         notes.append("Processing metadata recovered: " + ", ".join(added))
     report(2, 4, "Recovering camera references")
     if cancelled():
         return None
-    if any(c.aligned and not c.colmap_name for c in chunk.cameras):
-        if recover_names(chunk, chunk.workdir):
+    if any(c.aligned and not c.colmap_name for c in dataset.cameras):
+        if recover_names(dataset, dataset.workdir):
             project.modified = True
     context = ReferenceMixin()
     context.project = project
-    context.chunk = chunk
+    context.dataset = dataset
     report(3, 4, "Preparing marker observations")
     markers = None
-    if chunk.markers:
+    if dataset.markers:
         try:
             markers = context._marker_positions()
         except (OSError, ValueError, RuntimeError) as error:
             notes.append(f"Marker display could not be prepared: {error}")
     if cancelled():
         return None
-    ambiguous = photo_map(chunk)[1]
-    found = [c for c in chunk.cameras if os.path.exists(c.path)]
+    ambiguous = photo_map(dataset)[1]
+    found = [c for c in dataset.cameras if os.path.exists(c.path)]
     shape_cache = None
-    shape_path = (chunk.shapes or {}).get("path")
+    shape_path = (dataset.shapes or {}).get("path")
     if shape_path and os.path.exists(shape_path):
         from . import shapes
         try:
@@ -51,7 +51,7 @@ def prepare_project(path, report, cancelled):
             notes.append(f"Shapes could not be loaded: {error}")
     rasters = {}
     from .orthoview import RasterLayer
-    for kind, info in (("dem", chunk.dem), ("ortho", chunk.orthomosaic)):
+    for kind, info in (("dem", dataset.dem), ("ortho", dataset.orthomosaic)):
         if info and info.get("path") and os.path.exists(info["path"]):
             try:
                 rasters[kind] = RasterLayer(kind, info)

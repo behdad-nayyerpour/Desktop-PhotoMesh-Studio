@@ -12,10 +12,10 @@ planning a version, changing application code, or preparing a release.
 - Review changed code, its callers and affected workflows in detail. Also sweep
   the repository for duplicated logic, stale references, unused paths/resources
   and inconsistent responsibilities; inspect findings before changing them.
-- Before the next application release, complete the pending baseline
-  repository-wide maintainability audit described in the checklist. The previous
-  engine/regression validation did not establish that the entire codebase is
-  free of duplication or dead code.
+- The baseline repository sweep and targeted contract review are recorded in
+  docs/development/release-review-103.md. Keep that evidence and perform the
+  per-version review below for subsequent changes. Earlier engine/regression
+  validation alone did not establish the absence of duplication or dead code.
 - Prefer focused, behavior-preserving cleanup. Never merge similar-looking
   calculations, remove legacy compatibility or delete resources merely because
   a text search or static tool finds no callers.

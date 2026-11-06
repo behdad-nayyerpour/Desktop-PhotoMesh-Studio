@@ -33,7 +33,7 @@ def test_region_never_silently_becomes_full_extent(qtbot):
 
 def test_mesh_count_visible_and_effective_controls(window):
     from photomesh.dialogs import BuildModelDialog
-    window.chunk.point_count=15_000_000
+    window.dataset.point_count=15_000_000
     dialog=BuildModelDialog(window)
     assert dialog.custom.value()==1_000_000 and not dialog.custom.isEnabled()
     dialog.face_count.setCurrentText("High")
@@ -158,7 +158,7 @@ def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_
     from PIL import Image as PILImage
     from photomesh.project import Project,Camera as Photo
     from photomesh import colmap_io as cio
-    project=Project(); project.path=str(tmp_path/"registered.pmsx"); ch=project.chunk
+    project=Project(); project.path=str(tmp_path/"registered.pmsx"); ch=project.dataset
     R=np.diag([1.,-1.,-1.]); cam=cio.Camera(1,1000,800,np.array([800.,800.,500.,400.]))
     xyz=np.array([[-3,-2,0],[3,-2,.4],[3,2,0],[-3,2,.2],[0,0,1],[-2,1,.7],[2,-1,.3]])
     poses={}

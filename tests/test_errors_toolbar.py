@@ -26,8 +26,8 @@ def test_reported_aliked_size_is_bounded_in_all_builders(tmp_path, monkeypatch, 
     monkeypatch.setattr(engine, "verified_model", lambda *a: "/offline/" + a[-1])
     settings = {"accuracy": "High", "mode": mode, "feature_method": "ALIKED + LightGlue",
                 "key_point_limit": 2048, "use_gpu": False, "mapper": "Incremental"}
-    chunk = SimpleNamespace(cameras=[SimpleNamespace(path="a.jpg", enabled=True)] * 2)
-    steps = colmap.align_steps("engine", chunk, str(tmp_path), settings,
+    dataset = SimpleNamespace(cameras=[SimpleNamespace(path="a.jpg", enabled=True)] * 2)
+    steps = colmap.align_steps("engine", dataset, str(tmp_path), settings,
                                ["a.jpg", "b.jpg"], [{"width": 5472, "height": 3648}] * 2)
     args = next(args for _, args, _ in steps
                 if isinstance(args, list) and args and args[0] == "feature_extractor")
@@ -94,21 +94,22 @@ def test_publication_does_not_retry_disk_errors(monkeypatch):
 
 def test_toolbar_separates_processing_display_and_view(window):
     from PySide6.QtWidgets import QToolButton
-    process_names = {a.text() for a in window.processing_toolbar.actions()}
-    assert {"Align Photos...", "Build Point Cloud...", "Build Model..."} <= process_names
+    process_actions = window.processing_toolbar.actions()
+    assert all(window.actions[name] in process_actions for name in
+               ("Align Photos...", "Build Point Cloud...", "Build Model..."))
     display_actions = window.display_toolbar.actions()
     for key in ("tie", "cloud", "mesh"):
         assert window.layer_action(key) not in display_actions
     for key, button in zip(("tie", "cloud", "mesh"), window.mode_buttons):
-        assert button.popupMode() == QToolButton.InstantPopup
+        assert button.popupMode() == QToolButton.MenuButtonPopup
+        assert button.defaultAction() is window.layer_action(key)
+        assert button.visibility not in button.menu().actions()
         window.set_layer_visible(key, False)
-        assert button.toolTip().startswith(f"{button.title}: Hidden.") and button.hidden_action.isChecked()
-        window.set_layer_visible(key, True)
-        assert not button.toolTip().startswith(f"{button.title}: Hidden.") and not button.hidden_action.isChecked()
-        button.hidden_action.trigger()
-        assert not window.layer_action(key).isChecked()
-        button.hidden_action.trigger()
-        assert button.hidden_action.isChecked() and button.toolTip().startswith(f"{button.title}: Hidden.")
+        assert not button.isChecked() and button.toolTip().startswith(f"{button.title}: Off,")
+        button.click()
+        assert window.layer_action(key).isChecked() and button.isChecked()
+        button.click()
+        assert not window.layer_action(key).isChecked() and not button.isChecked()
     window.actions["View/Toolbar"].setChecked(False)
     assert all(tb.isHidden() for tb in window.toolbars)
     window.actions["View/Toolbar"].setChecked(True)
@@ -128,7 +129,7 @@ def test_predefined_views_switch_from_photo_and_preserve_zoom(window, monkeypatc
 def test_alignment_summary_discloses_aliked_resolution(window):
     from photomesh.project import Camera
     from photomesh.dialogs import AlignPhotosDialog
-    window.chunk.cameras = [Camera("a.jpg", width=5472, height=3648)]
+    window.dataset.cameras = [Camera("a.jpg", width=5472, height=3648)]
     dialog = AlignPhotosDialog(window)
     dialog.feature_method.setCurrentText("ALIKED + LightGlue")
     assert "2048" in dialog.summary.text() and "ONNX memory" in dialog.summary.text()

@@ -1,6 +1,6 @@
 """0.1.8: Save As copying project data into a OneDrive folder failed with
 "PermissionError: [WinError 5] Access is denied" when renaming
-chunk0.partial -> chunk0 (GitHub issue 2). The copy now goes straight into
+processing.partial -> processing (GitHub issue 2). The copy now goes straight into
 its final folder (no folder rename), brief locks are retried, and failures
 clean up after themselves."""
 import json
@@ -42,18 +42,18 @@ def test_save_as_copy_needs_no_folder_rename(tmp_path, no_dir_rename, fast_retry
     from photomesh import datafolder as dfo
     from photomesh.project import Project
     prj = _onedrive_project(tmp_path)
-    old = prj.chunk.workdir
+    old = prj.dataset.workdir
     new = str(tmp_path / "OneDrive - AFRY" / "Backup Drawings" / "Test-Lot3-Drone" / "Test-Lot3-Drone.pmsx")
     items = dfo.plan(prj, new, save_as=True)
     dfo.apply(dfo.execute(items))
     prj.save(new)                                     # file replace (not a folder) still allowed
-    wd = prj.chunk.workdir
-    assert wd == os.path.join(os.path.dirname(new), "Test-Lot3-Drone.files", "chunk0")
+    wd = prj.dataset.workdir
+    assert wd == os.path.join(os.path.dirname(new), "Test-Lot3-Drone.files", "processing")
     assert os.path.exists(os.path.join(wd, "dense", "point_cloud.ply")) and not dfo.is_incomplete(wd)
     assert not os.path.exists(wd + ".partial")
     assert os.path.exists(os.path.join(old, "dense", "point_cloud.ply"))          # original kept
-    assert Project.load(new).chunk.workdir == wd
-    assert json.load(open(new, encoding="utf-8"))["chunks"][0]["workdir"] == "Test-Lot3-Drone.files/chunk0"
+    assert Project.load(new).dataset.workdir == wd
+    assert json.load(open(new, encoding="utf-8"))["datasets"][0]["workdir"] == "Test-Lot3-Drone.files/processing"
 
 
 def test_brief_file_lock_is_retried(tmp_path, monkeypatch, fast_retry):
@@ -75,7 +75,7 @@ def test_brief_file_lock_is_retried(tmp_path, monkeypatch, fast_retry):
 def test_failed_copy_is_removed_and_project_unchanged(tmp_path, monkeypatch, fast_retry):
     from photomesh import datafolder as dfo
     prj = _processed(tmp_path / "a")
-    old = prj.chunk.workdir
+    old = prj.dataset.workdir
     items = dfo.plan(prj, str(tmp_path / "b" / "c.pmsx"))
 
     def broken(s, d, *a, **k):
@@ -83,7 +83,7 @@ def test_failed_copy_is_removed_and_project_unchanged(tmp_path, monkeypatch, fas
     monkeypatch.setattr(shutil, "copy2", broken)
     with pytest.raises(PermissionError):
         dfo.execute(items)
-    assert not os.path.exists(items[0]["dst"]) and prj.chunk.workdir == old
+    assert not os.path.exists(items[0]["dst"]) and prj.dataset.workdir == old
 
 
 def test_leftover_is_named_when_cleanup_fails(tmp_path, monkeypatch, fast_retry):
@@ -102,7 +102,7 @@ def test_unfinished_copy_is_reused_never_a_foreign_folder(tmp_path, fast_retry):
     prj = _processed(tmp_path / "a")
     new = str(tmp_path / "b" / "c.pmsx")
     root = dfo.data_folder(new)
-    stale = os.path.join(root, "chunk0"); os.makedirs(stale)
+    stale = os.path.join(root, "processing"); os.makedirs(stale)
     open(os.path.join(stale, dfo.INCOMPLETE_MARK), "w").close()
     open(os.path.join(stale, "junk.bin"), "wb").write(b"x")
     items = dfo.plan(prj, new)
@@ -110,8 +110,8 @@ def test_unfinished_copy_is_reused_never_a_foreign_folder(tmp_path, fast_retry):
     dfo.execute(items)
     assert not os.path.exists(os.path.join(stale, "junk.bin")) and not dfo.is_incomplete(stale)
     # a folder with the user's own files is never reused or emptied
-    mine = os.path.join(root, "chunk0_x"); os.makedirs(mine); open(os.path.join(mine, "keep.txt"), "w").close()
-    assert dfo.unique_target(root, "chunk0_x") != mine
+    mine = os.path.join(root, "processing_x"); os.makedirs(mine); open(os.path.join(mine, "keep.txt"), "w").close()
+    assert dfo.unique_target(root, "processing_x") != mine
     with pytest.raises(FileExistsError):
         dfo.execute([dict(items[0], dst=mine)])
     assert os.path.exists(os.path.join(mine, "keep.txt"))
@@ -147,16 +147,16 @@ def test_gui_save_as_into_locked_folder_tree(window, no_dialogs, tmp_path, monke
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.Yes))
     assert window.save_project_as()
     assert no_dialogs == [] and window.project.path == str(new) and new.exists()
-    assert window.chunk.workdir == str(new.parent / "Test-Lot3-Drone.files" / "chunk0")
+    assert window.dataset.workdir == str(new.parent / "Test-Lot3-Drone.files" / "processing")
 
 
 def test_save_as_into_subfolder_of_old_data_does_not_nest(tmp_path):
     """dst inside the source working folder: copied once, no endless nesting."""
     from photomesh import datafolder as dfo
-    from photomesh.project import Project, Chunk
+    from photomesh.project import Project, ProjectData
     old = tmp_path / "old"; (old / "dense").mkdir(parents=True)
     (old / "dense" / "a.bin").write_bytes(b"x" * 1000)
-    p = Project(); p.chunks = [Chunk(workdir=str(old))]
+    p = Project(); p.datasets = [ProjectData(workdir=str(old))]
     items = dfo.plan(p, str(old / "sub" / "new.pmsx"), save_as=True)
     assert items[0]["bytes"] == 1000
     dfo.apply(dfo.execute(items))

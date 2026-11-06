@@ -9,7 +9,7 @@ from photomesh import shape_style as SS
 from photomesh import shapes as S
 from photomesh import colmap_io as cio
 
-from test_shapes import _gui_chunk, _site_files, _rows, OFF
+from test_shapes import _gui_dataset, _site_files, _rows, OFF
 
 
 def _set():
@@ -142,7 +142,7 @@ def test_textured_shader_has_alpha_uniform():
 
 
 def _with_shapes(window, tmp_path):
-    ch = _gui_chunk(window, tmp_path)
+    ch = _gui_dataset(window, tmp_path)
     gcp, site, _local = _site_files(tmp_path)
     window.import_shapes(gcp, {"layer": "GCP", "z_mode": "keep"})
     window.import_shapes(site, {"layer": "Site", "z_mode": "drape_missing", "surface": "DEM"})
@@ -186,17 +186,17 @@ def test_gui_layer_style_applied_saved_reloaded(window, no_dialogs, tmp_path):
     window.project.save(pm)
     from photomesh.project import Project
     p2 = Project.load(pm)
-    assert p2.chunk.shapes["styles"]["Site"]["line_style"] == "dashed"
-    assert p2.chunk.shapes["shape_styles"]["0"]["line_color"] == [0, 255, 0]
+    assert p2.dataset.shapes["styles"]["Site"]["line_style"] == "dashed"
+    assert p2.dataset.shapes["shape_styles"]["0"]["line_color"] == [0, 255, 0]
     window.project = p2; window.refresh_all(); window.reload_view(); window.wait_view_loaded()
     window.update_shape_views()
     o = {d["type"]: d for d in window.ortho_view.shapes}
     assert o["polygon"]["dashed"] and o["polygon"]["color"] == (0, 0, 255)
     _gcp, _site, local = _site_files(tmp_path)
     window.import_shapes(local, {"layer": "loc", "z_mode": "keep"}, far_action="offset")
-    assert window.chunk.shapes["styles"]["Site"]["line_style"] == "dashed"
+    assert window.dataset.shapes["styles"]["Site"]["line_style"] == "dashed"
     window.remove_shape_layer("GCP")                  # shape indices shift: the override goes with G1
-    assert "GCP" not in window.chunk.shapes["styles"] and not window.chunk.shapes.get("shape_styles")
+    assert "GCP" not in window.dataset.shapes["styles"] and not window.dataset.shapes.get("shape_styles")
 
 
 def test_gui_style_dialog_live_apply_cancel_reset(window, no_dialogs, tmp_path):

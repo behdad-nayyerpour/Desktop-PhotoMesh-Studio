@@ -1,6 +1,8 @@
 """Project data model, saved as JSON (*.pmsx)."""
 from __future__ import annotations
 
+from .exif import rational as _rat, altitude as _gps_altitude
+
 import json
 import os
 from dataclasses import dataclass, field, asdict
@@ -8,8 +10,8 @@ from typing import Optional
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp", ".webp"}
 
-# path fields of a chunk (stored relative to the .pmsx when below its folder)
-CHUNK_PATHS = ("workdir", "tie_points_ply", "point_cloud_ply", "model_ply")
+# path fields of a dataset (stored relative to the .pmsx when below its folder)
+DATA_PATHS = ("workdir", "tie_points_ply", "point_cloud_ply", "model_ply")
 PRODUCT_PATHS = (("texture", ("dir", "obj", "glb", "uv_npz")), ("tiled_model", ("dir", "tileset", "index", "zip")),
                  ("orthomosaic", ("dir", "path", "height_path")), ("dem", ("dir", "path", "coverage_path")), ("shapes", ("path",)))
 CAMERA_PATHS = ("path", "thumb", "desc")
@@ -76,7 +78,7 @@ class Camera:
 
 
 @dataclass
-class Chunk:
+class ProjectData:
     # Internal legacy dataset name; the interface exposes one project.
     name: str = "Project"
     cameras: list = field(default_factory=list)
@@ -130,25 +132,25 @@ class Chunk:
 class Project:
     def __init__(self):
         self.path: str = ""
-        self.chunks: list[Chunk] = [Chunk()]
+        self.datasets: list[ProjectData] = [ProjectData()]
         self.active: int = 0
         self.modified = False
-        self.relocated: list = []      # (chunk, field, old, new) rebased by load()
+        self.relocated: list = []      # (dataset, field, old, new) rebased by load()
 
     @property
-    def chunk(self) -> Chunk:
-        if not self.chunks:
-            self.chunks.append(Chunk())
+    def dataset(self) -> ProjectData:
+        if not self.datasets:
+            self.datasets.append(ProjectData())
             self.active = 0
-        return self.chunks[min(self.active, len(self.chunks) - 1)]
+        return self.datasets[min(self.active, len(self.datasets) - 1)]
 
     def to_dict(self, base=None):
         """base = folder of the .pmsx: paths below it are written relative
         (portable project folder); photos/products elsewhere stay absolute."""
-        chunks = [asdict(c) for c in self.chunks]
+        datasets = [asdict(c) for c in self.datasets]
         if base:
-            for cd in chunks:
-                for k in CHUNK_PATHS:
+            for cd in datasets:
+                for k in DATA_PATHS:
                     cd[k] = to_relative(cd.get(k), base)
                 for name, keys in PRODUCT_PATHS:
                     d = cd.get(name) or {}
@@ -158,7 +160,7 @@ class Project:
                 for c in cd.get("cameras", []):
                     for k in CAMERA_PATHS:
                         c[k] = to_relative(c.get(k), base)
-        return {"format": "photomesh-studio/1", "active": self.active, "chunks": chunks}
+        return {"format": "photomesh-studio/2", "active": self.active, "datasets": datasets}
 
     def save(self, path):
         """Atomic: write <path>.tmp, then replace, so a crash/kill mid-save never
@@ -184,11 +186,21 @@ class Project:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         prj = cls()
-        prj.chunks = []
+        prj.datasets = []
         base = os.path.dirname(os.path.abspath(path))
-        known = set(Chunk.__dataclass_fields__)
+        known = set(ProjectData.__dataclass_fields__)
         cam_known = set(Camera.__dataclass_fields__)
-        for cd in data.get("chunks") or []:
+        records = data.get("datasets")
+        if records is None:
+            # Version 1 used a differently named list of complete data records.
+            # Identify its structure instead of retaining obsolete API names.
+            records = next((value for value in data.values()
+                            if isinstance(value, list) and value
+                            and all(isinstance(record, dict) and
+                                    (not record or bool(known.intersection(record))) for record in value)), [])
+        if not isinstance(records, list) or not all(isinstance(record, dict) for record in records):
+            raise ValueError("Project data records must be a list of objects")
+        for cd in records:
             cams = []
             for c in cd.pop("cameras", []):
                 for k in CAMERA_PATHS:          # relative = below the project folder
@@ -197,12 +209,12 @@ class Project:
                 cams.append(Camera(**{k: v for k, v in c.items() if k in cam_known}))
             cd = {k: v for k, v in cd.items() if k in known}
             # paths saved relative (0.1.7+, benchmark.py) are relative to the project file
-            for k in CHUNK_PATHS:
+            for k in DATA_PATHS:
                 cd[k] = _resolve(cd.get(k), base)
-            ch = Chunk(cameras=cams, **cd)
+            ch = ProjectData(cameras=cams, **cd)
             # project folder copied/moved (other drive or computer): find products below the new location
             from .relink import rebase_path
-            for k in CHUNK_PATHS:
+            for k in DATA_PATHS:
                 v = getattr(ch, k)
                 if v and not os.path.exists(v):
                     r = rebase_path(v, base)
@@ -229,13 +241,13 @@ class Project:
                         r = rebase_path(v, base)
                         if r:
                             setattr(c, k, r)
-            prj.chunks.append(ch)
-        if not prj.chunks:
-            prj.chunks.append(Chunk())
+            prj.datasets.append(ch)
+        if not prj.datasets:
+            prj.datasets.append(ProjectData())
         a = data.get("active", 0)
-        # the active chunk is read from the root of the file (0.1.9 and older read it
-        # from the last product dict, so it always came back as chunk 0)
-        prj.active = a if isinstance(a, int) and not isinstance(a, bool) and 0 <= a < len(prj.chunks) else 0
+        # the active dataset is read from the root of the file (0.1.9 and older read it
+        # from the last product dict, so it always came back as dataset 0)
+        prj.active = a if isinstance(a, int) and not isinstance(a, bool) and 0 <= a < len(prj.datasets) else 0
         prj.path = path
         return prj
 
@@ -244,33 +256,23 @@ class Project:
         """<name>.files next to the .pmsx ("" while unsaved)."""
         return data_folder(self.path) if self.path else ""
 
-    def default_workdir(self, chunk: Chunk):
-        """Folder where processing results of a chunk are stored: always inside
+    def default_workdir(self, dataset: ProjectData):
+        """Folder where processing results of a dataset are stored: always inside
         the project's data folder <name>.files (no temporary folder; an
         unsaved project must be saved before processing)."""
-        if chunk.workdir:
-            return chunk.workdir
+        if dataset.workdir:
+            return dataset.workdir
         if not self.path:
             raise ProjectNotSaved("Save the project before processing (its data is stored next to the .pmsx).")
-        idx = self.chunks.index(chunk) if chunk in self.chunks else 0
-        chunk.workdir = os.path.join(self.data_dir, f"chunk{idx}")
-        return chunk.workdir
+        idx = self.datasets.index(dataset) if dataset in self.datasets else 0
+        dataset.workdir = os.path.join(self.data_dir, "processing" if idx == 0 else f"processing-{idx + 1}")
+        return dataset.workdir
 
     def external_workdirs(self, path=None):
-        """Chunks whose working folder lies outside the folder of the .pmsx
+        """Datasets whose working folder lies outside the folder of the .pmsx
         (old absolute-path projects, the pre-0.1.7 temporary folder)."""
         base = os.path.dirname(os.path.abspath(path or self.path))
-        return [c for c in self.chunks if c.workdir and not is_under(c.workdir, base)]
-
-
-def _rat(v):
-    try:
-        return float(v)
-    except Exception:
-        try:
-            return v[0] / v[1]
-        except Exception:
-            return 0.0
+        return [c for c in self.datasets if c.workdir and not is_under(c.workdir, base)]
 
 
 def read_exif_gps(cam: Camera):
@@ -289,7 +291,6 @@ def read_exif_gps(cam: Camera):
             cam.lat = dms(gps[2], gps.get(1, "N"))
             cam.lon = dms(gps[4], gps.get(3, "E"))
         if 6 in gps:
-            a = _rat(gps[6])
-            cam.alt = -a if gps.get(5, 0) == 1 else a
+            cam.alt = _gps_altitude(gps)
     except Exception:
         pass

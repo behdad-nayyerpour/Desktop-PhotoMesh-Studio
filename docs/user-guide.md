@@ -2,22 +2,22 @@
 
 [Documentation](README.md) · [Installation](installation.md)
 
-1. *Workflow → Add Photos…* / *Add Folder…* — photos are analysed in parallel
+1. *Project → Add Photos…* / *Add Photo Folder…* — photos are analysed in parallel
    (EXIF GPS, thumbnails, global descriptors) and appear in **Photos**,
    **Workspace** and **Reference** panes.
-2. *Workflow → Align Photos…* — image resolution, matching mode (**Fast** default /
+2. *Process → Align Photos…* — image resolution, matching mode (**Fast** default /
    Exhaustive / Sequential), **camera estimation** (Auto / Global / Incremental /
    Hierarchical), coarse-to-fine, key point limit, guided matching…
    Result: camera positions + tie points in the **Model** view.
-3. *Workflow → Build Point Cloud…* — Quality + Depth filtering (CUDA).
-4. *Workflow → Build Model…* — Source (Point cloud / Delaunay from fused cloud and visibility),
+3. *Process → Build Point Cloud…* — Quality + Depth filtering (CUDA).
+4. *Process → Build Mesh…* — Source (Point cloud / Delaunay from fused cloud and visibility),
    trimming and target triangle count.
-5. *File → Save* stores a `*.pmsx` project (JSON); results live in
+5. *Project → Save* stores a `*.pmsx` project (JSON); results live in
    `<project>.files/`.
 
 ## Dense cloud, filtering, mesh and ground control
 
-**Build Point Cloud** (Workflow menu) – own parallel undistortion (photos are read in
+**Build Point Cloud** (Process menu) – own parallel undistortion (photos are read in
 place and never written to; downscaled undistorted copies go to `<workdir>\dense`),
 quality Ultra/High/Medium/Low/Lowest = 1/2/4/8/16× downscale, one undistorted
 pinhole camera per camera group, PatchMatch neighbours chosen from the sparse model
@@ -27,37 +27,37 @@ filter; fusion consistency checks remain active, then outlier filtering (minimum
 per point, terrain sanity check, statistical and radius outlier removal; scipy
 cKDTree, multi-threaded). Depth maps can be reused when the settings are unchanged.
 
-**Tools > Point Cloud > Filter Point Cloud / Filter by Confidence**, **Model >
-Gradual Selection** (tie points: reprojection error, reconstruction uncertainty,
+**Process > Filter Point Cloud > Filter Point Cloud / Filter by Confidence**, **Process >
+Clean Tie Points** (tie points: reprojection error, reconstruction uncertainty,
 image count, projection accuracy).
 
-**Build Model** – Poisson (Open3D) with strong/moderate trimming or permitted extrapolation,
+**Build Mesh** – Poisson (Open3D) with strong/moderate trimming or permitted extrapolation,
 or Delaunay from the fused cloud and visibility data; face count
-High/Medium/Low (points/5, /15, /45 as in Metashape) or Custom, quadric decimation,
+High/Medium/Low (points/5, /15, /45) or Custom, quadric decimation,
 removal of faces bridging gaps, long-edge faces and small components; automatic
 voxel downsampling with an enforced point limit and bounded large-file loading.
 A manual voxel that exceeds the limit is reported rather than silently changed.
 
-**Ground control** – File > Import > Import Markers / Import Reference reads
-Metashape reference exports (`# CoordinateSystem:` + `#Label X Y Z ...`, as
-exported by Metashape), plain label/X/Y/Z[/accuracy] text or CSV, Metashape
-markers XML (with photo projections and pinned flags) and survey XML.
+**Ground control** – **Project > Import Data > Import Markers...** reads
+plain label/X/Y/Z[/accuracy] text or CSV, reference text with coordinate-system
+headers, legacy marker XML (including photo projections and pinned flags),
+PhotoMesh reference XML 2.0, and supported survey XML.
 Coordinate systems: local (metres), WGS84 lon/lat/alt and UTM (own conversion,
 no PROJ data needed). The **Markers** pane lists reference, error (m), projections and
 pixel error; the check box switches control ↔ check point. In the Photo view,
-right-click to place the selected marker or edit an existing marker. **Tools > Markers > Refine Markers** predicts every marker in every photo and
+right-click to place the selected marker or edit an existing marker. **Survey > Refine Markers** predicts every marker in every photo and
 refines it locally (template from a pinned placement, else a checkerboard-corner
-detector, multi-view consensus). **Tools > Optimize Cameras** runs a robust Helmert
+detector, multi-view consensus). **Process > Optimize Cameras** runs a robust Helmert
 fit followed by a GCP-constrained bundle adjustment (Levenberg–Marquardt with Schur
 complement: poses, f/cx/cy/k1-k3/p1/p2 per camera group, tie points, markers;
-accuracies as in Metashape: markers 0.005 m, projections 0.5 px, tie points 1 px,
+default accuracies: markers 0.005 m, projections 0.5 px, tie points 1 px,
 camera GPS 10 m). Check points are not used in the adjustment. The report
-(File > Export > Export Markers) contains X/Y/Z/total error and pixel error per
+(Export > Markers) contains X/Y/Z/total error and pixel error per
 marker and the control/check RMSE.
 
 ## Texture and tiled model
 
-**Workflow → Build Texture** (Diffuse map from Images). Mapping mode Generic /
+**Process → Build Texture** (Diffuse map from Images). Mapping mode Generic /
 Adaptive orthophoto / Orthophoto / Keep uv; blending Mosaic (default) / Average /
 Max intensity / Min intensity / Disabled; texture size × count (count is an upper
 bound: pages are never filled with texels upsampled past the photo resolution);
@@ -74,27 +74,27 @@ per-face median (moving vehicles, people), view selection is a smoothness-weight
 labelling (few seams), seams are levelled by per-vertex colour offsets, faces no
 photo sees are filled from neighbouring colours. Charts are packed into the
 atlas and sampled multithreaded. Visibility is cached (`visibility_cache.npz`), so
-re-texturing with other settings is ~40 % faster.
+compatible re-texturing can reuse visibility work. Actual timings depend on the project.
 
 Output in `<project>.files/…/texture/`: `model_textured.obj/.mtl`, `texture_N.jpg`,
 `model_textured.glb`, `uv.npz`, `info.json`. The workspace row reads
 `3D Model (N faces, …, Texture 8192x8192)`; Properties lists texel size vs photo
-ground resolution (cm/pix when the chunk is georeferenced, model units otherwise).
+ground resolution (cm/pix when the dataset is georeferenced, model units otherwise).
 
-**Workflow → Build Tiled Model** from the model (with its texture, or vertex colours)
+**Process → Build Tiled Model** from the model (with its texture, or vertex colours)
 or from the point cloud. Adaptive quadtree on the ground plane (z when georeferenced,
 otherwise the mean camera up direction), leaves keep every original face, parents
 are quadric-decimated with locked borders; every tile has its own atlas baked from
 the full model. Output `tiled/`: Cesium 3D Tiles `tileset.json` + `tiles/*.b3dm`
 (or `.glb` for 3D Tiles 1.1, `.pnts` for point clouds) and `photomesh_tiles.json`
 for our viewer, which streams levels by screen-space error (16 px). Georeferenced
-UTM/WGS84 chunks get an ENU→ECEF root transform (Cesium places them on the globe);
-local-CRS chunks are written in local metres.
+UTM/WGS84 datasets get an ENU→ECEF root transform (Cesium places them on the globe);
+local-CRS datasets are written in local metres.
 
-**File → Import → Import Texture… / Import Tiled Model…** attach an existing output
+**Project → Import Data → Import Texture… / Import Tiled Model…** attach an existing output
 folder without rebuilding (e.g. a texture built from the command line or copied from
 another PC). Import Texture needs the folder with `info.json`, `uv.npz` and
-`texture_N.jpg` and refuses a texture of a different mesh (face count must match);
+`texture_N.jpg` and validates that the texture belongs to the current mesh;
 Import Tiled Model needs the folder with `tileset.json` + `photomesh_tiles.json`.
 Paths are stored in the `.pmsx` on the next Save.
 
@@ -104,7 +104,7 @@ tiled model 45 s (106 tiles, 5 levels); point-cloud tiles from 27.8 M points 12 
 
 ## Export mesh contours to DXF
 
-After building a model, choose **File > Export > Export Mesh Contours...**,
+After building a model, choose **Export > Mesh Contours (DXF)...**,
 next to Export Model. Select a DXF destination and enter the contour interval
 when prompted.
 The export intersects the mesh triangles with horizontal planes at integer
@@ -150,8 +150,8 @@ Rebuild notices above the Model and Ortho views indicate outdated products.
 For a final result after bundle adjustment:
 
 1. Save the project.
-2. Run **Workflow > Build Point Cloud...** with **Reuse depth maps** off.
-3. Rebuild the mesh with **Build Model...**.
+2. Run **Process > Build Point Cloud...** with **Reuse depth maps** off.
+3. Rebuild the mesh with **Process > Build Mesh...**.
 4. Rebuild the DEM if it is used as the orthomosaic surface.
 5. Rebuild the orthomosaic and any required texture or tiled model.
 
@@ -161,12 +161,12 @@ added again.
 
 ## Orthomosaic and DEM
 
-Use **Workflow > Build DEM...** to create an elevation raster from the mesh or
+Use **Process > Build DEM...** to create an elevation raster from the mesh or
 point cloud. Use **Build Orthomosaic...** with the required Mesh or DEM surface.
 
 The Ortho tab displays an actual orthomosaic or DEM after one has been built
 or imported; it does not substitute the sparse point cloud for a raster.
-Use **File > Export** to export orthomosaic and DEM products.
+Use **Export** to export orthomosaic and DEM products.
 
 ## Progress and background work
 
@@ -177,10 +177,7 @@ The status bar shows only Ready/Busy and CPU/GPU load. Progress stays in the
 processing dialog or relevant Model/Photos pane. A busy cursor acknowledges
 commands while their settings and input data are being prepared.
 
-[Back to the main page](../README.md)
-
-
-## Reference and Workspace in 1.0
+## Reference and Workspace
 
 Reference combines camera GPS and marker tables. Checking a camera enables its
 GPS for optimization (when camera GPS is enabled in Optimize Cameras); it does
@@ -188,16 +185,14 @@ not enable/disable the photo for alignment. Selecting a row only selects it.
 Uncheck a marker to use it as a check point instead of a control point.
 Ignored markers are excluded independently of that classification.
 
-Workspace lists the project's photos and products directly, without a Chunk row
-or Add/Merge/Duplicate/Delete Chunk commands. Version 1.0 opens one dataset per
-project. A legacy multi-chunk file is rejected with instructions to separate its
+Workspace lists the project's photos and products directly, without an intermediate dataset row or dataset-management commands. One dataset is opened per
+project. A legacy multi-dataset file is rejected with instructions to separate its
 datasets in an older version; its original file is not modified.
 
 **Preferences > Theme** applies Dark/Light immediately and remembers the choice.
 **Default view** selects the requested product when it is available after loading.
-On the first 1.0 launch the file-dialog preference is reset to Windows native
-dialogs. Subsequent explicit choices are preserved. The built-in dialog option remains
-an explicit fallback for Windows shell-dialog problems.
+Windows native file dialogs are the default. The built-in dialog option remains
+an explicit fallback for Windows shell-dialog problems; explicit preferences are preserved.
 
 Marker edits preserve the selected photo and Photos-panel scroll position.
 Project preparation runs off the UI thread and is transactional: a failed or
@@ -222,7 +217,7 @@ Workspace and Reference extend down to the status bar. Photos, Console and Jobs
 share the bottom area beneath the viewport, to the right of the left tabs.
 
 
-## Workflow settings in 1.0.1
+## Workflow settings
 
 - Alignment uses Full, Half, Quarter or One-eighth image dimensions. The visible
   feature limit is the only fine-stage limit; zero means the engine default,
@@ -322,3 +317,50 @@ large datasets should retain appropriate preselection to limit the workload.
 Cloud Properties accepts historical pair-list and dictionary filter statistics.
 Opening an older project does not require rebuilding its point cloud for this
 metadata display fix.
+
+
+## Project and reference file compatibility
+
+New saves use project schema 2 with project-data records and a `processing`
+working folder for new results. Earlier project files are read by their record
+structure; opening them does not rewrite the source file or move existing
+photos/results. Save As copies working data to the new layout using the normal
+space check, cancellation and transactional-copy safeguards.
+
+Marker XML exports now use PhotoMesh reference XML version 2.0
+(`photomesh-reference` / `dataset`). Legacy camera/marker XML and survey XML
+remain readable by their record structure. The new XML export is not the
+vendor-specific Metashape export schema. Text/CSV import and tab-separated
+reference-report export remain available for exchanging references.
+Reference coordinates, accuracies, control/check state and pinned projections
+are retained.
+
+Layer buttons for Tie Points, Cloud and Mesh have a checked primary part for
+visibility and a separate arrow for render styles. Turning a layer off retains
+its selected style. Shape metrics remain in Properties; the separate measurement
+command and full-screen mode have been removed.
+
+
+## Toolbar, display and view controls
+
+The first row contains project/edit actions, processing commands and Settings.
+The processing labels are Add Photos, Align Photos, Build Cloud, Build Mesh,
+Build Texture, Build Tiled Model, Build DEM and Build Orthomosaic.
+
+The second row uses captions beneath icons, with separators between products,
+overlays and view controls. Click the main part of Tie Points, Cloud or Mesh to
+toggle visibility; the checked state means visible. Click its arrow to choose a
+rendering style. Hiding a product retains its style. Ortho and DEM are beside Mesh.
+Transparency uses a checked main button and an opacity slider in its arrow menu.
+
+Layers contains tiled-model visibility and styles, camera/marker labels,
+trackball, perspective/orthographic projection, and Show All/Hide All.
+The cube buttons select Top, Bottom, Left, Right, Front, Back and Iso;
+Zoom In, Zoom Out and Fit follow them. Commands also remain in their application
+menus. Narrow windows can use the processing row's native overflow arrow.
+
+SIFT + LightGlue and ALIKED + LightGlue display a time-cost note below their
+selector. CPU execution, many image pairs and high feature counts can make them
+slow; a learned matcher is not a guarantee of faster alignment.
+
+[Back to the main page](../README.md)

@@ -28,14 +28,14 @@ from . import georef as g
 UNDO_DEPTH = 50
 
 
-def ray_mesh(V, F, o, d, chunk=400_000):
+def ray_mesh(V, F, o, d, dataset=400_000):
     """Nearest hit (t > 0) of ray o + t d with triangles V[F] (Moller-Trumbore,
     vectorised, two-sided). Returns t or None."""
     V = np.asarray(V, np.float64); F = np.asarray(F, np.int64)
     o = np.asarray(o, float); d = np.asarray(d, float) / np.linalg.norm(d)
     best = None
-    for s in range(0, len(F), chunk):
-        f = F[s:s + chunk]
+    for s in range(0, len(F), dataset):
+        f = F[s:s + dataset]
         a = V[f[:, 0]]; e1 = V[f[:, 1]] - a; e2 = V[f[:, 2]] - a
         p = np.cross(d, e2)
         det = np.einsum("ij,ij->i", e1, p)
@@ -105,9 +105,8 @@ class MarkerEditMixin:
             if view == "photo":
                 self._mk_undo.pop()  # pin_marker takes its own undo snapshot
                 k = self.current_photo
-                if not (0 <= k < len(self.chunk.cameras)):
+                if not (0 <= k < len(self.dataset.cameras)):
                     return False
-                stem = g._stem(self.chunk.cameras[k].label)
                 point = next((p for lab, *p in self.photo_view.markers if lab == label), None)
                 return self.pin_marker(label, point[0], point[1]) if point else False
             m.locked = True
@@ -125,12 +124,12 @@ class MarkerEditMixin:
             view.cancel_marker_move()
 
     def _markers_snapshot(self):
-        self._mk_undo.append((copy.deepcopy(self.chunk.markers or []), copy.deepcopy(self._ref_pending)))
+        self._mk_undo.append((copy.deepcopy(self.dataset.markers or []), copy.deepcopy(self._ref_pending)))
         del self._mk_undo[:-UNDO_DEPTH]
         self._mk_redo.clear()
 
     def _restore_markers(self, state):
-        self.chunk.markers, self._ref_pending = copy.deepcopy(state[0]), copy.deepcopy(state[1])
+        self.dataset.markers, self._ref_pending = copy.deepcopy(state[0]), copy.deepcopy(state[1])
         self.set_modified()
         self._refresh_markers_pane()
         self._update_view_markers()
@@ -138,25 +137,25 @@ class MarkerEditMixin:
     def undo_markers(self):
         if not self._mk_undo:
             self.statusBar().showMessage("Nothing to undo", 3000); return False
-        self._mk_redo.append((copy.deepcopy(self.chunk.markers or []), copy.deepcopy(self._ref_pending)))
+        self._mk_redo.append((copy.deepcopy(self.dataset.markers or []), copy.deepcopy(self._ref_pending)))
         self._restore_markers(self._mk_undo.pop())
         self.log("Undo: markers restored"); return True
 
     def redo_markers(self):
         if not self._mk_redo:
             self.statusBar().showMessage("Nothing to redo", 3000); return False
-        self._mk_undo.append((copy.deepcopy(self.chunk.markers or []), copy.deepcopy(self._ref_pending)))
+        self._mk_undo.append((copy.deepcopy(self.dataset.markers or []), copy.deepcopy(self._ref_pending)))
         self._restore_markers(self._mk_redo.pop())
         self.log("Redo: markers restored"); return True
 
     def _refresh_markers_pane(self):
         self.markers_pane.pending = self._ref_pending
-        self.markers_pane.refresh(self.chunk)
+        self.markers_pane.refresh(self.dataset)
 
     def _commit_markers(self, ms, msg=None):
         """Store markers (after a snapshot was taken)."""
         self._invalidate_marker_error_rows(ms)
-        self.chunk.markers = [m.to_dict() for m in ms]
+        self.dataset.markers = [m.to_dict() for m in ms]
         self.set_modified()
         self._refresh_markers_pane()
         self._update_view_markers()
@@ -176,10 +175,10 @@ class MarkerEditMixin:
     def _camera_of_photo(self, k):
         """(model, image id, sx, sy): photo pixel = COLMAP pixel * (sx, sy)."""
         model = self._sparse_model()
-        if model is None or not (0 <= k < len(self.chunk.cameras)):
+        if model is None or not (0 <= k < len(self.dataset.cameras)):
             return None
         names = g.name_index(model)
-        c = self.chunk.cameras[k]
+        c = self.dataset.cameras[k]
         iid = names.get(g._stem(c.label))
         if iid is None:
             return None
@@ -208,7 +207,7 @@ class MarkerEditMixin:
         occ = getattr(self, "_occl", None)
         if occ is None:
             return None
-        key = self._occl_key(self.chunk)
+        key = self._occl_key(self.dataset)
         if key is None:
             return None
         if occ.get("key") == key and occ.get("scene") is not None:
@@ -247,7 +246,7 @@ class MarkerEditMixin:
             if t is not None:
                 return o + t * d, "model"
         try:
-            smp = self._sampler("DEM") if self.chunk.georef else None
+            smp = self._sampler("DEM") if self.dataset.georef else None
         except Exception:  # noqa: BLE001
             smp = None
         if smp is not None and d[2] < -1e-3:
@@ -270,7 +269,7 @@ class MarkerEditMixin:
 
     def _march_height(self, smp, o, d, n=6000):
         """Ray vs height field (local frame; sampler takes world XY): march + bisection."""
-        off = self._frame(self.chunk).offset
+        off = self._frame(self.dataset).offset
         step = max(0.25 * float(getattr(smp, "px", 1.0) or 1.0), 0.05)
 
         def h(p):
@@ -303,7 +302,7 @@ class MarkerEditMixin:
             return {}
         X = np.asarray(X, float)
         sc = self._raycast_scene(build=False) if occlusion else None
-        by_stem = {g._stem(c.label): c for c in self.chunk.cameras}
+        by_stem = {g._stem(c.label): c for c in self.dataset.cameras}
         out = {}
         rays, keys = [], []
         for iid, im in model.images.items():
@@ -338,11 +337,11 @@ class MarkerEditMixin:
         """Photo tab > right-click > Add Marker: new marker pinned at (u, v) on
         photo k (no active marker needed), predicted on the other photos."""
         k = self.current_photo if k is None else k
-        if not (0 <= k < len(self.chunk.cameras)):
+        if not (0 <= k < len(self.dataset.cameras)):
             return None
         ms = self._marker_objs()
         label = label or self._new_label(ms)
-        stem = g._stem(self.chunk.cameras[k].label)
+        stem = g._stem(self.dataset.cameras[k].label)
         X, src = None, None
         ray = self.photo_pixel_ray(k, u, v)
         if ray is not None:
@@ -354,7 +353,7 @@ class MarkerEditMixin:
         ms.append(m)
         where = (f"surface point from the {src}" if X is not None else
                  "no 3D position yet (place it on a second photo)" if ray is not None else "photo not aligned")
-        self._commit_markers(ms, f"Added marker {label}: pinned on {self.chunk.cameras[k].label} at "
+        self._commit_markers(ms, f"Added marker {label}: pinned on {self.dataset.cameras[k].label} at "
                                  f"({u:.1f}, {v:.1f}); {where}; predicted on {len(pred)} other photos (unpinned)")
         self._select_marker_row(label)
         return label
@@ -381,7 +380,7 @@ class MarkerEditMixin:
     def _ortho_frame(self, ch=None):
         """(R, off) with ortho/DEM world XYZ = R @ local + off (ortho.py: R is the
         top-view rotation of a local project, identity when georeferenced)."""
-        ch = ch or self.chunk
+        ch = ch or self.dataset
         for d in (ch.orthomosaic, ch.dem):
             if d and d.get("rotation") is not None:
                 return np.asarray(d["rotation"], float), np.asarray(d.get("offset") or [0, 0, 0], float)
@@ -403,7 +402,7 @@ class MarkerEditMixin:
         if z is not None:
             return z, "DEM" if "dem" in getattr(self.ortho_view, "layers", {}) else "orthomosaic height"
         from . import geotiff as gt
-        ch = self.chunk
+        ch = self.dataset
         for d, name in ((ch.dem, "DEM"), (ch.orthomosaic, "orthomosaic height")):
             src = (d or {}).get("path") if name == "DEM" else (d or {}).get("height_path")
             if not src or not os.path.exists(src):
@@ -435,7 +434,7 @@ class MarkerEditMixin:
         ms = self._marker_objs()
         target = next((m for m in ms if m.label == label), None) if label else None
         if label is not None and target is None:
-            self._marker_error("Place Marker", f"Marker '{label}' is no longer in this chunk.")
+            self._marker_error("Place Marker", f"Marker '{label}' is no longer in this dataset.")
             return None
         if target is not None and target.locked and not replace_pins:
             self.statusBar().showMessage(f"Marker {label} is pinned; choose Move Marker to reposition it.", 6000)
@@ -449,7 +448,7 @@ class MarkerEditMixin:
             Xl = self.ortho_to_local([X, Y, Z])
         else:
             R, off = self._ortho_frame()
-            zr = [v for v in ((self.chunk.orthomosaic or {}).get("z_range") or []) if v is not None]
+            zr = [v for v in ((self.dataset.orthomosaic or {}).get("z_range") or []) if v is not None]
             top = (max(zr) if zr else off[2]) + 1000.0
             Xl, src = self.surface_hit(R.T @ (np.array([X, Y, top]) - off), R.T @ np.array([0.0, 0.0, -1.0]))
             if Xl is None:
@@ -483,13 +482,13 @@ class MarkerEditMixin:
         k = self.current_photo if k is None else k
         ms = self._marker_objs()
         m = next((x for x in ms if x.label == label), None)
-        if m is None or not (0 <= k < len(self.chunk.cameras)):
+        if m is None or not (0 <= k < len(self.dataset.cameras)):
             return False
         self._markers_snapshot()
-        stem = g._stem(self.chunk.cameras[k].label)
+        stem = g._stem(self.dataset.cameras[k].label)
         m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
         m.projections[stem] = [float(u), float(v), True]
-        self._commit_markers(ms, f"Marker {label} pinned on {self.chunk.cameras[k].label} at ({u:.1f}, {v:.1f})")
+        self._commit_markers(ms, f"Marker {label} pinned on {self.dataset.cameras[k].label} at ({u:.1f}, {v:.1f})")
         return True
 
     def _select_marker_row(self, label):
@@ -523,7 +522,7 @@ class MarkerEditMixin:
                 m.label = new
         if old in self._ref_pending:
             self._ref_pending[new] = self._ref_pending.pop(old)
-        gr = self.chunk.georef or {}
+        gr = self.dataset.georef or {}
         for r in gr.get("rows") or []:
             if r.get("label") == old:
                 r["label"] = new
@@ -575,7 +574,7 @@ class MarkerEditMixin:
                 if cur[col - 1] == v:
                     return True
                 cur[col - 1] = v
-                crs = g.CRS.parse(self.chunk.crs) if self.chunk.crs else None
+                crs = g.CRS.parse(self.dataset.crs) if self.dataset.crs else None
                 if v is not None and crs is not None and getattr(crs, "kind", "") == "geographic":
                     lim = 180.0 if col == 1 else 90.0 if col == 2 else None
                     if lim is not None and abs(v) > lim:
@@ -610,10 +609,10 @@ class MarkerEditMixin:
     def marker_photo_indices(self, labels):
         labs = set(labels)
         stems = set()
-        for m in self.chunk.markers or []:
+        for m in self.dataset.markers or []:
             if m["label"] in labs:
                 stems |= {g._stem(p) for p in (m.get("projections") or {})}
-        return {k for k, c in enumerate(self.chunk.cameras) if g._stem(c.label) in stems}
+        return {k for k, c in enumerate(self.dataset.cameras) if g._stem(c.label) in stems}
 
     def filter_photos_by_markers(self, labels=None):
         """Photos pane shows only the photos where the markers are placed (pinned or not)."""

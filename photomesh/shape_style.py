@@ -1,6 +1,6 @@
 """Display styles of imported shapes (Qt-free).
 
-A style is a dict of DEFAULTS keys. Layer styles live in the chunk's shapes
+A style is a dict of DEFAULTS keys. Layer styles live in the dataset's shapes
 info (saved in the .pmsx): ch.shapes["styles"][layer name] holds the keys the
 user changed, ch.shapes["shape_styles"][str(shape index)] an optional per-shape
 override (also only changed keys). resolve() merges defaults < layer < shape

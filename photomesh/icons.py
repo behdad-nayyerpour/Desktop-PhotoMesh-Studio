@@ -6,7 +6,7 @@ import math
 
 from PySide6.QtCore import Qt, QPointF, QRectF, QSize
 from PySide6.QtGui import (QIcon, QIconEngine, QImage, QPixmap, QPainter, QPainterPath, QColor, QPen, QBrush,
-                           QPolygonF, QFont)
+                           QPolygonF, QFont, QGuiApplication, QPalette)
 
 _SIZE = 32          # design grid: every icon is drawn in 32 x 32 units and scaled as a vector
 
@@ -17,15 +17,15 @@ TOOLBAR_ICON = 21           # main toolbar buttons
 MODE_ICON = 26              # split display-mode buttons (Tie Points / Colors / Shaded)
 SELECT_ICON = 21            # navigation / selection split button
 PANE_ICON = 21              # pane toolbars (Workspace)
+_THEMED_KEYS = frozenset(("markers", "marker_labels", "ortho", "shapes"))
+
+
+def _dark_icons():
+    """Follow the active palette, including theme switches within a session."""
+    return QGuiApplication.palette().color(QPalette.Window).lightnessF() < 0.5
+
+
 MIN_STROKE_PX = 1.25        # thinnest line, in device pixels, after scaling
-
-
-def _canvas():
-    pm = QPixmap(_SIZE, _SIZE)
-    pm.fill(Qt.transparent)
-    p = QPainter(pm)
-    p.setRenderHint(QPainter.Antialiasing)
-    return pm, p
 
 
 def _dots(p, pts, col, r):
@@ -101,7 +101,8 @@ class PainterIconEngine(QIconEngine):
         return "photomesh_painter"
 
     def _image(self, device_px, mode):
-        ck = (self.name, int(device_px), mode == QIcon.Disabled)
+        ck = (self.name, int(device_px), mode == QIcon.Disabled,
+              _dark_icons() if self.name in _THEMED_KEYS else None)
         im = self._cache.get(ck)
         if im is None:
             im = render_image(self.name, device_px)
@@ -165,7 +166,6 @@ def _view_cube(p, direction):
 
 
 def _draw(key, p):
-    S = _SIZE
     if key == "tie":                       # sparse dots
         _dots(p, [(7, 9), (16, 6), (25, 10), (10, 18), (21, 17), (6, 26), (16, 25), (26, 25)],
               QColor(120, 200, 255), 2.7)
@@ -189,13 +189,19 @@ def _draw(key, p):
             p.drawLine(apex, q)
         if key == "camera_labels":
             _label(p, "A", QColor(150, 190, 255))
-    elif key in ("markers", "marker_labels"):    # flag on a pole + target
-        p.setPen(QPen(QColor(240, 240, 240), 1.6)); p.drawLine(QPointF(10, 28), QPointF(10, 5))
-        p.setPen(Qt.NoPen); p.setBrush(QBrush(QColor(255, 210, 40)))
-        p.drawPolygon(QPolygonF([QPointF(10, 5), QPointF(24, 9), QPointF(10, 14)]))
-        p.setBrush(QBrush(QColor(60, 220, 255))); p.drawEllipse(QPointF(10, 28), 3, 2)
+    elif key in ("markers", "marker_labels"):    # survey target
+        dark = _dark_icons()
+        foreground = QColor("#DCE5EF" if dark else "#34475C")
+        accent = QColor("#65CEF3" if dark else "#087FA8")
+        p.setBrush(Qt.NoBrush); p.setPen(QPen(foreground, 1.7))
+        p.drawEllipse(QRectF(7, 7, 18, 18))
+        for x1, y1, x2, y2 in ((16, 2, 16, 8), (16, 24, 16, 30),
+                                 (2, 16, 8, 16), (24, 16, 30, 16)):
+            p.drawLine(QPointF(x1, y1), QPointF(x2, y2))
+        p.setPen(QPen(accent, 1.7)); p.drawEllipse(QRectF(12, 12, 8, 8))
+        p.setPen(Qt.NoPen); p.setBrush(accent); p.drawEllipse(QRectF(14.5, 14.5, 3, 3))
         if key == "marker_labels":
-            _label(p, "A", QColor(255, 230, 120))
+            _label(p, "A", accent)
     elif key == "grid":                    # perspective base plane
         p.setPen(QPen(QColor(185, 188, 205), 1.5))
         for k in range(5):
@@ -214,23 +220,31 @@ def _draw(key, p):
         p.setPen(QPen(QColor(90, 130, 255), 1.6)); p.drawEllipse(QPointF(16, 16), 12, 12)
         p.setPen(QPen(QColor(255, 90, 90), 1.6)); p.drawEllipse(QPointF(16, 16), 12, 5)
         p.setPen(QPen(QColor(90, 230, 110), 1.6)); p.drawEllipse(QPointF(16, 16), 5, 12)
-    elif key == "ortho":                   # top-view photo tile: fields, a road, a north tick
-        p.setPen(QPen(QColor(30, 40, 30), 1.2)); p.setBrush(QBrush(QColor(120, 160, 90)))
+    elif key == "ortho":                   # four orthographic image tiles
+        dark = _dark_icons()
+        foreground = QColor("#DCE5EF" if dark else "#34475C")
+        accent = QColor("#65CEF3" if dark else "#087FA8")
+        p.setPen(Qt.NoPen); p.setBrush(accent)
+        p.drawRect(QRectF(4, 4, 11, 11)); p.drawRect(QRectF(17, 17, 11, 11))
+        p.setBrush(Qt.NoBrush); p.setPen(QPen(foreground, 1.7))
         p.drawRect(QRectF(4, 4, 24, 24))
-        p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(QColor(175, 150, 95))); p.drawRect(QRectF(4, 4, 11, 10))
-        p.setBrush(QBrush(QColor(90, 130, 70))); p.drawRect(QRectF(17, 17, 11, 11))
-        p.setBrush(QBrush(QColor(200, 185, 150))); p.drawRect(QRectF(19, 5, 7, 8))
-        p.setPen(QPen(QColor(230, 225, 210), 2.4)); p.drawLine(QPointF(4, 22), QPointF(28, 12))
-        p.setPen(QPen(QColor(250, 250, 250), 1.2)); p.setBrush(Qt.NoBrush); p.drawRect(QRectF(4, 4, 24, 24))
-    elif key == "shapes":                  # vector overlay: polygon outline, a polyline and vertices
-        poly = [QPointF(5, 9), QPointF(19, 5), QPointF(27, 15), QPointF(17, 27), QPointF(6, 21)]
-        p.setBrush(QBrush(QColor(165, 112, 65, 230)))
-        p.setPen(QPen(QColor(255, 150, 70), 1.8))
+        p.drawLine(QPointF(16, 4), QPointF(16, 28))
+        p.drawLine(QPointF(4, 16), QPointF(28, 16))
+        p.setPen(QPen(accent, 1.7))
+        p.drawLine(QPointF(7, 23), QPointF(11, 19))
+        p.drawLine(QPointF(20, 11), QPointF(24, 7))
+    elif key == "shapes":                  # unfilled polygon and open path
+        dark = _dark_icons()
+        foreground = QColor("#DCE5EF" if dark else "#34475C")
+        accent = QColor("#65CEF3" if dark else "#087FA8")
+        poly = [QPointF(5, 9), QPointF(19, 4), QPointF(27, 17), QPointF(14, 24)]
+        p.setBrush(Qt.NoBrush); p.setPen(QPen(foreground, 1.7))
         p.drawPolygon(QPolygonF(poly))
-        p.setPen(QPen(QColor(90, 220, 140), 1.6))
-        p.drawPolyline(QPolygonF([QPointF(3, 28), QPointF(13, 16), QPointF(29, 24)]))
-        _dots(p, [(q.x(), q.y()) for q in poly], QColor(255, 235, 120), 2.0)
+        p.setPen(QPen(accent, 1.7))
+        p.drawPolyline(QPolygonF([QPointF(3, 29), QPointF(11, 16), QPointF(29, 27)]))
+        p.setPen(Qt.NoPen); p.setBrush(accent)
+        for point in poly:
+            p.drawRect(QRectF(point.x() - 1.7, point.y() - 1.7, 3.4, 3.4))
     elif key == "transparency":            # see-through surface: a dashed shape behind a translucent sheet
         p.setPen(QPen(QColor(255, 150, 70), 2.0, Qt.DashLine)); p.setBrush(Qt.NoBrush)
         p.drawPolygon(QPolygonF([QPointF(4, 20), QPointF(14, 6), QPointF(27, 12), QPointF(22, 28)]))
@@ -244,10 +258,6 @@ def _draw(key, p):
         p.setPen(QPen(QColor(30, 30, 30, 160), 1.0)); p.setBrush(Qt.NoBrush)
         for k in range(1, 5):
             p.drawEllipse(QPointF(16, 18), 13 - 2.4 * k, 11 - 2.0 * k)
-    elif key == "chunk":                   # stacked sheets
-        for k, col in enumerate((QColor(90, 130, 190), QColor(120, 165, 225), QColor(170, 205, 250))):
-            p.setPen(QPen(QColor(40, 60, 90), 1.2)); p.setBrush(QBrush(col))
-            p.drawRect(QRectF(4 + 3 * k, 4 + 4 * k, 20, 15))
     elif key == "workspace":
         p.setPen(QPen(QColor(120, 90, 30), 1.2)); p.setBrush(QBrush(QColor(235, 190, 80)))
         p.drawRect(QRectF(3, 10, 26, 17)); p.drawRect(QRectF(3, 6, 11, 5))

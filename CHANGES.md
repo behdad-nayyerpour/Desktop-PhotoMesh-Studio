@@ -4,6 +4,20 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
+### 1.0.3 (2026-11-07)
+
+- Widen Tie Points, Cloud, Mesh and Transparency captions, including selected states; retain native split visibility/style controls and compact icon sizes. Keep the display row within 1280 logical pixels by tightening view/zoom side padding.
+- Use complete processing labels and reorganized Project/Process/Display/Survey/Export menus with independent layer icons.
+- Remove Full Screen/F11 and the inactive Measure Shape command; retain shape metrics in Properties.
+- Use project-data terminology, processing workspace names and project schema 2. Read existing project records and paths; older application versions may not read new saves.
+- Export independent PhotoMesh reference XML 2.0 while retaining legacy reference import.
+- Protect project context during processing, referenced files and linked targets during cleanup, and temporary sources until metadata is saved.
+- Preserve older raw-cloud projects across failed/cancelled rebuilds and close failed TIFF/DEM readers.
+- Handle byte-valued EXIF altitude references consistently and validate available memory before large allocations.
+- Fix the reported dense-workspace nesting case without allowing processing to overwrite input photos.
+- Complete the [baseline maintainability review](docs/development/release-review-103.md), remove obsolete processing routes and unused imports/locals, and retain required compatibility paths.
+- Build and verify the complete 1.0.3 Setup, including an upgrade over 1.0.2. Linux and Windows each pass 680 tests; native CPU synthetic reconstruction and installed-source/version checks pass. Installed-user appearance review was approved on 2026-11-07; full real-data CUDA reconstruction remains a separate target-hardware check.
+
 ### 1.0.2 (2026-11-02)
 
 - Pin the offline Windows engine bundle to COLMAP 4.2.1, with CPU/CUDA builds, SHA256-verified local neural models and retained legacy compatibility.

@@ -30,7 +30,7 @@ See [Updating](../UPDATING.md).
 
 Memory and disk use depend on photo count, resolution, quality, and the chosen
 products. The bundled COLMAP build and the installed NVIDIA driver must be
-compatible. **Tools > Preferences** can select another COLMAP installation.
+compatible. **Project > Preferences** can select another COLMAP installation.
 
 ## Store projects separately
 
@@ -48,7 +48,7 @@ folders used by your project.
 2. Copy the project file and its complete working/result folders.
 3. Copy the original photos.
 4. Open the copied `.pmsx`.
-5. If photos cannot be found, choose **Tools > Change Image Paths...** and
+5. If photos cannot be found, choose **Project > Relocate Photos...** and
    select their new folder.
 6. Save the project to retain the new paths.
 

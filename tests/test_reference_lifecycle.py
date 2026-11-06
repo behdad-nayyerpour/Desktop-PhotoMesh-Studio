@@ -15,7 +15,7 @@ from test_dense_mesh_gcp import synthetic_model
 
 @pytest.mark.parametrize("transition", ["new", "open"])
 def test_project_switch_drops_marker_overlays_history_and_pending(window, tmp_path, transition):
-    from photomesh.project import Chunk, Project
+    from photomesh.project import ProjectData, Project
     _scene(window, tmp_path)
     label = window.add_marker_at_photo(500, 400, k=0)
     window.edit_marker_cell(label, 1, "123")
@@ -23,12 +23,12 @@ def test_project_switch_drops_marker_overlays_history_and_pending(window, tmp_pa
     assert window.model_view.overlay.markers is not None
     # Queued cell edits must not leak into another project with the same marker label.
     window._marker_edited(label, 2, "999")
-    target = Chunk(markers=[g.Marker(label).to_dict()])
+    target = ProjectData(markers=[g.Marker(label).to_dict()])
     if transition == "new":
         window.new_project()
     elif transition == "open":
         project = Project()
-        project.chunks = [target]
+        project.datasets = [target]
         path = str(tmp_path / "next.pmsx")
         project.save(path)
         window.open_project(path)
@@ -40,7 +40,7 @@ def test_project_switch_drops_marker_overlays_history_and_pending(window, tmp_pa
     assert window.ortho_view.active_marker is None
     assert window._ref_pending == {} and window.markers_pane.pending == {}
     assert not window.undo_markers() and not window.redo_markers()
-    assert all(m["ref"] is None for m in window.chunk.markers)
+    assert all(m["ref"] is None for m in window.dataset.markers)
 
 
 def test_model_clear_drops_marker_overlay_and_backing_data(window):

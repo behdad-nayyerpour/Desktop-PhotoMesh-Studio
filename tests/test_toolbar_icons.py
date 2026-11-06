@@ -15,10 +15,9 @@ def _opaque_bbox(img):
 
 
 def test_icon_sizes_are_30_percent_larger():
-    from photomesh import icons, toolbuttons
+    from photomesh import icons
     assert icons.TOOLBAR_ICON == round(16 * 1.3) and icons.PANE_ICON == round(16 * 1.3)
     assert icons.SELECT_ICON == round(16 * 1.3) and icons.MODE_ICON == round(20 * 1.3)
-    assert toolbuttons.ARROW_W == round(16 * 1.3)
 
 
 @pytest.mark.parametrize("dpr", [1.0, 1.25, 1.5, 2.0])
@@ -32,7 +31,7 @@ def test_icons_are_rendered_at_device_pixels_not_upscaled(qapp, dpr):
 
 
 def test_icons_fill_the_box_and_have_contrast(qapp):
-    from PySide6.QtGui import QColor
+    from PySide6.QtGui import QColor, QPalette
     from photomesh.icons import render_image
     bg = QColor(58, 58, 61)                                    # toolbar background (theme)
     for key in ("file_new", "file_open", "file_save", "undo", "redo", "preferences", "tie", "cloud", "mesh",
@@ -46,7 +45,8 @@ def test_icons_fill_the_box_and_have_contrast(qapp):
                 c = img.pixelColor(x, y)
                 if c.alpha() > 200:
                     l = 0.3 * c.red() + 0.59 * c.green() + 0.11 * c.blue()
-                    best = max(best, abs(l - (0.3 * bg.red() + 0.59 * bg.green() + 0.11 * bg.blue())))
+                    background = qapp.palette().color(QPalette.Window) if key == "markers" else bg
+                    best = max(best, abs(l - (0.3 * background.red() + 0.59 * background.green() + 0.11 * background.blue())))
         assert best > 70, key
 
 
@@ -85,7 +85,8 @@ def test_toolbar_uses_only_painter_icons(window):
 
 
 _FIT_SCRIPT = r"""
-import json, os, sys
+import json, os, sys, faulthandler
+faulthandler.dump_traceback_later(20, exit=True)
 sys.path.insert(0, sys.argv[1])
 from PySide6.QtCore import Qt, QCoreApplication
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
@@ -94,14 +95,35 @@ app = QApplication([]); app.setOrganizationName("PhotoMeshFitTest"); app.setAppl
 from photomesh.theme import apply_theme
 apply_theme(app, sys.argv[2].capitalize())                                       # as main.py
 from photomesh.mainwindow import MainWindow
-w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(1280, 800); w.show()
+w = MainWindow(); apply_theme(app, sys.argv[2].capitalize()); w.resize(int(sys.argv[3]), 800); w.show()
 for _ in range(10):
     app.processEvents()
 tb = w.main_toolbar
 ext = [b for b in tb.findChildren(QToolButton) if b.objectName() == "qt_toolbar_ext_button"]
+omitted = [a.text() for a in tb.actions() if not a.isSeparator()
+           and tb.widgetForAction(a) is not None and not tb.widgetForAction(a).isVisible()]
+overflow_entries = []
+if ext and ext[0].isVisible():
+    from PySide6.QtCore import QTimer
+    from PySide6.QtTest import QTest
+    def inspect_overflow():
+        popup = app.activePopupWidget()
+        if popup is not None:
+            overflow_entries.extend(a.text() for a in popup.actions())
+            popup.close()
+    QTimer.singleShot(100, inspect_overflow)
+    QTest.mouseClick(ext[0], Qt.LeftButton)
+    QTest.qWait(150)
+    for _ in range(10): app.processEvents()
+    # Some Qt styles expand the toolbar instead of opening a popup.
+    if not overflow_entries:
+        overflow_entries.extend(a.text() for a in tb.actions()
+                                if tb.widgetForAction(a) is not None and tb.widgetForAction(a).isVisible())
 print("FIT" + json.dumps({"hint": tb.sizeHint().width(), "width": tb.width(), "dpr": w.devicePixelRatioF(),
                           "overflow": bool(ext and ext[0].isVisible()),
                           "window_width": w.width(),
+                          "omitted": omitted,
+                          "overflow_entries": overflow_entries,
                           "clipped": [(b.text(), b.width(), b.sizeHint().width(), b.height(), b.sizeHint().height())
                                       for bar in w.toolbars for b in bar.findChildren(QToolButton)
                                       if b.isVisible() and b.objectName() != "qt_toolbar_ext_button"
@@ -116,23 +138,28 @@ os._exit(0)
 
 @pytest.mark.parametrize("scale", ["1", "1.5", "2"])
 @pytest.mark.parametrize("theme", ["dark", "light"])
-def test_main_toolbar_fits_1920px_at_150_percent(tmp_path, scale, theme):
-    """1920 px at 150 % scaling = 1280 logical px: the themed main toolbar
-    (as started by main.py) must fit without the overflow (>>) button."""
+@pytest.mark.parametrize("width", [1280, 1920])
+def test_complete_toolbar_labels_are_not_clipped(tmp_path, scale, theme, width):
+    """Full processing labels fit wide windows; narrow windows use native overflow.
+    Font/icon sizes stay unchanged, and displayed buttons must never clip."""
     import json, os, subprocess, sys
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_SCALE_FACTOR=scale)
     if os.name == "nt":
         env.setdefault("QT_QPA_FONTDIR", os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts"))
     sc = tmp_path / "fit.py"; sc.write_text(_FIT_SCRIPT, encoding="utf-8")
-    out = subprocess.run([sys.executable, str(sc), root, theme], env=env, capture_output=True, text=True, timeout=120)
+    out = subprocess.run([sys.executable, str(sc), root, theme, str(width)], env=env, capture_output=True, text=True, timeout=120)
     line = [l for l in out.stdout.splitlines() if l.startswith("FIT")]
     assert line, out.stdout + out.stderr
     r = json.loads(line[0][3:])
     assert abs(r["dpr"] - float(scale)) < 1e-6
-    assert r["window_width"] == 1280 and not r["clipped"], r
-    assert r["hint"] <= 1280 - 16 and not r["overflow"], r
-    assert all(bar["hint"] <= 1280 - 16 and not bar["overflow"] for bar in r["bars"]), r
+    assert r["window_width"] == width and not r["clipped"], r
+    if width == 1920:
+        assert all(bar["hint"] <= width - 16 and not bar["overflow"] for bar in r["bars"]), r
+    else:
+        assert r["hint"] <= width - 16 or r["overflow"], r
+        assert set(r["omitted"]).issubset(r["overflow_entries"]), r
+        assert r["bars"][1]["hint"] <= width and not r["bars"][1]["overflow"], r
 
 
 def _photo_with_markers(window):
@@ -185,3 +212,28 @@ def test_photo_markers_hidden_from_the_toolbar_toggle(window):
     assert pv._overlay == []
     window.layer_action("markers").trigger()
     assert pv._overlay and len(_texts(pv)) == 3
+
+
+@pytest.mark.parametrize("size", [16, 21, 26, 32, 42])
+@pytest.mark.parametrize("key", ["markers", "marker_labels", "ortho", "shapes"])
+def test_layer_icon_cache_tracks_theme_at_small_sizes(qapp, key, size):
+    """The same icon engine must update after a palette switch at tree/toolbar sizes."""
+    from PySide6.QtGui import QIcon, QPalette, QColor
+    from photomesh.icons import PainterIconEngine
+    old = QPalette(qapp.palette())
+    engine = PainterIconEngine(key)
+    images = []
+    try:
+        for background in ("#FFFFFF", "#292F38", "#FFFFFF"):
+            palette = QPalette(old)
+            palette.setColor(QPalette.Window, QColor(background))
+            qapp.setPalette(palette)
+            image = engine._image(size, QIcon.Normal)
+            images.append(image)
+            assert not image.isNull()
+            assert image.width() == size and image.height() == size
+            assert _opaque_bbox(image) is not None
+        assert images[0] != images[1]
+        assert images[0] == images[2]
+    finally:
+        qapp.setPalette(old)

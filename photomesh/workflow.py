@@ -126,7 +126,7 @@ def product_transaction(function):
 
 
 def raster_budget(width, height, bytes_per_cell=64, folder=None):
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     cells = int(width) * int(height)
     if width < 1 or height < 1:
         raise ValueError("Empty raster region")
@@ -135,7 +135,7 @@ def raster_budget(width, height, bytes_per_cell=64, folder=None):
     if folder and shutil.disk_usage(folder).free < disk:
         raise ValueError(f"Raster requires about {disk / 2**30:.2f} GiB free disk space")
     return {"cells": cells, "memory": memory, "disk": disk,
-            "fits_ram": memory < available_bytes() * .65}
+            "fits_ram": memory < require_available_bytes() * .65}
 
 
 def vertex_blocks(path, block=500_000):

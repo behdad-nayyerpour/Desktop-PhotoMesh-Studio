@@ -1,23 +1,33 @@
 # Architecture and performance
 
-[Development guide](README.md)
+[Development guide](README.md) · [1.0.3 review](release-review-103.md)
 
-The measurements below are historical results on the stated data and hardware,
-not performance guarantees for every project or the current release.
+## Current processing pipeline
 
-## fastpipe — the speed pipeline (default "Fast" mode)
-
-Original implementation of published techniques:
-
-| Stage | What it does |
+| Stage | Behavior |
 |---|---|
-| Parallel analysis | EXIF, thumbnails and descriptors computed in a process pool (cached). |
-| Pair preselection | Union of (a) GPS k-nearest neighbours, (b) top-k global-descriptor similarity (GIST-like gradient grid + tiny image), (c) sequential window. Fed to COLMAP `matches_importer`, so matching cost is **O(n·k)** instead of **O(n²)** (e.g. a 200-photo grid survey: ~1 300 GPS+sequence pairs, ≤ ~2 900 with descriptor pairs, instead of 19 900). |
-| Coarse-to-fine | Align at 1024 px first, then extract full-accuracy features, match only pairs co-visible in the coarse model, triangulate into the coarse poses (`point_triangulator`), register the photos the coarse stage missed (`image_registrator`), triangulate again and run one `bundle_adjuster` — never a second full SfM (that is only a fallback if the refinement fails). |
-| Camera estimation | **Auto** (default): GLOMAP global SfM for 100+ photos when bundled, else incremental. **Global**: GLOMAP solves all cameras at once (rotation averaging + global positioning). **Incremental**: COLMAP mapper tuned for speed (all threads, fewer/shorter global BAs). **Hierarchical**: COLMAP `hierarchical_mapper`, scene split into parallel sub-models. Global/Hierarchical fall back to incremental if they fail. |
-| Decode once | Photos are decoded once (JPEG DCT downscale, process pool) into working images in the project folder (never the photo folder); COLMAP detects on them and key points/cameras are rescaled to full resolution; deleted after alignment. |
-| Feature selection | Fine stage keeps 18 000 features/photo at Medium (24 000 High): mostly the best-localised small-scale ones plus the most repeatable large-scale ones — 4× faster GPU matching than 50 k features. |
-| GPU | SIFT extraction/matching GPU flags on (toggle in Preferences → GPU). |
+| Photo analysis | Process-pool EXIF, thumbnail and descriptor analysis, with ordered results and cached outputs. |
+| Pair selection | GPS, descriptor and sequential overlap candidates limit matching work. Turning off both preselection methods explicitly permits all pairs and can greatly increase runtime. |
+| Working images | Decode/downscale into a managed project workspace; do not overwrite source photos. Restore calibration dimensions and keypoint coordinates before camera grouping. |
+| Features | SIFT is the default. Optional SIFT + LightGlue and ALIKED + LightGlue use verified local models and their own bounded, visible feature counts. ALIKED extraction has a 2048-pixel maximum long edge. |
+| Mapping | Prefer the integrated global mapper when supported and appropriate; retain incremental and compatible legacy-engine fallbacks. Hierarchical mapping remains selectable. |
+| Coarse-to-fine | A SIFT route. Reuse coarse poses only with reliable focal priors; otherwise map at target resolution. Preserve calibration, the project frame and transactional activation. |
+| Resources | Bound worker counts and large allocations by measured resources. Unknown RAM stops large-allocation planning rather than inventing a safe budget. |
+| Publication | Build new generations first, validate them, then activate complete product sets. Retain old results on failure/cancellation and invalidate derived products when their inputs change. |
+| Device policy | Probe compatible device/driver execution in child processes. GPU feature failure can retry on CPU; dense depth maps still require compatible NVIDIA/CUDA hardware. |
+
+See [engine policy and native tests](engine-modernization-102.md),
+[workflow contracts](workflow-review-101.md) and the current
+[release review](release-review-103.md) for implementation details and evidence.
+Benchmarks measure their stated inputs/settings; they do not guarantee timing or
+survey accuracy for another dataset.
+
+## Historical measurements
+
+The following measurements describe earlier implementations and the stated
+hardware. In particular, the old 18,000-feature selection and standalone-GLOMAP
+default are not current configuration guidance. Current alignment settings and
+feature limits are documented in the [user guide](../user-guide.md).
 
 Benchmark: `python benchmark.py <image_folder> [--modes fast exhaustive sequential] [--mapper Auto Global Incremental Hierarchical] [--no-gpu]`.
 On the 11-image OpenMVG *Sceaux Castle* set (CPU only, no GPU) all modes register
@@ -29,7 +39,7 @@ larger sets (hundreds of photos).
 Drone survey, 641 DJI Mavic 3 Pro photos (597 wide 5280×3956 + 44 tele 4032×3024), Medium accuracy, Fast mode,
 RTX 3080 Laptop + Ryzen 9 5900HX, COLMAP 3.8 CUDA + GLOMAP 1.2:
 
-| | first Fast run | GLOMAP + refinement fix | speed-ups | current (mixed cameras) |
+| | first Fast run | GLOMAP + refinement fix | speed-ups | final historical run (mixed cameras) |
 |---|---|---|---|---|
 | total | > 77 min (unfinished) | 38.6 min | 12.6 min | 15.2 min† |
 | aligned | – | 596/641 | 596/641 | **640/641** |
@@ -46,7 +56,7 @@ Mavic 3 Pro. PhotoMesh Studio now extracts per photo and then shares one camera 
 group of identical lens + image size ("2 camera group(s): 597 photos, 44 photos" in
 the Console). Photos that still don't align are listed in the Console after Align
 Photos (here only the last frame, an oblique shot at landing with no overlap).
-Current speed-ups: photos decoded once in parallel into downscaled working
+Speed-ups in that historical implementation: photos decoded once in parallel into downscaled working
 images (key points rescaled to full resolution); fine-stage feature selection
 (18 000/photo: 80 % smallest-scale for precision + 20 % largest for robustness);
 GLOMAP binary output; no second triangulation when no photo was added; bundle

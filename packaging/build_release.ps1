@@ -74,7 +74,7 @@ foreach ($screenshot in @("screenshot.png", "screenshot-light.png")) {
     Copy-Item -LiteralPath (Join-Path $app $screenshot) -Destination (Join-Path $appStage $screenshot)
 }
 New-Item -ItemType Directory -Force -Path (Join-Path $appStage "packaging") | Out-Null
-foreach ($guide in @("README.md", "RELEASE.md")) {
+foreach ($guide in @("README.md", "RELEASE.md", "fix_shortcut_icon.ps1")) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $guide) -Destination (Join-Path (Join-Path $appStage "packaging") $guide)
 }
 
@@ -124,7 +124,8 @@ Write-Host "Validating copied runtime"
 $env:PYTHONDONTWRITEBYTECODE = "1"
 $env:QT_QPA_PLATFORM = "offscreen"
 $env:PYTHONPATH = $appStage
-& (Join-Path $pythonStage "python.exe") -c "import PySide6, numpy, scipy, open3d, pyproj, photomesh; print('Runtime OK:', photomesh.APP_VERSION)"
+$env:PHOTOMESH_STAGE_APP = $appStage
+& (Join-Path $pythonStage "python.exe") -c "import os, sys; sys.path.insert(0, os.environ['PHOTOMESH_STAGE_APP']); import PySide6, numpy, scipy, open3d, pyproj, psutil, photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PHOTOMESH_STAGE_APP']).resolve()); from photomesh.memguard import require_available_bytes; print('Runtime OK:', photomesh.APP_VERSION, require_available_bytes())"
 if ($LASTEXITCODE -ne 0) { throw "Copied Python runtime failed validation" }
 
 Write-Host "Building full installer"

@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF, QTimer
-from PySide6.QtGui import QPainter, QColor, QFont, QImage, QPen, QBrush, QGuiApplication
+from PySide6.QtGui import QPainter, QColor, QFont, QImage, QPen, QGuiApplication
 from PySide6.QtWidgets import QWidget, QMenu
 
 from . import geotiff as gt
@@ -99,7 +99,7 @@ class OrthoView(QWidget):
     tileReady = Signal(int, object, object)        # generation, key, QImage
     heightReady = Signal(int, object)
     coordinatesChanged = Signal(str)
-    shapeClicked = Signal(int)                     # index into the chunk's shape set, -1 = nothing hit
+    shapeClicked = Signal(int)                     # index into the dataset's shape set, -1 = nothing hit
     workChanged = Signal(str, int, int, bool)
     markerAction = Signal(str, str)
     moveMarkerRequested = Signal(str, float, float, object)

@@ -290,9 +290,9 @@ def test_pixel_world_mapping_and_cursor_readout(qtbot, ortho_geo):
 
 
 # ------------------------------------------------------------------ GUI
-def _setup_chunk(window, scene, tmp_path, georef=True):
+def _setup_dataset(window, scene, tmp_path, georef=True):
     from photomesh.plyio import ply_counts
-    ch = window.chunk
+    ch = window.dataset
     ch.add_photos(sorted(scene["photos"].values()))
     wd = str(tmp_path / "work"); ch.workdir = wd
     shutil.copytree(scene["model"], os.path.join(wd, "sparse", "0"))
@@ -322,10 +322,10 @@ def test_gui_build_export_import_orthomosaic(window, no_dialogs, monkeypatch, sc
     s0 = dialogs.BuildOrthomosaicDialog.settings
     monkeypatch.setattr(dialogs.BuildOrthomosaicDialog, "settings", lambda self: dict(s0(self), pixel_size=0.04))
     monkeypatch.setattr(dialogs.BuildDEMDialog, "exec", lambda self: 1)
-    ch = _setup_chunk(window, scene, tmp_path)
+    ch = _setup_dataset(window, scene, tmp_path)
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     o = ch.orthomosaic
-    assert o.get("pixel_size") == 0.04, window.chunk.log
+    assert o.get("pixel_size") == 0.04, window.dataset.log
     assert window.tabs.currentWidget() is window.ortho_view and window.ortho_view.has_raster("ortho")
     assert "4 cm/pix" in pm.summary(ch, "ortho")
     rows = dict(pm.properties(ch, "ortho"))
@@ -346,14 +346,14 @@ def test_gui_build_export_import_orthomosaic(window, no_dialogs, monkeypatch, sc
     files = window.export_raster_to("ortho", str(tmp_path / "exp.tif"), fmt="tif", compression="Deflate")
     with gt.TiffReader(files[0]) as r:
         assert r.geo[0] == pytest.approx(o["origin"][0]) and r.geo[1] > OFF[1] + 19
-    # DEM from the mesh (no cloud in this chunk)
+    # DEM from the mesh (no cloud in this dataset)
     window.actions["Build DEM..."].trigger(); _wait(window)
-    assert ch.dem.get("width"), window.chunk.log
+    assert ch.dem.get("width"), window.dataset.log
     assert window.ortho_view.has_raster("dem")
     # save / load keeps both; Import Orthomosaic of a moved folder
     window.project.path = str(tmp_path / "p.pmsx"); window.project.save(window.project.path)
     from photomesh.project import Project
-    c2 = Project.load(window.project.path).chunks[0]
+    c2 = Project.load(window.project.path).datasets[0]
     assert c2.orthomosaic["width"] == o["width"] and c2.dem["width"] == ch.dem["width"]
     moved = str(tmp_path / "moved_ortho"); shutil.copytree(o["dir"], moved)
     ch.orthomosaic = {}

@@ -48,7 +48,7 @@ def apply_dark_theme(app: QApplication) -> None:
 def apply_theme(app, name=None):
     """Apply a persisted palette and refresh custom viewports immediately."""
     from PySide6.QtCore import QSettings
-    from PySide6.QtGui import QPalette
+
     name = name or QSettings().value("ui/theme", "Dark", str)
     if app.property("photomesh_active_theme") == name:
         return

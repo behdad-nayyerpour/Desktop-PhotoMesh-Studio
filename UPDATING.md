@@ -24,4 +24,14 @@ The retired Git updater and portable ZIP tooling are no longer distributed.
 Existing portable users should install the complete Setup and open their projects
 from their separate data folders.
 
+## 1.0.3 project and reference compatibility
+
+1.0.3 reads older projects and preserves their existing result paths. New saves
+use project schema 2; keep a separate copy if an older application version is
+still needed. Save As can create a new copy with processing workspace names.
+
+New marker XML exports use PhotoMesh reference XML 2.0. Legacy reference XML
+and text/CSV import remain supported. Tab-separated reference reports can still
+be exported for exchange.
+
 [Back to the main page](README.md)

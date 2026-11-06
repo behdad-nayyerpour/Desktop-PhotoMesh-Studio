@@ -28,7 +28,7 @@ class _Cam:
         self.path, self.enabled, self.label = path, True, os.path.basename(path)
 
 
-class _Chunk:
+class _ProjectData:
     def __init__(self, paths):
         self.cameras = [_Cam(p) for p in paths]
 
@@ -62,10 +62,10 @@ def count_pairs_file(p):
 def save_project(path, paths, infos, mapping, wd, exe):
     """Write a .pmsx the app can open, pointing at this run's results."""
     wd = os.path.abspath(wd)          # never store cwd-relative paths in the project
-    from photomesh.project import Project, Chunk
+    from photomesh.project import Project, ProjectData
     sparse_txt = os.path.join(wd, "sparse_txt")
     prj = Project()
-    ch = Chunk(name="Chunk 1", workdir=wd)
+    ch = ProjectData(name="Project", workdir=wd)
     ch.add_photos(paths, infos)
     poses = cm.read_images_txt(os.path.join(sparse_txt, "images.txt"))
     for c in ch.cameras:
@@ -75,7 +75,7 @@ def save_project(path, paths, infos, mapping, wd, exe):
         c.rot = p[1].tolist() if p else None
     ch.tie_points_ply = os.path.join(wd, "tie_points.ply")
     ch.tie_point_count = cm.count_points3d(os.path.join(sparse_txt, "points3D.txt"))
-    prj.chunks = [ch]
+    prj.datasets = [ch]
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     prj.save(path)
     print(f"  project saved: {path} ({ch.aligned_count()}/{len(ch.cameras)} aligned)", flush=True)
@@ -115,15 +115,15 @@ def main():
         tag = mode if len(a.mapper) == 1 else f"{mode}_{mapper.lower()}"
         wd = os.path.join(out_root, tag)
         shutil.rmtree(wd, ignore_errors=True)
-        chunk = _Chunk(paths)
-        mapping = cm.prepare_images(chunk, wd)
+        dataset = _ProjectData(paths)
+        mapping = cm.prepare_images(dataset, wd)
         names = [mapping[p] for p in paths]
         s = {"mode": mode.capitalize(), "accuracy": a.accuracy, "key_point_limit": a.key_points,
              "generic": True, "reference": True, "single_camera": True,
              "use_gpu": not a.no_gpu, "coarse_to_fine": True,
              "max_pairs_per_image": a.max_pairs_per_image, "mapper": mapper}
         print(f"== {mode} / mapper {mapper} -> {fp.choose_mapper(s, len(paths))} ==", flush=True)
-        steps = cm.align_steps(exe, chunk, wd, s, names=names, infos=[infos[p] for p in paths])
+        steps = cm.align_steps(exe, dataset, wd, s, names=names, infos=[infos[p] for p in paths])
         t0 = time.perf_counter()
         try:
             timings = run_steps(exe, steps, log=lambda m: print(m, flush=True),

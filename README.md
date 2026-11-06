@@ -1,7 +1,6 @@
 # PhotoMesh Studio
 
-**Source version 1.0.2** — offline engine compatibility checks, maintained global mapping, optional neural matching, and explicit GPS framing.
-Windows installers are published separately in Releases; check their version before downloading.
+**Version 1.0.3** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
 
 PhotoMesh Studio is a free desktop photogrammetry application for processing aerial
 imagery locally, without a cloud service.
@@ -15,31 +14,17 @@ and surveying workflows.
 [Changelog](CHANGES.md) ·
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
 
-## 1.0.3 candidate under review
-
-Version 1.0.3 is being tested before publication; the main-branch source and
-published installer remain 1.0.2. [Review the 1.0.3 changes and validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/pull/7).
-Linux and Windows each passed 680 tests; the complete candidate Setup and a
-disposable upgrade from 1.0.2 passed. Real-project/GPU acceptance remains pending.
-
-[Download the candidate Setup and validation records](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547844488)
-(about 866 MB; temporary artifact ZIP containing the full Setup).
-Keep a separate project copy when testing: new saves use schema 2 and new
-reference XML exports use the independent PhotoMesh format.
-
-Installed 1.0.3 toolbar preview:
-
-![PhotoMesh Studio 1.0.3 candidate toolbar with complete captions](docs/images/toolbar-1.0.3.png)
-
 ## Screenshots
+
+Project screenshots from the user-reviewed Windows installation of 1.0.3.
 
 **Dark theme**
 
-![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in dark mode](screenshot.png?v=f4ca6d10)
+![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in dark mode](screenshot.png?v=ca492977)
 
 **Light theme**
 
-![PhotoMesh Studio 1.0.2 displaying a reconstructed aerial survey in light mode](screenshot-light.png?v=2f117e4e)
+![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in light mode](screenshot-light.png?v=bf32d86b)
 
 ## Install
 
@@ -71,12 +56,12 @@ can run on the CPU. The 3D viewer requires an OpenGL-capable driver.
 ## Quick start
 
 1. Save a new project outside the application installation folder.
-2. Choose **Workflow > Add Photos...** or **Add Folder...**.
+2. Choose **Project > Add Photos...** or **Add Photo Folder...**.
 3. Run **Align Photos...**, then inspect the cameras and tie points.
 4. Add ground control and optimize cameras when required.
-5. Run **Build Point Cloud...**, **Build Model...**, and the required texture,
+5. Run **Build Point Cloud...**, **Build Mesh...**, and the required texture,
    DEM, or orthomosaic steps.
-6. Use **File > Export** to save your deliverables.
+6. Use **Export** to save your deliverables.
 
 For settings, marker editing, rebuilding after camera optimization, and contours,
 see the [user guide](docs/user-guide.md).

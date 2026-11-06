@@ -9,6 +9,13 @@ from . import geotiff as gt
 class RasterSurface:
     def __init__(self, path, offset=(0,0,0), rotation=None, crs=None):
         self.reader=gt.TiffReader(path)
+        try:
+            self._load_grid(path, offset, rotation, crs)
+        except BaseException:
+            self.reader.close()
+            raise
+
+    def _load_grid(self, path, offset, rotation, crs):
         self.offset=np.asarray(offset,float)
         if not self.reader.geo:
             self.reader.close()

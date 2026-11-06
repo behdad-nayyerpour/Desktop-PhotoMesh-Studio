@@ -1,4 +1,4 @@
-"""Tools > Clean Up Intermediate Data...: one checkbox per part with its size."""
+"""Project > Clean Up Intermediate Data...: one checkbox per part with its size."""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -20,7 +20,7 @@ class CleanupDialog(QDialog):
         self.tree.setHeaderLabels(["Data", "Size", "Note"])
         self.tree.setRootIsDecorated(False)
         for p in parts:
-            it = QTreeWidgetItem([(p["chunk"] + ": " if p["chunk"] else "") + p["label"], fmt_size(p["bytes"]),
+            it = QTreeWidgetItem([(p["dataset"] + ": " if p["dataset"] else "") + p["label"], fmt_size(p["bytes"]),
                                   p["note"]])
             it.setFlags(it.flags() | Qt.ItemIsUserCheckable)
             it.setCheckState(0, Qt.Checked if p["checked"] else Qt.Unchecked)

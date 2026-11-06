@@ -1,102 +1,216 @@
-"""Menu specification.
+"""Workflow-oriented menu layout.
 
-The top-level menus and their commands follow the *public* "Menu commands"
-appendix (Appendix A, Graphical user interface) of the Agisoft Metashape
-Professional user manual:
-    https://www.agisoft.com/pdf/metashape-pro_2_3_en.pdf
-Grouping into sub-menus and separators is our own arrangement.
-
-Item syntax:
-    "Name"              -> action
-    "-"                 -> separator
-    ("Sub", [ ... ])    -> sub-menu
-A trailing "*" in a name marks the action as checkable.
-
-Only commands that do something are listed (0.1.12 removed the placeholders
-that only said "not implemented yet"; REMOVED_0112 keeps their names for
-reference and for the test that they do not come back).
+Menu leaves are stable command names, independent of their visible location.
+Historical action-path aliases support existing scripts; they do not create
+menus or duplicate actions. The previous layout's public-manual reference is
+documented in docs/development/project-notes.md and remains in Git history.
+Only implemented commands belong in MENUS.
 """
 
 MENUS = [
-    ("&File", [
-        "New", "Open...", "-",
-        "Save", "Save As...", "-",
-        ("Export", [
-            "Export Point Cloud...", "Export Model...", "Export Mesh Contours...", "Export Tiled Model...",
-            "Export Orthomosaic...", "Export DEM...", "-",
-            "Generate Report...", "-",
-            "Export Cameras...", "Export Markers...", "Export Reference",
-            "Export Shapes...",
-        ]),
-        ("Import", [
+    ("&Project", [
+        "New", "Open...", "Save", "Save As...", "-",
+        "Add Photos...", "Add Folder...",
+        ("Import Data", [
             "Import Markers...", "Import Shapes...", "-",
             "Import Point Cloud...", "Import Model...", "Import Texture...",
             "Import Tiled Model...", "Import Orthomosaic...", "Import DEM...",
-        ]),
-        "-", "Exit",
+        ]), "-",
+        "Change Image Paths...", "Clean Up Intermediate Data...", "Run Script...",
+        "Preferences...", "-", "Exit",
     ]),
     ("&Edit", [
         "Undo", "Redo", "-",
-        "Rotate Right", "Rotate Left",
+        ("Rotate Photo", ["Rotate Right", "Rotate Left"]),
     ]),
-    ("&View", [
-        "Zoom In", "Zoom Out", "Reset View", "-", "Capture View", "-",
-        "Full Screen*", "-",
-        ("Panes", ["Workspace*", "Reference*", "Photos*", "Console*", "Jobs*"]),
-        "Toolbar*",
-    ]),
-    ("&Workflow", [
-        "Add Photos...", "Add Folder...", "-",
-        "Align Photos...", "-",
+    ("Pro&cess", [
+        "Align Photos...", "Optimize Cameras...", "-",
         "Build Point Cloud...", "Build Model...", "Build Texture...",
-        "Build Tiled Model...", "Build DEM...", "Build Orthomosaic...",
+        "Build Tiled Model...", "Build DEM...", "Build Orthomosaic...", "-",
+        "Gradual Selection...",
+        ("Filter Point Cloud", ["Filter Point Cloud...", "Filter by Confidence..."]),
+        "View Model Statistics...",
     ]),
-    ("&Model", [
-        "Gradual Selection...", "-",
-        ("Show/Hide Items", [
+    ("&Display", [
+        ("Zoom / Fit", ["Zoom In", "Zoom Out", "Reset View"]),
+        ("Orientation", ["Top", "Bottom", "Front", "Back", "Left", "Right", "Isometric"]),
+        "Perspective/Orthographic*", "-",
+        ("Layers and Labels", [
             "Show Tie Points*", "Show Point Cloud*", "Show Model*", "Show Tiled Model*",
             "Show Orthomosaic*", "Show DEM*", "-",
-            "Show Cameras*", "Show Shapes*",
-            "Show Markers*", "Show Marker Labels*", "Show Camera Labels*",
-            "Show Labels*", "Show Region*", "Show Trackball*", "Show Grid*", "-",
-            "Show All", "Hide All",
+            "Show Cameras*", "Show Shapes*", "Show Markers*",
+            "Show Marker Labels*", "Show Camera Labels*", "Show Labels*",
+            "Show Region*", "Show Trackball*", "Show Grid*",
         ]),
-        ("Tie Points", ["Tie Points - Colors"]),
-        ("Point Cloud", ["Point Cloud - Solid", "Point Cloud - Colors"]),
-        ("Model", ["Model - Textured", "Model - Shaded", "Model - Solid", "Model - Wireframe"]),
-        ("Tiled Model", ["Tiled Model - Textured", "Tiled Model - Solid",
-                         "Tiled Model - Wireframe", "Tiled Model - Elevation"]),
-        "-",
-        "Perspective/Orthographic*",
-        "-",
-        ("Predefined views", ["Top", "Bottom", "Front", "Back", "Left", "Right", "Isometric"]),
+        ("Rendering Styles", [
+            ("Tie Points", ["Tie Points - Colors"]),
+            ("Point Cloud", ["Point Cloud - Solid", "Point Cloud - Colors"]),
+            ("Mesh", ["Model - Textured", "Model - Shaded", "Model - Solid", "Model - Wireframe"]),
+            ("Tiled Model", ["Tiled Model - Textured", "Tiled Model - Solid",
+                             "Tiled Model - Wireframe", "Tiled Model - Elevation"]),
+        ]),
+        "Show All", "Hide All", "-",
+        ("Photo Navigation", ["Open Next Photo", "Open Previous Photo"]),
+        ("Ortho Product", ["DEM - Elevation", "Orthomosaic"]), "-",
+        ("Panels and Toolbars", [
+            "Workspace*", "Reference*", "Photos*", "Console*", "Jobs*", "-", "Toolbar*",
+        ]),
+        "Capture View",
     ]),
-    ("&Photo", [
-        "Open Next Photo", "Open Previous Photo", "-",
-        ("Show/Hide Items", ["Show Shapes*"]),
+    ("&Survey", [
+        "Add Marker", "Refine Markers", "-",
+        "Shape Settings...", "Remove Shapes", "-", "Transparent View*",
     ]),
-    ("&Ortho", [
-        ("Show/Hide Items", ["Show Shapes*"]),
-        "-",
-        "DEM - Elevation", "Orthomosaic",
+    ("E&xport", [
+        "Export Point Cloud...", "Export Model...", "Export Mesh Contours...",
+        "Export Tiled Model...", "Export Orthomosaic...", "Export DEM...", "-",
+        "Export Cameras...", "Export Markers...", "Export Reference", "Export Shapes...", "-",
+        "Generate Report...",
     ]),
-    ("&Tools", [
-        "Change Image Paths...", "Clean Up Intermediate Data...", "-",
-        ("Markers", ["Add Marker", "Refine Markers"]),
-        ("Point Cloud", ["Filter Point Cloud...", "Filter by Confidence..."]),
-        ("Mesh", ["View Model Statistics..."]),
-        ("Shapes", ["Shape Settings...", "Transparent View*", "-", "Measure Shape...", "-", "Remove Shapes"]),
-        "-",
-        "Optimize Cameras...",
-        "-",
-        "Run Script...", "-", "Preferences...",
-    ]),
-    ("&Help", [
-        "Contents", "-", "Report a Problem...", "Open Log Folder", "-",
-        "About PhotoMesh Studio...",
-    ]),
+    ("&Help", ["Contents", "Report a Problem...", "Open Log Folder", "-", "About PhotoMesh Studio..."]),
 ]
 
+# Presentation labels do not change command IDs or toolbar text.
+ACTION_LABELS = {
+    "New": "New Project", "Open...": "Open Project...",
+    "Add Folder...": "Add Photo Folder...", "Change Image Paths...": "Relocate Photos...",
+    "Build Model...": "Build Mesh...", "Gradual Selection...": "Clean Tie Points...",
+    "Contents": "Documentation",
+    "Export Point Cloud...": "Point Cloud...", "Export Model...": "Mesh...",
+    "Export Mesh Contours...": "Mesh Contours (DXF)...", "Export Tiled Model...": "Tiled Model...",
+    "Export Orthomosaic...": "Orthomosaic...", "Export DEM...": "DEM...",
+    "Export Cameras...": "Cameras...", "Export Markers...": "Markers...",
+    "Export Reference": "Reference...", "Export Shapes...": "Shapes...",
+}
+
+# Compatibility registry only: do not use these names to arrange the interface.
+LEGACY_ACTION_GROUPS = {
+    "File": [
+        "New",
+        "Open...",
+        "Save",
+        "Save As...",
+        "Export Point Cloud...",
+        "Export Model...",
+        "Export Mesh Contours...",
+        "Export Tiled Model...",
+        "Export Orthomosaic...",
+        "Export DEM...",
+        "Generate Report...",
+        "Export Cameras...",
+        "Export Markers...",
+        "Export Reference",
+        "Export Shapes...",
+        "Import Markers...",
+        "Import Shapes...",
+        "Import Point Cloud...",
+        "Import Model...",
+        "Import Texture...",
+        "Import Tiled Model...",
+        "Import Orthomosaic...",
+        "Import DEM...",
+        "Exit"
+    ],
+    "Edit": [
+        "Undo",
+        "Redo",
+        "Rotate Right",
+        "Rotate Left"
+    ],
+    "View": [
+        "Zoom In",
+        "Zoom Out",
+        "Reset View",
+        "Capture View",
+        "Workspace",
+        "Reference",
+        "Photos",
+        "Console",
+        "Jobs",
+        "Toolbar"
+    ],
+    "Workflow": [
+        "Add Photos...",
+        "Add Folder...",
+        "Align Photos...",
+        "Build Point Cloud...",
+        "Build Model...",
+        "Build Texture...",
+        "Build Tiled Model...",
+        "Build DEM...",
+        "Build Orthomosaic..."
+    ],
+    "Model": [
+        "Gradual Selection...",
+        "Show Tie Points",
+        "Show Point Cloud",
+        "Show Model",
+        "Show Tiled Model",
+        "Show Orthomosaic",
+        "Show DEM",
+        "Show Cameras",
+        "Show Shapes",
+        "Show Markers",
+        "Show Marker Labels",
+        "Show Camera Labels",
+        "Show Labels",
+        "Show Region",
+        "Show Trackball",
+        "Show Grid",
+        "Show All",
+        "Hide All",
+        "Tie Points - Colors",
+        "Point Cloud - Solid",
+        "Point Cloud - Colors",
+        "Model - Textured",
+        "Model - Shaded",
+        "Model - Solid",
+        "Model - Wireframe",
+        "Tiled Model - Textured",
+        "Tiled Model - Solid",
+        "Tiled Model - Wireframe",
+        "Tiled Model - Elevation",
+        "Perspective/Orthographic",
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Left",
+        "Right",
+        "Isometric"
+    ],
+    "Photo": [
+        "Open Next Photo",
+        "Open Previous Photo",
+        "Show Shapes"
+    ],
+    "Ortho": [
+        "Show Shapes",
+        "DEM - Elevation",
+        "Orthomosaic"
+    ],
+    "Tools": [
+        "Change Image Paths...",
+        "Clean Up Intermediate Data...",
+        "Add Marker",
+        "Refine Markers",
+        "Filter Point Cloud...",
+        "Filter by Confidence...",
+        "View Model Statistics...",
+        "Shape Settings...",
+        "Transparent View",
+        "Remove Shapes",
+        "Optimize Cameras...",
+        "Run Script...",
+        "Preferences..."
+    ],
+    "Help": [
+        "Contents",
+        "Report a Problem...",
+        "Open Log Folder",
+        "About PhotoMesh Studio..."
+    ]
+}
 
 # commands removed in 0.1.12: they only showed "not implemented yet" (or, for the
 # Edit > ... Snap toggles, only changed a status label), or duplicated another command
@@ -136,7 +250,7 @@ REMOVED_0112 = (
     'View > Panes > Animation',
     'Workflow > Align Laser Scans...',
     'Workflow > Build Panorama...',
-    'Workflow > Align Chunks...',
+    'Workflow > Align Datasets...',
     'Workflow > Batch Process...',
     'Model > Navigation',
     'Model > Rectangle Selection',
@@ -178,7 +292,7 @@ REMOVED_0112 = (
     'Model > Show/Hide Items > Lock Image',
     'Model > Show/Hide Items > Show Animation',
     'Model > Show/Hide Items > Show Info',
-    'Model > Show/Hide Items > Show Aligned Chunks',
+    'Model > Show/Hide Items > Show Aligned Datasets',
     'Model > View Mode > Solid View',
     'Model > View Mode > Colors View',
     'Model > View Mode > Classes View',

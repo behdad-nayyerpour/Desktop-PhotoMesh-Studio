@@ -464,13 +464,13 @@ def test_full_opencv_rational_and_fisheye_distortion():
 
 
 # ------------------------------------------------------------------ GUI
-def _gui_chunk(window, tmp_path):
-    """Georeferenced chunk (local CRS, big offset) with a DEM, one photo and a
+def _gui_dataset(window, tmp_path):
+    """Georeferenced dataset (local CRS, big offset) with a DEM, one photo and a
     COLMAP model whose camera looks straight down at the site."""
     window.project.path = str(tmp_path / "proj.pmsx")      # processing needs a saved project
     from PIL import Image
     from photomesh.project import Camera
-    ch = window.chunk
+    ch = window.dataset
     wd = tmp_path / "work"; (wd / "sparse" / "0").mkdir(parents=True)
     ch.workdir = str(wd)
     photo = str(tmp_path / "IMG_0001.JPG")
@@ -523,7 +523,7 @@ def _rows(window):
 
 
 def test_gui_import_show_save_load_export_remove(window, no_dialogs, tmp_path):
-    ch = _gui_chunk(window, tmp_path)
+    ch = _gui_dataset(window, tmp_path)
     gcp, site, local = _site_files(tmp_path)
     r = window.import_shapes(gcp, {"layer": "GCP", "z_mode": "keep"})
     assert r and r["shapes"] == 3 and not r["far"]
@@ -562,8 +562,8 @@ def test_gui_import_show_save_load_export_remove(window, no_dialogs, tmp_path):
     window.set_layer_visible("shapes", True)
     assert window.photo_view.shapes
     # properties / measurement
-    window._show_properties({"kind": "shape", "chunk": 0, "index": 3})
-    m = window.measure_shape(3)
+    window._show_properties({"kind": "shape", "dataset": 0, "index": 3})
+    m = dict(window._shape_rows(window.dataset, 3))
     assert m["Area 2D"].startswith("2,400.000") and "Volume net" in m
     # ortho click selection
     ov = window.ortho_view; ov.resize(600, 500); ov.fit()
@@ -574,7 +574,7 @@ def test_gui_import_show_save_load_export_remove(window, no_dialogs, tmp_path):
     window.project.save(pm)
     from photomesh.project import Project
     p2 = Project.load(pm)
-    assert p2.chunk.shapes["count"] == 4 and p2.chunk.shapes["path"] == ch.shapes["path"]
+    assert p2.dataset.shapes["count"] == 4 and p2.dataset.shapes["path"] == ch.shapes["path"]
     window.project = p2; window.refresh_all(); window.reload_view(); window.wait_view_loaded()
     assert len(window.ortho_view.shapes) == 4 and "Shapes (4)" in [t for t, _d in _rows(window)]
     # export in world coordinates, re-read
@@ -593,27 +593,30 @@ def test_gui_import_show_save_load_export_remove(window, no_dialogs, tmp_path):
     assert window.import_shapes(local, {"layer": "x"}, far_action="cancel") is None
     # replace / remove layer / remove all
     window.remove_shape_layer("loc")
-    assert window.chunk.shapes["count"] == 4
-    assert window.remove_shapes(confirm=False) and not window.chunk.shapes
+    assert window.dataset.shapes["count"] == 4
+    assert window.remove_shapes(confirm=False) and not window.dataset.shapes
     assert window.ortho_view.shapes == [] and window.photo_view.shapes == []
     assert not any(t.startswith("Shapes (") for t, _d in _rows(window))
 
 
 def test_gui_menus_and_toolbar(window):
-    for name in ("File/Import Shapes...", "File/Export Shapes...", "Tools/Remove Shapes", "Tools/Measure Shape...",
+    for name in ("File/Import Shapes...", "File/Export Shapes...", "Tools/Remove Shapes",
                  "Model/Show Shapes"):
         assert name in window.actions, name
     a = window.layer_action("shapes")
     assert a.isCheckable() and not a.icon().isNull()
     assert a in window.display_toolbar.actions()
     window.set_layer_visible("shapes", False)
-    assert all(not m.isChecked() for m in window._shape_mirrors)
+    assert not a.isChecked()
+    assert window.actions["Photo/Show Shapes"] is a
+    assert window.actions["Ortho/Show Shapes"] is a
     window.set_layer_visible("shapes", True)
-    assert all(m.isChecked() for m in window._shape_mirrors)
+    assert a.isChecked()
+    assert window.actions["Display/Show Shapes"] is a
 
 
 def test_kml_into_local_project_warns(window, no_dialogs, tmp_path):
-    ch = window.chunk
+    ch = window.dataset
     ch.georef = {"offset": OFF.tolist(), "crs": "Local Coordinates (m)", "crs_kind": "local"}
     ch.crs = "Local Coordinates (m)"
     p = tmp_path / "a.kml"; p.write_text(KML, encoding="utf-8")

@@ -76,30 +76,30 @@ def median_spacing(xyz, sample=200_000, tree=None):
     return float(np.median(d[:, 1]))
 
 
-def statistical_outliers(xyz, k=16, std_ratio=2.0, tree=None, chunk=2_000_000):
+def statistical_outliers(xyz, k=16, std_ratio=2.0, tree=None, block_size=2_000_000):
     """Keep mask: mean distance to k neighbours <= mean + std_ratio * std."""
     tree = tree or _tree(xyz)
     md = np.empty(len(xyz), np.float32)
-    for s in range(0, len(xyz), chunk):
-        d, _ = tree.query(xyz[s:s + chunk], k=k + 1, workers=-1)
-        md[s:s + chunk] = d[:, 1:].mean(1)
+    for s in range(0, len(xyz), block_size):
+        d, _ = tree.query(xyz[s:s + block_size], k=k + 1, workers=-1)
+        md[s:s + block_size] = d[:, 1:].mean(1)
     mu, sd = float(md.mean()), float(md.std())
     return md <= mu + std_ratio * sd
 
 
-def radius_outliers(xyz, radius=None, min_neighbors=4, tree=None, chunk=2_000_000):
+def radius_outliers(xyz, radius=None, min_neighbors=4, tree=None, block_size=2_000_000):
     """Keep mask: at least min_neighbors other points within radius."""
     tree = tree or _tree(xyz)
     radius = radius or 3.0 * median_spacing(xyz, tree=tree)
     cnt = np.empty(len(xyz), np.int32)
-    for s in range(0, len(xyz), chunk):
-        cnt[s:s + chunk] = tree.query_ball_point(xyz[s:s + chunk], radius, workers=-1,
+    for s in range(0, len(xyz), block_size):
+        cnt[s:s + block_size] = tree.query_ball_point(xyz[s:s + block_size], radius, workers=-1,
                                                  return_length=True)
     return cnt - 1 >= min_neighbors, radius
 
 
 def local_outliers(xyz, k=16, kr=4, stat_ratio=3.0, radius_ratio=3.0, global_cap=10.0, tree=None,
-                   chunk=1_000_000):
+                   block_size=1_000_000):
     """Density-adaptive statistical + radius filter for clouds whose point
     spacing varies a lot (near/far ground, wide and tele photos).
 
@@ -113,17 +113,17 @@ def local_outliers(xyz, k=16, kr=4, stat_ratio=3.0, radius_ratio=3.0, global_cap
     tree = tree or _tree(xyz)
     n = len(xyz)
     md = np.empty(n, np.float32); dk = np.empty(n, np.float32)
-    for s in range(0, n, chunk):
-        d, _ = tree.query(xyz[s:s + chunk], k=k + 1, workers=-1)
-        md[s:s + chunk] = d[:, 1:].mean(1); dk[s:s + chunk] = d[:, kr]
+    for s in range(0, n, block_size):
+        d, _ = tree.query(xyz[s:s + block_size], k=k + 1, workers=-1)
+        md[s:s + block_size] = d[:, 1:].mean(1); dk[s:s + block_size] = d[:, kr]
     keep_s = np.ones(n, bool); keep_r = np.ones(n, bool)
     cap = global_cap * float(np.median(dk)) if global_cap else np.inf
-    for s in range(0, n, chunk):
-        _, idx = tree.query(xyz[s:s + chunk], k=k + 1, workers=-1)
+    for s in range(0, n, block_size):
+        _, idx = tree.query(xyz[s:s + block_size], k=k + 1, workers=-1)
         nb = idx[:, 1:]
         ref_md = np.median(md[nb], axis=1); ref_dk = np.median(dk[nb], axis=1)
-        keep_s[s:s + chunk] = md[s:s + chunk] <= stat_ratio * ref_md
-        keep_r[s:s + chunk] = (dk[s:s + chunk] <= radius_ratio * ref_dk) & (dk[s:s + chunk] <= cap)
+        keep_s[s:s + block_size] = md[s:s + block_size] <= stat_ratio * ref_md
+        keep_r[s:s + block_size] = (dk[s:s + block_size] <= radius_ratio * ref_dk) & (dk[s:s + block_size] <= cap)
     return keep_s, keep_r
 
 

@@ -8,7 +8,7 @@ import pytest
 from PySide6.QtCore import QSettings, QTimer, Qt, QItemSelectionModel
 from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QApplication, QProgressBar, QCheckBox
-from photomesh.project import Project, Camera, Chunk
+from photomesh.project import Project, Camera, ProjectData
 
 
 def test_theme_switch_is_immediate_and_persistent(qapp):
@@ -31,21 +31,21 @@ def test_theme_switch_is_immediate_and_persistent(qapp):
 
 
 def test_reference_selection_does_not_change_usage_and_flags_persist(window, tmp_path):
-    window.chunk.cameras = [Camera("a.jpg", lon=44., lat=40., alt=100.),
+    window.dataset.cameras = [Camera("a.jpg", lon=44., lat=40., alt=100.),
                             Camera("b.jpg", lon=44.1, lat=40.1, alt=101.)]
     window.refresh_all()
     window.reference.selectRow(1)
-    assert all(c.use_reference for c in window.chunk.cameras)
+    assert all(c.use_reference for c in window.dataset.cameras)
     window.reference.item(1, 0).setCheckState(Qt.Unchecked)
-    assert not window.chunk.cameras[1].use_reference
-    assert window.chunk.cameras[1].enabled
+    assert not window.dataset.cameras[1].use_reference
+    assert window.dataset.cameras[1].enabled
     path = str(tmp_path / "references.pmsx")
     window.project.save(path)
-    assert not Project.load(path).chunk.cameras[1].use_reference
+    assert not Project.load(path).dataset.cameras[1].use_reference
 
 
 def test_photo_refresh_keeps_identity_selection_and_scroll(window, qtbot):
-    window.chunk.cameras = [Camera(f"/survey/photo_{i}.jpg") for i in range(150)]
+    window.dataset.cameras = [Camera(f"/survey/photo_{i}.jpg") for i in range(150)]
     window.refresh_all()
     window.photos.resize(500, 200)
     window.photos.show()
@@ -55,7 +55,7 @@ def test_photo_refresh_keeps_identity_selection_and_scroll(window, qtbot):
     window.photos.scrollToItem(photo)
     qtbot.wait(30)
     before = window.photos.verticalScrollBar().value()
-    window.chunk.markers = [{"label": "G1", "enabled": True, "projections": {}}]
+    window.dataset.markers = [{"label": "G1", "enabled": True, "projections": {}}]
     for _ in range(3):
         window.set_modified()
         QApplication.processEvents()
@@ -136,22 +136,22 @@ def test_cancelled_project_open_keeps_current_project(window, tmp_path, monkeypa
 
 def test_legacy_multi_dataset_open_never_drops_data(tmp_path):
     from photomesh.project_loader import prepare_project
-    project = Project(); project.chunks.append(Chunk(name="Second"))
+    project = Project(); project.datasets.append(ProjectData(name="Second"))
     path = str(tmp_path / "legacy.pmsx"); project.save(path)
     before = open(path, "rb").read()
-    with pytest.raises(ValueError, match="multiple chunks"):
+    with pytest.raises(ValueError, match="multiple datasets"):
         prepare_project(path, lambda *args: None, lambda: False)
     assert open(path, "rb").read() == before
-    assert len(Project.load(path).chunks) == 2
+    assert len(Project.load(path).datasets) == 2
 
 
 def test_workspace_root_is_project_and_markers_share_flag_icons(window):
     from photomesh import georef as g
-    window.chunk.markers = [g.Marker("G1", locked=True).to_dict()]
+    window.dataset.markers = [g.Marker("G1", locked=True).to_dict()]
     window.refresh_all()
     root = window.workspace.topLevelItem(0)
     assert root.data(0, Qt.UserRole)[0] == "project"
-    assert not any("chunk" == (item.data(0, Qt.UserRole) or [None])[0]
+    assert not any("dataset" == (item.data(0, Qt.UserRole) or [None])[0]
                    for item in window.workspace._iter())
     assert not window.markers_pane.item(0, 0).icon().isNull()
     assert window.reference_panel.count() == 2
@@ -278,7 +278,7 @@ def test_point_cloud_engine_probe_does_not_block_gui_thread(window, tmp_path, mo
     seen = []
     main = threading.get_ident()
     window.project.path = str(tmp_path / "project.pmsx")
-    window.chunk.cameras = [Camera("a.jpg", aligned=True)]
+    window.dataset.cameras = [Camera("a.jpg", aligned=True)]
     monkeypatch.setattr(colmap, "find_colmap", lambda: "colmap")
     def probe(exe):
         seen.append(threading.get_ident())

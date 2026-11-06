@@ -80,7 +80,7 @@ def test_undistort_and_workspace(tmp_path):
         c = m.cameras[im.camera_id]
         Image.fromarray(rng.integers(0, 255, (c.height, c.width, 3), dtype=np.uint8)).save(photos / im.name)
     with pytest.raises(RuntimeError):
-        dense.prepare_workspace(str(model_dir), str(photos), str(photos / "dense"), "Low", workers=1)
+        dense.prepare_workspace(str(model_dir), str(photos), str(photos), "Low", workers=1)
     r = dense.prepare_workspace(str(model_dir), str(photos), str(tmp_path / "dense"), "High",
                                 max_sources=4, workers=2)
     assert r["undistorted"] == 8 and r["factor"] == 2
@@ -181,11 +181,11 @@ def test_import_survey_and_metashape_xml(tmp_path):
     ms, crs = g.import_markers(str(p))
     assert crs.kind == "local" and [m.enabled for m in ms] == [True, False]
     p = tmp_path / "m.xml"
-    p.write_text("""<document><chunk><cameras><camera id="5" label="DJI_0001_D"/></cameras>
+    p.write_text("""<document><dataset><cameras><camera id="5" label="DJI_0001_D"/></cameras>
       <markers><marker id="0" label="1"><reference x="10" y="20" z="30" enabled="false"/></marker></markers>
       <reference>LOCAL_CS["Local Coordinates (m)"]</reference>
       <frames><frame><markers><marker marker_id="0"><location camera_id="5" pinned="true" x="100.5" y="200.25"/></marker></markers></frame></frames>
-      </chunk></document>""")
+      </dataset></document>""")
     ms, crs = g.import_markers(str(p))
     assert ms[0].projections == {"DJI_0001_D": [100.5, 200.25, True]} and ms[0].enabled is False
 
@@ -383,7 +383,7 @@ def test_ply_readers_do_not_memory_map(tmp_path):
 
 @pytest.mark.parametrize("fmt", ["binary_little_endian", "binary_big_endian", "ascii"])
 def test_transform_ply_streams_mesh_with_normals(tmp_path, fmt):
-    """Chunked streaming transform: vertices + normals transformed, faces and
+    """Block-based streaming transform: vertices + normals transformed, faces and
     colours copied unchanged, identical to a reference computed in memory."""
     from plyfile import PlyData, PlyElement
     from photomesh import georef as g
@@ -404,7 +404,7 @@ def test_transform_ply_streams_mesh_with_normals(tmp_path, fmt):
             text=(fmt == "ascii"), byte_order="<" if fmt != "binary_big_endian" else ">").write(str(p))
     R = Rotation.from_euler("xyz", [10, 20, 30], degrees=True).as_matrix()
     M = np.eye(4); M[:3, :3] = 2.5 * R; M[:3, 3] = [100, -50, 7]
-    g.transform_ply(str(p), M, chunk=97)
+    g.transform_ply(str(p), M, block_size=97)
     assert os.listdir(tmp_path) == ["m.ply"]
     with open(p, "rb") as fh:
         out = PlyData.read(fh, mmap=False)

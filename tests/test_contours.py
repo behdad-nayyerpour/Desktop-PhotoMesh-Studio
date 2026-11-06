@@ -199,7 +199,7 @@ def test_export_menu_asks_interval_and_uses_contour_route(window, tmp_path, monk
     src, out = tmp_path / "model.ply", tmp_path / "ui.dxf"
     V, F = plane()
     save_ply(str(src), V.astype(np.float32), faces=F)
-    window.chunk.model_ply = str(src)
+    window.dataset.model_ply = str(src)
     asked = []
     def choose(*args):
         assert args[1] == "Export Mesh Contours"
@@ -210,10 +210,9 @@ def test_export_menu_asks_interval_and_uses_contour_route(window, tmp_path, monk
         return 1.0, True
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(choose))
     monkeypatch.setattr(QInputDialog, "getDouble", staticmethod(interval))
-    file_menu = next(a.menu() for a in window.menuBar().actions() if a.text().replace("&", "") == "File")
-    export_menu = next(a.menu() for a in file_menu.actions() if a.text().replace("&", "") == "Export")
-    labels = [a.text().replace("&", "") for a in export_menu.actions()]
-    assert labels.index("Export Mesh Contours...") == labels.index("Export Model...") + 1
+    export_menu = window.menus["Export"]
+    actions = export_menu.actions()
+    assert actions.index(window.actions["Export Mesh Contours..."]) == actions.index(window.actions["Export Model..."]) + 1
     window.actions["File/Export Mesh Contours..."].trigger()
     assert len(asked) == 1 and len(read_contours(out)) == 4
 
@@ -223,7 +222,7 @@ def test_interval_dialog_cancel_does_not_export(window, tmp_path, monkeypatch):
     src, out = tmp_path / "model.ply", tmp_path / "cancel_ui.dxf"
     V, F = plane()
     save_ply(str(src), V.astype(np.float32), faces=F)
-    window.chunk.model_ply = str(src)
+    window.dataset.model_ply = str(src)
     monkeypatch.setattr(QInputDialog, "getDouble", staticmethod(lambda *a: (1.0, False)))
     assert window.export_model_to(str(out), "contours") is None
     assert not out.exists()

@@ -17,7 +17,7 @@ and stereo-fusion thresholds.
 from __future__ import annotations
 
 import json
-import math
+
 import os
 import re
 import sys
@@ -314,13 +314,44 @@ def is_inside(path, folder):
         return False
 
 
+
+def validate_workspace_paths(image_root, dense_dir, photo_names, model_dir=None):
+    """Allow projects below the photo root, but never write over input data.
+
+    The common image root can be a parent of the project. Only the referenced
+    photos matter: none may live in a workspace that cleanup can modify.
+    Resolve links/junctions before checking, and validate before any mutation.
+    """
+    import ntpath
+    root = os.path.realpath(image_root)
+    workspace = os.path.realpath(dense_dir)
+    if is_inside(root, workspace):
+        raise RuntimeError("Source photo folder must be outside the dense workspace")
+    if model_dir is not None and is_inside(os.path.realpath(model_dir), workspace):
+        raise RuntimeError("Source sparse model must be outside the dense workspace")
+    for folder in ("images", "sparse", "stereo", "undistort_maps"):
+        expected = os.path.join(workspace, folder)
+        if os.path.normcase(os.path.realpath(expected)) != os.path.normcase(expected):
+            raise RuntimeError(f"Dense workspace subfolder must not be a link: {folder}")
+    output_root = os.path.join(workspace, "images")
+    for name in photo_names:
+        parts = name.replace("\\", "/").split("/")
+        if ntpath.isabs(name) or ntpath.splitdrive(name)[0] or any(p in ("", ".", "..") for p in parts):
+            raise RuntimeError(f"Unsafe photo name in sparse model: {name}")
+        source = os.path.realpath(os.path.join(root, *parts))
+        if is_inside(source, workspace):
+            raise RuntimeError(f"Source photo must be outside the dense workspace: {name}")
+        destination = os.path.realpath(os.path.join(output_root, *parts))
+        if not is_inside(destination, output_root):
+            raise RuntimeError(f"Undistorted output must stay inside the dense images folder: {name}")
+
+
 def prepare_workspace(model_dir, image_root, dense_dir, quality="Medium", max_sources=10,
                       workers=None, log=print, progress=None):
     """Write a COLMAP dense workspace (images/, sparse/, stereo/*.cfg) to dense_dir."""
     factor = QUALITY_FACTOR[quality]
     model = cio.read_model(model_dir)
-    if is_inside(dense_dir, image_root):     # check before creating anything
-        raise RuntimeError("Dense workspace must not be inside the source photo folder")
+    validate_workspace_paths(image_root, dense_dir, [im.name for im in model.images.values()], model_dir)
     img_dir = os.path.join(dense_dir, "images")
     for d in ("images", "sparse", "stereo/depth_maps", "stereo/normal_maps",
               "stereo/consistency_graphs"):
@@ -938,13 +969,14 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
     quality = s.get("quality", "Medium")
     mode = s.get("depth_filtering", "Mild")
     f = DEPTH_FILTERS[mode]
-    os.makedirs(dense, exist_ok=True)
     cfg = {"model": os.path.join(wd, "sparse", "0"), "image_root": image_root, "dense": dense,
            "quality": quality, "max_sources": int(s.get("max_sources", 8))}
     marker = os.path.join(dense, "workspace.json")
     from .workflow import model_stamp, file_stamp
     from .colmap_io import read_images
     photo_names = [im.name for im in read_images(os.path.join(cfg["model"], "images.bin")).values()] if os.path.exists(os.path.join(cfg["model"], "images.bin")) else []
+    validate_workspace_paths(image_root, dense, photo_names, cfg["model"])
+    os.makedirs(dense, exist_ok=True)
     depth_parameters = {k: s.get(k, default) for k, default in
                         (("depth_filtering", "Mild"), ("window_step", 2), ("num_iterations", 3),
                          ("window_radius", 5), ("num_samples", 15))}
@@ -1087,3 +1119,79 @@ def dense_steps(exe, wd, s, image_root, opt=None, disk_free=None):
         ("gate", fusion_gate, 0),
         ("Filtering point cloud", [PYTHON, "filter_cloud", fcfg], 6),
     ] + tail
+
+
+class LegacyCloudBackup:
+    """Preserve older projects that reference the raw fusion output directly."""
+
+    def __init__(self, cloud, workspace):
+        raw = os.path.join(workspace, "dense", "fused.ply")
+        same_source = False
+        if cloud and os.path.isfile(cloud):
+            try:
+                same_source = os.path.samefile(cloud, raw)
+            except OSError:
+                same_source = False
+        self.paths = [raw, raw + ".vis"] if same_source else []
+        self.entries = []
+        self.ready = False
+
+    def prepare(self):
+        import shutil
+        import uuid
+        if self.ready:
+            return
+        try:
+            for path in self.paths:
+                backup = None
+                if os.path.exists(path):
+                    backup = path + ".preserved-" + uuid.uuid4().hex
+                    self.entries.append((path, backup))
+                    try:
+                        if os.path.islink(path):
+                            raise OSError("Copy linked input")
+                        os.link(path, backup)
+                    except OSError:
+                        shutil.copy2(path, backup)
+                else:
+                    self.entries.append((path, None))
+            self.ready = True
+        except BaseException as error:
+            retained = self.discard()
+            if retained:
+                error.add_note("Backup files retained: " + "; ".join(retained))
+            raise
+
+    def restore(self):
+        if not self.ready:
+            return
+        from .workflow import replace_output
+        failed = []
+        for path, backup in self.entries:
+            try:
+                if backup is not None:
+                    replace_output(backup, path)
+                    # Renaming two names for the same inode may be a no-op.
+                    if os.path.exists(backup):
+                        os.remove(backup)
+                elif os.path.exists(path):
+                    os.remove(path)
+            except OSError:
+                failed.append((path, backup))
+        self.entries = failed
+        self.ready = bool(failed)
+        if failed:
+            raise RuntimeError("Previous cloud backup retained; close programs using these files: "
+                               + "; ".join(str(backup or path) for path, backup in failed))
+
+    def discard(self):
+        retained = []
+        for _path, backup in self.entries:
+            if backup is not None and os.path.exists(backup):
+                try:
+                    os.remove(backup)
+                except OSError:
+                    retained.append(backup)
+        self.entries = []
+        self.ready = False
+        return retained

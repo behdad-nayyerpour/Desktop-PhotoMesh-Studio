@@ -1,4 +1,4 @@
-"""Exact link between COLMAP image names and the chunk's photos.
+"""Exact link between COLMAP image names and the dataset's photos.
 
 COLMAP knows a photo only by its image name. When all photos are in one
 folder that is the file name; photos from several folders are exposed in
@@ -16,10 +16,10 @@ import os
 from collections import Counter
 
 
-def assign_names(chunk, mapping):
+def assign_names(dataset, mapping):
     """Store the names of a new alignment ({photo path: COLMAP name}, from
     prepare_images). Photos not in it (disabled) are not in the model."""
-    for c in chunk.cameras:
+    for c in dataset.cameras:
         c.colmap_name = mapping.get(c.path, "")
 
 
@@ -27,12 +27,12 @@ def _key(st):
     return (st.st_dev, st.st_ino)
 
 
-def recover_names(chunk, wd):
+def recover_names(dataset, wd):
     """Fill missing Camera.colmap_name from the folder COLMAP read the images
     from (hard links / symlinks to the photos, or the photo folder itself).
     Plain copies match by size and modification time when that is unique.
     Returns the number of names recovered."""
-    todo = [c for c in chunk.cameras if not getattr(c, "colmap_name", "") and c.path]
+    todo = [c for c in dataset.cameras if not getattr(c, "colmap_name", "") and c.path]
     if not todo or not wd:
         return 0
     try:
@@ -51,7 +51,7 @@ def recover_names(chunk, wd):
             continue
         by_inode.setdefault(_key(st), []).append(c)
         by_stamp.setdefault((st.st_size, st.st_mtime_ns), []).append(c)
-    taken = {c.colmap_name for c in chunk.cameras if getattr(c, "colmap_name", "")}
+    taken = {c.colmap_name for c in dataset.cameras if getattr(c, "colmap_name", "")}
     found = {}
     for name in sorted(os.listdir(root)):
         if name in taken:
@@ -85,12 +85,12 @@ def _stem_ok(name, path):
     return head.lower() == b.lower() and tail.isdigit()
 
 
-def photo_map(chunk):
+def photo_map(dataset):
     """({COLMAP image name: photo path}, [ambiguous file names]).
 
     Stored names are exact. Cameras without one (older projects) are matched
-    by file name only when no other photo of the chunk has that name."""
-    cams = [c for c in chunk.cameras if c.path]
+    by file name only when no other photo of the dataset has that name."""
+    cams = [c for c in dataset.cameras if c.path]
     out = {c.colmap_name: c.path for c in cams if getattr(c, "colmap_name", "")}
     names = Counter(os.path.basename(c.path).lower() for c in cams)
     used = {k.lower() for k in out}
@@ -106,11 +106,11 @@ def photo_map(chunk):
     return out, sorted(ambiguous)
 
 
-def camera_for_names(chunk, names):
+def camera_for_names(dataset, names):
     """{COLMAP name: Camera} for the names of a model (exact names first, then
     unambiguous file names), plus the ambiguous file names."""
-    pm, ambiguous = photo_map(chunk)
+    pm, ambiguous = photo_map(dataset)
     by_path = {}
-    for c in chunk.cameras:
+    for c in dataset.cameras:
         by_path.setdefault(c.path, c)
     return {n: by_path[pm[n]] for n in names if n in pm}, ambiguous

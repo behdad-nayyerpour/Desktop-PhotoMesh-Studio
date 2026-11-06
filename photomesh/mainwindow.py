@@ -12,20 +12,19 @@ from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEvent
 from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
-    QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QStyle,
-    QToolBar, QInputDialog, QApplication, QLabel)
+    QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QInputDialog, QApplication, QLabel)
 
 from . import APP_NAME, APP_VERSION, PROJECT_EXT
 from . import colmap as cm
 from .dialogs import (AlignPhotosDialog, BuildPointCloudDialog, BuildModelDialog,
                       BuildTextureDialog, BuildTiledModelDialog, ProgressDialog, PreferencesDialog,
                       BuildDEMDialog, BuildOrthomosaicDialog, ExportRasterDialog)
-from .menus import MENUS
+from .menus import MENUS, ACTION_LABELS, LEGACY_ACTION_GROUPS
 from .panes import (WorkspacePane, ReferencePane, MarkersPane, PhotosPane, ConsolePane,
                     PropertiesPane, JobsPane, workspace_panel, markers_panel)
 from . import procmeta
-from .plyio import load_ply, save_ply, ply_counts, vertex_normals
-from .project import Project, Chunk, IMAGE_EXTS, data_folder
+from .plyio import load_ply, ply_counts, vertex_normals
+from .project import Project, ProjectData, IMAGE_EXTS, data_folder
 from .views import ModelView, PhotoView, OrthoView, LAYERS
 from .icons import layer_icon
 from . import diag
@@ -33,7 +32,7 @@ from .bgjob import BackgroundJob, run_modal
 
 _log = logging.getLogger("photomesh")
 
-# layer key -> Model > Show/Hide Items action
+# Layer key -> stable command ID, independent of menu placement.
 LAYER_ACTIONS = {"tie": "Show Tie Points", "cloud": "Show Point Cloud", "mesh": "Show Model",
                  "tiled": "Show Tiled Model", "ortho": "Show Orthomosaic", "dem": "Show DEM",
                  "cameras": "Show Cameras", "camera_labels": "Show Camera Labels",
@@ -47,7 +46,7 @@ SHORTCUTS = {"New": QKeySequence.New, "Open...": QKeySequence.Open, "Save": QKey
              "Save As...": QKeySequence.SaveAs, "Exit": QKeySequence.Quit,
              "Undo": QKeySequence.Undo, "Redo": QKeySequence.Redo,
              "Zoom In": "Ctrl++", "Zoom Out": "Ctrl+-", "Reset View": "0",
-             "Full Screen": "F11", "Contents": "F1", "Open Next Photo": "Page Down",
+             "Contents": "F1", "Open Next Photo": "Page Down",
              "Open Previous Photo": "Page Up"}
 
 PROJECT_FILTER = f"{APP_NAME} project (*{PROJECT_EXT})"
@@ -207,8 +206,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.model_view.addMarkerRay.connect(lambda o, d: self.add_marker_at_ray(o, d))
 
     def _camera_reference_changed(self, index, on):
-        if 0 <= index < len(self.chunk.cameras):
-            self.chunk.cameras[index].use_reference = bool(on)
+        if 0 <= index < len(self.dataset.cameras):
+            self.dataset.cameras[index].use_reference = bool(on)
             self.set_modified()
 
     def _workspace_panel(self):
@@ -246,7 +245,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not sel:
             self.statusBar().showMessage("Select cameras in the Workspace first", 4000); return
         for _kind, ci, k in sel:
-            c = self.project.chunks[ci].cameras[k]; c.enabled = not c.enabled
+            c = self.project.datasets[ci].cameras[k]; c.enabled = not c.enabled
         self.set_modified()
 
     def _ws_remove_selected(self):
@@ -257,7 +256,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if QMessageBox.question(self, "Remove Photos", f"Remove {len(indices)} photo(s) from this project?") != QMessageBox.Yes:
             return
         for index in indices:
-            del self.chunk.cameras[index]
+            del self.dataset.cameras[index]
         self.set_modified(); self.reload_view()
 
     def _show_requested(self, kind, ci):
@@ -284,7 +283,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _goto_marker(self, label):
         """Open the first photo where the marker is placed (pinned first)."""
-        ms = [m for m in (self.chunk.markers or []) if m["label"] == label]
+        ms = [m for m in (self.dataset.markers or []) if m["label"] == label]
         if not ms:
             return
         for r in range(self.markers_pane.rowCount()):
@@ -292,7 +291,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.markers_pane.selectRow(r); break
         proj = ms[0].get("projections") or {}
         order = sorted(proj, key=lambda n: not (len(proj[n]) < 3 or proj[n][2]))
-        stems = {os.path.splitext(c.label)[0].lower(): k for k, c in enumerate(self.chunk.cameras)}
+        stems = {os.path.splitext(c.label)[0].lower(): k for k, c in enumerate(self.dataset.cameras)}
         for n in order:
             k = stems.get(os.path.splitext(n)[0].lower())
             if k is not None:
@@ -327,13 +326,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             "DEM - Elevation": lambda: self.show_ortho("dem"),
             "Zoom In": lambda: self.zoom(1 / 1.25), "Zoom Out": lambda: self.zoom(1.25),
             "Reset View": self.reset_view, "Capture View": self.capture_view,
-            "Full Screen": self.toggle_full_screen,
             "Add Photos...": self.add_photos, "Add Folder...": self.add_folder,
             "Align Photos...": self.align_photos, "Build Point Cloud...": self.build_point_cloud,
             "Build Model...": self.build_model, "Build Texture...": self.build_texture,
             "Import Markers...": self.import_markers,
             "Import Shapes...": lambda: self.import_shapes(), "Export Shapes...": lambda: self.export_shapes(),
-            "Remove Shapes": lambda: self.remove_shapes(), "Measure Shape...": lambda: self.measure_shape(),
+            "Remove Shapes": lambda: self.remove_shapes(),
             "Shape Settings...": lambda: self.open_shape_style(),
             "Transparent View": lambda on=True: self.set_transparency(bool(on)),
             "Export Markers...": self.export_markers,
@@ -375,66 +373,71 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _build_menus(self):
         handlers = self._handlers()
         self.unhandled_actions = []
+        self.menus = {}
         mb = self.menuBar()
         for title, items in MENUS:
-            self._fill_menu(mb.addMenu(title), items, handlers, title.strip("&"))
-        # panes / toolbar toggles reflect dock visibility
+            top = title.replace("&", "")
+            menu = mb.addMenu(title)
+            self.menus[top] = menu
+            self._fill_menu(menu, items, handlers, top)
+            menu.aboutToShow.connect(self._update_menu_actions)
+        # Preserve script/action lookup IDs without retaining the previous layout.
+        for group, names in LEGACY_ACTION_GROUPS.items():
+            for name in names:
+                if name in self.actions:
+                    self.actions.setdefault(f"{group}/{name}", self.actions[name])
         for name, dock in self.docks.items():
-            a = self.actions.get(f"View/{name}")
-            if a:
-                a.setChecked(dock.isVisible())
-                a.toggled.connect(dock.setVisible)
-                dock.visibilityChanged.connect(lambda vis, a=a, d=dock: a.setChecked(not d.isHidden()))
-        # layer toggles: restore last state, mirror them in View > Layers
+            action = self.actions[name]
+            action.setChecked(dock.isVisible())
+            action.toggled.connect(dock.setVisible)
+            dock.visibilityChanged.connect(lambda vis, a=action, d=dock: a.setChecked(not d.isHidden()))
         st = QSettings()
-        view_menu = next(a.menu() for a in mb.actions() if a.text().strip("&") == "View")
-        layers_menu = view_menu.addMenu("Layers")
         for key, label, default in LAYERS:
-            a = self.actions[f"Model/{LAYER_ACTIONS[key]}"]
-            a.setIcon(layer_icon(key))
-            a.setToolTip(f"Show/hide {label.lower()}  (Model > Show/Hide Items > {LAYER_ACTIONS[key]})")
+            action = self.layer_action(key)
+            action.setIcon(layer_icon(key))
+            action.setToolTip(f"Show/hide {label.lower()} (Display > Layers and Labels)")
             on = st.value(f"view/show_{key}", default, bool)
-            a.blockSignals(True); a.setChecked(on); a.blockSignals(False)
+            action.blockSignals(True); action.setChecked(on); action.blockSignals(False)
             self.model_view.set_visible(key, on)
-            layers_menu.addAction(a)
-        self.workspace.vis = {k: self.layer_action(k).isChecked() for k in LAYER_ACTIONS}
-        layers_menu.addSeparator()
-        layers_menu.addAction(self.actions["Model/Show All"]); layers_menu.addAction(self.actions["Model/Hide All"])
+        self.workspace.vis = {key: self.layer_action(key).isChecked() for key in LAYER_ACTIONS}
+
+    def _update_menu_actions(self):
+        """Photo-only commands need their input; they are not placeholder tools."""
+        opened = bool(self.photo_view.path)
+        for name in ("Rotate Right", "Rotate Left"):
+            self.actions[name].setEnabled(opened)
+        for name in ("Open Next Photo", "Open Previous Photo"):
+            self.actions[name].setEnabled(bool(self.dataset.cameras))
 
     def _fill_menu(self, menu, items, handlers, top):
-        for it in items:
-            if it == "-":
+        for item in items:
+            if item == "-":
                 menu.addSeparator()
-            elif isinstance(it, tuple):
-                self._fill_menu(menu.addMenu(it[0]), it[1], handlers, top)
+            elif isinstance(item, tuple):
+                self._fill_menu(menu.addMenu(item[0]), item[1], handlers, top)
             else:
-                checkable = it.endswith("*")
-                name = it.rstrip("*")
-                a = QAction(name, self)
-                a.setCheckable(checkable)
-                if name in SHORTCUTS and top in ("File", "Edit", "View", "Workflow", "Help", "Photo"):
-                    a.setShortcut(QKeySequence(SHORTCUTS[name]))
-                fn = handlers.get(name)
-                if top in ("Photo", "Ortho") and name == "Show Shapes":
-                    # mirrors Model > Show/Hide Items > Show Shapes (one layer for all views)
-                    fn = lambda on=True: self.set_layer_visible("shapes", on)
-                    self._shape_mirrors = getattr(self, "_shape_mirrors", []) + [a]
-                if fn is not None:
-                    fn = self._safe(name, fn)
-                    if checkable:
-                        a.toggled.connect(fn)
-                    else:
-                        a.triggered.connect(lambda _=False, f=fn: f())
-                elif top == "View" and name in self.docks or name == "Toolbar":
-                    pass
-                else:
-                    # every menu entry must do something (0.1.12: no "not implemented" placeholders)
-                    _log.warning("menu item without a handler: %s > %s", top, name)
-                    self.unhandled_actions.append(f"{top}/{name}")
-                    a.setEnabled(False)
-                menu.addAction(a)
-                self.actions.setdefault(f"{top}/{name}", a)
-                self.actions.setdefault(name, a)
+                name = item.rstrip("*")
+                action = self.actions.get(name)
+                if action is None:
+                    fn = handlers.get(name)
+                    if fn is None and name not in self.docks and name != "Toolbar":
+                        _log.warning("menu item without a handler: %s > %s", top, name)
+                        self.unhandled_actions.append(f"{top}/{name}")
+                        continue
+                    action = QAction(ACTION_LABELS.get(name, name), self)
+                    action.setObjectName("command:" + name)
+                    action.setCheckable(item.endswith("*"))
+                    if name in SHORTCUTS:
+                        action.setShortcut(QKeySequence(SHORTCUTS[name]))
+                    if fn is not None:
+                        fn = self._safe(name, fn)
+                        if action.isCheckable():
+                            action.toggled.connect(fn)
+                        else:
+                            action.triggered.connect(lambda _=False, f=fn: f())
+                    self.actions[name] = action
+                menu.addAction(action)
+                self.actions[f"{top}/{name}"] = action
 
     def _build_toolbar(self):
         from .toolbar import build_toolbar
@@ -444,14 +447,15 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Checkable 'Transparent View' button with an opacity slider in its
         dropdown (default 40%); the state is restored at start-up."""
         from PySide6.QtWidgets import QToolButton, QMenu, QWidgetAction, QSlider, QLabel, QWidget, QHBoxLayout
-        a = self.actions["Tools/Transparent View"] if "Tools/Transparent View" in self.actions else \
-            self.actions["Transparent View"]
+        a = self.actions["Transparent View"]
         a.setIcon(layer_icon("transparency"))
         a.setShortcut(QKeySequence("Ctrl+Shift+T")); a.setShortcutContext(Qt.ApplicationShortcut)
         a.setToolTip("Transparent view (Ctrl+Shift+T): model, point clouds, photo and orthomosaic semi-transparent, "
                      "so shapes behind or under the surface are visible. Arrow: opacity.")
         self.transparency_action = a
-        btn = QToolButton(tb); btn.setDefaultAction(a); btn.setPopupMode(QToolButton.MenuButtonPopup)
+        from .toolbuttons import CaptionSplitButton
+        btn = CaptionSplitButton(tb); btn.setDefaultAction(a); btn.setPopupMode(QToolButton.MenuButtonPopup)
+        btn.setStyleSheet("QToolButton{padding:2px 1px;margin:0px;}")
         btn.setObjectName("transparency_button")
         menu = QMenu(btn)
         box = QWidget(menu); h = QHBoxLayout(box); h.setContentsMargins(8, 4, 8, 4)
@@ -543,17 +547,18 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
     @property
-    def chunk(self) -> Chunk:
-        return self.project.chunk
+    def dataset(self) -> ProjectData:
+        return self.project.dataset
 
     def refresh_all(self):
         self.workspace.refresh(self.project)
-        self.reference.refresh(self.chunk)
+        self.reference.refresh(self.dataset)
         self._refresh_markers_pane()
         self._marker_selection_changed()
-        self.photos.refresh(self.chunk)
+        self.photos.refresh(self.dataset)
         self._update_title()
         self._update_stale_banners()
+        self._update_menu_actions()
 
     def _apply_default_view(self):
         choice = QSettings().value("ui/default_view", "Point cloud", str)
@@ -565,14 +570,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.setWindowTitle(window_title(self.project.path, self.project.modified))
 
     def reload_view(self):
-        """Show the active chunk's results in the 3D and ortho views.
+        """Show the active dataset's results in the 3D and ortho views.
 
         Cameras appear at once; the PLYs (tie points, a display-decimated
         point cloud, the mesh + its normals) and marker positions are loaded
         in a background thread with progress in the Model pane, so the
         window stays responsive while a 28M-point project opens."""
         self.model_view.clear()
-        ch = self.chunk
+        ch = self.dataset
         self.model_view.set_z_up(bool(ch.georef))
         cams = [(c.est, c.rot) for c in ch.cameras if c.aligned and c.est and c.rot]
         if cams and self.model_view.gl is not None:
@@ -591,7 +596,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         jobs = [(key, path) for key, path in (("tie", ch.tie_points_ply), ("cloud", ch.point_cloud_ply),
                                               ("mesh", ch.model_ply)) if path and os.path.exists(path)]
         from .reference_ui import ReferenceMixin
-        context = ReferenceMixin(); context.project = self.project; context.chunk = ch
+        context = ReferenceMixin(); context.project = self.project; context.dataset = ch
         context._model_cache = getattr(self, "_model_cache", (None,))
         context._marker_xyz_cache = getattr(self, "_marker_xyz_cache", None)
         want_markers = bool(ch.markers)
@@ -678,7 +683,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         d = out.get("mesh")
         if d is not None and d["faces"] is not None:
             self.model_view.set_mesh(d["points"], d["faces"], d["colors"], d.get("normals"))
-        ch = self.chunk
+        ch = self.dataset
         cams = [c.est for c in ch.cameras if c.aligned and c.est and c.rot]
         if cams and self.model_view.gl is not None:
             centres = np.array(cams, np.float32)
@@ -718,7 +723,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
     def layer_action(self, key):
-        return self.actions[f"Model/{LAYER_ACTIONS[key]}"]
+        return self.actions[LAYER_ACTIONS[key]]
 
     def _layer_toggled(self, key, on):
         """Single sink for every way of toggling a layer (menu, toolbar, Workspace checkbox)."""
@@ -728,9 +733,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if key in ("markers", "marker_labels") and getattr(self, "photo_view", None) is not None:
             self.photo_view.set_visible(key, on)
         if key == "shapes":
-            for m in getattr(self, "_shape_mirrors", []):
-                if m.isChecked() != on:
-                    m.blockSignals(True); m.setChecked(on); m.blockSignals(False)
             try:
                 self._update_photo_shapes()
             except Exception as e:  # noqa: BLE001
@@ -755,7 +757,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.set_layer_visible(k, on)
 
     def _has_layer(self, key):
-        ch = self.chunk
+        ch = self.dataset
         path = {"tie": ch.tie_points_ply, "cloud": ch.point_cloud_ply, "mesh": ch.model_ply,
                 "tiled": (ch.tiled_model or {}).get("index"), "ortho": (ch.orthomosaic or {}).get("path"),
                 "dem": (ch.dem or {}).get("path"), "shapes": (ch.shapes or {}).get("path")}[key]
@@ -764,7 +766,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return bool(path and os.path.exists(path)) or self.model_view.has_layer(key)
 
     def _solo(self, key):
-        """Like Metashape's view-mode buttons: show one data layer, hide the others."""
+        """Show one reconstruction layer and hide the others."""
         for k in ("tie", "cloud", "mesh", "tiled"):
             self.set_layer_visible(k, k == key)
         self.tabs.setCurrentWidget(self.model_view)
@@ -794,7 +796,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self._solo("mesh")
 
     def _show_properties(self, info):
-        ch = self.project.chunks[info["chunk"]]
+        ch = self.project.datasets[info["dataset"]]
         kind = info["kind"]
         if kind == "project":
             rows = [("Project", self.project.path or "Untitled"), ("Images", len(ch.cameras)),
@@ -814,7 +816,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             rows = self._shape_properties(info, ch)
         else:
             rows = procmeta.properties(ch, {"group": "cameras"}.get(kind, kind)) or \
-                procmeta.properties(ch, "chunk")
+                procmeta.properties(ch, "dataset")
         self.properties.show_props({k: ("" if v is None else v) for k, v in rows})
 
     def _move_marker_ray(self, label, origin, direction):
@@ -827,7 +829,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.add_marker_at_ortho(*world, label=label, replace_pins=True)
 
     def _update_stale_banners(self):
-        ch = self.chunk
+        ch = self.dataset
         model = (ch.meta or {}).get("model") or {}
         reason = model.get("stale") or (ch.texture or {}).get("stale") or (ch.tiled_model or {}).get("stale")
         self.model_view.set_stale_message("Update required: rebuild the 3D model - " + str(reason) if reason else "")
@@ -837,14 +839,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _marker_edited(self, label, col, text):
         # applied after the edit signal returns (the table is refilled)
-        chunk = self.chunk
+        dataset = self.dataset
         generation = self._view_gen
         QTimer.singleShot(0, lambda: self.edit_marker_cell(label, col, text)
-                          if self.chunk is chunk and self._view_gen == generation else None)
+                          if self.dataset is dataset and self._view_gen == generation else None)
 
     def _workspace_action(self, action, ci):
-        if action in ("Add Chunk", "Set as Active Chunk", "Rename Chunk...", "Duplicate Chunk", "Remove Chunk"):
-            raise ValueError("Chunk management is not supported; use one project per dataset.")
+        if action in ("Add ProjectData", "Set as Active ProjectData", "Rename ProjectData...", "Duplicate ProjectData", "Remove ProjectData"):
+            raise ValueError("Multiple data groups are not supported; use a separate project for each survey.")
         if action.startswith("register_camera:"):
             clicked=int(action.split(":")[1])
             indices=[role[2] for role in self.workspace.selected_roles() if role[0]=="camera"]
@@ -855,14 +857,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             _t, act, labs = action.split(":", 2)
             labels = [l for l in labs.split("\x1f") if l]
             if labels == ["*"]:
-                labels = [m["label"] for m in self.chunk.markers or []]
+                labels = [m["label"] for m in self.dataset.markers or []]
             self._marker_pane_action({"Remove Marker": "Remove Markers"}.get(act, act), labels)
             return
         elif action.startswith("set_camera:"):
             _t, k, on = action.split(":")
-            self.project.chunks[ci].cameras[int(k)].enabled = bool(int(on))
+            self.project.datasets[ci].cameras[int(k)].enabled = bool(int(on))
             self.set_modified(); return
-        elif action.startswith(("shape_layer:", "show_shape:", "remove_shape_layer:", "measure_shape:",
+        elif action.startswith(("shape_layer:", "show_shape:", "remove_shape_layer:",
                                 "shape_style:")) or \
                 action in ("Export Shapes...", "Remove Shapes"):
             if action.startswith("shape_layer:"):
@@ -874,8 +876,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self._show_requested("shapes", ci)
             elif action.startswith("remove_shape_layer:"):
                 self.remove_shape_layer(action.split(":", 1)[1])
-            elif action.startswith("measure_shape:"):
-                self.measure_shape(int(action.split(":", 1)[1]))
             elif action.startswith("shape_style:"):
                 _t, what, arg = action.split(":", 2)
                 if what == "layer":
@@ -891,12 +891,22 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.remove_shapes()
             return
         elif action.startswith("toggle_camera:"):
-            cam = self.project.chunks[ci].cameras[int(action.split(":")[1])]
+            cam = self.project.datasets[ci].cameras[int(action.split(":")[1])]
             cam.enabled = not cam.enabled
         self.set_modified(); self.reload_view()
 
     # ---------------------------------------------------------------- File
+    def _can_change_project(self):
+        if self._opening or (self.runner is not None and getattr(self.runner, "busy", False)):
+            message = "Wait for processing to finish or cancel it before saving, switching or closing the project."
+            self.statusBar().showMessage(message, 8000)
+            QMessageBox.information(self, "Processing in progress", message)
+            return False
+        return True
+
     def _confirm_discard(self):
+        if not self._can_change_project():
+            return False
         if not self.project.modified:
             return True
         r = QMessageBox.question(self, APP_NAME, "Save changes to the current project?",
@@ -906,7 +916,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return r == QMessageBox.Discard
 
     def _reset_project_views(self):
-        """Discard view state belonging to the project or chunk being replaced."""
+        """Discard view state belonging to the project or dataset being replaced."""
         self._view_gen += 1
         self.view_loading = False; self.model_progress.reset()
         self.busy_indicator.background("view-loader")
@@ -964,17 +974,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self._marker_xyz_cache = result["marker_cache"]
             self._prepared_rasters = result.get("rasters", {})
             if result.get("shape_cache"):
-                self._shape_cache[id(self.chunk)] = result["shape_cache"]
+                self._shape_cache[id(self.dataset)] = result["shape_cache"]
             for note in result["notes"]:
                 self.log(note)
             if self.project.relocated:
                 self.project.modified = True
                 self.log("Project paths relocated. Save to retain the updated paths.")
-            missing = len(self.chunk.cameras) - len(result["found"])
+            missing = len(self.dataset.cameras) - len(result["found"])
             if result.get("ambiguous"):
                 self._warn_ambiguous(result["ambiguous"])
             if missing:
-                msg = f"{missing} photo(s) are unavailable. Use Tools > Change Image Paths to locate them."
+                msg = f"{missing} photo(s) are unavailable. Use Project > Relocate Photos to locate them."
                 self.log(msg)
                 if QMessageBox.question(self, "Missing Photos", msg + "\n\nLocate the photos now?",
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
@@ -992,11 +1002,11 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Relink photos after moving them (other drive letter / computer): pick
         the folder that now contains them; files are matched by name (searching
         subfolders) and the longest identical trailing path."""
-        from .relink import relink_chunk, missing_cameras, index_folder
-        chunks = [self.project.chunks[ci]] if isinstance(ci, int) and 0 <= ci < len(self.project.chunks) \
-            else self.project.chunks
-        n_missing = sum(len(missing_cameras(ch)) for ch in chunks)
-        n_all = sum(len(ch.cameras) for ch in chunks)
+        from .relink import relink_dataset, missing_cameras, index_folder
+        datasets = [self.project.datasets[ci]] if isinstance(ci, int) and 0 <= ci < len(self.project.datasets) \
+            else self.project.datasets
+        n_missing = sum(len(missing_cameras(ch)) for ch in datasets)
+        n_all = sum(len(ch.cameras) for ch in datasets)
         if not n_all:
             QMessageBox.information(self, "Change Image Paths", "The project has no photos."); return
         only_missing = True
@@ -1019,8 +1029,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.show_error("Change Image Paths", error)
             return
         done, nf = 0, []
-        for ch in chunks:
-            a, b = relink_chunk(ch, folder, only_missing=only_missing, idx=idx)
+        for ch in datasets:
+            a, b = relink_dataset(ch, folder, only_missing=only_missing, idx=idx)
             done += a; nf += b
         self.log(f"Change Image Paths: {done} photo(s) relinked to {folder}; {len(nf)} not found"
                  + (f" (e.g. {', '.join(nf[:5])})" if nf else ""))
@@ -1055,13 +1065,15 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _offer_stale_cleanup(self, path):
         """Unfinished copies of an earlier Save As in <name>.files of path
-        (0.1.7 'chunkN.partial', or marked incomplete): ask, then delete them."""
+        (legacy numbered folders or marked incomplete): ask before removal."""
         from . import datafolder as dfo
         root = data_folder(path)
         asked = self.__dict__.setdefault("_stale_asked", set())
         if os.path.normcase(root) in asked:
             return
-        stale = dfo.stale_copies(root)
+        def unreferenced(folder):
+            return not dfo.contains_referenced_data(folder, dfo.protected_paths(self.project))
+        stale = [(p, size) for p, size in dfo.stale_copies(root) if unreferenced(p)]
         if not stale:
             return
         asked.add(os.path.normcase(root))
@@ -1070,12 +1082,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         r = QMessageBox.question(self, "Project Data",
                                  f"Found {len(stale)} unfinished copy(ies) of project data left by an earlier, "
                                  f"interrupted or failed Save As ({dfo.fmt_size(size)}):\n{names}\n\n"
-                                 f"They are not used by any project. Delete them to free the space?",
+                                 f"The current project does not reference these folders. Delete them to free the space?",
                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if r != QMessageBox.Yes:
             self.log("Unfinished data copies kept: " + "; ".join(p for p, _b in stale))
             return
-        left = [p for p, _b in stale if not dfo.remove_tree(p)]
+        left = [p for p, _b in stale if not unreferenced(p) or not dfo.remove_tree(p)]
         freed = sum(b for p, b in stale if p not in left)
         self.log(f"Removed unfinished data copies ({dfo.fmt_size(freed)})"
                  + (f"; could not remove: {'; '.join(left)}" if left else ""))
@@ -1083,14 +1095,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             QMessageBox.warning(self, "Project Data", "Could not remove (files in use?):\n" + "\n".join(left))
 
     def _bring_data(self, path, save_as):
-        """Copy the chunks' working folders into <name>.files of `path` when
+        """Copy the datasets' working folders into <name>.files of `path` when
         they are elsewhere (Save As to a new place, old absolute-path or
         temporary data). Returns False to abort the save."""
         from . import datafolder as dfo, choice
         self._offer_stale_cleanup(path)
         items = dfo.plan(self.project, path, save_as=save_as)
         if save_as:                       # never-created working folders: new results go to the new data folder
-            for ch in self.project.chunks:
+            for ch in self.project.datasets:
                 if ch.workdir and not os.path.isdir(ch.workdir):
                     ch.workdir = ""
         if not items:
@@ -1099,7 +1111,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         depth = sum(it["parts"]["depth"] for it in items)
         copies = sum(it["parts"]["photo_copies"] for it in items)
         other = total - depth - copies
-        src = "\n".join(f"  {it['chunk'].name}: {it['src']}" for it in items[:6])
+        src = "\n".join(f"  {it['dataset'].name}: {it['src']}" for it in items[:6])
         root = data_folder(path)
         lines = [f"  Results, models, databases: {dfo.fmt_size(other)}"]
         if depth:
@@ -1153,7 +1165,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                     f"the copy may help.",
                             step="Save project data", worker=False)
             return False
-        for ch, a, b, moved in dfo.apply(res or []):
+        for ch, a, b, moved in dfo.apply(res or [], remove_temporary=False):
+            if dfo.is_temporary(a):
+                self.__dict__.setdefault("_temporary_data_copies", []).append((self.project, a, b))
             self.log(f"{ch.name}: data {'moved' if moved else 'copied'} {a} -> {b}"
                      + (" (without depth maps)" if r == "results" and depth else ""))
         return True
@@ -1181,10 +1195,30 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.log(f"Project saved in a {name} folder: {os.path.dirname(path)}")
         return True
 
+    def _finish_temporary_data_copies(self):
+        """Only a successful metadata save permits removal of migrated temporary results."""
+        from . import datafolder as dfo
+        pending = self.__dict__.pop("_temporary_data_copies", [])
+        protected = dfo.protected_paths(self.project)
+        for owner, source, destination in pending:
+            if owner is not self.project:
+                continue
+            if not dfo.is_temporary(source) or not os.path.isdir(destination):
+                continue
+            if dfo.contains_referenced_data(source, protected):
+                self.log(f"Kept temporary data containing referenced files: {source}")
+                continue
+            if dfo.remove_tree(source):
+                self.log(f"Removed migrated temporary data after saving the project: {source}")
+            else:
+                self.log(f"Project saved; temporary source could not be removed: {source}")
+
     def _save_to(self, path, save_as=False):
         """Write the project file (metadata, ~1 MB JSON, well under 1 s) with
         paths relative to its folder. Data outside the project folder is
         offered to be copied into <name>.files first (see _bring_data)."""
+        if not self._can_change_project():
+            return False
         import time
         if not self._bring_data(path, save_as):
             return False
@@ -1195,11 +1229,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             import traceback
             self.show_error("Save", f"Cannot save project:\n{e}", step="Save project",
                             traceback_text=traceback.format_exc(), worker=False); return False
+        self._finish_temporary_data_copies()
         self._update_title()
         self.log(f"Saved {path} ({time.perf_counter() - t0:.2f} s)")
         return True
 
     def save_project_as(self):
+        if not self._can_change_project():
+            return False
         path = QFileDialog.getSaveFileName(self, "Save As", self.project.path or "", PROJECT_FILTER)[0]
         if not path:
             return False
@@ -1216,7 +1253,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _world_offset(self):
         from .export import georef_offset
-        return georef_offset(self.chunk.georef)
+        return georef_offset(self.dataset.georef)
 
     def _run_export(self, title, fn):
         """Run a (possibly long) export off the GUI thread behind a progress dialog."""
@@ -1226,7 +1263,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return res
 
     def export_ply(self, what):
-        src = (self.chunk.point_cloud_ply or self.chunk.tie_points_ply) if what == "cloud" else self.chunk.model_ply
+        src = (self.dataset.point_cloud_ply or self.dataset.tie_points_ply) if what == "cloud" else self.dataset.model_ply
         if not src or not os.path.exists(src):
             QMessageBox.information(self, "Export", "Nothing to export yet."); return
         if what != "cloud":
@@ -1239,7 +1276,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def export_cloud_to(self, dst, kind="ply", src=None):
         """Point cloud (dense, else tie points) in world coordinates (local + georef offset)."""
         from . import export as ex
-        src = src or self.chunk.point_cloud_ply or self.chunk.tie_points_ply
+        src = src or self.dataset.point_cloud_ply or self.dataset.tie_points_ply
         off = self._world_offset()
         ext = ".dxf" if kind == "dxf" else ".ply"
         if not dst.lower().endswith(ext):
@@ -1267,19 +1304,19 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             raise FileNotFoundError(f"Expected result not found: {path}")
         nv, nf = ply_counts(path)                # header only; the view loads in the background
         if what == "cloud":
-            self.chunk.point_cloud_ply, self.chunk.point_count = path, nv
+            self.dataset.point_cloud_ply, self.dataset.point_count = path, nv
         elif what == "tie":
-            self.chunk.tie_points_ply, self.chunk.tie_point_count = path, nv
+            self.dataset.tie_points_ply, self.dataset.tie_point_count = path, nv
         else:
-            if path != self.chunk.model_ply or nf != self.chunk.face_count:
-                self.chunk.texture = {}          # the old atlas belongs to the previous mesh
-            self.chunk.model_ply = path
-            self.chunk.face_count = nf
+            if path != self.dataset.model_ply or nf != self.dataset.face_count:
+                self.dataset.texture = {}          # the old atlas belongs to the previous mesh
+            self.dataset.model_ply = path
+            self.dataset.face_count = nf
         self.set_modified(); self.reload_view()
         self.tabs.setCurrentWidget(self.model_view)
 
     def export_cameras(self):
-        aligned = [c for c in self.chunk.cameras if c.est]
+        aligned = [c for c in self.dataset.cameras if c.est]
         if not aligned:
             QMessageBox.information(self, "Export Cameras", "No aligned cameras."); return
         dst = QFileDialog.getSaveFileName(self, "Export Cameras", "cameras.csv", "CSV (*.csv)")[0]
@@ -1293,14 +1330,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if dst:
             with open(dst, "w", encoding="utf-8") as f:
                 f.write("label,longitude,latitude,altitude\n")
-                for c in self.chunk.cameras:
+                for c in self.dataset.cameras:
                     f.write(f"{c.label},{c.lon or ''},{c.lat or ''},{c.alt or ''}\n")
 
     def generate_report(self):
         dst = QFileDialog.getSaveFileName(self, "Generate Report", "report.html", "HTML (*.html)")[0]
         if not dst:
             return
-        ch = self.chunk
+        ch = self.dataset
         img = os.path.splitext(dst)[0] + "_view.png"
         self.model_view.grab().save(img)
         rows = "".join(f"<tr><td>{c.label}</td><td>{'yes' if c.aligned else 'no'}</td></tr>" for c in ch.cameras)
@@ -1334,18 +1371,16 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if dst:
             self.tabs.currentWidget().grab().save(dst)
 
-    def toggle_full_screen(self, on):
-        self.showFullScreen() if on else self.showNormal()
-
     # -------------------------------------------------------------- Photos
     def open_photo(self, k):
-        cams = self.chunk.cameras
+        cams = self.dataset.cameras
         if 0 <= k < len(cams):
             self.current_photo = k
             c = cams[k]
             self.photo_view.open(c.path, f"{c.label}   ({k + 1}/{len(cams)})   "
                                           f"{'aligned' if c.aligned else 'not aligned'}")
             self.tabs.setCurrentWidget(self.photo_view)
+            self._update_menu_actions()
             try:
                 self._update_photo_markers()
             except Exception as e:
@@ -1356,8 +1391,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.log(f"Shapes overlay on the photo: {e}")
 
     def step_photo(self, d):
-        if self.chunk.cameras:
-            self.open_photo((self.current_photo + d) % len(self.chunk.cameras))
+        if self.dataset.cameras:
+            self.open_photo((self.current_photo + d) % len(self.dataset.cameras))
 
     def rotate_photo(self, deg):
         if self.photo_view.path is None:
@@ -1377,7 +1412,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not paths:
             return []
         from .fastpipe import map_images, read_header
-        known = {c.path for c in self.chunk.cameras}
+        known = {c.path for c in self.dataset.cameras}
         new = [p for p in dict.fromkeys(os.path.abspath(p) for p in paths)
                if p not in known and os.path.splitext(p)[1].lower() in IMAGE_EXTS]
         if not new:
@@ -1399,14 +1434,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         t1 = time.perf_counter()
         _log.info("Add Photos: header scan %.2f s", t1 - t0)
         with diag.Timed("Add Photos: add cameras", n=len(new)):
-            added = self.chunk.add_photos(new, infos)
+            added = self.dataset.add_photos(new, infos)
         bad = [p for p, i in infos.items() if "error" in i]
         for p in bad[:20]:
             _log.warning("unreadable photo %s: %s", p, infos[p]["error"])
         self.log(f"Added {len(added)} photos in {time.perf_counter() - t0:.2f} s"
                  + (f" ({len(bad)} unreadable, e.g. {os.path.basename(bad[0])}: {infos[bad[0]]['error']})"
                     if bad else ""))
-        with diag.Timed("Add Photos: refresh panes", cameras=len(self.chunk.cameras)):
+        with diag.Timed("Add Photos: refresh panes", cameras=len(self.dataset.cameras)):
             self.set_modified()
         self.start_thumbnails(added)
         return added
@@ -1476,7 +1511,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def _apply_thumbs(self, results):
         by_path = {}
-        for ch in self.project.chunks:
+        for ch in self.project.datasets:
             for k, c in enumerate(ch.cameras):
                 by_path.setdefault(c.path, []).append((ch, k, c))
         for r in results:
@@ -1486,7 +1521,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 c.thumb, c.desc = r["thumb"], r["desc"]
                 if not c.width:
                     c.width, c.height = r["width"], r["height"]
-                if ch is self.chunk:
+                if ch is self.dataset:
                     self.photos.set_thumb(k, c)
 
     @Slot(list)
@@ -1529,7 +1564,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 "This command uses COLMAP as its reconstruction engine, but no 'colmap' "
                 "executable was found.\n\nWindows: download COLMAP (CUDA build) from\n"
                 "https://github.com/colmap/colmap/releases, unzip it (e.g. C:\\COLMAP) and add "
-                "that folder to PATH, or set the path in Tools > Preferences > Advanced.")
+                "that folder to PATH, or set the path in Project > Preferences > Advanced.")
             self.statusBar().showMessage("COLMAP not found", 6000)
         return exe
 
@@ -1581,7 +1616,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             dlg._timer.stop()
             dt = time.perf_counter() - t0
             self.jobs.add_job(f"[{'done' if ok else 'failed'}] {job}  ({dt:.1f} s)")
-            self.chunk.log.append(f"{title}: {'OK' if ok else msg} ({dt:.1f} s)")
+            self.dataset.log.append(f"{title}: {'OK' if ok else msg} ({dt:.1f} s)")
             if ok:
                 try:
                     on_success()
@@ -1644,7 +1679,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def align_photos(self):
         if not self._require_saved("Align Photos"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if len([c for c in ch.cameras if c.enabled]) < 2:
             QMessageBox.information(self, "Align Photos", "Add at least two photos first."); return
         exe = self._need_colmap()
@@ -1779,7 +1814,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def build_point_cloud(self):
         if not self._require_saved("Build Point Cloud"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if not ch.aligned_count():
             QMessageBox.information(self, "Build Point Cloud", "Align photos first."); return
         exe = self._need_colmap()
@@ -1808,14 +1843,23 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         dlg = BuildPointCloudDialog(self)
         if not dlg.exec():
             return
-        from .dense import dense_steps
+        from .dense import dense_steps, LegacyCloudBackup
         wd = self.project.default_workdir(ch)
         s = dlg.settings()
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
         if ch.georef:
             s["filters"].setdefault("up", [0.0, 0.0, 1.0])
-        steps = [("Preparing point cloud", lambda: dense_steps(exe, wd, s, cm.image_dir(wd)), 1)]
+        source_backup = LegacyCloudBackup(ch.point_cloud_ply, wd)
+        def prepare():
+            source_backup.prepare()
+            return dense_steps(exe, wd, s, cm.image_dir(wd))
+        def loaded():
+            self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply"))
+            retained = source_backup.discard()
+            if retained:
+                self.log("Build Point Cloud succeeded; backup files retained: " + "; ".join(retained))
+        steps = [("Preparing point cloud", prepare, 1)]
         self.log(f"Build Point Cloud: quality={s['quality']}, depth filtering={s['depth_filtering']}, "
                  f"{s['max_sources']} neighbour photos, workdir={wd}")
         def meta(dt, stages):
@@ -1847,12 +1891,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                             filtering=filter_statistics.get("filters",[]),
                             **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
-                  lambda: self.load_result("cloud", os.path.join(wd, "dense", "point_cloud.ply")), meta, params=s, engine_exe=exe)
+                  loaded, meta, params=s, on_fail=source_backup.restore, engine_exe=exe)
 
     def build_model(self):
         if not self._require_saved("Build Model"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if not ch.aligned_count():
             QMessageBox.information(self, "Build Model", "Align photos first."); return
         exe = self._need_colmap()
@@ -1931,7 +1975,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def build_texture(self):
         if not self._require_saved("Build Texture"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         if not (ch.model_ply and os.path.exists(ch.model_ply)):
             QMessageBox.information(self, "Build Texture", "Build the model first."); return
         mdir = self._model_dir(ch)
@@ -1975,7 +2019,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def load_texture_view(self):
         """Load the textured model display in the background (Model - Textured)."""
-        ch = self.chunk
+        ch = self.dataset
         t = ch.texture or {}
         if not t.get("dir") or not ch.model_ply or self.model_view.gl is None:
             return
@@ -2009,10 +2053,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.statusBar().showMessage("Textured model loaded", 3000)
 
     def import_texture(self, folder=None, quiet=False):
-        """File > Import > Import Texture...: attach an existing Build Texture output
+        """Project > Import Data > Import Texture...: attach an existing Build Texture output
         folder (info.json + uv.npz + texture_N pages) to the current model without
         rebuilding it. The folder must belong to this exact mesh (same face count)."""
-        ch = self.chunk
+        ch = self.dataset
         if not folder:
             if not (ch.model_ply and os.path.exists(ch.model_ply)):
                 QMessageBox.information(self, "Import Texture", "Build or import the model first."); return False
@@ -2055,9 +2099,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return True
 
     def import_tiled_model(self, folder=None, quiet=False):
-        """File > Import > Import Tiled Model...: attach an existing Build Tiled Model
+        """Project > Import Data > Import Tiled Model...: attach an existing Build Tiled Model
         output folder (tileset.json + photomesh_tiles.json + tiles/)."""
-        ch = self.chunk
+        ch = self.dataset
         if not folder:
             folder = QFileDialog.getExistingDirectory(self, "Import Tiled Model - folder with tileset.json",
                                                       os.path.dirname(ch.model_ply or ""))
@@ -2117,7 +2161,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def build_tiled_model(self):
         if not self._require_saved("Build Tiled Model"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         have_mesh = bool(ch.model_ply and os.path.exists(ch.model_ply))
         have_cloud = bool(ch.point_cloud_ply and os.path.exists(ch.point_cloud_ply))
         if not (have_mesh or have_cloud):
@@ -2162,7 +2206,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self._run("Build Tiled Model", steps, loaded, meta, params=s, on_fail=self.load_tiled_view)
 
     def load_tiled_view(self):
-        t = self.chunk.tiled_model or {}
+        t = self.dataset.tiled_model or {}
         idx = t.get("index")
         if not idx or not os.path.exists(idx):
             self.model_view.set_tiled(None); return
@@ -2181,7 +2225,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def export_model(self):
         """Export mesh geometry or textured models."""
-        ch = self.chunk
+        ch = self.dataset
         src = ch.model_ply
         if not src or not os.path.exists(src):
             QMessageBox.information(self, "Export Model", "Nothing to export yet."); return
@@ -2201,7 +2245,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if kind == "contours":
             return self.export_contours_to(dst, contour_interval)
         from . import export as ex
-        ch = self.chunk
+        ch = self.dataset
         t = ch.texture or {}
         off = self._world_offset()
         src = ch.model_ply
@@ -2234,8 +2278,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return dst
 
     def export_contours(self):
-        """Independent File > Export command, next to Export Model."""
-        src = self.chunk.model_ply
+        """Export > Mesh Contours command, next to Mesh."""
+        src = self.dataset.model_ply
         if not src or not os.path.exists(src):
             QMessageBox.information(self, "Export Mesh Contours", "Build a model first.")
             return None
@@ -2249,7 +2293,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def export_contours_to(self, dst, interval=None):
         """Ask for the interval and export current mesh sections off the GUI thread."""
         from .contours import export_mesh_contours, ContourCancelled
-        src = self.chunk.model_ply
+        src = self.dataset.model_ply
         if not src or not os.path.exists(src):
             QMessageBox.information(self, "Export Mesh Contours", "Build a model first.")
             return None
@@ -2288,7 +2332,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return dst
 
     def export_tiled_model(self):
-        t = self.chunk.tiled_model or {}
+        t = self.dataset.tiled_model or {}
         if not t.get("dir") or not os.path.exists(t["dir"]):
             QMessageBox.information(self, "Export Tiled Model", "Build the tiled model first."); return
         dst, f = QFileDialog.getSaveFileName(self, "Export Tiled Model", "tiled_model",
@@ -2298,7 +2342,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def export_tiled_to(self, dst, kind):
         from .tiles import zip_tiles
-        src = self.chunk.tiled_model["dir"]
+        src = self.dataset.tiled_model["dir"]
         if kind == "zip":
             if not dst.lower().endswith(".zip"):
                 dst += ".zip"
@@ -2328,8 +2372,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return (ch.georef or {}).get("crs") or ch.crs or ""
 
     def load_ortho_view(self):
-        """Orthomosaic + DEM layers of the active chunk in the Ortho tab (tiles load in the background)."""
-        ch = self.chunk
+        """Orthomosaic + DEM layers of the active dataset in the Ortho tab (tiles load in the background)."""
+        ch = self.dataset
         from .geotiff import is_geographic
         from .workflow import processing_crs
         crs = processing_crs(ch.georef) if ch.georef else self._crs_text(ch)
@@ -2358,7 +2402,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _update_ortho_markers(self):
         """Use measured model positions; survey references remain independent."""
         from .marker_style import marker_state
-        ch = self.chunk
+        ch = self.dataset
         try:
             positions = {label: X for label, X, _control in (self._marker_positions() or [])}
         except Exception:
@@ -2380,7 +2424,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.ortho_view.set_markers(markers)
 
     def show_ortho(self, kind):
-        """Model > Orthomosaic / DEM (and the Workspace rows): show the layer in the Ortho tab."""
+        """Display > Ortho Product > Orthomosaic / DEM (and the Workspace rows): show the layer in the Ortho tab."""
         if not self._has_layer(kind):
             self.statusBar().showMessage(("No orthomosaic" if kind == "ortho" else "No DEM") + " - build it first", 4000)
             return
@@ -2391,7 +2435,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def build_dem(self):
         if not self._require_saved("Build DEM"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         have_cloud = bool(ch.point_cloud_ply and os.path.exists(ch.point_cloud_ply))
         have_mesh = bool(ch.model_ply and os.path.exists(ch.model_ply))
         if not (have_cloud or have_mesh):
@@ -2436,7 +2480,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def build_orthomosaic(self):
         if not self._require_saved("Build Orthomosaic"):
             return None
-        ch = self.chunk
+        ch = self.dataset
         mdir = self._model_dir(ch)
         if not os.path.exists(os.path.join(mdir, "images.bin")):
             QMessageBox.information(self, "Build Orthomosaic", "Align photos first (no camera model found)."); return
@@ -2547,11 +2591,11 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return dict(s, pixel_size=sug, max_dimension=0)
 
     def import_raster(self, kind, path=None, quiet=False):
-        """File > Import > Import Orthomosaic... / Import DEM...: a PhotoMesh output folder
+        """Project > Import Data > Import Orthomosaic... / Import DEM...: a PhotoMesh output folder
         (info.json) or any georeferenced GeoTIFF (ModelPixelScale + ModelTiepoint)."""
         from .ortho import read_info
         title = "Import Orthomosaic" if kind == "ortho" else "Import DEM"
-        ch = self.chunk
+        ch = self.dataset
         if not path:
             path = QFileDialog.getOpenFileName(self, f"{title} - GeoTIFF (or info.json of an output folder)", "",
                                                "GeoTIFF / info.json (*.tif *.tiff info.json)")[0]
@@ -2584,7 +2628,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return True
 
     def export_raster(self, kind):
-        ch = self.chunk
+        ch = self.dataset
         info = ch.orthomosaic if kind == "ortho" else ch.dem
         title = "Export Orthomosaic" if kind == "ortho" else "Export DEM"
         if not (info and info.get("path") and os.path.exists(info["path"])):
@@ -2605,7 +2649,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def export_raster_to(self, kind, dst, **opts):
         """Export the orthomosaic / DEM (background thread, progress + Cancel)."""
         from .ortho import export_raster, Cancelled
-        ch = self.chunk
+        ch = self.dataset
         info = dict(ch.orthomosaic if kind == "ortho" else ch.dem)
         ext = opts.get("fmt") or os.path.splitext(dst)[1].lstrip(".").lower() or "tif"
         if not os.path.splitext(dst)[1]:
@@ -2627,7 +2671,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
     def clean_up_data(self):
-        """Tools > Clean Up Intermediate Data...: sizes per part, checkboxes,
+        """Project > Clean Up Intermediate Data...: sizes per part, checkboxes,
         confirmation; finished products and photos are never deleted."""
         from . import datafolder as dfo
         from .cleanup_ui import CleanupDialog
@@ -2644,7 +2688,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         size = sum(p["bytes"] for p in chosen)
         r = QMessageBox.question(self, "Clean Up Intermediate Data",
                                  f"Delete {dfo.fmt_size(size)} of intermediate data?\n\n"
-                                 + "\n".join(f"  {p['chunk'] + ': ' if p['chunk'] else ''}{p['label']} "
+                                 + "\n".join(f"  {p['dataset'] + ': ' if p['dataset'] else ''}{p['label']} "
                                               f"({dfo.fmt_size(p['bytes'])})" for p in chosen)
                                  + "\n\nFinished products (point cloud, model, texture, tiles, orthomosaic, DEM) "
                                    "and photos are not touched.",
@@ -2666,7 +2710,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return freed
 
     def model_statistics(self):
-        ch = self.chunk
+        ch = self.dataset
         QMessageBox.information(self, "Model Statistics",
             f"Cameras: {len(ch.cameras)} ({ch.aligned_count()} aligned)\nTie points: {ch.tie_point_count:,}\n"
             f"Point cloud: {ch.point_count:,}\nModel faces: {ch.face_count:,}")
@@ -2712,7 +2756,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
 
 def apply_dialog_setting():
-    """Tools > Preferences > 'Use built-in file dialogs' (or PHOTOMESH_QT_DIALOGS=1):
+    """Project > Preferences > 'Use built-in file dialogs' (or PHOTOMESH_QT_DIALOGS=1):
     use Qt's own file dialogs instead of the Windows shell dialogs, which can hang
     on some systems (broken shell extensions, offline network/cloud drives)."""
     on = QSettings().value("ui/qt_file_dialogs", False, bool) or os.environ.get("PHOTOMESH_QT_DIALOGS", "").lower() in ("1", "true", "yes", "on")

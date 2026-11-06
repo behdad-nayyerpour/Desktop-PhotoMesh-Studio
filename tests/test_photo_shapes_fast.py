@@ -38,7 +38,7 @@ def _window_with_shapes(window, tmp_path, sset):
 
 def _reference_items(window, k):
     """The old per-shape loop (S.project_polylines per shape) for comparison."""
-    ch = window.chunk
+    ch = window.dataset
     sset, vis = window._visible_shapes(ch)
     model = window._sparse_model()
     from photomesh import georef as g
@@ -156,7 +156,7 @@ def test_tie_point_statistics_on_open(window, tmp_path, monkeypatch):
     from tests.test_dense_mesh_gcp import synthetic_model
     logs = []
     monkeypatch.setattr(window, "log", lambda m, *a, **k: logs.append(str(m)))
-    ch = window.chunk
+    ch = window.dataset
     wd = tmp_path / "w"; (wd / "sparse" / "0").mkdir(parents=True)
     cio.write_model(str(wd / "sparse" / "0"), synthetic_model())
     ch.workdir = str(wd); ch.tie_point_count = 100

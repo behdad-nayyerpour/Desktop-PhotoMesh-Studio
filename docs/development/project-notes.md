@@ -11,13 +11,18 @@ Optional local neural matching uses ALIKED (BSD) and LightGlue (Apache 2.0);
 pipeline is described in [Architecture and performance](architecture.md).
 Dependencies are listed in [requirements.txt](../../requirements.txt).
 
-The menu layout follows publicly documented photogrammetry commands, including
+Earlier versions arranged menus using publicly documented photogrammetry commands, including
 the *Menu commands* appendix of the public
 [Agisoft Metashape Professional manual](https://www.agisoft.com/pdf/metashape-pro_2_3_en.pdf).
+Version 1.0.3 groups commands by Project, Edit, Process, Display, Survey,
+Export and Help. Command identifiers remain compatible with earlier scripts;
+their historical paths are aliases, not extra menus.
 PhotoMesh Studio is not affiliated with Agisoft.
 
-The project describes its code, styling, and icons as original, using Qt standard
-icons where applicable. No third-party application files were inspected or copied.
+Toolbar icons are drawn with Qt. Version 1.0.3 replaces the Markers,
+Ortho and Shapes icons with the user-approved target, mosaic and vector-path
+designs. Other artwork and interface provenance remain under review; this note
+does not certify independent authorship of every asset.
 
 Third-party components retain their own licenses. Their license terms must be
 reviewed when redistributing a bundled runtime; this page is not a substitute

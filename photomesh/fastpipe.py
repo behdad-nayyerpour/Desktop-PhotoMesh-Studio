@@ -20,6 +20,8 @@ Original code. Ideas follow well-known published techniques, no proprietary code
 """
 from __future__ import annotations
 
+from .exif import rational as _rat, altitude as _gps_altitude
+
 import hashlib
 import math
 import os
@@ -27,7 +29,7 @@ import re
 import sqlite3
 import subprocess
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 from .engine import child_env
@@ -41,16 +43,6 @@ BA_FUNCTION_TOLERANCE = 1e-6     # relative cost change at which bundle adjustme
 
 
 # ------------------------------------------------------------ image analysis
-def _rat(v):
-    try:
-        return float(v)
-    except Exception:
-        try:
-            return v[0] / v[1]
-        except Exception:
-            return 0.0
-
-
 def _gps(exif):
     try:
         gps = exif.get_ifd(0x8825)
@@ -64,12 +56,7 @@ def _gps(exif):
         return -d if ref in ("S", "W") else d
     lat = dms(gps[2], gps.get(1, "N"))
     lon = dms(gps[4], gps.get(3, "E"))
-    alt = None
-    if 6 in gps:
-        ref = gps.get(5, 0)
-        if isinstance(ref, (bytes, bytearray)):
-            ref = ref[0] if ref else 0
-        alt = _rat(gps[6]) * (-1 if ref == 1 else 1)
+    alt = _gps_altitude(gps)
     return lon, lat, alt
 
 
@@ -137,7 +124,12 @@ def read_header(path: str) -> dict:
     return {"path": path, "width": w, "height": h, "lon": lon, "lat": lat, "alt": alt}
 
 
-def pool_map(fn, jobs, workers, chunksize=4):
+def _pool_batch(fn, batch):
+    """One picklable task per batch, preserving bounded process-queue overhead."""
+    return [fn(job) for job in batch]
+
+
+def pool_map(fn, jobs, workers, batch_size=4):
     """Ordered map over worker processes ('spawn'); if the pool cannot start or
     breaks (e.g. antivirus kills the worker processes), redo it in threads."""
     import multiprocessing as mp
@@ -147,9 +139,13 @@ def pool_map(fn, jobs, workers, chunksize=4):
     done = 0
     try:
         with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
-            for r in ex.map(fn, jobs, chunksize=chunksize):
-                done += 1
-                yield r
+            from itertools import repeat
+            size = max(1, int(batch_size))
+            batches = (jobs[start:start + size] for start in range(0, len(jobs), size))
+            for results in ex.map(_pool_batch, repeat(fn), batches):
+                for result in results:
+                    done += 1
+                    yield result
             return
     except (BrokenProcessPool, OSError) as e:
         import sys
@@ -218,13 +214,6 @@ def analyze_images(paths, cache_dir, workers=None, progress=None, cancel=None):
         except TypeError:
             progress(i, n)
     return map_images(lambda p: analyze_image(p, cache_dir), list(paths), workers, prog, cancel)
-
-
-def _safe(p, cache_dir):
-    try:
-        return analyze_image(p, cache_dir)
-    except Exception as e:
-        return {"path": p, "error": str(e)}
 
 
 # ------------------------------------------------------------ decode-once cache
@@ -825,7 +814,6 @@ def fast_align_steps(exe, wd, names, infos, s):
     from .colmap import image_dir, image_list
     img_dir = image_dir(wd)
     ilist = image_list(wd)
-    gpu = "1" if s.get("use_gpu", True) else "0"
     maxdim = max([i.get("width", 0) for i in infos] + [i.get("height", 0) for i in infos] + [0]) or 3200
     fine_size = max(256, maxdim // ACCURACY_DOWNSCALE[s["accuracy"]])
     from .engine import extraction_size

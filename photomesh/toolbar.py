@@ -15,13 +15,14 @@ def build_toolbar(window):
         window.addToolBar(tb)
         return tb
 
-    def action(tb, name, icon, label=None):
+    def action(tb, name, icon, label=None, compact=False):
         a = window.actions[name]
         a.setIcon(layer_icon(icon))
         a.setToolTip(name.rstrip("."))
-        if label:
-            a.setIconText(label)
+        a.setIconText(label or name.rstrip("."))
         tb.addAction(a)
+        if compact:
+            tb.widgetForAction(a).setStyleSheet("QToolButton{padding:2px 0px;margin:0px;}")
         return a
 
     top = row("Project and processing", "toolbar", Qt.ToolButtonTextBesideIcon)
@@ -32,14 +33,14 @@ def build_toolbar(window):
     action(top, "Undo", "undo"); action(top, "Redo", "redo")
     top.addSeparator()
     for name, icon, label in (
-        ("Add Photos...", "add_photos", "Photos"),
-        ("Align Photos...", "align", "Align"),
+        ("Add Photos...", "add_photos", "Add Photos"),
+        ("Align Photos...", "align", "Align Photos"),
         ("Build Point Cloud...", "cloud", "Build Cloud"),
         ("Build Model...", "mesh", "Build Mesh"),
-        ("Build Texture...", "mode_textured", "Texture"),
-        ("Build Tiled Model...", "tiled", "Tiles"),
-        ("Build DEM...", "dem", "DEM"),
-        ("Build Orthomosaic...", "ortho", "Ortho")):
+        ("Build Texture...", "mode_textured", "Build Texture"),
+        ("Build Tiled Model...", "tiled", "Build Tiled Model"),
+        ("Build DEM...", "dem", "Build DEM"),
+        ("Build Orthomosaic...", "ortho", "Build Orthomosaic")):
         action(top, name, icon, label)
     top.addSeparator()
     action(top, "Preferences...", "preferences", "Settings")
@@ -104,21 +105,21 @@ def build_toolbar(window):
     menu.addSeparator()
     menu.addAction(window.actions["Perspective/Orthographic"])
     menu.addSeparator()
-    menu.addAction(window.actions["Model/Show All"])
-    menu.addAction(window.actions["Model/Hide All"])
+    menu.addAction(window.actions["Show All"])
+    menu.addAction(window.actions["Hide All"])
     extras.setMenu(menu)
     bottom.addWidget(extras)
     window.show_items_button = extras
 
     bottom.addSeparator()
     for name in ("Top", "Bottom", "Left", "Right", "Front", "Back", "Isometric"):
-        action(bottom, name, "view_" + name.lower(), "Iso" if name == "Isometric" else name)
+        action(bottom, name, "view_" + name.lower(), "Iso" if name == "Isometric" else name, compact=True)
     bottom.addSeparator()
     for name, icon, label in (("Zoom In", "zoom_in", "Zoom In"),
                               ("Zoom Out", "zoom_out", "Zoom Out"),
                               ("Reset View", "fit_view", "Fit")):
-        action(bottom, name, icon, label)
+        action(bottom, name, icon, label, compact=True)
     window.toolbars = [top, bottom]
-    toggle = window.actions["View/Toolbar"]
+    toggle = window.actions["Toolbar"]
     toggle.setChecked(True)
     toggle.toggled.connect(lambda on: [tb.setVisible(on) for tb in window.toolbars])

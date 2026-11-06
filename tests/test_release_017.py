@@ -271,7 +271,7 @@ def test_add_marker_in_ortho_view_signal_and_surface_fallback(window, tmp_path):
 
 
 def test_ortho_frame_rotation_roundtrip(window):
-    ch = window.chunk
+    ch = window.dataset
     a = np.radians(30)
     R = np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1.0]])
     ch.orthomosaic = {"rotation": R.tolist(), "offset": [1000.0, 2000.0, 10.0]}
@@ -293,9 +293,9 @@ def test_processing_requires_saved_project(window, no_dialogs, monkeypatch, tmp_
               window.refine_markers, window.gradual_selection):
         assert f() is None
     assert len(asked) == 10 and asked[0] == "Align Photos"
-    assert window.chunk.workdir == "" and not window.project.path
+    assert window.dataset.workdir == "" and not window.project.path
     with pytest.raises(Exception, match="Save the project"):
-        window.project.default_workdir(window.chunk)
+        window.project.default_workdir(window.dataset)
     # Save -> Save As dialog right there; cancelled dialog = not started
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.Save))
     assert window._require_saved("Align Photos") is False
@@ -303,7 +303,7 @@ def test_processing_requires_saved_project(window, no_dialogs, monkeypatch, tmp_
     monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(out)[:-5], "")))
     assert window._require_saved("Align Photos") is True
     assert window.project.path == str(out) and out.exists()
-    assert window.project.default_workdir(window.chunk) == str(tmp_path / "site" / "flight1.files" / "chunk0")
+    assert window.project.default_workdir(window.dataset) == str(tmp_path / "site" / "flight1.files" / "processing")
 
 
 def _processed(tmp_path, name="proj"):
@@ -316,7 +316,7 @@ def _processed(tmp_path, name="proj"):
         Image.new("RGB", (8, 8)).save(photos / f"IMG_{k}.JPG")
     prj = Project()
     prj.path = str(tmp_path / f"{name}.pmsx")
-    ch = prj.chunk
+    ch = prj.dataset
     ch.cameras = [Camera(path=str(photos / f"IMG_{k}.JPG")) for k in range(2)]
     wd = prj.default_workdir(ch)
     os.makedirs(os.path.join(wd, "images"), exist_ok=True)
@@ -341,13 +341,13 @@ def _processed(tmp_path, name="proj"):
 def test_saved_paths_are_relative_and_photos_referenced(tmp_path):
     from photomesh.project import Project
     prj = _processed(tmp_path)
-    raw = json.load(open(prj.path, encoding="utf-8"))["chunks"][0]
-    assert raw["workdir"] == "proj.files/chunk0"
-    assert raw["point_cloud_ply"] == "proj.files/chunk0/dense/point_cloud.ply"
-    assert raw["texture"]["obj"] == "proj.files/chunk0/texture/model.obj"
+    raw = json.load(open(prj.path, encoding="utf-8"))["datasets"][0]
+    assert raw["workdir"] == "proj.files/processing"
+    assert raw["point_cloud_ply"] == "proj.files/processing/dense/point_cloud.ply"
+    assert raw["texture"]["obj"] == "proj.files/processing/texture/model.obj"
     assert raw["cameras"][0]["path"] == "photos/IMG_0.JPG"           # under the project folder: relative
     q = Project.load(prj.path)
-    assert q.chunk.point_cloud_ply == prj.chunk.point_cloud_ply and q.chunk.cameras[0].path == prj.chunk.cameras[0].path
+    assert q.dataset.point_cloud_ply == prj.dataset.point_cloud_ply and q.dataset.cameras[0].path == prj.dataset.cameras[0].path
     assert not os.path.exists(os.path.join(tmp_path, "photos", "proj.files"))   # nothing copied next to photos
 
 
@@ -355,17 +355,17 @@ def test_save_as_copies_data_keeps_originals(tmp_path):
     from photomesh import datafolder as dfo, colmap as cm
     from photomesh.project import Project
     prj = _processed(tmp_path / "a")
-    old_wd = prj.chunk.workdir
+    old_wd = prj.dataset.workdir
     new = str(tmp_path / "b" / "copy.pmsx")
     items = dfo.plan(prj, new, save_as=True)
-    assert len(items) == 1 and items[0]["dst"] == os.path.join(str(tmp_path / "b" / "copy.files"), "chunk0")
+    assert len(items) == 1 and items[0]["dst"] == os.path.join(str(tmp_path / "b" / "copy.files"), "processing")
     assert items[0]["bytes"] - items[0]["parts"]["photo_copies"] < 5000  # results excluding photo copies
     assert dfo.check_space(items)[0]
     progress = []
     done = dfo.execute(items, lambda d, n, t: progress.append((d, n)))
     dfo.apply(done)
     prj.save(new)
-    nw = prj.chunk.workdir
+    nw = prj.dataset.workdir
     assert nw == items[0]["dst"] and os.path.exists(os.path.join(nw, "dense", "point_cloud.ply"))
     assert os.path.exists(os.path.join(old_wd, "dense", "point_cloud.ply"))       # originals kept
     # Links save space where the filesystem permits them; a sandbox can forbid
@@ -373,10 +373,10 @@ def test_save_as_copies_data_keeps_originals(tmp_path):
     copied = os.path.join(nw, "images", "IMG_0.JPG")
     assert open(copied, "rb").read() == open(os.path.join(old_wd, "images", "IMG_0.JPG"), "rb").read()
     assert cm.image_dir(nw) == os.path.join(nw, "images")                         # image_root remapped
-    assert prj.chunk.point_cloud_ply.startswith(nw) and prj.chunk.texture["obj"].startswith(nw)
+    assert prj.dataset.point_cloud_ply.startswith(nw) and prj.dataset.texture["obj"].startswith(nw)
     assert not os.path.exists(nw + ".partial") and not dfo.is_incomplete(nw)
     q = Project.load(new)
-    assert q.chunk.workdir == nw and json.load(open(new))["chunks"][0]["workdir"] == "copy.files/chunk0"
+    assert q.dataset.workdir == nw and json.load(open(new))["datasets"][0]["workdir"] == "copy.files/processing"
 
 
 def test_copy_cancel_and_disk_full_leave_nothing(tmp_path, monkeypatch):
@@ -394,17 +394,17 @@ def test_copy_cancel_and_disk_full_leave_nothing(tmp_path, monkeypatch):
 def test_legacy_temp_data_is_moved_on_save(tmp_path, monkeypatch):
     import tempfile
     from photomesh import datafolder as dfo
-    from photomesh.project import Project, Chunk
+    from photomesh.project import Project, ProjectData
     monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path / "tmp"))
-    wd = os.path.join(dfo.legacy_temp_root(), "chunk0"); os.makedirs(os.path.join(wd, "sparse", "0"))
+    wd = os.path.join(dfo.legacy_temp_root(), "processing"); os.makedirs(os.path.join(wd, "sparse", "0"))
     open(os.path.join(wd, "sparse", "0", "points3D.bin"), "wb").write(b"x" * 100)
-    prj = Project(); prj.chunks = [Chunk(workdir=wd, tie_points_ply=os.path.join(wd, "tie.ply"))]
+    prj = Project(); prj.datasets = [ProjectData(workdir=wd, tie_points_ply=os.path.join(wd, "tie.ply"))]
     path = str(tmp_path / "p" / "new.pmsx")
     items = dfo.plan(prj, path, save_as=False)
     assert items and items[0]["move"]
     dfo.apply(dfo.execute(items))
-    assert not os.path.exists(wd) and prj.chunk.workdir == os.path.join(str(tmp_path / "p" / "new.files"), "chunk0")
-    assert prj.chunk.tie_points_ply == os.path.join(prj.chunk.workdir, "tie.ply")
+    assert not os.path.exists(wd) and prj.dataset.workdir == os.path.join(str(tmp_path / "p" / "new.files"), "processing")
+    assert prj.dataset.tie_points_ply == os.path.join(prj.dataset.workdir, "tie.ply")
 
 
 def test_user_style_project_keeps_working_on_save(tmp_path):
@@ -414,18 +414,18 @@ def test_user_style_project_keeps_working_on_save(tmp_path):
     from photomesh.project import Project
     bench = tmp_path / "bench_drone5"; (bench / "fast" / "sparse" / "0").mkdir(parents=True)
     (bench / "fast" / "tie_points.ply").write_bytes(b"ply\n")
-    d = {"format": "photomesh-studio/1", "active": 0, "chunks": [{
-        "name": "Chunk 1", "workdir": str(bench / "fast"), "tie_points_ply": str(bench / "fast" / "tie_points.ply"),
+    d = {"format": "photomesh-studio/1", "active": 0, "datasets": [{
+        "name": "Project", "workdir": str(bench / "fast"), "tie_points_ply": str(bench / "fast" / "tie_points.ply"),
         "cameras": [{"path": "F:\\DJI_001\\DJI_0001.JPG", "label": "DJI_0001.JPG"}]}]}
     pm = bench / "drone_DJI_001_fast.pmsx"; pm.write_text(json.dumps(d), encoding="utf-8")
     q = Project.load(str(pm))
-    assert q.chunk.workdir == str(bench / "fast") and not q.relocated
+    assert q.dataset.workdir == str(bench / "fast") and not q.relocated
     assert dfo.plan(q, str(pm), save_as=False) == []                 # inside the project folder: not moved
     q.save(str(pm))
-    raw = json.load(open(pm, encoding="utf-8"))["chunks"][0]
+    raw = json.load(open(pm, encoding="utf-8"))["datasets"][0]
     assert raw["workdir"] == "fast" and raw["tie_points_ply"] == "fast/tie_points.ply"
     assert raw["cameras"][0]["path"] == "F:\\DJI_001\\DJI_0001.JPG"   # photos elsewhere: absolute, untouched
-    assert Project.load(str(pm)).chunk.tie_points_ply == str(bench / "fast" / "tie_points.ply")
+    assert Project.load(str(pm)).dataset.tie_points_ply == str(bench / "fast" / "tie_points.ply")
 
 
 def test_gui_save_as_copies_with_progress(window, no_dialogs, tmp_path, monkeypatch):
@@ -438,9 +438,9 @@ def test_gui_save_as_copies_with_progress(window, no_dialogs, tmp_path, monkeypa
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: QMessageBox.Yes))
     assert window.save_project_as()
     assert window.project.path == str(new)
-    assert window.chunk.workdir == str(tmp_path / "b" / "moved.files" / "chunk0")
-    assert os.path.exists(os.path.join(window.chunk.workdir, "dense", "point_cloud.ply"))
-    assert os.path.exists(os.path.join(prj.chunk.workdir, "dense", "point_cloud.ply"))      # original kept
+    assert window.dataset.workdir == str(tmp_path / "b" / "moved.files" / "processing")
+    assert os.path.exists(os.path.join(window.dataset.workdir, "dense", "point_cloud.ply"))
+    assert os.path.exists(os.path.join(prj.dataset.workdir, "dense", "point_cloud.ply"))      # original kept
     assert no_dialogs == []
     # not enough space: warning, nothing saved
     from photomesh import datafolder as dfo
@@ -456,8 +456,8 @@ def test_gui_save_as_copies_with_progress(window, no_dialogs, tmp_path, monkeypa
 
 def test_open_offers_relink_for_missing_photos(window, no_dialogs, tmp_path, monkeypatch):
     from PySide6.QtWidgets import QMessageBox
-    from photomesh.project import Project, Chunk, Camera
-    p = Project(); p.chunks = [Chunk(cameras=[Camera(path=r"Q:\x\a.jpg")])]
+    from photomesh.project import Project, ProjectData, Camera
+    p = Project(); p.datasets = [ProjectData(cameras=[Camera(path=r"Q:\x\a.jpg")])]
     p.save(str(tmp_path / "m.pmsx"))
     asked, relinked = [], []
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **k: asked.append(a[1]) or QMessageBox.Yes))

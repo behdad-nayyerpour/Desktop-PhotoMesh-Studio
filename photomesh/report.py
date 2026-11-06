@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import datetime
 import getpass
-import io
+
 import json
 import os
 import platform
@@ -455,7 +455,7 @@ def project_stats(project):
     if project is None:
         return {}
     try:
-        ch = project.chunk
+        ch = project.dataset
         cams = list(getattr(ch, "cameras", []) or [])
         sizes = {}
         for c in cams:
@@ -471,7 +471,7 @@ def project_stats(project):
                 steps[step] = dict(q, seconds=m.get("seconds"))
         return {
             "saved": bool(getattr(project, "path", "")),
-            "chunks": len(project.chunks), "photos": len(cams),
+            "photos": len(cams),
             "enabled": sum(1 for c in cams if getattr(c, "enabled", True)),
             "aligned": sum(1 for c in cams if getattr(c, "aligned", False)),
             "with_gps": sum(1 for c in cams if getattr(c, "lat", None) is not None),
@@ -498,7 +498,7 @@ def project_roots(project):
         if getattr(project, "path", ""):
             r[os.path.dirname(os.path.abspath(project.path))] = "<project>"
         dirs = {}
-        for ch in project.chunks:
+        for ch in project.datasets:
             if getattr(ch, "workdir", ""):
                 r[os.path.abspath(ch.workdir)] = "<workdir>"
             for c in ch.cameras:
@@ -659,7 +659,7 @@ def _project_md(p):
         return p["error"]
     rows = [("Photos", f"{p['photos']} ({p['enabled']} enabled, {p['aligned']} aligned, {p['with_gps']} with GPS)"),
             ("Photo sizes", ", ".join(f"{k} x{v}" for k, v in p["photo_sizes"].items())),
-            ("Chunks", p["chunks"]), ("Markers", p["markers"]),
+            ("Markers", p["markers"]),
             ("Tie points", f"{p['tie_points']:,}"), ("Dense points", f"{p['dense_points']:,}"),
             ("Mesh faces", f"{p['mesh_faces']:,}"),
             ("Products", ", ".join(k for k in ("texture", "tiled_model", "orthomosaic", "dem") if p.get(k)) or "-"),

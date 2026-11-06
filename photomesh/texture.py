@@ -3,7 +3,7 @@
 Own implementation (numpy + scipy + Open3D's Embree ray caster), no third-party
 texturing code:
 
-1. Cameras: the chunk's current sparse model (same frame as the mesh - after
+1. Cameras: the project's current sparse model (same frame as the mesh - after
    Optimize Cameras both are in the georeferenced frame), original photos read
    at a working resolution (JPEG DCT down-scaling, e.g. 5280 -> 2640 px), full
    camera model incl. radial/tangential distortion, any number of sensors.
@@ -57,7 +57,7 @@ DEFAULTS = {"mapping": "Generic", "blending": "Mosaic", "size": 8192, "count": 1
             "ghost_threshold": 45.0, "page_policy": "limit"}
 
 
-SAMPLE_CHUNK = 1_000_000   # texels projected at once per photo (bounds float64 temporaries)
+SAMPLE_BLOCK = 1_000_000   # texels projected at once per photo (bounds float64 temporaries)
 
 
 # ------------------------------------------------------------------ images
@@ -474,7 +474,6 @@ def seam_offsets(V, F, L, views, gains, threads, log=print):
     from scipy.sparse.linalg import cg
     m = len(F)
     lab = np.repeat(L, 3); vid = F.ravel()
-    good = lab >= 0
     key = vid.astype(np.int64) * (len(views) + 1) + (lab + 1)
     uk, cid = np.unique(key, return_inverse=True)
     nc = len(uk)
@@ -724,12 +723,12 @@ def pack_fit(uv, comp, size, count, pad, log=print, page_policy="auto"):
 def rasterize(uvp, page, npages, size):
     """Bounded rasterization; large UV triangles are processed in strips, never dropped."""
     import tempfile, atexit
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     lo = np.floor(uvp.min(1) - .5).astype(np.int64)
     hi = np.ceil(uvp.max(1) + .5).astype(np.int64)
     extent = hi - lo
     estimate = float(np.sum(np.minimum(extent[:, 0], size).astype(float) * np.minimum(extent[:, 1], size)))
-    free = available_bytes()
+    free = require_available_bytes()
     if len(extent) and extent.max() <= 256 and estimate * 160 < free * .45:
         return _rasterize_fast(uvp,page,npages,size,lo,hi)
     disk = estimate * 26 > free * .35
@@ -841,8 +840,8 @@ def _rasterize_fast(uvp, page, npages, size, lo, hi):
 
 def unique_texels(arrays,size):
     # Shared-edge texels have exactly one owner, as in the original renderer.
-    from .memguard import available_bytes
-    if len(arrays[0])*32 > available_bytes()*.7:
+    from .memguard import require_available_bytes
+    if len(arrays[0])*32 > require_available_bytes()*.7:
         raise ValueError("Texture sample indices exceed available RAM; use smaller pages or fewer pages")
     key=(arrays[0].astype(np.int64)*size+arrays[1])*size+arrays[2]
     _keys,first=np.unique(key,return_index=True)
@@ -1042,9 +1041,9 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     log(f"Texture: {len(tf) / 1e6:.1f} M texels cover the model ({stages['rasterize atlas']:.1f} s)")
     # ---- fill texels
     t0 = time.perf_counter()
-    from .memguard import available_bytes
+    from .memguard import require_available_bytes
     scratch = None
-    if count * size * size * 13 > available_bytes() * .4:
+    if count * size * size * 13 > require_available_bytes() * .4:
         import tempfile
         scratch = tempfile.TemporaryDirectory(prefix="texture-pages-", dir=out)
         pages = np.memmap(os.path.join(scratch.name, "rgb.bin"), mode="w+", dtype=np.float32,
@@ -1064,26 +1063,26 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
     done = [0]
     def sample_view(vi, sel):
         """Colours of texels `sel` from photo vi. The float64 texel positions and
-        projections are made in chunks (SAMPLE_CHUNK texels), not for all texels
+        projections are made in blocks (SAMPLE_BLOCK texels), not for all texels
         of the photo at once (millions per photo on big pages, x ~200 bytes)."""
         v = views[vi]
         img = load_image(v.path, mr)
         h, w = img.shape[:2]
         out_c = np.empty((len(sel), 3), np.float32)
-        for a in range(0, len(sel), SAMPLE_CHUNK):
-            part = sel[a:a + SAMPLE_CHUNK]
+        for a in range(0, len(sel), SAMPLE_BLOCK):
+            part = sel[a:a + SAMPLE_BLOCK]
             uv_, _z = v.project(texel_points(part))
             out_c[a:a + len(part)] = bilinear(img, uv_[:, 0] * w / v.W, uv_[:, 1] * h / v.H)
             del uv_, _z
         del img
         return out_c
-    # threads that sample photos hold one decoded photo + one chunk each: cap by free RAM
+    # threads that sample photos hold one decoded photo + one block each: cap by free RAM
     from .memguard import cap_workers, MB
     _cw = views[0].cam if views else None
     _photo = (int(_cw.width) * int(_cw.height) * 3 * 2) if _cw is not None else 0
     if mr and _cw is not None and max(_cw.width, _cw.height) > mr:
         _photo = int(_photo * (mr / max(_cw.width, _cw.height)) ** 2)
-    sample_threads = cap_workers(min(threads, 6), _photo + SAMPLE_CHUNK * 220 + 50 * MB)
+    sample_threads = cap_workers(min(threads, 6), _photo + SAMPLE_BLOCK * 220 + 50 * MB)
     if sample_threads < min(threads, 6):
         log(f"Texture: {sample_threads} photo sampling threads (limited by free RAM)")
     if c["blending"] in ("Mosaic", "Disabled"):
@@ -1115,7 +1114,6 @@ def build_texture(cfg, log=print, progress=None, cancel=None):
         best = np.full(n, -1.0 if c["blending"] == "Max intensity" else 1e9, np.float32)
         tord = np.argsort(tf, kind="stable"); tfs = tf[tord]
         fstart = np.searchsorted(tfs, np.arange(m)); fcnt = np.searchsorted(tfs, np.arange(m), "right") - fstart
-        K = best_v.shape[1]
         jobs = []
         for vi in range(len(views)):
             fk = np.argwhere(best_v == vi)
@@ -1327,12 +1325,12 @@ def write_obj(path, V, F, uvp, page, size, textures, offset=None):
             _write_rows(fh, "f", arr, "%d/%d %d/%d %d/%d", grouped=True)
 
 
-def _write_rows(fh, tag, arr, fmt, grouped=False, chunk=200000):
+def _write_rows(fh, tag, arr, fmt, grouped=False, block=200000):
     n = len(arr)
     cols = arr.shape[1]
     line = f"{tag} " + (fmt if grouped else " ".join([fmt] * cols)) + "\n"
-    for s in range(0, n, chunk):
-        blk = arr[s:s + chunk]
+    for s in range(0, n, block):
+        blk = arr[s:s + block]
         fh.write((line * len(blk)) % tuple(blk.ravel()))
 
 
