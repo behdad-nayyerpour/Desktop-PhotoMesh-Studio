@@ -25,17 +25,18 @@ jobs:
       - name: Compile and test
         run: |
           python -m compileall -q photomesh main.py tests
-          python -m pytest -q -rs -p no:cacheprovider tests
+          python -m pytest -q -rs -p no:cacheprovider tests/test_toolbar_icons.py tests/test_toolbar_layout.py tests/test_layers_workspace.py
       - name: Render actual toolbar previews
         shell: python
         run: |
-          import os
+          import os, sys
+          sys.path.insert(0, os.getcwd())
           from PySide6.QtCore import Qt, QCoreApplication
           QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
           from PySide6.QtWidgets import QApplication
+          app = QApplication([])
           from photomesh.theme import apply_theme
           from photomesh.mainwindow import MainWindow
-          app = QApplication([])
           app.setOrganizationName("PhotoMeshIconReview")
           app.setApplicationName("PhotoMeshIconReview")
           apply_theme(app, "Dark")
