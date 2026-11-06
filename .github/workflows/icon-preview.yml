@@ -29,7 +29,7 @@ jobs:
           python -m compileall -q photomesh main.py tests
           ruff check --select F821,F822,F823 photomesh
       - name: Full regression suite
-        run: python -m pytest -vv -rs --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
+        run: python -m pytest -vv -rs --maxfail=10 --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
   preview:
     runs-on: windows-latest
     timeout-minutes: 40
@@ -46,7 +46,7 @@ jobs:
       - name: Compile and test
         run: |
           python -m compileall -q photomesh main.py tests
-          python -m pytest -vv -rs --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
+          python -m pytest -vv -rs --maxfail=10 --timeout=180 -o faulthandler_timeout=120 -p no:cacheprovider tests
       - name: Render actual menus and toolbar previews
         shell: python
         run: |
