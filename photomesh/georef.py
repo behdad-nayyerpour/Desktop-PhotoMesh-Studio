@@ -459,8 +459,16 @@ def transform_model(model: cio.Model, s, R, t):
 
 
 def name_index(model):
-    """{photo stem (lower): image_id}."""
-    return {_stem(im.name): iid for iid, im in model.images.items()}
+    """Unambiguous legacy photo stems only; never choose an arbitrary camera."""
+    names = {}
+    ambiguous = set()
+    for iid, image in model.images.items():
+        stem = _stem(image.name)
+        if stem in names:
+            ambiguous.add(stem)
+        else:
+            names[stem] = iid
+    return {stem: iid for stem, iid in names.items() if stem not in ambiguous}
 
 
 def triangulate_marker(model, projections, names=None, refine=True):

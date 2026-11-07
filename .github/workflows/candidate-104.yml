@@ -1,4 +1,4 @@
-# Candidate includes exact-name GPS reference regression coverage.
+# Candidate includes exact-name GPS and ambiguous-marker reference guards.
 name: 1.0.4 test installer
 on:
   push:

@@ -213,3 +213,4 @@ def test_gps_reference_matching_keeps_same_stem_different_extensions_distinct():
         east, north = g.utm_forward(lat, lon, 38, False)
         assert np.allclose(result[iid], [east, north, altitude])
     assert not g.camera_gps_metric(model, {"photo": [44., 40., 100.]}, crs)
+    assert "photo" not in g.name_index(model)  # ambiguous legacy marker names cannot pick either image
