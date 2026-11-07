@@ -589,7 +589,7 @@ class ModelView(QWidget):
         menu = QMenu(self)
         menu.addAction(f"Select Marker: {label}").triggered.connect(
             lambda: self.markerAction.emit("select", label))
-        menu.exec(self.gl.mapToGlobal(pos))
+        menu.exec((self.gl or self).mapToGlobal(pos))
 
     def _overlay_changed(self):
         if self.gl is not None:

@@ -152,7 +152,7 @@ class ReferenceMixin:
         gr = self.dataset.georef or {}
         if gr.get("offset") is not None and m.ref is not None:
             try:
-                crs = g.CRS.parse(self.dataset.crs)
+                crs = g.CRS.parse(gr.get("crs") or self.dataset.crs)
                 X = crs.to_metric(np.atleast_2d(np.asarray(m.ref, float)), gr.get("zone"))[0]
                 return X - np.asarray(gr["offset"], float)
             except Exception:
@@ -392,6 +392,7 @@ class ReferenceMixin:
             if not res.get("local_only"):
                 ch.georef = {k: res.get(k) for k in ("offset", "similarity", "crs", "crs_kind", "zone", "rows",
                                                      "control_rmse", "check_rmse")}
+                ch.crs = res.get("crs") or ch.crs
                 for r in ch.georef.get("rows") or []:
                     r["pix"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("pix")
                     r["n"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("n")

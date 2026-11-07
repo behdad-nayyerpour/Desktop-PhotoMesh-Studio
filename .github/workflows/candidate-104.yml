@@ -1,4 +1,4 @@
-# Final rebuild includes coherent marker and GPS optimization switches.
+# Final rebuild includes independent reference and camera-model numerical audit.
 name: 1.0.4 test installer
 on:
   push:
@@ -18,6 +18,8 @@ jobs:
       QT_QPA_PLATFORM: offscreen
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -33,6 +35,8 @@ jobs:
           if ($LASTEXITCODE) { throw "Static checks failed" }
           python -m pytest -q -rs -p no:cacheprovider tests
           if ($LASTEXITCODE) { throw "Regressions failed" }
+      - name: Reference numerical performance acceptance
+        run: python tools/benchmark_reference_104.py
       - name: Fetch exact verified 1.0.3 runtime
         shell: pwsh
         env:
@@ -52,6 +56,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force preview | Out-Null
+          Copy-Item -LiteralPath "reference-performance-104.json" -Destination "preview/reference-performance-104.json"
           & (Join-Path $env:CANDIDATE_RUNTIME "python/python.exe") "tools/benchmark_engine_102.py" --exe (Join-Path $env:CANDIDATE_RUNTIME "tools/colmap-cpu/bin/colmap.exe") --output "preview/native-engine-104.json"
           if ($LASTEXITCODE) { throw "Native numerical benchmark failed" }
       - name: Build with production packaging

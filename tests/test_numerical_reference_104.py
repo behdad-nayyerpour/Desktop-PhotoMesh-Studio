@@ -408,3 +408,13 @@ def test_model_context_menu_can_only_select_a_marker(window,tmp_path,monkeypatch
     assert actions == ["Select Marker: "+label]
     assert window.markers_pane.current_label() == label
     assert window.dataset.markers == before and len(window._mk_undo) == history
+
+
+def test_reference_edit_uses_persisted_geographic_frame_if_project_crs_is_legacy_empty(window,tmp_path):
+    from test_markers_manual import _scene
+    _scene(window,tmp_path)
+    window.dataset.crs=""
+    window.dataset.georef={"crs":"EPSG:4326","offset":[400000.,4400000.,0.]}
+    label=window.add_marker_at_photo(500.,400.,k=0)
+    assert not window.edit_marker_cell(label,1,"1000")
+    assert window.dataset.markers[0]["ref"] is None

@@ -523,7 +523,8 @@ class MarkerEditMixin:
                 if cur[col - 1] == v:
                     return True
                 cur[col - 1] = v
-                crs = g.CRS.parse(self.dataset.crs) if self.dataset.crs else None
+                crs_text = (self.dataset.georef or {}).get("crs") or self.dataset.crs
+                crs = g.CRS.parse(crs_text) if crs_text else None
                 if v is not None and crs is not None and getattr(crs, "kind", "") == "wgs84":
                     lim = 180.0 if col == 1 else 90.0 if col == 2 else None
                     if lim is not None and abs(v) > lim:
