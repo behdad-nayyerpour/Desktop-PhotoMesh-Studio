@@ -75,6 +75,49 @@ before preparing the version for release.
 This checklist changes development practice, not application behavior. Updating
 it alone does not require rebuilding the Setup or increasing the app version.
 
+## Approved scope for 1.0.4 (2026-11-07)
+
+The user approved the following scope for the next version. The goal is a
+cleaner layout and a more distinct visual identity while preserving application
+capabilities and integrity. This records the plan only: application changes,
+a new build and publication are not performed by this checklist update.
+All implementation items remain unchecked.
+
+- [ ] Rename the left Workspace tab/panel to **Project**. Replace the combined
+  **Reference** tab with separate **Markers** and **Cameras** tabs, moving each
+  table and its relevant controls into its own tab.
+- [ ] Use exactly two central tabs: **3D View** and **Plan View**. Plan View
+  displays the selected photograph or orthophoto. Remove the separate Photo
+  tab while preserving photograph interaction and marker placement/editing.
+- [ ] Put **Photos** on the right in the default layout. Hide **Console** and
+  **Jobs** by default; opening either from the menu shows it as a floating
+  window.
+- [ ] Remove the small local action strip above the Project tree (the four
+  controls marked in the approved reference screenshot). Preserve access to
+  required commands through the main toolbars and menus.
+- [ ] Remove the per-camera reference-use checkboxes from Cameras. Use valid
+  photo GPS by default and add one global **Use Photo GPS** option in
+  **Settings**. Adding markers must not automatically disable photo GPS.
+  Disabling this option affects GPS reference use only; photographs remain
+  included in alignment. Preserve the distinction between control and check
+  points and review existing project/reference settings during implementation.
+- [ ] Persist and restore the latest appearance settings, panel layout,
+  sizes/positions, active tab and last file/folder selection paths across
+  application restarts. Use the new default layout on first launch.
+- [ ] Implement the approved About content below, with actual application
+  metadata and offline access to the bundled LICENSE. Keep third-party
+  licensing distinct and verify the installed application.
+- [ ] Perform the maintainability and affected-caller/workflow review required
+  above, with focused cleanup only after confirming behavior and dynamic uses.
+  Validate existing-project compatibility and preservation of project data,
+  GPS/reference behavior, markers, failure/cancellation and offline operation.
+- [ ] Verify layout and text in Dark and Light themes at supported display
+  scales; update affected user/developer documentation and retain validation
+  evidence and unresolved hardware limitations.
+- [ ] Build a **1.0.4 test installer** for the user's review. Public release
+  requires the user's separate approval after that review; scope approval is
+  not publication authorization.
+
 ## Required for the next application release
 
 - [ ] Add a concise license notice to Help > About PhotoMesh Studio: personal
