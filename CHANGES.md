@@ -4,8 +4,10 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
-### 1.0.4 (candidate)
+### 1.0.4
 
+- Reset Ortho/DEM selection when opening a photo, allowing one-click return to a raster in Plan View.
+- Use the project filename in exported processing reports instead of legacy dataset names.
 - Separate Project, Markers and Cameras panels; Photos on the right and floating Console/Jobs.
 - Use 3D View and shared Plan View for photographs and orthophotos/DEMs, retaining marker tools.
 - Replace camera reference checkboxes with project-wide Use Photo GPS; preserve legacy opt-outs conservatively.

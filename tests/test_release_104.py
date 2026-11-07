@@ -214,3 +214,34 @@ def test_gps_reference_matching_keeps_same_stem_different_extensions_distinct():
         assert np.allclose(result[iid], [east, north, altitude])
     assert not g.camera_gps_metric(model, {"photo": [44., 40., 100.]}, crs)
     assert "photo" not in g.name_index(model)  # ambiguous legacy marker names cannot pick either image
+
+
+def test_each_photo_selection_resets_raster_tools_for_one_click_return(window, image_dir, monkeypatch):
+    window.dataset.add_photos([str(next(image_dir.glob("*.jpg")))])
+    monkeypatch.setattr(window.ortho_view, "has_raster", lambda kind=None: True)
+    for _ in range(2):
+        window.layer_action("ortho").setChecked(True)
+        assert window.active_view() is window.ortho_view
+        window.open_photo(0)
+        assert window.active_view() is window.photo_view
+        assert not window.layer_action("ortho").isChecked()
+        window.layer_action("ortho").trigger()
+        assert window.active_view() is window.ortho_view
+        assert window.layer_action("ortho").isChecked()
+
+
+def test_export_report_uses_project_name_instead_of_legacy_dataset(window, tmp_path, monkeypatch):
+    from photomesh.filedialogs import QFileDialog
+    window.project.path = str(tmp_path / "Site & Survey.pmsx")
+    window.dataset.name = "Chunk 1"
+    window.dataset.cameras = [Camera("a.jpg", label="<camera>")]
+    window.dataset.log = ["Processing <complete>"]
+    destination = tmp_path / "report.html"
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(lambda *a, **k: (str(destination), "HTML")))
+    window.actions["Generate Report..."].trigger()
+    html = destination.read_text(encoding="utf-8")
+    assert "<h2>Site &amp; Survey</h2>" in html
+    assert "Chunk 1" not in html
+    assert "&lt;camera&gt;" in html and "Processing &lt;complete&gt;" in html
+    assert window.dataset.name == "Chunk 1"
+    assert destination.with_name("report_view.png").exists()

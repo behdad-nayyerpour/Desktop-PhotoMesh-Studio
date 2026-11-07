@@ -1,4 +1,4 @@
-# Candidate includes exact-name GPS and ambiguous-marker reference guards.
+# Rebuild after user acceptance fixes: photo/raster selection and report project title.
 name: 1.0.4 test installer
 on:
   push:

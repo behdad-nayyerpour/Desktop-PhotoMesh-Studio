@@ -148,6 +148,11 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def show_view(self, view):
         if view in (self.photo_view, self.ortho_view):
+            if view is self.photo_view:
+                # Photo and raster tools share Plan View; a raster click must
+                # become an on transition again after every photo selection.
+                for key in ("ortho", "dem"):
+                    self.set_layer_visible(key, False)
             self.plan_view.setCurrentWidget(view)
             self.tabs.setCurrentWidget(self.plan_view)
         else:
@@ -1358,19 +1363,21 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                     f.write(f"{c.label},{c.lon or ''},{c.lat or ''},{c.alt or ''}\n")
 
     def generate_report(self):
+        from html import escape
         dst = QFileDialog.getSaveFileName(self, "Generate Report", "report.html", "HTML (*.html)")[0]
         if not dst:
             return
         ch = self.dataset
         img = os.path.splitext(dst)[0] + "_view.png"
         self.model_view.grab().save(img)
-        rows = "".join(f"<tr><td>{c.label}</td><td>{'yes' if c.aligned else 'no'}</td></tr>" for c in ch.cameras)
+        project_name = os.path.splitext(os.path.basename(self.project.path))[0] if self.project.path else "Untitled"
+        rows = "".join(f"<tr><td>{escape(c.label)}</td><td>{'yes' if c.aligned else 'no'}</td></tr>" for c in ch.cameras)
         html = (f"<html><body style='font-family:sans-serif'><h1>{APP_NAME} processing report</h1>"
-                f"<h2>{ch.name}</h2><ul><li>Cameras: {len(ch.cameras)} ({ch.aligned_count()} aligned)</li>"
+                f"<h2>{escape(project_name)}</h2><ul><li>Cameras: {len(ch.cameras)} ({ch.aligned_count()} aligned)</li>"
                 f"<li>Tie points: {ch.tie_point_count:,}</li><li>Point cloud: {ch.point_count:,}</li>"
-                f"<li>Model faces: {ch.face_count:,}</li></ul><img src='{os.path.basename(img)}' width=800>"
+                f"<li>Model faces: {ch.face_count:,}</li></ul><img src='{escape(os.path.basename(img), quote=True)}' width=800>"
                 f"<h3>Cameras</h3><table border=1 cellpadding=3><tr><th>Label</th><th>Aligned</th></tr>{rows}</table>"
-                f"<h3>Processing log</h3><pre>{chr(10).join(ch.log)}</pre></body></html>")
+                f"<h3>Processing log</h3><pre>{escape(chr(10).join(ch.log))}</pre></body></html>")
         with open(dst, "w", encoding="utf-8") as f:
             f.write(html)
         self.log(f"Report written to {dst}")
