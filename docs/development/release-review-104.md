@@ -2,8 +2,8 @@
 
 ## Scope and status
 
-Implementation in progress on an isolated release branch. No public publication
-is authorized. The approved scope is in [release-quality.md](release-quality.md).
+Implementation and automated candidate acceptance are complete on the isolated
+release branch. User acceptance is pending; no public publication is authorized. The approved scope is in [release-quality.md](release-quality.md).
 The review includes maintainability, functional and numerical contracts,
 project compatibility, failure/cancellation, offline operation and performance.
 
@@ -23,7 +23,8 @@ project compatibility, failure/cancellation, offline operation and performance.
 - Fixed failed photo-open retaining the previously opened photo identity.
 - Route GPS references through exact model aliases, including images sharing a
   stem with different extensions; ambiguous legacy stem-only GPS matches are
-  excluded. Unresolved duplicate legacy
+  excluded. Ambiguous legacy marker stems are also excluded rather than
+  assigned to an arbitrary camera. Unresolved duplicate legacy
   photo names are excluded instead of swapping coordinates.
 - Retain selected-photo enable/remove commands in Edit after removing the local
   strip, and block those commands during project preparation/processing.
@@ -41,8 +42,49 @@ Its Light screenshots were manually inspected after resetting existing styled
 widget palettes; the toolbar, Photos, Properties and view background now switch
 consistently. Dark/Light About and full license were inspected, with automated
 wrapped-label height checks at scale factors 1, 1.5 and 2.
-The final saved-display/default-view follow-up and installer scripts still need
-their final-head regression/build acceptance below.
+Final application commit:
+`bc4f35f205b96c9a6666010cc9c86dcb510e26db`.
+
+- [Final Tests run 42373636315](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42373636315):
+  **696 passed, 8 skipped** on Linux and Windows; compile/undefined-name checks,
+  Mesa overlay smoke and equivalent-workload performance gates passed.
+- Final inventory: 134 Python files including tests/tools, 72 app modules,
+  zero static findings or exact nontrivial function-body duplicate candidates;
+  35 zero-text-reference leads remain for the reasons described below.
+- [Candidate run 42373636312](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42373636312):
+  **696 passed, 8 skipped** again on Windows, real COLMAP 4.2.1 CPU numerical
+  acceptance with known/self-calibration fixtures, SIFT incremental/global and
+  fastpipe plus ALIKED/LightGlue; bounded large-image and downstream checks passed.
+  Synthetic camera RMS ranged from approximately 0.012 to 0.042 m across those
+  fixtures; these are not claims of real survey accuracy.
+- Production builder reused the SHA256-verified public 1.0.3 runtime and pinned
+  offline engines/models. The complete test installer upgraded a disposable
+  1.0.3 installation; obsolete managed-code probe was removed, external metadata
+  fixture was unchanged, installed application hashes matched source, and offline
+  About/full LICENSE passed in Dark/Light.
+- Manual review of final-head layout captures and wrapped-dialog checks at scale
+  1/1.5/2 completed. The installed acceptance captures are in the candidate artifact.
+
+## Test installer identity
+
+- EXE: `PhotoMeshStudio_Setup_1.0.4.exe`
+- Size: 860525023 bytes.
+- EXE SHA256: `99b4e3cd99314649eccb081e5f5192eabc8950a38556ffdd0fd2790eacd1e774`.
+- [Candidate artifact 13575311053](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42373636312/artifacts/13575311053):
+  860319281-byte ZIP, includes Setup/checksum, test-build notes, native-engine
+  evidence and installed acceptance/screenshots.
+- ZIP SHA256: `79f8ffabe075c0ec948a2ed287b3a145030bcf77eac50c469fb0b8421fa8a37d`.
+- Artifact expires 2026-11-21. No GitHub Release/tag was created or existing
+  public asset replaced. Later documentation-only evidence updates do not
+  rebuild or change this installer.
+
+## Remaining acceptance
+
+The user should close the app, install the test Setup and review the layout,
+photo/ortho selection, markers, Use Photo GPS and restart persistence on a copy
+of a project. Real CUDA processing, real-data accuracy/performance and target
+driver/OpenGL behavior remain hardware acceptance tasks. Public publication
+requires the user's separate approval.
 
 New tests exercise Plan View/marker interaction, failed
 photo opens, GPS settings and legacy policy, picker cancellation and UI restore.
