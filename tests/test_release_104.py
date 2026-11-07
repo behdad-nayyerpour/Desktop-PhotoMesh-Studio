@@ -127,3 +127,27 @@ def test_camera_gps_uses_exact_model_aliases_for_duplicate_filenames():
     for camera in dataset.cameras:
         camera.colmap_name = ""
     assert not camera_gps(dataset)  # unresolved legacy aliases must never swap GPS references
+
+
+def test_photo_click_opens_plan_without_reopening_on_table_refresh(window, image_dir, qtbot):
+    window.dataset.add_photos([str(next(image_dir.glob("*.jpg")))])
+    window.refresh_all()
+    QApplication.processEvents()
+    item = window.photos.item(0)
+    qtbot.mouseClick(window.photos.viewport(), Qt.LeftButton,
+                     pos=window.photos.visualItemRect(item).center())
+    assert window.active_view() is window.photo_view
+    window.show_view(window.model_view)
+    window.refresh_all()
+    assert window.active_view() is window.model_view
+
+
+def test_light_theme_restores_readable_base_and_text_after_dark(qapp):
+    from photomesh.theme import apply_theme, viewport_color
+    from PySide6.QtGui import QPalette
+    for theme in ("Dark", "Light", "Dark", "Light"):
+        apply_theme(qapp, theme)
+    assert qapp.palette().color(QPalette.Base).lightness() > 200
+    assert qapp.palette().color(QPalette.Text).lightness() < 100
+    assert viewport_color().lightness() > 200
+    apply_theme(qapp, "Dark")

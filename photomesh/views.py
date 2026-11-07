@@ -978,7 +978,7 @@ class PhotoView(QWidget):
         super().__init__(parent)
         lay = QVBoxLayout(self); lay.setContentsMargins(0, 0, 0, 0)
         self.view = _ZoomView()
-        self.caption = QLabel("Double-click a photo in the Photos pane to open it.")
+        self.caption = QLabel("Select a photo in the Photos pane to open it.")
         lay.addWidget(self.view, 1); lay.addWidget(self.caption)
         self.path = None
         self.shapes = []           # projected shapes (see set_shapes)
@@ -1043,7 +1043,7 @@ class PhotoView(QWidget):
         self.path = None; self._pix = None
         self._overlay = []; self._shape_items = []
         self.shapes = []; self.markers = []; self.active_marker = None
-        self.caption.setText("Double-click a photo in the Photos pane to open it.")
+        self.caption.setText("Select a photo in the Photos pane to open it.")
 
     def open(self, path, caption=""):
         pm = QPixmap(path)

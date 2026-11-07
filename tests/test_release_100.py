@@ -212,7 +212,8 @@ def test_default_view_setting_selects_loaded_product(window):
         setting.setValue("ui/default_view", old)
 
 
-def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, monkeypatch):
+@pytest.mark.parametrize("gps_on", [False, True])
+def test_project_gps_policy_filters_optimizer_inputs(window, tmp_path, monkeypatch, gps_on):
     import json
     from photomesh.dialogs import OptimizeCamerasDialog
     from test_markers_manual import _scene
@@ -221,6 +222,7 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
         camera.lon, camera.lat, camera.alt = 44. + i * .001, 40., 100.
     ch.cameras[1].use_reference = False
     ch.cameras[2].enabled = False
+    ch.reference_settings["use_photo_gps"] = gps_on
     from PySide6.QtWidgets import QMessageBox
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **kw: QMessageBox.Yes))
     monkeypatch.setattr(OptimizeCamerasDialog, "exec", lambda self: True)
@@ -229,7 +231,7 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
     window.optimize_cameras()
     assert ran
     cfg = json.load(open(tmp_path / "work" / "georef_task.json", encoding="utf-8"))
-    assert set(cfg["camera_gps"]) == {ch.cameras[0].label}
+    assert set(cfg["camera_gps"]) == ({ch.cameras[0].label, ch.cameras[1].label} if gps_on else set())
 
 
 def test_ortho_context_hit_includes_flag_above_ground_point(window):

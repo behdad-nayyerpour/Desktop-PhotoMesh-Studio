@@ -26,7 +26,10 @@ def capture(widget, label):
         app.processEvents()
     buffer = QBuffer()
     buffer.open(QIODevice.WriteOnly)
-    widget.grab().save(buffer, "PNG")
+    capture = widget.grab()
+    if capture.width() > 1500:
+        capture = capture.scaledToWidth(1500, Qt.SmoothTransformation)
+    capture.save(buffer, "PNG")
     print(label + "_IMAGE=" + base64.b64encode(bytes(buffer.data())).decode(), flush=True)
 
 original = QDialog.exec

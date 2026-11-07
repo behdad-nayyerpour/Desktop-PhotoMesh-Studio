@@ -183,7 +183,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                     "project": self.project, "np": np})
         self.properties = PropertiesPane()
         self.jobs = JobsPane()
-        from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
+        from PySide6.QtWidgets import QWidget, QVBoxLayout
         from .activity import ProgressPanel
         self.photo_progress = ProgressPanel()
         photos_panel = QWidget(); photos_layout = QVBoxLayout(photos_panel)
@@ -209,7 +209,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         for name in ("Console", "Jobs"):
             self.docks[name].setFloating(True)
             self.docks[name].hide()
-        self.resizeDocks([self.docks["Project"], self.docks["Photos"]], [330, 280], Qt.Horizontal)
+        self.resizeDocks([self.docks["Project"], self.docks["Photos"]], [330, 320], Qt.Horizontal)
         self.workspace.cameraActivated.connect(lambda ci, k: self._safe("Open Photo", self.open_photo)(k))
         self.workspace.contextAction.connect(self._workspace_action)
         self.workspace.selectionInfo.connect(self._show_properties)
@@ -755,6 +755,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.log(f"Shapes overlay on the photo: {e}")
         if key not in ("ortho", "dem"):
             self.model_view.set_visible(key, on)
+        if key in ("ortho", "dem") and on and self.ortho_view.has_raster(key):
+            self.show_view(self.ortho_view)
         QSettings().setValue(f"view/show_{key}", on)
         self.workspace.set_layer_states({key: on})
 

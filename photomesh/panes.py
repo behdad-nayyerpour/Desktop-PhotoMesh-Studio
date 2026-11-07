@@ -381,7 +381,7 @@ class ReferencePane(QTableWidget):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setAlternatingRowColors(True)
         self._filling = False
-        self.cellDoubleClicked.connect(self._activate_camera)
+        self.cellClicked.connect(self._activate_camera)
 
     def _activate_camera(self, row, column):
         item = self.item(row, 0)
@@ -665,7 +665,7 @@ class PhotosPane(QListWidget):
         self.setSpacing(4)
         self.setWordWrap(True)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.itemDoubleClicked.connect(lambda it: self.photoActivated.emit(it.data(ROLE)))
+        self.itemClicked.connect(lambda it: self.photoActivated.emit(it.data(ROLE)))
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._photo_menu)
         self._cache = {}
