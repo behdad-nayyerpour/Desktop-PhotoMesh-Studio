@@ -66,7 +66,9 @@ accuracy on real survey data.
    distances across the date line. Similarity fitting validates finite paired
    positions/weights and returns a transform fitted to its final inlier mask.
 7. Known source-photo/calibration dimension mismatches fail before marker
-   optimization/refinement rather than mixing pixel units. Normal pipelines
+   optimization/refinement rather than mixing pixel units. Out-of-photo margin clicks cannot create/move
+   measurements, and imported out-of-bounds observations are rejected before
+   adjustment. Normal pipelines
    restore original-photo dimensions; native fixtures verify that contract.
 8. Added-photo resection requires measured 3D controls or surveyed coordinates
    in an existing referenced frame. Predicted-only 3D hints cannot initialize

@@ -356,8 +356,9 @@ class ReferenceMixin:
                                               os.path.join(wd, "dense", "fused.ply")) if p]}
         if not ch.georef and cfg["camera_gps"] and (ch.crs or "") == "" and s["use_cameras"]:
             cfg["crs"] = "EPSG:4326"
-        status = g.reference_status(self._sparse_model(), self._marker_objs(),
+        status = g.reference_status(self._sparse_model(), self._marker_objs() if s["use_markers"] else [],
                                     g.CRS.parse(cfg["crs"]), cfg["camera_gps"])
+        status["imported"] = len(ch.markers or [])
         ready = ((s["use_markers"] and status["usable"] >= 3) or
                  (s["use_cameras"] and status["gps"] >= 3))
         if not ready:

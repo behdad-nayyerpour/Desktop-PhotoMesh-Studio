@@ -331,14 +331,22 @@ class MarkerEditMixin:
         return out
 
     # ------------------------------------------------------------ add / pin
+    def _valid_photo_measurement(self, k, u, v):
+        camera = self.dataset.cameras[k]
+        valid = np.isfinite([u, v]).all()
+        if camera.width and camera.height:
+            valid = valid and 0 <= u < camera.width and 0 <= v < camera.height
+        if not valid:
+            self._marker_error("Place Marker", "Choose a finite position inside the source photograph.")
+        return bool(valid)
+
     def add_marker_at_photo(self, u, v, k=None, label=None):
         """Photo tab > right-click > Add Marker: new marker pinned at (u, v) on
         photo k (no active marker needed), predicted on the other photos."""
         k = self.current_photo if k is None else k
         if not (0 <= k < len(self.dataset.cameras)):
             return None
-        if not np.isfinite([u, v]).all():
-            self._marker_error("Place Marker", "Photo coordinates must be finite.")
+        if not self._valid_photo_measurement(k, u, v):
             return None
         ms = self._marker_objs()
         label = label or self._new_label(ms)
@@ -396,8 +404,7 @@ class MarkerEditMixin:
         m = next((x for x in ms if x.label == label), None)
         if m is None or not (0 <= k < len(self.dataset.cameras)):
             return False
-        if not np.isfinite([u, v]).all():
-            self._marker_error("Place Marker", "Photo coordinates must be finite.")
+        if not self._valid_photo_measurement(k, u, v):
             return False
         stem = self._photo_marker_key(k)
         if stem is None:

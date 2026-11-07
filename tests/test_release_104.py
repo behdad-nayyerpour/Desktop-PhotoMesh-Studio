@@ -253,7 +253,7 @@ def test_optimize_local_marker_switch_controls_worker_observations(tmp_path, mon
     from photomesh import georef as g, colmap_io as cio
     from test_dense_mesh_gcp import synthetic_model
     model = synthetic_model(n_img=5, n_pts=100, two_cameras=False)
-    X = model.points.xyz[0]
+    X = np.array([15., 0., 0.])
     projections = {}
     for image in model.images.values():
         uv, _ = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None,:])
@@ -284,7 +284,7 @@ def test_optimize_reference_switch_matrix_reaches_worker(tmp_path, monkeypatch):
     second = original.images[2]
     second.tvec = -second.R() @ np.array([8., 10., 50.])
     markers = []
-    for k, X in enumerate(original.points.xyz[:3]):
+    for k, X in enumerate(np.array([[10.,-4.,0.],[15.,4.,0.],[20.,-4.,0.]])):
         projections = {}
         for image in original.images.values():
             uv, _ = cio.project(original.cameras[image.camera_id], image.R(), image.tvec, X[None,:])

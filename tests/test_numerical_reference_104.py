@@ -123,19 +123,23 @@ def test_marker_edit_refreshes_coordinate_pixel_errors_groups_and_undo(window,tm
     assert window.dataset.georef["check_rmse"] is None
 
 
-def test_marker_residual_does_not_hide_off_image_errors():
-    model = synthetic_model(n_img=4,n_pts=100,two_cameras=False)
-    # Pinhole remains invertible beyond the image; radial models can fold there.
-    model.cameras[1] = cio.Camera(1,600,450,np.array([500.,500.,300.,225.]))
-    X = np.array([400.,20.,1.])
-    projections = {}
+def test_marker_residual_does_not_hide_off_image_errors(monkeypatch):
+    model=synthetic_model(n_img=4,n_pts=100,two_cameras=False)
+    model.cameras[1]=cio.Camera(1,600,450,np.array([500.,500.,300.,225.]))
+    X=np.array([400.,20.,1.])
+    # Actual measurements remain inside their photos. The current estimate can
+    # project outside one: that large residual must still count.
+    projections={image.name:[300.,225.,True] for image in model.images.values()}
+    monkeypatch.setattr(g,"triangulate_marker",lambda *args,**kwargs:(X,4))
+    marker=g.Marker("outside",[400.,20.,1.],projections=projections)
+    estimate,pixel,count=g.marker_observation_diagnostic(model,marker)
+    expected=[]
     for image in model.images.values():
-        uv,_ = cio.project(model.cameras[image.camera_id],image.R(),image.tvec,X[None])
-        projections[image.name] = [float(uv[0,0]),float(uv[0,1])]
-    marker = g.Marker("outside",[400.,20.,1.],projections=projections)
-    estimate,pixel,count = g.marker_observation_diagnostic(model,marker)
-    assert np.allclose(estimate,X,atol=1e-6)
-    assert pixel < 1e-6 and count == 4
+        uv=independent_uv(1,model.cameras[1].params,(image.R()@X+image.tvec)[None])
+        expected.append(np.sum((uv[0]-[300.,225.])**2))
+    assert np.allclose(estimate,X)
+    assert count == 4 and pixel == pytest.approx(np.sqrt(np.mean(expected)))
+    assert pixel > 1000.
 
 
 def test_triangulation_rejects_behind_camera_intersection():
@@ -220,7 +224,7 @@ def test_two_marker_controls_still_constrain_bundle_when_gps_initializes_frame(t
     second = model.images[2]
     second.tvec = -second.R() @ np.array([8.,10.,50.])
     markers = []
-    for k,X in enumerate(model.points.xyz[:2]):
+    for k,X in enumerate(np.array([[10.,-4.,0.],[15.,4.,0.]])):
         projections = {}
         for image in model.images.values():
             uv,_ = cio.project(model.cameras[1],image.R(),image.tvec,X[None])
@@ -255,7 +259,7 @@ def test_invalid_unused_markers_do_not_enter_local_adjustment(tmp_path,monkeypat
 def test_check_points_remain_independent_even_with_legacy_hidden_option(tmp_path,monkeypatch):
     model = synthetic_model(n_img=5,n_pts=100,two_cameras=False)
     markers = []
-    for k,X in enumerate(model.points.xyz[:4]):
+    for k,X in enumerate(np.array([[10.,-4.,0.],[15.,4.,0.],[20.,-4.,0.],[20.,4.,0.]])):
         projections = {}
         for image in model.images.values():
             uv,_ = cio.project(model.cameras[1],image.R(),image.tvec,X[None])
@@ -418,3 +422,20 @@ def test_reference_edit_uses_persisted_geographic_frame_if_project_crs_is_legacy
     label=window.add_marker_at_photo(500.,400.,k=0)
     assert not window.edit_marker_cell(label,1,"1000")
     assert window.dataset.markers[0]["ref"] is None
+
+
+@pytest.mark.parametrize("uv",[(-1.,400.),(1000.,400.),(500.,800.),(float("nan"),400.)])
+def test_photo_margin_clicks_cannot_create_or_move_measurements(window,tmp_path,uv):
+    from test_markers_manual import _scene
+    _scene(window,tmp_path)
+    label=window.add_marker_at_photo(500.,400.,k=0)
+    before=copy.deepcopy(window.dataset.markers); history=len(window._mk_undo)
+    assert window.add_marker_at_photo(*uv,k=0) is None
+    assert not window.pin_marker(label,*uv,k=0)
+    assert window.dataset.markers == before and len(window._mk_undo) == history
+
+
+def test_imported_outside_photo_observation_cannot_enter_adjustment():
+    model=synthetic_model(n_img=3,n_pts=50,two_cameras=False)
+    with pytest.raises(ValueError,match="outside source photo"):
+        g.triangulate_marker(model,{"img00":[-1.,225.,True],"img01":[300.,225.,True]},measured_only=True)

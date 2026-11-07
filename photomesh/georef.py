@@ -522,6 +522,10 @@ def marker_image_observations(model, projections, names=None, measured_only=Fals
         uv = np.asarray(value[:2], float)
         if uv.shape != (2,) or not np.isfinite(uv).all():
             raise ValueError(f"Invalid marker observation on {label}")
+        if measured_only and iid in model.images:
+            camera = model.cameras[model.images[iid].camera_id]
+            if not (0 <= uv[0] < camera.width and 0 <= uv[1] < camera.height):
+                raise ValueError(f"Marker observation lies outside source photo {label}")
         pinned = len(value) < 3 or bool(value[2])
         if iid in observations:
             old, old_pin = observations[iid]

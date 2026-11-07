@@ -1,4 +1,4 @@
-# Final rebuild: reviewed numerical workflows with clean import/static checks.
+# Final rebuild: source-photo measurement bounds, reviewed numerical workflows and documentation.
 name: 1.0.4 test installer
 on:
   push:

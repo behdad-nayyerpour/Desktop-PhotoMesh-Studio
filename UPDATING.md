@@ -24,14 +24,25 @@ The retired Git updater and portable ZIP tooling are no longer distributed.
 Existing portable users should install the complete Setup and open their projects
 from their separate data folders.
 
-## 1.0.3 project and reference compatibility
+## 1.0.4 marker and reference compatibility
 
-1.0.3 reads older projects and preserves their existing result paths. New saves
-use project schema 2; keep a separate copy if an older application version is
-still needed. Save As can create a new copy with processing workspace names.
+Version 1.0.4 keeps existing project/result paths and survey coordinates. Marker
+measurement edits are available on the original photographs and in Markers;
+3D and orthophoto views display/select flags only.
 
-New marker XML exports use PhotoMesh reference XML 2.0. Legacy reference XML
-and text/CSV import remain supported. Tab-separated reference reports can still
-be exported for exchange.
+Predicted locations and legacy unpinned placements without measurement provenance
+remain visible, but are excluded from adjustment and error measurements until
+pinned on the photographs or refined from image content. Confirm the same feature
+on at least two different aligned photographs. Imported XYZ alone is insufficient.
+
+The project-wide Use Photo GPS setting gates GPS use without excluding photos.
+Turning it off does not undo an existing coordinate frame. Camera optimization
+invalidates camera-derived products; rebuild dense/mesh/raster outputs as described
+in the [user guide](docs/user-guide.md#rebuild-after-optimizing-cameras).
+
+Project schema 2 and PhotoMesh reference XML 2.0 remain readable. New saves/exports
+retain prediction/refinement provenance and marker status. Legacy reference XML,
+text and CSV imports remain supported. Keep a separate project copy when older
+application versions are still needed.
 
 [Back to the main page](README.md)

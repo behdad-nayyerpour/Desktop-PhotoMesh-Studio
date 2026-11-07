@@ -162,7 +162,9 @@ RMSE measures fit to controls; independent check points are needed to assess
 accuracy away from those controls. Synthetic tests do not establish survey
 accuracy on a real project.
 
-Marker observations use original-photo pixels. If stored photo dimensions and
+Marker observations use original-photo pixels; clicks in empty margins and
+out-of-bounds imported measurements cannot become adjustment observations.
+If stored photo dimensions and
 model calibration dimensions disagree, optimization/refinement stops with an
 explanation; re-align to restore original photo calibration rather than mixing
 pixel units.
