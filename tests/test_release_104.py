@@ -323,19 +323,24 @@ def test_optimize_remembers_marker_and_gps_choices_and_global_gate(window):
     assert dialog.use_cameras.isChecked() and dialog.use_cameras.isEnabled()
 
 
-def test_photo_context_can_place_existing_marker_without_selection(window, image_dir, monkeypatch):
-    from PySide6.QtWidgets import QMenu
+def test_photo_context_can_place_existing_marker_without_selection(window, image_dir):
+    from PySide6.QtCore import QPointF, QTimer
+    from PySide6.QtWidgets import QApplication
     photo = str(next(image_dir.glob("*.jpg")))
     window.dataset.add_photos([photo])
     window.open_photo(0)
     window.photo_view.set_markers([], available=["G1", "G2"])
     captured = []
-    def choose(menu, _position):
+    window.photo_view.pinMarker.connect(lambda *args: captured.append(args))
+    def choose():
+        menu = QApplication.activePopupWidget()
+        assert menu is not None
         existing = next(action.menu() for action in menu.actions()
                         if action.menu() and action.text() == "Place Existing Marker")
         next(action for action in existing.actions() if action.text() == "G2").trigger()
-    monkeypatch.setattr(QMenu, "exec", choose)
-    window.photo_view.pinMarker.connect(lambda *args: captured.append(args))
-    from PySide6.QtCore import QPointF
+        menu.close()
+    QTimer.singleShot(0, choose)
+    QTimer.singleShot(1000, lambda: QApplication.activePopupWidget().close()
+                      if QApplication.activePopupWidget() else None)
     window.photo_view._context(window.photo_view.view.mapFromScene(QPointF(60., 60.)))
     assert captured and captured[0][0] == "G2"

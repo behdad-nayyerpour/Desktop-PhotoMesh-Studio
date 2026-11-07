@@ -3,7 +3,7 @@ name: 1.0.4 test installer
 on:
   push:
     branches: ["release/1.0.4-hotfix"]
-    paths: [".github/workflows/candidate-104.yml", "tools/validate_installed_104.py"]
+    paths: [".github/workflows/candidate-104.yml", "tools/validate_installed_104.py", "photomesh/**", "tests/**"]
   workflow_dispatch:
 permissions:
   contents: read
