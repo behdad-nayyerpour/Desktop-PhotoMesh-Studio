@@ -6,7 +6,9 @@ import json
 import os
 
 import numpy as np
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMessageBox
+
+from .filedialogs import QFileDialog
 
 from . import colmap as cm
 from . import georef as g
@@ -272,7 +274,7 @@ class ReferenceMixin:
         nproj = sum(len(m.projections) for m in new)
         self.log(f"Imported {len(new)} markers ({nproj} photo projections) from {path}; "
                  f"coordinate system: {crs.name if crs else 'unknown'}")
-        self.docks["Reference"].raise_()
+        self._show_dock("Markers", True)
 
     def export_markers(self):
         rows = (self.dataset.georef or {}).get("rows")
@@ -305,13 +307,13 @@ class ReferenceMixin:
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
         defaults = dict(ch.reference_settings)
-        defaults.setdefault("use_cameras", any(c.enabled and c.use_reference and c.lat is not None and c.lon is not None
-                                             for c in ch.cameras))
+        from .photo_gps import camera_gps, use_photo_gps
+        defaults["use_cameras"] = use_photo_gps(ch) and bool(camera_gps(ch))
         dlg = OptimizeCamerasDialog(self, defaults)
         if not dlg.exec():
             return
         s = dlg.settings()
-        ch.reference_settings = dict(s["accuracies"], use_cameras=s["use_cameras"])
+        ch.reference_settings.update(s["accuracies"], use_cameras=s["use_cameras"])
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],

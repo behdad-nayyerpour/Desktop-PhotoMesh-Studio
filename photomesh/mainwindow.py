@@ -12,7 +12,9 @@ from PySide6.QtCore import Qt, QSettings, QStandardPaths, QTimer, Signal, QEvent
 from PySide6.QtGui import QAction, QKeySequence, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
-    QMainWindow, QDockWidget, QTabWidget, QFileDialog, QMessageBox, QInputDialog, QApplication, QLabel)
+    QMainWindow, QDockWidget, QTabWidget, QMessageBox, QInputDialog, QApplication, QLabel, QStackedWidget)
+
+from .filedialogs import QFileDialog
 
 from . import APP_NAME, APP_VERSION, PROJECT_EXT
 from . import colmap as cm
@@ -21,7 +23,7 @@ from .dialogs import (AlignPhotosDialog, BuildPointCloudDialog, BuildModelDialog
                       BuildDEMDialog, BuildOrthomosaicDialog, ExportRasterDialog)
 from .menus import MENUS, ACTION_LABELS, LEGACY_ACTION_GROUPS
 from .panes import (WorkspacePane, ReferencePane, MarkersPane, PhotosPane, ConsolePane,
-                    PropertiesPane, JobsPane, workspace_panel, markers_panel)
+                    PropertiesPane, JobsPane, markers_panel)
 from . import procmeta
 from .plyio import load_ply, ply_counts, vertex_normals
 from .project import Project, ProjectData, IMAGE_EXTS, data_folder
@@ -116,6 +118,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             name, name if active else None, done, total))
         self._start_resource_monitor()
         self.refresh_all()
+        from .ui_state import restore_window_state
+        restore_window_state(self)
         from .theme import apply_theme
         apply_theme(QApplication.instance())
         self.log(f"{APP_NAME} {APP_VERSION} started. COLMAP: {cm.locate_colmap() or 'not found'}")
@@ -127,14 +131,35 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.model_view = ModelView()
         self.ortho_view = OrthoView()
         self.photo_view = PhotoView()
-        self.tabs.addTab(self.model_view, "Model")
-        self.tabs.addTab(self.ortho_view, "Ortho")
-        self.tabs.addTab(self.photo_view, "Photo")
+        self.plan_view = QStackedWidget()
+        self.plan_view.addWidget(self.ortho_view)
+        self.plan_view.addWidget(self.photo_view)
+        self.tabs.addTab(self.model_view, "3D View")
+        self.tabs.addTab(self.plan_view, "Plan View")
         self.setCentralWidget(self.tabs)
         from .activity import ProgressPanel
         self.model_progress = ProgressPanel()
         self.model_view.layout().insertWidget(0, self.model_progress)
         self.model_progress.cancelled.connect(self._cancel_view_load)
+
+    def active_view(self):
+        """Return the renderer currently displayed, including Plan View's child."""
+        return self.plan_view.currentWidget() if self.tabs.currentWidget() is self.plan_view else self.model_view
+
+    def show_view(self, view):
+        if view in (self.photo_view, self.ortho_view):
+            self.plan_view.setCurrentWidget(view)
+            self.tabs.setCurrentWidget(self.plan_view)
+        else:
+            self.tabs.setCurrentWidget(self.model_view)
+
+    def _show_dock(self, name, on):
+        dock = self.docks[name]
+        if on and name in ("Console", "Jobs"):
+            dock.setFloating(True)
+        dock.setVisible(on)
+        if on:
+            dock.raise_()
 
     def _dock(self, title, widget, area, name):
         d = QDockWidget(title, self)
@@ -153,10 +178,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.properties = PropertiesPane()
         self.jobs = JobsPane()
         from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
-        self.reference_panel = QSplitter(Qt.Vertical)
-        self.reference_panel.addWidget(self.reference)
-        self.reference_panel.addWidget(markers_panel(self.markers_pane))
-        self.reference_panel.setSizes([300, 350])
         from .activity import ProgressPanel
         self.photo_progress = ProgressPanel()
         photos_panel = QWidget(); photos_layout = QVBoxLayout(photos_panel)
@@ -165,25 +186,24 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.photo_progress.cancelled.connect(self.cancel_thumbnails)
         from .report_ui import ErrorReporter
         self.reporter = ErrorReporter(self)
-        L, B = Qt.LeftDockWidgetArea, Qt.BottomDockWidgetArea
-        # Keep the left tabs full-height; bottom panes belong below the viewport.
+        L, R, B = Qt.LeftDockWidgetArea, Qt.RightDockWidgetArea, Qt.BottomDockWidgetArea
         self.setCorner(Qt.BottomLeftCorner, L)
+        self.setCorner(Qt.BottomRightCorner, R)
         self.docks = {
-            "Workspace": self._dock("Workspace", self._workspace_panel(), L, "ws"),
-            "Reference": self._dock("Reference", self.reference_panel, L, "ref"),
-            "Photos": self._dock("Photos", photos_panel, B, "photos"),
+            "Project": self._dock("Project", self._workspace_panel(), L, "project"),
+            "Markers": self._dock("Markers", markers_panel(self.markers_pane), L, "markers"),
+            "Cameras": self._dock("Cameras", self.reference, L, "cameras"),
+            "Photos": self._dock("Photos", photos_panel, R, "photos"),
             "Console": self._dock("Console", self.console, B, "console"),
             "Jobs": self._dock("Jobs", self.jobs, B, "jobs"),
         }
-        # Properties belongs to Workspace, so switching to Reference hides it too.
-        self.tabifyDockWidget(self.docks["Workspace"], self.docks["Reference"])
-        self.docks["Workspace"].raise_()
-        self.tabifyDockWidget(self.docks["Photos"], self.docks["Console"])
-        self.tabifyDockWidget(self.docks["Console"], self.docks["Jobs"])
-        self.docks["Photos"].raise_()
-        self.docks["Jobs"].hide()
-        self.resizeDocks([self.docks["Workspace"]], [330], Qt.Horizontal)
-        self.resizeDocks([self.docks["Photos"]], [230], Qt.Vertical)
+        for name in ("Markers", "Cameras"):
+            self.tabifyDockWidget(self.docks["Project"], self.docks[name])
+        self.docks["Project"].raise_()
+        for name in ("Console", "Jobs"):
+            self.docks[name].setFloating(True)
+            self.docks[name].hide()
+        self.resizeDocks([self.docks["Project"], self.docks["Photos"]], [330, 280], Qt.Horizontal)
         self.workspace.cameraActivated.connect(lambda ci, k: self._safe("Open Photo", self.open_photo)(k))
         self.workspace.contextAction.connect(self._workspace_action)
         self.workspace.selectionInfo.connect(self._show_properties)
@@ -194,7 +214,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.photos.photoActivated.connect(self._safe("Open Photo", self.open_photo))
         self.photos.registerRequested.connect(self._safe("Align Selected Photos", self.register_selected_photos))
         self.reference.cameraActivated.connect(self._safe("Open Photo", self.open_photo))
-        self.reference.cameraReferenceToggled.connect(self._camera_reference_changed)
         self.markers_pane.markerToggled.connect(self.toggle_marker)
         self.markers_pane.itemSelectionChanged.connect(self._marker_selection_changed)
         self.photo_view.placeMarker.connect(self._safe("Place Marker", self.place_marker))
@@ -205,25 +224,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.markers_pane.markerAction.connect(self._marker_pane_action)
         self.model_view.addMarkerRay.connect(lambda o, d: self.add_marker_at_ray(o, d))
 
-    def _camera_reference_changed(self, index, on):
-        if 0 <= index < len(self.dataset.cameras):
-            self.dataset.cameras[index].use_reference = bool(on)
-            self.set_modified()
-
     def _workspace_panel(self):
-        def mk(text, icon, fn):
-            a = QAction(layer_icon(icon), text, self)
-            a.setToolTip(text); a.triggered.connect(lambda _=False: self._safe(text, fn)())
-            return a
-        self.ws_actions = {
-            "add_photos": mk("Add Photos", "add_photos", lambda: self.add_photos()),
-            "add_folder": mk("Add Folder", "add_folder", lambda: self.add_folder()),
-            "enable": mk("Enable/Disable selected cameras", "enable", self._ws_toggle_selected),
-            "remove": mk("Remove selected items", "remove", self._ws_remove_selected),
-        }
-        a = self.ws_actions
-        self.workspace_widget = workspace_panel(self.workspace, [a["add_photos"], a["add_folder"],
-                                                                 None, a["enable"], a["remove"]])
+        self.workspace_widget = self.workspace
         from PySide6.QtWidgets import QWidget, QVBoxLayout, QSplitter
         property_panel = QWidget()
         layout = QVBoxLayout(property_panel); layout.setContentsMargins(0, 0, 0, 0); layout.setSpacing(0)
@@ -243,7 +245,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _ws_toggle_selected(self):
         sel = [r for r in self.workspace.selected_roles() if r[0] == "camera"]
         if not sel:
-            self.statusBar().showMessage("Select cameras in the Workspace first", 4000); return
+            self.statusBar().showMessage("Select cameras in Project first", 4000); return
         for _kind, ci, k in sel:
             c = self.project.datasets[ci].cameras[k]; c.enabled = not c.enabled
         self.set_modified()
@@ -251,7 +253,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _ws_remove_selected(self):
         indices = sorted({r[2] for r in self.workspace.selected_roles() if r[0] == "camera"}, reverse=True)
         if not indices:
-            QMessageBox.information(self, "Remove Photos", "Select photos in Workspace first.")
+            QMessageBox.information(self, "Remove Photos", "Select photos in Project first.")
             return
         if QMessageBox.question(self, "Remove Photos", f"Remove {len(indices)} photo(s) from this project?") != QMessageBox.Yes:
             return
@@ -274,12 +276,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.show_ortho(kind)
         elif kind in ("markers", "cameras"):
             self.set_layer_visible(kind, True)
-            self.tabs.setCurrentWidget(self.model_view)
+            self.show_view(self.model_view)
         elif kind == "shapes":
             self.set_layer_visible("shapes", True)
-            if self.tabs.currentWidget() is self.photo_view and self.photo_view.path:
+            if self.active_view() is self.photo_view and self.photo_view.path:
                 return
-            self.tabs.setCurrentWidget(self.ortho_view if self.ortho_view.has_raster() else self.model_view)
+            self.show_view(self.ortho_view if self.ortho_view.has_raster() else self.model_view)
 
     def _goto_marker(self, label):
         """Open the first photo where the marker is placed (pinned first)."""
@@ -367,7 +369,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         for key, name in LAYER_ACTIONS.items():
             h[name] = (lambda k: lambda on=True: self._layer_toggled(k, on))(key)
         for v in ("Top", "Bottom", "Front", "Back", "Left", "Right", "Isometric"):
-            h[v] = (lambda vv: lambda: (self.tabs.setCurrentWidget(self.model_view), self.model_view.set_predefined(vv)))(v)
+            h[v] = (lambda vv: lambda: (self.show_view(self.model_view), self.model_view.set_predefined(vv)))(v)
         return h
 
     def _build_menus(self):
@@ -389,8 +391,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         for name, dock in self.docks.items():
             action = self.actions[name]
             action.setChecked(dock.isVisible())
-            action.toggled.connect(dock.setVisible)
+            action.toggled.connect(lambda on, n=name: self._show_dock(n, on))
             dock.visibilityChanged.connect(lambda vis, a=action, d=dock: a.setChecked(not d.isHidden()))
+        self.actions["Workspace"] = self.actions["Project"]  # legacy script IDs
+        self.actions["Reference"] = self.actions["Cameras"]
         st = QSettings()
         for key, label, default in LAYERS:
             action = self.layer_action(key)
@@ -769,7 +773,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Show one reconstruction layer and hide the others."""
         for k in ("tie", "cloud", "mesh", "tiled"):
             self.set_layer_visible(k, k == key)
-        self.tabs.setCurrentWidget(self.model_view)
+        self.show_view(self.model_view)
 
     def show_layer(self, key, solid=False):
         """Tie Points - Colors / Point Cloud - Colors|Solid. Reuses the arrays
@@ -940,7 +944,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.current_photo = -1
         self.photo_view.clear()
         self.ortho_view.reset_project()
-        self.tabs.setCurrentWidget(self.model_view)
+        self.show_view(self.model_view)
 
     def new_project(self):
         if self._confirm_discard():
@@ -1313,7 +1317,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.dataset.model_ply = path
             self.dataset.face_count = nf
         self.set_modified(); self.reload_view()
-        self.tabs.setCurrentWidget(self.model_view)
+        self.show_view(self.model_view)
 
     def export_cameras(self):
         aligned = [c for c in self.dataset.cameras if c.est]
@@ -1353,15 +1357,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     # ---------------------------------------------------------------- View
     def reset_view(self):
-        if self.tabs.currentWidget() is self.ortho_view:
+        if self.active_view() is self.ortho_view:
             self.ortho_view.fit()
+        elif self.active_view() is self.photo_view:
+            self.photo_view.fit()
         else:
             self.model_view.reset_view()
 
     def zoom(self, f):
-        if self.tabs.currentWidget() is self.ortho_view:
+        if self.active_view() is self.ortho_view:
             self.ortho_view.zoom(f)
-        elif self.tabs.currentWidget() is self.photo_view:
+        elif self.active_view() is self.photo_view:
             self.photo_view.zoom(1 / f)
         else:
             self.model_view.zoom(f)
@@ -1369,7 +1375,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def capture_view(self):
         dst = QFileDialog.getSaveFileName(self, "Capture View", "capture.png", "PNG (*.png)")[0]
         if dst:
-            self.tabs.currentWidget().grab().save(dst)
+            self.active_view().grab().save(dst)
 
     # -------------------------------------------------------------- Photos
     def open_photo(self, k):
@@ -1379,7 +1385,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             c = cams[k]
             self.photo_view.open(c.path, f"{c.label}   ({k + 1}/{len(cams)})   "
                                           f"{'aligned' if c.aligned else 'not aligned'}")
-            self.tabs.setCurrentWidget(self.photo_view)
+            self.show_view(self.photo_view)
             self._update_menu_actions()
             try:
                 self._update_photo_markers()
@@ -1398,7 +1404,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if self.photo_view.path is None:
             QMessageBox.information(self, "Rotate Photo", "Open a photo first.")
             return
-        self.tabs.setCurrentWidget(self.photo_view)
+        self.show_view(self.photo_view)
         self.photo_view.view.rotate(deg)
 
     # ------------------------------------------------------------ Workflow
@@ -1689,6 +1695,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not dlg.exec():
             return
         s = dlg.settings()
+        from .photo_gps import use_photo_gps
+        if not use_photo_gps(ch):
+            s["reference"] = False
+            s["gps_frame"] = False
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
         original_wd = self.project.default_workdir(ch)
@@ -1734,11 +1744,11 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
                 planned.insert(index,("Preserving project frame",[cm.PYTHON,"preserve_frame",path],2))
             if s.get("gps_frame"):
+                from .photo_gps import camera_gps
                 gps_path = os.path.join(wd, "alignment_gps.json")
                 gps_cfg = {"model": os.path.join(wd,"sparse","0"), "markers": [],
                            "crs": ch.crs or "EPSG:4326", "use_markers": False, "use_cameras": True,
-                           "camera_gps": {mapping[c.path]: [c.lon,c.lat,c.alt] for c in enabled
-                                          if c.use_reference and all(v is not None and np.isfinite(v) for v in (c.lon,c.lat,c.alt))},
+                           "camera_gps": camera_gps(ch, mapping),
                            "bundle": False, "transform_files": [], "result": os.path.join(wd,"alignment_georef.json"),
                            "report": os.path.join(wd,"alignment_georef.txt")}
                 with open(gps_path,"w",encoding="utf-8") as handle:
@@ -1778,7 +1788,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             ch.tie_points_ply = os.path.join(wd, "tie_points.ply")
             ch.tie_point_count = cm.count_points3d(os.path.join(wd, "sparse_txt", "points3D.txt"))
             self.set_modified(); self.reload_view()
-            self.tabs.setCurrentWidget(self.model_view)
+            self.show_view(self.model_view)
             self._report_unaligned([c for c in enabled if not c.aligned], len(enabled))
         def meta(dt, stages):
             procmeta.record(ch, "alignment", params=s, seconds=dt, stages=stages,
@@ -2430,7 +2440,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             return
         self.set_layer_visible(kind, True)
         self.load_ortho_view()
-        self.tabs.setCurrentWidget(self.ortho_view)
+        self.show_view(self.ortho_view)
 
     def build_dem(self):
         if not self._require_saved("Build DEM"):
@@ -2736,14 +2746,13 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         QDesktopServices.openUrl(QUrl.fromLocalFile(readme))
 
     def about(self):
-        QMessageBox.about(self, f"About {APP_NAME}",
-            f"<b>{APP_NAME}</b> {APP_VERSION}<br>Desktop photogrammetry application.<br>"
-            "Reconstruction engine: COLMAP (BSD), GLOMAP (BSD). Speed pipeline: fastpipe.<br>"
-            "Runs fully offline: no network access at run time.<br>"
-            "UI built with PySide6 / pyqtgraph.")
+        from .about_ui import show_about
+        show_about(self)
 
     def closeEvent(self, e):
         if self._confirm_discard():
+            from .ui_state import save_window_state
+            save_window_state(self)
             if getattr(self, "monitor", None) is not None:
                 self.monitor.stop(0.5)
             self._view_gen += 1                  # cancel any background view load

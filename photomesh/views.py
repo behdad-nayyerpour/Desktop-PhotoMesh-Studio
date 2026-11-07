@@ -1050,6 +1050,7 @@ class PhotoView(QWidget):
         sc = self.view.scene(); sc.clear(); self._overlay = []; self._shape_items = []; self._pix = None
         self.shapes = []
         if pm.isNull():
+            self.clear()
             self.caption.setText(f"Cannot open {path}"); return
         self._pix = sc.addPixmap(pm); sc.setSceneRect(pm.rect())
         self._pix.setOpacity(self.surface_opacity if self.transparent else 1.0)
@@ -1058,6 +1059,11 @@ class PhotoView(QWidget):
         self.path = path
         self.caption.setText(caption or path)
         self._draw_markers()
+
+    def fit(self):
+        if self._pix is not None:
+            self.view.resetTransform()
+            self.view.fitInView(self.view.sceneRect(), Qt.KeepAspectRatio)
 
     def set_markers(self, markers, active=None):
         self.markers = list(markers or []); self.active_marker = active

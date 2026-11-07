@@ -119,9 +119,9 @@ def test_toolbar_separates_processing_display_and_view(window):
 def test_predefined_views_switch_from_photo_and_preserve_zoom(window, monkeypatch):
     called = []
     monkeypatch.setattr(window.model_view, "set_predefined", called.append)
-    window.tabs.setCurrentWidget(window.photo_view)
+    window.show_view(window.photo_view)
     window.actions["Top"].trigger()
-    assert called == ["Top"] and window.tabs.currentWidget() == window.model_view
+    assert called == ["Top"] and window.active_view() == window.model_view
     window.actions["Isometric"].trigger()
     assert called[-1] == "Isometric"
 

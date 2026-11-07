@@ -226,7 +226,7 @@ def test_view_overlays(window):
     ax = mv.gizmo.axes_2d()
     assert ax["X"][0] > 0.9 and abs(ax["Z"][0]) < 1e-6 and abs(ax["Z"][1]) < 1e-6
     tabs = [window.tabs.tabText(i) for i in range(window.tabs.count())]
-    assert tabs[:2] == ["Model", "Ortho"]
+    assert tabs == ["3D View", "Plan View"]
 
 
 def test_mode_buttons_keep_uniform_titles_and_track_modes(window, tmp_path):

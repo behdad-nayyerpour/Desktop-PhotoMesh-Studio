@@ -386,10 +386,9 @@ def workspace_panel(tree, actions):
 
 
 class ReferencePane(QTableWidget):
-    """Camera references; checkbox usage is independent of photo selection."""
+    """Camera coordinates and errors; GPS policy is project-wide in Settings."""
     COLS = ["Cameras", "X / Longitude", "Y / Latitude", "Z / Altitude", "Accuracy (m)",
             "Error (m)", "X estimated", "Y estimated", "Z estimated"]
-    cameraReferenceToggled = Signal(int, bool)
     cameraActivated = Signal(int)
 
     def __init__(self, parent=None):
@@ -400,7 +399,6 @@ class ReferencePane(QTableWidget):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setAlternatingRowColors(True)
         self._filling = False
-        self.itemChanged.connect(self._changed)
         self.cellDoubleClicked.connect(self._activate_camera)
 
     def _activate_camera(self, row, column):
@@ -408,14 +406,11 @@ class ReferencePane(QTableWidget):
         if item is not None and item.data(ROLE) is not None:
             self.cameraActivated.emit(item.data(ROLE))
 
-    def _changed(self, item):
-        if not self._filling and item.column() == 0 and item.data(ROLE) is not None:
-            self.cameraReferenceToggled.emit(item.data(ROLE), item.checkState() == Qt.Checked)
-
     def refresh(self, dataset):
         import math
         import numpy as np
         from .georef import CRS
+        from .photo_gps import use_photo_gps
         selected = {self.item(r, 0).data(ROLE) for r in {i.row() for i in self.selectedIndexes()}
                     if self.item(r, 0)}
         scroll = self.verticalScrollBar().value()
@@ -446,7 +441,7 @@ class ReferencePane(QTableWidget):
                                 err = float(np.linalg.norm(np.asarray(est) - gps))
                             except (ValueError, TypeError):
                                 pass
-                    if err is not None and camera.use_reference and camera.enabled:
+                    if err is not None and use_photo_gps(dataset) and camera.enabled:
                         errors.append(err)
                     values = [camera.label, _fmt(ref[0]), _fmt(ref[1]), _fmt(ref[2], 3),
                               _fmt((dataset.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
@@ -457,19 +452,16 @@ class ReferencePane(QTableWidget):
                         if col == 0:
                             from .icons import icon
                             item.setIcon(icon("photo"))
-                            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-                            item.setCheckState(Qt.Checked if camera.use_reference and has_gps else Qt.Unchecked)
-                            item.setToolTip("Use GPS as a reference in camera optimization; selecting a row only selects the photo.")
-                            if not has_gps:
-                                item.setFlags(item.flags() & ~Qt.ItemIsUserCheckable)
-                                item.setToolTip("No complete GPS position; reference use is unavailable.")
+                            item.setFlags(item.flags() & ~Qt.ItemIsUserCheckable)
+                            item.setToolTip("Photo GPS is controlled by Use Photo GPS in Settings." if has_gps else
+                                            "No complete GPS position; this photo can still be aligned.")
                         self.setItem(row, col, item)
                     if row in selected:
                         self.selectRow(row)
                 self.summary_row = self.data_row_count
                 rmse = math.sqrt(sum(x * x for x in errors) / len(errors)) if errors else None
                 self.error_summary = {"error": rmse, "measured": len(errors)}
-                tip = f"Camera RMSE from {len(errors)} checked references with measured errors."
+                tip = f"Camera RMSE from {len(errors)} GPS references with measured errors."
                 for column in range(self.columnCount()):
                     self.setItem(self.summary_row, column, summary_item(tooltip=tip))
                 self.item(self.summary_row, 0).setText("Total Error")
