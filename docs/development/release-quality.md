@@ -79,10 +79,10 @@ it alone does not require rebuilding the Setup or increasing the app version.
 
 The user approved the following scope for the next version. The goal is a
 cleaner layout and a more distinct visual identity while preserving application
-capabilities and integrity. Implementation and automated candidate acceptance
-are complete on the release branch; evidence is recorded in
-[the 1.0.4 review](release-review-104.md). User acceptance and separate public
-release approval remain pending. The public 1.0.3 installer is unchanged.
+capabilities and integrity. Implementation and the reviewed test installer are complete on the release branch.
+The user subsequently requested the final fixes and explicitly authorized release.
+The numerical review and later photo-only marker editing approval are recorded in
+[release-review-104.md](release-review-104.md), which retains final validation evidence.
 
 - [x] Rename the left Workspace tab/panel to **Project**. Replace the combined
   **Reference** tab with separate **Markers** and **Cameras** tabs, moving each
@@ -119,14 +119,14 @@ release approval remain pending. The public 1.0.3 installer is unchanged.
   requires the user's separate approval after that review; scope approval is
   not publication authorization.
 
-## About implementation for 1.0.4
+## Required for the next application release
 
 - [x] Add a concise license notice to Help > About PhotoMesh Studio: personal
   and educational non-commercial use; commercial use, including company
   evaluation, requires prior written permission. Provide access to the full
   bundled LICENSE text and keep third-party licenses distinct. Verify readable
   layout in both themes and that the license can be opened offline in the
-  installed application. Verified in the 1.0.4 test installer; the public
+  installed application. This is scheduled for the next release; the current
   1.0.3 executable is unchanged.
 
 ### Approved About content (2026-11-07)
@@ -157,6 +157,4 @@ from application metadata; the license itself has no version number.
 The View full license control must open the bundled LICENSE offline. Render
 these as readable paragraphs with complete text in both themes. Keep version
 and copyright metadata current without changing the approved licensing meaning.
-The approved content is implemented in the 1.0.4 test candidate and verified
-offline after installation. Public publication still requires separate user
-approval; see the 1.0.4 review for exact build identity and remaining checks.
+The installed 1.0.4 acceptance run verified the approved About content and offline license viewer.
