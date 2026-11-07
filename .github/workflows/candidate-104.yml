@@ -1,4 +1,4 @@
-# Final rebuild includes validated reference workflows and retired spatial-edit cleanup.
+# Final rebuild: reviewed numerical workflows with clean import/static checks.
 name: 1.0.4 test installer
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
         run: |
           python -m compileall -q photomesh main.py tests tools
           if ($LASTEXITCODE) { throw "Compilation failed" }
-          python -m ruff check --select F821,F822,F823 photomesh
+          python -m ruff check --select F401,F811,F841,F821,F822,F823 photomesh
           if ($LASTEXITCODE) { throw "Static checks failed" }
           python -m pytest -q -rs -p no:cacheprovider tests
           if ($LASTEXITCODE) { throw "Regressions failed" }

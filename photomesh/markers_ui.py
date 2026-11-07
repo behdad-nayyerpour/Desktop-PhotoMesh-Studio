@@ -10,7 +10,6 @@ from PySide6.QtCore import Qt
 
 import copy
 import math
-import os
 
 import numpy as np
 from PySide6.QtWidgets import QInputDialog, QMessageBox
