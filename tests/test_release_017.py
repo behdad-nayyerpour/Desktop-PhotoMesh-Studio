@@ -241,33 +241,21 @@ def _dem(path, z=0.0, x0=60.0, y1=160.0, px=0.5, n=256):
             "pixel_size": px, "rotation": np.eye(3).tolist(), "offset": [0, 0, 0], "georef": False}
 
 
-def test_add_marker_in_ortho_view_with_dem_height(window, tmp_path):
+def test_ortho_display_does_not_add_markers_even_with_dem_height(window,tmp_path):
     from tests.test_markers_manual import _scene
-    from photomesh import georef as g
-    ch = _scene(window, tmp_path)
-    ch.dem = _dem(str(tmp_path / "dem.tif"))
-    lab = window.add_marker_at_ortho(110.0, 100.0)            # Z read from the DEM (0)
-    m = next(x for x in ch.markers if x["label"] == lab)
-    p = m["projections"]
-    assert set(p) == {"img_0001", "img_0002"} and all(v[2] is False for v in p.values())
-    assert p["img_0001"][0] == pytest.approx(500 + 1000 * 10 / 60, abs=1e-3)
-    X, n = g.triangulate_marker(window._sparse_model(), p)
-    assert n == 2 and np.allclose(X, [110, 100, 0], atol=1e-3)
-    assert window.ortho_view.markers and window.ortho_view.markers[-1][0] == lab
-    assert window.ortho_view.markers[-1][1] == pytest.approx(110.0, abs=1e-3)
-    window.undo_markers()
-    assert not ch.markers
+    ch=_scene(window,tmp_path)
+    ch.dem=_dem(str(tmp_path/"dem.tif"))
+    before=len(window._mk_undo)
+    assert window.add_marker_at_ortho(110.,100.) is None
+    assert not ch.markers and len(window._mk_undo) == before
 
 
-def test_add_marker_in_ortho_view_signal_and_surface_fallback(window, tmp_path):
-    from tests.test_markers_manual import _scene, _ground_ply
-    ch = _scene(window, tmp_path)
-    ch.model_ply = _ground_ply(str(tmp_path / "ground.ply"), z=0.0)
-    window.ortho_view.addMarkerRequested.emit(130.0, 100.0, None)     # no raster: vertical ray onto the mesh
-    m = ch.markers[-1]
-    assert set(m["projections"]) == {"img_0002", "img_0003"}
-    # outside every photo: refused with a message, nothing added
-    assert window.add_marker_at_ortho(1000.0, 1000.0, 0.0) is None and len(ch.markers) == 1
+def test_ortho_legacy_add_signal_has_no_surface_edit_fallback(window,tmp_path):
+    from tests.test_markers_manual import _scene,_ground_ply
+    ch=_scene(window,tmp_path)
+    ch.model_ply=_ground_ply(str(tmp_path/"ground.ply"),z=0.)
+    window.ortho_view.addMarkerRequested.emit(130.,100.,None)
+    assert not ch.markers and not window._mk_undo
 
 
 def test_ortho_frame_rotation_roundtrip(window):
