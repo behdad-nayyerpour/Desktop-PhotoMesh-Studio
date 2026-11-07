@@ -75,6 +75,41 @@ before preparing the version for release.
 This checklist changes development practice, not application behavior. Updating
 it alone does not require rebuilding the Setup or increasing the app version.
 
+## Approved scope for the next version (2026-11-08)
+
+The user approved these six work areas for the release following 1.0.4.
+Start with the confirmed EXIF and calibration defects, then validate the
+coordinate-frame and height-reference changes numerically. The F identifiers
+refer to the external review discussed with the user.
+
+- [ ] Fix invalid EXIF rational/GPS decoding so corrupt metadata cannot become
+  plausible zero coordinates (F7). Correct intrinsic fit presets so the named
+  coefficients match the coefficients optimized for each camera model (F9).
+- [ ] Evaluate and implement a suitable Cartesian adjustment frame, including
+  ENU, with independent numerical comparisons (F1). Extend supported coordinate
+  systems and make camera/control height references explicit (F3). Preserve
+  existing project frames and provide tested migration for frame changes.
+- [ ] Add camera-model selection, supported DJI/RTK metadata and per-camera
+  accuracy handling, and optional GPS constraints during alignment (F2/F6/F8).
+  Validate defaults against representative data. Record unknown height sources
+  and verify camera metadata semantics before assigning survey-grade weights.
+- [ ] Add streaming LAS/LAZ export with coordinate-system metadata (F4), ground
+  classification and DTM generation (F5). Retain the existing DSM workflow and
+  distinguish measured ground from interpolated surfaces.
+- [ ] Improve large-project capacity with a sparse camera-optimization solver
+  (F10), efficient GPS-neighbor pair selection (F14), and DEM median aggregation
+  (F15). Compare accuracy, deterministic behavior, peak memory and runtime on
+  equivalent workloads before adopting each optimization.
+- [ ] Improve actionable errors and script tracebacks while respecting Qt thread
+  ownership and existing script behavior (F21/F22). Introduce locked runtime
+  dependencies and a reusable validated release workflow (F25/F26). Add installer
+  signing when signing credentials and infrastructure are available (F27).
+- [ ] Before releasing numerical changes, verify independent surveyed check
+  points and controlled synthetic fixtures, calibration behavior, compatible
+  horizontal/vertical reference systems, old-project load/export, affected
+  downstream products and stale-result invalidation. Retain test and benchmark
+  evidence and identify target-data/hardware checks still outstanding.
+
 ## Approved scope for 1.0.4 (2026-11-07)
 
 The following scope shipped in 1.0.4 after the user reviewed the test installer and authorized publication.
