@@ -84,3 +84,34 @@ it alone does not require rebuilding the Setup or increasing the app version.
   layout in both themes and that the license can be opened offline in the
   installed application. This is scheduled for the next release; the current
   1.0.3 executable is unchanged.
+
+### Approved About content (2026-11-07)
+
+Implement the following user-approved content in the next application release
+and retain it in subsequent versions. Use the actual application name/version
+from application metadata; the license itself has no version number.
+
+> **PhotoMesh Studio — [Application version]**
+>
+> Desktop photogrammetry application.
+> Runs fully offline; no network connection is required for processing.
+>
+> Reconstruction: COLMAP (BSD), with optional GLOMAP (BSD) for compatible legacy workflows.
+> Processing pipeline: fastpipe.
+> User interface: PySide6 / pyqtgraph.
+>
+> **License**
+>
+> Free for personal and educational, non-commercial use. Commercial use, including evaluation for company workflows, requires prior written permission from Behdad Nayyerpour.
+>
+> Third-party components retain their respective licenses.
+>
+> **[View full license]**
+>
+> © 2026 Behdad Nayyerpour.
+
+The View full license control must open the bundled LICENSE offline. Render
+these as readable paragraphs with complete text in both themes. Keep version
+and copyright metadata current without changing the approved licensing meaning.
+This records approval only; it does not change the current executable or mark
+the implementation checklist above complete.
