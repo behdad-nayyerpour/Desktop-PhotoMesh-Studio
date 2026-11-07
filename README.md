@@ -2,8 +2,9 @@
 
 **Version 1.0.3** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
 
-PhotoMesh Studio is a free desktop photogrammetry application for processing aerial
-imagery locally, without a cloud service.
+PhotoMesh Studio is a desktop photogrammetry application for processing aerial
+imagery locally, without a cloud service. It is available at no charge for
+personal and educational non-commercial use under the [project license](LICENSE).
 
 Built with Python and PySide6, it uses COLMAP for photo alignment and dense
 reconstruction, alongside application code for project management, visualization,
@@ -11,8 +12,17 @@ and surveying workflows.
 
 **[Download for Windows](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)** ·
 [User guide](docs/user-guide.md) · [Installation](docs/installation.md) ·
-[Changelog](CHANGES.md) ·
+[Changelog](CHANGES.md) · [License](LICENSE) ·
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
+
+## License
+
+Personal projects, learning, non-commercial teaching and academic research are
+permitted under the [PhotoMesh Studio license](LICENSE). Commercial use requires
+prior written permission, including company evaluations, business workflows,
+client projects and paid services. Contact the project owner through
+[GitHub](https://github.com/behdad-nayyerpour) for separate permission.
+Third-party components retain their respective licenses.
 
 ## Screenshots
 

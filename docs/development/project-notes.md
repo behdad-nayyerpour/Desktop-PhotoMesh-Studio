@@ -3,6 +3,10 @@
 [Development guide](README.md) · [Main page](../../README.md)
 
 PhotoMesh Studio is an independent Python/PySide6 desktop photogrammetry project.
+Its own materials are licensed for personal and educational non-commercial use
+under the [project license](../../LICENSE). Commercial use, including company
+evaluation, requires prior written permission. This does not replace or restrict
+the licenses of third-party components.
 
 Reconstruction uses [COLMAP](https://colmap.github.io/) (BSD), including its integrated global mapper.
 Standalone [GLOMAP](https://github.com/colmap/glomap) is retained only for compatible legacy engines.

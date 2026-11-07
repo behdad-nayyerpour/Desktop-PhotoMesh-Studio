@@ -12,6 +12,7 @@ AppId={{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}
 AppName=PhotoMesh Studio
 AppVersion={#AppVersion}
 AppPublisher=Behdad Nayyerpour
+LicenseFile={#StageDir}\app\LICENSE
 DefaultDirName={localappdata}\Programs\PhotoMesh Studio
 DefaultGroupName=PhotoMesh Studio
 PrivilegesRequired=lowest

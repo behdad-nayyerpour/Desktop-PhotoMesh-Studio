@@ -75,3 +75,11 @@ The one-time 1.0.3 publication and archive workflows were retired after success;
 use the production builder above for later versions. Historical Actions evidence
 remains in the release review. Retired workflows are recoverable from Git history
 and are not current release instructions.
+
+## Application license
+
+The builder copies the root `LICENSE` into the staged application. Inno Setup
+shows that file as the application's license agreement. Preserve the separate
+third-party license notices; the application license does not replace them.
+These packaging changes apply to subsequent builds. The already published
+1.0.3 Setup predates the license addition and has not been rebuilt or replaced.

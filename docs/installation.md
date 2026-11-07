@@ -18,6 +18,13 @@ You do not need to install Git or Python separately.
 To install a later version, close the app and run its complete Setup.
 See [Updating](../UPDATING.md).
 
+## Usage license
+
+PhotoMesh Studio's own materials are provided for personal and educational
+non-commercial use under the [project license](../LICENSE). Commercial use,
+including company evaluation and client projects, requires prior written
+permission. Third-party components keep their own licenses.
+
 ## Requirements
 
 | Component | Requirement or guidance |
