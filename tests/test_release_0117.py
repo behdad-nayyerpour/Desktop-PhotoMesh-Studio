@@ -82,7 +82,7 @@ def test_marker_menu_edits_only_photos_and_spatial_views_only_select(window,tmp_
     assert len(window._mk_undo) == history
 
 def test_photo_move_click_pins_same_marker(window, tmp_path, qtbot):
-    from PySide6.QtCore import Qt, QPoint
+    from PySide6.QtCore import Qt, QPointF
     _scene(window, tmp_path)
     label = window.add_marker_at_photo(500, 400, k=0)
     window.open_photo(0)
@@ -91,8 +91,10 @@ def test_photo_move_click_pins_same_marker(window, tmp_path, qtbot):
     qtbot.keyClick(view.view, Qt.Key_Escape)
     assert view._moving_marker is None
     view.begin_marker_move(label)
-    scene = view.view.mapToScene(QPoint(100, 100))
-    qtbot.mouseClick(view.view.viewport(), Qt.LeftButton, pos=QPoint(100, 100))
+    screen = view.view.mapFromScene(QPointF(510., 410.))
+    scene = view.view.mapToScene(screen)
+    assert 0 <= scene.x() < 1000 and 0 <= scene.y() < 800
+    qtbot.mouseClick(view.view.viewport(), Qt.LeftButton, pos=screen)
     point = _marker(window, label)["projections"]["img_0001"]
     assert np.allclose(point[:2], [scene.x(), scene.y()]) and point[2]
     assert len(window.dataset.markers) == 1 and view._moving_marker is None
