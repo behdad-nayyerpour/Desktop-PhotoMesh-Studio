@@ -269,3 +269,19 @@ def test_check_points_remain_independent_even_with_legacy_hidden_option(tmp_path
     with pytest.raises(Captured):
         g.run_task({"model":path,"crs":"LOCAL","use_markers":True,"markers":markers,
                     "check_projections_in_ba":True},log=lambda *_:None)
+
+
+def test_predicted_only_controls_cannot_initialize_georeferencing(tmp_path):
+    model = synthetic_model(n_img=5,n_pts=100,two_cameras=False)
+    markers=[]
+    for k,X in enumerate(model.points.xyz[:3]):
+        projections={}
+        for image in model.images.values():
+            uv,_=cio.project(model.cameras[1],image.R(),image.tvec,X[None])
+            projections[image.name]=[*uv[0],False,"predicted"]
+        markers.append(g.Marker(str(k),X.tolist(),projections=projections).to_dict())
+    path=str(tmp_path/"model"); cio.write_model(path,model)
+    before=(tmp_path/"model"/"images.bin").read_bytes()
+    with pytest.raises(ValueError,match="Cannot georeference"):
+        g.run_task({"model":path,"markers":markers,"use_markers":True},log=lambda *_:None)
+    assert (tmp_path/"model"/"images.bin").read_bytes() == before

@@ -1088,7 +1088,9 @@ def run_task(cfg, log=print):
     # ---- triangulate markers in the current model
     tri = {}
     for m in markers:
-        X, n = triangulate_marker(model, m.projections, names)
+        if not cfg.get("use_markers", True) or not m.enabled:
+            continue
+        X, n = triangulate_marker(model, m.projections, names, measured_only=True)
         if X is not None:
             tri[m.label] = X
     control = [m for m in markers if m.enabled and m.ref is not None and m.label in tri]
