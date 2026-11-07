@@ -885,9 +885,16 @@ def camera_gps_metric(model, gps, crs, zone_hint=None):
     """EXIF GPS is lon/lat/alt, including when the project CRS is UTM."""
     if crs.kind == "local":
         return {}
-    names, out = name_index(model), {}
+    exact = {image.name: iid for iid, image in model.images.items()}
+    by_stem = {}
+    for iid, image in model.images.items():
+        by_stem.setdefault(_stem(image.name), []).append(iid)
+    out = {}
     for label, xyz in (gps or {}).items():
-        iid = names.get(_stem(label))
+        iid = exact.get(label)
+        if iid is None:
+            candidates = by_stem.get(_stem(label), [])
+            iid = candidates[0] if len(candidates) == 1 else None
         if iid is None or len(xyz) != 3 or any(v is None for v in xyz):
             continue
         values=valid_gps(xyz)

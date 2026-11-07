@@ -194,3 +194,22 @@ def test_saved_layout_prevents_default_view_overriding_user_choice(window, monke
         assert calls == [] and window.active_view() is window.photo_view
     finally:
         settings.remove(KEY)
+
+
+def test_gps_reference_matching_keeps_same_stem_different_extensions_distinct():
+    import numpy as np
+    from photomesh import georef as g
+    from test_dense_mesh_gcp import synthetic_model
+    model = synthetic_model()
+    first, second = list(model.images)[:2]
+    model.images[first].name = "photo.jpg"
+    model.images[second].name = "photo.png"
+    crs = g.CRS.parse("EPSG:32638")
+    gps = {"photo.jpg": [44., 40., 100.], "photo.png": [44.001, 40.001, 200.]}
+    result = g.camera_gps_metric(model, gps, crs)
+    assert set(result) == {first, second}
+    for iid, label in ((first, "photo.jpg"), (second, "photo.png")):
+        lon, lat, altitude = gps[label]
+        east, north = g.utm_forward(lat, lon, 38, False)
+        assert np.allclose(result[iid], [east, north, altitude])
+    assert not g.camera_gps_metric(model, {"photo": [44., 40., 100.]}, crs)
