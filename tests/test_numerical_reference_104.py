@@ -98,6 +98,8 @@ def test_marker_edit_refreshes_coordinate_pixel_errors_groups_and_undo(window,tm
     _scene(window,tmp_path)
     window.dataset.georef = {"offset":[0.,0.,0.],"crs":"LOCAL","rows":[]}
     label = window.add_marker_at_photo(500.,400.,k=0)
+    prediction = window.dataset.markers[0]["projections"]["img_0002"]
+    assert window.pin_marker(label,*prediction[:2],k=1)
     X = next(X for name,X,_ in window._marker_positions() if name == label)
     for col,value in enumerate(X,1):
         assert window.edit_marker_cell(label,col,str(value))
@@ -166,3 +168,104 @@ def test_marker_keys_follow_model_aliases_for_same_named_photos():
     dataset.cameras[0].colmap_name = ""
     dataset.cameras[1].colmap_name = ""
     assert marker_camera_keys(dataset) == {}
+
+
+@pytest.mark.parametrize("kind", list(PARAMS))
+@pytest.mark.parametrize("fit", [False, True])
+def test_noisy_bundle_reduces_independent_pixel_residuals(kind,fit):
+    model = synthetic_model(n_img=5,n_pts=150,two_cameras=False)
+    model.cameras[1] = cio.Camera(kind,600,450,np.array(PARAMS[kind]))
+    rng = np.random.default_rng(104)
+    for image in model.images.values():
+        xyz = model.points.xyz[image.point3D_ids] @ image.R().T + image.tvec
+        image.xys = independent_uv(kind,model.cameras[1].params,xyz) + rng.normal(0,.1,(len(xyz),2))
+        image.tvec += rng.normal(0,.08,3)
+    def rms():
+        residuals = []
+        for image in model.images.values():
+            xyz = model.points.xyz[image.point3D_ids] @ image.R().T + image.tvec
+            residuals.extend(np.sum((independent_uv(kind,model.cameras[1].params,xyz)-image.xys)**2,axis=1))
+        return np.sqrt(np.mean(residuals))
+    before = rms()
+    result = g.gcp_bundle_adjust(model,{}, {},{"fit_intrinsics":fit,"max_iterations":10},log=lambda *_:None)
+    assert model.cameras[1].model == kind
+    assert rms() < before*.5
+    assert result["tie_rms_px"] == pytest.approx(rms(),abs=1e-10)
+
+
+def test_predicted_placements_are_display_hints_until_measured(window,tmp_path):
+    from test_markers_manual import _scene
+    _scene(window,tmp_path)
+    label = window.add_marker_at_photo(500.,400.,k=0)
+    marker = g.Marker(**window.dataset.markers[0])
+    model = window._sparse_model()
+    assert g.triangulate_marker(model,marker.projections)[0] is not None
+    assert g.triangulate_marker(model,marker.projections,measured_only=True)[0] is None
+    assert g.marker_observation_diagnostic(model,marker) == (None,None,0)
+    marker.ref = [100.,100.,0.]
+    assert g.reference_status(model,[marker],g.CRS.parse("LOCAL"))["usable"] == 0
+    prediction = marker.projections["img_0002"]
+    window.pin_marker(label,*prediction[:2],k=1)
+    marker = g.Marker(**window.dataset.markers[0])
+    assert g.triangulate_marker(model,marker.projections,measured_only=True)[0] is not None
+    window.project.save(window.project.path)
+    from photomesh.project import Project
+    saved = Project.load(window.project.path)
+    assert saved.active.markers[0]["projections"] == window.dataset.markers[0]["projections"]
+
+
+def test_two_marker_controls_still_constrain_bundle_when_gps_initializes_frame(tmp_path,monkeypatch):
+    model = synthetic_model(n_img=5,n_pts=100,two_cameras=False)
+    second = model.images[2]
+    second.tvec = -second.R() @ np.array([8.,10.,50.])
+    markers = []
+    for k,X in enumerate(model.points.xyz[:2]):
+        projections = {}
+        for image in model.images.values():
+            uv,_ = cio.project(model.cameras[1],image.R(),image.tvec,X[None])
+            projections[image.name] = [*uv[0],True]
+        markers.append(g.Marker(str(k),(X+[400000.,4400000.,0.]).tolist(),projections=projections).to_dict())
+    gps = {image.name:[44.+image.center()[0]*.0001,40.+image.center()[1]*.0001,100.] for image in model.images.values()}
+    path = str(tmp_path/"model"); cio.write_model(path,model)
+    class Captured(Exception): pass
+    def capture(model,observations,control,*args,**kwargs):
+        assert set(observations) == set(control) == {"0","1"}
+        assert len(kwargs["cam_priors"]) == 5
+        raise Captured()
+    monkeypatch.setattr(g,"gcp_bundle_adjust",capture)
+    with pytest.raises(Captured):
+        g.run_task({"model":path,"crs":"EPSG:32638","markers":markers,
+                    "use_markers":True,"use_cameras":True,"camera_gps":gps},log=lambda *_:None)
+
+
+def test_invalid_unused_markers_do_not_enter_local_adjustment(tmp_path,monkeypatch):
+    model = synthetic_model(n_img=3,n_pts=100,two_cameras=False)
+    path = str(tmp_path/"model"); cio.write_model(path,model)
+    marker = g.Marker("bad",projections={"img00":[float("nan"),0.],"img01":[0.,0.]}).to_dict()
+    class Captured(Exception): pass
+    def capture(model,observations,control,*args,**kwargs):
+        assert observations == control == {}
+        raise Captured()
+    monkeypatch.setattr(g,"gcp_bundle_adjust",capture)
+    with pytest.raises(Captured):
+        g.run_task({"model":path,"local_only":True,"use_markers":False,"markers":[marker]},log=lambda *_:None)
+
+
+def test_check_points_remain_independent_even_with_legacy_hidden_option(tmp_path,monkeypatch):
+    model = synthetic_model(n_img=5,n_pts=100,two_cameras=False)
+    markers = []
+    for k,X in enumerate(model.points.xyz[:4]):
+        projections = {}
+        for image in model.images.values():
+            uv,_ = cio.project(model.cameras[1],image.R(),image.tvec,X[None])
+            projections[image.name] = [*uv[0],True]
+        markers.append(g.Marker(str(k),(X+[1000.,2000.,0.]).tolist(),enabled=k<3,projections=projections).to_dict())
+    path = str(tmp_path/"model"); cio.write_model(path,model)
+    class Captured(Exception): pass
+    def capture(model,observations,control,*args,**kwargs):
+        assert set(observations) == set(control) == {"0","1","2"}
+        raise Captured()
+    monkeypatch.setattr(g,"gcp_bundle_adjust",capture)
+    with pytest.raises(Captured):
+        g.run_task({"model":path,"crs":"LOCAL","use_markers":True,"markers":markers,
+                    "check_projections_in_ba":True},log=lambda *_:None)

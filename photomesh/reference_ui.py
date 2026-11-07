@@ -135,7 +135,9 @@ class ReferenceMixin:
         else triangulated from its projections."""
         # Display the surveyed feature's observed estimate, not its reference target.
         # Moving its photo/Ortho placement must not edit its survey XYZ.
-        X, _n = g.triangulate_marker(model, m.projections, names)
+        X, _n = g.triangulate_marker(model, m.projections, names, measured_only=True)
+        if X is None:
+            X, _n = g.triangulate_marker(model, m.projections, names)
         if X is not None:
             return X
         gr = self.dataset.georef or {}
@@ -214,7 +216,7 @@ class ReferenceMixin:
         for m in self._marker_objs():
             p = {g._stem(a): v for a, v in m.projections.items()}.get(stem)
             if p is not None:
-                kind = "predicted" if m.disabled else ("pinned" if len(p) < 3 or p[2] else "placed")
+                kind = "predicted" if m.disabled or (len(p) > 3 and p[3] == "predicted") else ("pinned" if len(p) < 3 or p[2] else "placed")
                 items.append((m.label, p[0], p[1], kind))
             elif model is not None and stem in names:
                 X = self._marker_model_xyz(m, model, names)
@@ -404,6 +406,8 @@ class ReferenceMixin:
                 m.est = e.get("est")
             ch.markers = [m.to_dict() for m in ms]
             self._reload_alignment(ch, wd)
+            if res.get("local_only") and ch.georef:
+                self._store_markers(self._marker_objs())
             c, k = res.get("control_rmse"), res.get("check_rmse")
             msg = ("Cameras optimized in the existing frame. " if res.get("local_only") else "Georeferenced. ") + (f"Control RMSE {c['total']:.3f} m (n={c['n']}). " if c else "") + \
                 (f"Check RMSE {k['total']:.3f} m (n={k['n']})." if k else "")
@@ -491,7 +495,7 @@ class ReferenceMixin:
                         continue                     # never move a user-pinned placement
                     if how in ("saddle", "template"):
                         m.projections.pop(cur.get(stem, stem), None)
-                        m.projections[stem] = [u, v, False]; n += 1
+                        m.projections[stem] = [u, v, False, "refined"]; n += 1
             self._store_markers(ms)
             self.log(f"Refine Markers: {n} projections placed/refined (unpinned; pinned ones untouched)")
         self._run("Refine Markers", [("Placing markers", [cm.PYTHON, "refine_markers", path], 100)], loaded)

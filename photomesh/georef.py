@@ -471,11 +471,13 @@ def name_index(model):
     return {stem: iid for stem, iid in names.items() if stem not in ambiguous}
 
 
-def marker_image_observations(model, projections, names=None):
+def marker_image_observations(model, projections, names=None, measured_only=False):
     """One finite observation per camera; prefer pins, reject conflicting equal-status aliases."""
     names = name_index(model) if names is None else names
     observations = {}
     for label, value in projections.items():
+        if measured_only and len(value) > 3 and value[3] == "predicted":
+            continue
         iid = names.get(_stem(label))
         if iid is None:
             continue
@@ -493,11 +495,11 @@ def marker_image_observations(model, projections, names=None):
     return [(iid, float(uv[0]), float(uv[1])) for iid, (uv, _pin) in observations.items()]
 
 
-def triangulate_marker(model, projections, names=None, refine=True):
+def triangulate_marker(model, projections, names=None, refine=True, measured_only=False):
     """Marker position in the model frame from its photo projections."""
     names = names or name_index(model)
     C, D, obs = [], [], []
-    for iid, x, y in marker_image_observations(model, projections, names):
+    for iid, x, y in marker_image_observations(model, projections, names, measured_only):
         im = model.images[iid]; cam = model.cameras[im.camera_id]
         xn, yn = cio.undistort_points(cam, np.array([[x, y]], float))
         d = im.R().T @ np.array([xn[0], yn[0], 1.0])
@@ -536,11 +538,11 @@ def triangulate_marker(model, projections, names=None, refine=True):
 def marker_observation_diagnostic(model, marker, names=None):
     """3D estimate and RMS image-vector residual, counting each camera once."""
     names = name_index(model) if names is None else names
-    X, _n = triangulate_marker(model, marker.projections, names)
+    X, _n = triangulate_marker(model, marker.projections, names, measured_only=True)
     if X is None:
         return None, None, 0
     residuals = []
-    observations = marker_image_observations(model, marker.projections, names)
+    observations = marker_image_observations(model, marker.projections, names, measured_only=True)
     for iid, x, y in observations:
         image = model.images[iid]
         uv, depth = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None])
@@ -561,7 +563,11 @@ def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=N
             continue
         key = (marker.label, json.dumps(marker.projections, sort_keys=True))
         if key not in cache:
-            cache[key] = marker_observation_diagnostic(model, marker, names)
+            try:
+                cache[key] = marker_observation_diagnostic(model, marker, names)
+            except (ValueError, np.linalg.LinAlgError):
+                # An invalid diagnostic is unavailable, never a zero or stale error.
+                cache[key] = (None, None, 0)
         X, pixel, count = cache[key]
         if X is None:
             continue
@@ -603,7 +609,7 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
     control            {label: (ref (3,), sigma (3,))}  - control points only
     cam_priors         {image_id: (C_gps (3,), sigma (3,))} or None
     opts: tie_points (40000), tie_accuracy (px), projection_accuracy (px),
-          fit_intrinsics (True) / intrinsics (INTRINSIC_SETS key),
+          fit_intrinsics (True) / intrinsics (model-specific fit preset),
           max_iterations (30), huber (robust threshold in sigmas)
     Updates model poses/intrinsics in place and re-triangulates all tie points.
     Returns {"markers": {label: X}, "tie_rms_px", "iterations"}.
@@ -707,6 +713,8 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
     why = ""
     t_start = time.perf_counter()
     cur = cost(R, C, K, X)
+    if not np.isfinite(cur):
+        raise ValueError("Initial bundle residuals are non-finite; check observations and calibration")
     c0 = cur
     it = 0
     for it in range(1, int(o["max_iterations"]) + 1):
@@ -962,7 +970,7 @@ def reference_status(model, markers, crs, gps=None):
     refs = [m for m in markers if m.enabled and not m.disabled and m.ref is not None]
     usable = 0
     for m in refs:
-        X, n = triangulate_marker(model, m.projections, names)
+        X, n = triangulate_marker(model, m.projections, names, measured_only=True)
         if X is not None and n >= 2:
             usable += 1
     return {"imported": len(markers), "references": len(refs), "usable": usable,
@@ -995,9 +1003,11 @@ def run_local_task(cfg, log=print):
     markers = [Marker(**m) for m in cfg.get("markers", []) if not m.get("disabled", False)]
     obs = {}
     for m in markers:
-        X, _n = triangulate_marker(model, m.projections, names)
-        if cfg.get("use_markers", True) and m.enabled and X is not None:
-            obs[m.label] = (X, marker_image_observations(model, m.projections, names))
+        if not cfg.get("use_markers", True) or not m.enabled:
+            continue
+        X, _n = triangulate_marker(model, m.projections, names, measured_only=True)
+        if X is not None:
+            obs[m.label] = (X, marker_image_observations(model, m.projections, names, measured_only=True))
     acc = dict(DEFAULTS); acc.update(cfg.get("accuracies") or {})
     stats = gcp_bundle_adjust(model, obs, {}, {
         "tie_points": cfg.get("tie_points", 40000), "tie_accuracy": acc["tie_accuracy"],
@@ -1014,8 +1024,12 @@ def run_local_task(cfg, log=print):
     offset = np.asarray(cfg.get("offset") or [0, 0, 0], float)
     est = {}
     for m in markers:
-        X, n = triangulate_marker(model, m.projections)
-        est[m.label] = {"est": (X + offset).tolist() if X is not None else None, "n": n, "pix": None}
+        try:
+            X, pixel, n = marker_observation_diagnostic(model, m)
+        except (ValueError, np.linalg.LinAlgError) as error:
+            log(f"Marker {m.label}: residual unavailable ({error})")
+            X, pixel, n = None, None, 0
+        est[m.label] = {"est": (X + offset).tolist() if X is not None else None, "n": n, "pix": pixel}
     backup = mdir.rstrip("/\\") + "_original"
     if not os.path.isdir(backup):
         shutil.copytree(mdir, backup)
@@ -1087,8 +1101,8 @@ def run_task(cfg, log=print):
         if references: zone_hint=geographic_zone(references)
     metric = lambda xyz: crs.to_metric(np.atleast_2d(xyz),zone_hint)[0]
     cam_gps = camera_gps_metric(model, gps, crs, zone_hint) if cfg.get("use_cameras") else {}
-    use_markers = cfg.get("use_markers", True) and len(control) >= 3
-    if use_markers:
+    use_markers = cfg.get("use_markers", True)
+    if use_markers and len(control) >= 3:
         src = np.array([tri[m.label] for m in control]); dst = np.array([metric(m.ref) for m in control])
         what = "control markers"
     elif len(cam_gps) >= 3:
@@ -1122,9 +1136,9 @@ def run_task(cfg, log=print):
             if not cfg.get("use_markers", True) or m.label not in tri:
                 continue
             # check points stay independent: their projections are not used in the adjustment
-            if m.label not in ctrl_labels and not cfg.get("check_projections_in_ba", False):
+            if m.label not in ctrl_labels:
                 continue
-            o = marker_image_observations(model, m.projections, names)
+            o = marker_image_observations(model, m.projections, names, measured_only=True)
             obs[m.label] = (tri[m.label], o)
         ctrl = {}
         if use_markers:

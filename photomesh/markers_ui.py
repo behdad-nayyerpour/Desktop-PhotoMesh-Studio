@@ -329,7 +329,7 @@ class MarkerEditMixin:
             sx = sy = 1.0
             if c is not None and c.width and c.height and (c.width, c.height) != (cam.width, cam.height):
                 sx, sy = c.width / cam.width, c.height / cam.height
-            out[stem] = [float(p[0] * sx), float(p[1] * sy), False]
+            out[stem] = [float(p[0] * sx), float(p[1] * sy), False, "predicted"]
             if sc is not None:
                 R = im.R(); C = -R.T @ np.asarray(im.tvec, float)
                 v = X - C; L = float(np.linalg.norm(v))

@@ -59,6 +59,8 @@ jobs:
       - name: Reference and Ortho regressions
         timeout-minutes: 3
         run: python -m pytest -x -vv --tb=short -o faulthandler_timeout=60 -p no:cacheprovider tests/test_reference_lifecycle.py tests/test_release_0117.py tests/test_release_100.py tests/test_release_100_followup.py
+      - name: Numerical calibration and reference contracts
+        run: python -m pytest -x -vv --tb=short -p no:cacheprovider tests/test_numerical_reference_104.py
       - name: Tests (no COLMAP / GPU)
         run: |
           set -o pipefail
@@ -98,6 +100,8 @@ jobs:
           cache-dependency-path: requirements*.txt
       - name: Install
         run: pip install -q -r requirements-dev.txt
+      - name: Numerical calibration and reference contracts
+        run: python -m pytest -x -vv --tb=short -p no:cacheprovider tests/test_numerical_reference_104.py
       - name: Tests (no COLMAP / GPU)
         run: python -m pytest -q -rs -p no:cacheprovider tests
 
