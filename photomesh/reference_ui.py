@@ -84,7 +84,8 @@ class ReferenceMixin:
         f = os.path.join(d, "images.bin")
         if not os.path.exists(f):
             return None
-        key = (d, os.path.getmtime(f), os.path.getmtime(os.path.join(d, "points3D.bin")))
+        key = (d, tuple((os.stat(os.path.join(d, name)).st_mtime_ns, os.stat(os.path.join(d, name)).st_size)
+                        for name in ("images.bin", "points3D.bin", "cameras.bin")))
         if getattr(self, "_model_cache", (None,))[0] != key:
             self._model_cache = (key, cio.read_model(d))
         return self._model_cache[1]
@@ -97,15 +98,27 @@ class ReferenceMixin:
             self._markers_snapshot()              # Edit > Undo restores the previous markers
 
     def _invalidate_marker_error_rows(self, markers):
-        """Old residuals must not be presented as measurements of edited placements."""
-        before = {m["label"]: m for m in self.dataset.markers or []}
-        changed = {m.label for m in markers if m.label not in before or
-                   before[m.label].get("ref") != m.ref or
-                   before[m.label].get("projections", {}) != m.projections}
-        if changed and self.dataset.georef:
-            self.dataset.georef["rows"] = [row for row in self.dataset.georef.get("rows", [])
-                                        if row["label"] not in changed]
-            self.dataset.georef["control_rmse"] = self.dataset.georef["check_rmse"] = None
+        """Recompute edited residuals in the current frame; never keep old error rows."""
+        georef = self.dataset.georef
+        if not georef:
+            return
+        georef.update(rows=[], control_rmse=None, check_rmse=None)
+        model = self._sparse_model()
+        if model is None:
+            return
+        stamp = self._model_cache[0]
+        if getattr(self, "_marker_residual_cache", (None,))[0] != stamp:
+            self._marker_residual_cache = (stamp, {})
+        try:
+            estimates, _pixels, _counts, rows = g.marker_diagnostics(
+                model, markers, g.CRS.parse(georef.get("crs") or self.dataset.crs),
+                georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1])
+        except (ValueError, np.linalg.LinAlgError) as error:
+            self.log(f"Marker residuals unavailable after edit: {error}")
+            return
+        georef.update(rows=rows, control_rmse=g.rmse(rows, "control"), check_rmse=g.rmse(rows, "check"))
+        for marker in markers:
+            marker.est = estimates[marker.label].tolist() if marker.label in estimates else None
 
     def _store_markers(self, ms):
         self._invalidate_marker_error_rows(ms)
@@ -133,8 +146,7 @@ class ReferenceMixin:
                 return X - np.asarray(gr["offset"], float)
             except Exception:
                 pass
-        X, _n = g.triangulate_marker(model, m.projections, names)
-        return X
+        return None
 
     def _marker_positions(self):
         """Model-frame positions of the active dataset's markers (list of xyz).
@@ -149,7 +161,7 @@ class ReferenceMixin:
         if model is None:
             return None
         key0 = (self._model_cache[0], _json.dumps(self.dataset.georef.get("offset") if self.dataset.georef else None),
-                self.dataset.crs)
+                self.dataset.crs, _json.dumps((self.dataset.georef or {}).get("zone")))
         cache = getattr(self, "_marker_xyz_cache", None)
         if cache is None or cache[0] != key0:
             cache = self._marker_xyz_cache = (key0, {})
@@ -242,9 +254,7 @@ class ReferenceMixin:
         for m in ms:
             if m.label == label:
                 m.enabled = enabled
-        self.dataset.markers = [m.to_dict() for m in ms]
-        self.set_modified()
-        self._update_view_markers()
+        self._store_markers(ms)
 
     def add_marker(self):
         ms = self._marker_objs()

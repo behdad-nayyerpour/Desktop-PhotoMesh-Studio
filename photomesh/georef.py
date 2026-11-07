@@ -509,7 +509,55 @@ def triangulate_marker(model, projections, names=None, refine=True):
             X = X + dx
             if np.linalg.norm(dx) < 1e-9 * max(1, np.abs(X).max()):
                 break
+    if not np.isfinite(X).all() or any(
+            (model.images[iid].R() @ X + model.images[iid].tvec)[2] <= 0 for iid, _x, _y in obs):
+        return None, len(C)
     return X, len(C)
+
+
+def marker_observation_diagnostic(model, marker, names=None):
+    """3D estimate and RMS image-vector residual, counting each camera once."""
+    names = name_index(model) if names is None else names
+    X, _n = triangulate_marker(model, marker.projections, names)
+    if X is None:
+        return None, None, 0
+    residuals, seen = [], set()
+    for label, observation in marker.projections.items():
+        iid = names.get(_stem(label))
+        if iid is None or iid in seen:
+            continue
+        seen.add(iid)
+        image = model.images[iid]
+        uv, depth = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None])
+        if depth[0] <= 0 or not np.isfinite(uv).all():
+            return None, None, len(seen)
+        residuals.append(float(np.sum((uv[0]-np.asarray(observation[:2], float))**2)))
+    return X, float(np.sqrt(np.mean(residuals))) if residuals else None, len(seen)
+
+
+def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=None):
+    """Current residuals without editing reference XYZ; caller owns cache model identity."""
+    offset = np.asarray(offset if offset is not None else [0,0,0], float)
+    names = name_index(model)
+    estimates, pixels, counts = {}, {}, {}
+    cache = {} if cache is None else cache
+    for marker in markers:
+        if marker.disabled:
+            continue
+        key = (marker.label, json.dumps(marker.projections, sort_keys=True))
+        if key not in cache:
+            cache[key] = marker_observation_diagnostic(model, marker, names)
+        X, pixel, count = cache[key]
+        if X is None:
+            continue
+        estimates[marker.label] = X + offset
+        pixels[marker.label], counts[marker.label] = pixel, count
+    metric = lambda value: crs.to_metric(np.atleast_2d(value), zone_hint)[0]
+    rows = marker_errors([marker for marker in markers if not marker.disabled], metric, estimates)
+    for row in rows:
+        row["pix"] = pixels.get(row["label"])
+        row["n"] = counts.get(row["label"], 0)
+    return estimates, pixels, counts, rows
 
 
 def predict_projection(model, iid, X):
@@ -824,7 +872,7 @@ def rmse(rows, kind):
 
 def write_report(path, rows, crs, pixel=None, counts=None):
     """Reference-pane style tab-separated export (+ pixel error and type)."""
-    pixel = pixel or {}; counts = counts or {}
+    pixel = {key: value for key, value in (pixel or {}).items() if value is not None}; counts = counts or {}
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(f"# CoordinateSystem: {crs.name}\n")
         f.write("#Label\tType\tX\tY\tZ\tError_(m)\tX_error\tY_error\tZ_error\tX_est\tY_est\tZ_est\t"
@@ -1084,17 +1132,7 @@ def run_task(cfg, log=print):
     log(f"Reference use: marker image observations={len(obs) if cfg.get('bundle', True) else 0}, "
         f"marker XYZ controls={len(control) if use_markers else 0}, camera GPS={len(cam_gps)}.")
     # ---- final marker estimates: re-triangulate with optimised cameras
-    est, pix, cnt = {}, {}, {}
-    for m in markers:
-        X, n = triangulate_marker(model, m.projections, names)
-        if X is None:
-            continue
-        est[m.label] = X + offset; cnt[m.label] = n
-        e = [np.hypot(*(np.array(predict_projection(model, names[_stem(p)], X) or (np.nan, np.nan)) - v[:2]))
-             for p, v in m.projections.items() if _stem(p) in names]
-        e = [x for x in e if np.isfinite(x)]
-        pix[m.label] = float(np.sqrt(np.mean(np.square(e)))) if e else float("nan")
-    rows = marker_errors(markers, metric, est)
+    est, pix, cnt, rows = marker_diagnostics(model, markers, crs, offset, zone_hint)
     # ---- commit transactionally: build every output in temporary files first,
     # so a failure leaves the model AND the point cloud / mesh in the old frame
     M = sim_matrix(s, R, t)

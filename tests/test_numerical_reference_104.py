@@ -91,3 +91,54 @@ def test_coordinate_rmse_matches_independent_known_residuals():
     assert control["total"] == pytest.approx(np.sqrt((25+144)/2))
     assert control["xy"] == pytest.approx(np.sqrt(25/2))
     assert check["total"] == pytest.approx(17.)
+
+
+def test_marker_edit_refreshes_coordinate_pixel_errors_groups_and_undo(window,tmp_path):
+    from test_markers_manual import _scene
+    _scene(window,tmp_path)
+    window.dataset.georef = {"offset":[0.,0.,0.],"crs":"LOCAL","rows":[]}
+    label = window.add_marker_at_photo(500.,400.,k=0)
+    X = next(X for name,X,_ in window._marker_positions() if name == label)
+    for col,value in enumerate(X,1):
+        assert window.edit_marker_cell(label,col,str(value))
+    original_ref = list(window.dataset.markers[0]["ref"])
+    before = copy.deepcopy(window.dataset.georef["rows"][0])
+    assert before["total"] < 1e-8
+    assert window.pin_marker(label,510.,405.,k=0)
+    changed = window.dataset.georef["rows"][0]
+    assert changed["total"] > before["total"] + .001
+    assert changed["pix"] > before["pix"] + .01
+    assert window.dataset.markers[0]["ref"] == original_ref
+    assert window.undo_markers()
+    restored = window.dataset.georef["rows"][0]
+    assert restored["total"] == pytest.approx(before["total"],abs=1e-8)
+    assert window.redo_markers()
+    window.toggle_marker(label,False)
+    assert window.dataset.georef["control_rmse"] is None
+    assert window.dataset.georef["check_rmse"]["n"] == 1
+    window.marker_view_action("ignore",label)
+    assert window.dataset.georef["rows"] == []
+    assert window.dataset.georef["check_rmse"] is None
+
+
+def test_marker_residual_does_not_hide_off_image_errors():
+    model = synthetic_model(n_img=4,n_pts=100,two_cameras=False)
+    X = np.array([400.,20.,1.])
+    projections = {}
+    for image in model.images.values():
+        uv,_ = cio.project(model.cameras[image.camera_id],image.R(),image.tvec,X[None])
+        projections[image.name] = [float(uv[0,0]),float(uv[0,1])]
+    marker = g.Marker("outside",[400.,20.,1.],projections=projections)
+    estimate,pixel,count = g.marker_observation_diagnostic(model,marker)
+    assert np.allclose(estimate,X,atol=1e-6)
+    assert pixel < 1e-6 and count == 4
+
+
+def test_triangulation_rejects_behind_camera_intersection():
+    model = synthetic_model(n_img=4,n_pts=100,two_cameras=False)
+    X = np.array([10.,0.,100.])
+    projections = {}
+    for image in model.images.values():
+        uv,_ = cio.project(model.cameras[image.camera_id],image.R(),image.tvec,X[None])
+        projections[image.name] = uv[0].tolist()
+    assert g.triangulate_marker(model,projections)[0] is None

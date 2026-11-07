@@ -129,7 +129,10 @@ class MarkerEditMixin:
         self._mk_redo.clear()
 
     def _restore_markers(self, state):
-        self.dataset.markers, self._ref_pending = copy.deepcopy(state[0]), copy.deepcopy(state[1])
+        restored = [g.Marker(**marker) for marker in copy.deepcopy(state[0])]
+        self._invalidate_marker_error_rows(restored)
+        self.dataset.markers = [marker.to_dict() for marker in restored]
+        self._ref_pending = copy.deepcopy(state[1])
         self.set_modified()
         self._refresh_markers_pane()
         self._update_view_markers()
@@ -575,7 +578,7 @@ class MarkerEditMixin:
                     return True
                 cur[col - 1] = v
                 crs = g.CRS.parse(self.dataset.crs) if self.dataset.crs else None
-                if v is not None and crs is not None and getattr(crs, "kind", "") == "geographic":
+                if v is not None and crs is not None and getattr(crs, "kind", "") == "wgs84":
                     lim = 180.0 if col == 1 else 90.0 if col == 2 else None
                     if lim is not None and abs(v) > lim:
                         raise ValueError(f"{'longitude' if col == 1 else 'latitude'} must be within ±{lim:g}°")
