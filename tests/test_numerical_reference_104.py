@@ -300,3 +300,49 @@ def test_gps_preselection_rejects_invalid_positions_and_handles_date_line():
     assert ("a.jpg","b.jpg") in result
     assert all("invalid.jpg" not in pair and "missing.jpg" not in pair for pair in result)
     assert select_pairs(names,info,window=0,use_desc=True,use_gps=False) == []
+
+
+def test_realign_preserves_photo_identity_when_duplicate_names_are_removed_or_reordered(tmp_path):
+    from photomesh.colmap import prepare_images
+    from photomesh.photonames import assign_names
+    from photomesh.project import ProjectData,Camera
+    a=tmp_path/"a"; b=tmp_path/"b"; a.mkdir(); b.mkdir()
+    (a/"photo.jpg").write_bytes(b"first"); (b/"photo.jpg").write_bytes(b"second")
+    dataset=ProjectData(cameras=[Camera(str(a/"photo.jpg")),Camera(str(b/"photo.jpg"))])
+    first=prepare_images(dataset,str(tmp_path/"work1")); assign_names(dataset,first)
+    assert first[dataset.cameras[1].path] == "photo_1.jpg"
+    dataset.cameras.reverse()
+    second=prepare_images(dataset,str(tmp_path/"work2"))
+    assert second == first
+    dataset.cameras=dataset.cameras[:1]
+    third=prepare_images(dataset,str(tmp_path/"work3"))
+    assert third[dataset.cameras[0].path] == "photo_1.jpg"
+    assert (tmp_path/"work3"/"images"/"photo_1.jpg").read_bytes() == b"second"
+
+
+def test_similarity_transform_keeps_pose_projections_and_roundtrips_world_offsets():
+    from scipy.spatial.transform import Rotation
+    model=synthetic_model(n_img=5,n_pts=100,two_cameras=False)
+    before=copy.deepcopy(model)
+    R=Rotation.from_euler("xyz",[.2,-.1,.4]).as_matrix()
+    scale=2.4; translation=np.array([400000.,4400000.,120.])
+    g.transform_model(model,scale,R,translation)
+    for iid,image in model.images.items():
+        old=before.images[iid]
+        assert np.allclose(image.center(),scale*R@old.center()+translation,atol=1e-8,rtol=0)
+        uv,_=cio.project(model.cameras[image.camera_id],image.R(),image.tvec,model.points.xyz)
+        expected,_=cio.project(before.cameras[old.camera_id],old.R(),old.tvec,before.points.xyz)
+        assert np.allclose(uv,expected,atol=1e-6,rtol=0)
+
+
+def test_robust_similarity_matches_final_inlier_mask():
+    rng=np.random.default_rng(104)
+    source=rng.normal(size=(30,3))
+    target=2.3*source+[100.,200.,30.]
+    target[:3]+=rng.normal(0,20,(3,3))
+    scale,R,t,mask=g.robust_helmert(source,target,max_iter=1)
+    ss,RR,tt=g.umeyama(source[mask],target[mask])
+    assert scale == pytest.approx(ss)
+    assert np.allclose(R,RR) and np.allclose(t,tt)
+    with pytest.raises(ValueError,match="degenerate"):
+        g.umeyama(np.ones((3,3)),np.ones((3,3)))

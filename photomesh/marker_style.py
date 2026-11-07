@@ -8,7 +8,7 @@ def marker_state(marker):
         return "predicted"
     if marker.get("locked", False) or any(len(v) < 3 or v[2] for v in marker.get("projections", {}).values()):
         return "pinned"
-    return "placed" if marker.get("projections") else "predicted"
+    return "placed" if any(len(v) < 4 or v[3] != "predicted" for v in marker.get("projections", {}).values()) else "predicted"
 
 def color(state):
     return QColor(*COLORS.get(state, COLORS["predicted"]))

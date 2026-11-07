@@ -101,15 +101,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self._viewData.connect(self._apply_view_data)
         self._texData.connect(self._apply_texture)
         self._viewProgress.connect(self._show_view_progress)
-        self.ortho_view.addMarkerRequested.connect(lambda X, Y, Z: self.add_marker_at_ortho(X, Y, Z))
         self.photo_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "photo"))
         self.ortho_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "ortho"))
         self.model_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "model"))
-        self.model_view.moveMarkerRay.connect(self._move_marker_ray)
-        self.ortho_view.moveMarkerRequested.connect(
-            lambda label, X, Y, Z: self.add_marker_at_ortho(X, Y, Z, label=label, replace_pins=True))
-        self.ortho_view.placeMarkerRequested.connect(
-            lambda label, X, Y, Z: self.add_marker_at_ortho(X, Y, Z, label=label))
         self._thumb_job = None
         apply_dialog_setting()
         from .busy import BusyIndicator
@@ -233,7 +227,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.photo_view.pinMarker.connect(lambda lab, u, v: self.pin_marker(lab, u, v))
         self.markers_pane.markerEdited.connect(self._marker_edited)
         self.markers_pane.markerAction.connect(self._marker_pane_action)
-        self.model_view.addMarkerRay.connect(lambda o, d: self.add_marker_at_ray(o, d))
 
     def _workspace_panel(self):
         self.workspace_widget = self.workspace
@@ -848,15 +841,6 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             rows = procmeta.properties(ch, {"group": "cameras"}.get(kind, kind)) or \
                 procmeta.properties(ch, "dataset")
         self.properties.show_props({k: ("" if v is None else v) for k, v in rows})
-
-    def _move_marker_ray(self, label, origin, direction):
-        point, source = self.surface_hit(origin, direction)
-        if point is None:
-            self.statusBar().showMessage(f"Move Marker: {source}", 6000)
-            self.model_view.begin_marker_move(label)
-            return
-        world = self.ortho_from_local(point)
-        self.add_marker_at_ortho(*world, label=label, replace_pins=True)
 
     def _update_stale_banners(self):
         ch = self.dataset
@@ -1730,6 +1714,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
         original_wd = self.project.default_workdir(ch)
+        self._photo_map(ch)  # recover legacy identities before generating new aliases
         import uuid
         wd = os.path.join(self.project.data_dir, "alignment-" + uuid.uuid4().hex[:12])
         try:

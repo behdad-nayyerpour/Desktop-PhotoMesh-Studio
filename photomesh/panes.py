@@ -538,7 +538,8 @@ class MarkersPane(QTableWidget):
                         f = it.font(); f.setItalic(True); it.setFont(f)
                         it.setForeground(QBrush(QColor(230, 160, 60)))
                 elif k == 6:
-                    it.setToolTip(f"{pinned} pinned / {len(proj)} placed (unpinned ones are blue flags)")
+                    it.setToolTip(f"{pinned} pinned / {len(proj)} locations. Gray predictions are display hints; "
+                                  "blue refined placements and green pins are image observations.")
                 self.setItem(r, k, it)
             if m["label"] in selected:
                 from PySide6.QtCore import QItemSelectionModel

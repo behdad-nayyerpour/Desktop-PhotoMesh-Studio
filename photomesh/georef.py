@@ -409,6 +409,10 @@ def umeyama(src, dst, w=None, scale=True):
     """Similarity dst ~ s R src + t (weighted least squares)."""
     src = np.asarray(src, float); dst = np.asarray(dst, float)
     w = np.ones(len(src)) if w is None else np.asarray(w, float)
+    if src.ndim != 2 or src.shape[1:] != (3,) or src.shape != dst.shape or len(src) < 3 or not np.isfinite(src).all() or not np.isfinite(dst).all():
+        raise ValueError("Similarity needs at least three finite paired 3D positions")
+    if w.shape != (len(src),) or not np.isfinite(w).all() or np.any(w <= 0):
+        raise ValueError("Similarity weights must be finite and positive")
     w = w / w.sum()
     ms, md = w @ src, w @ dst
     a, b = src - ms, dst - md
@@ -419,7 +423,11 @@ def umeyama(src, dst, w=None, scale=True):
         E[2, 2] = -1
     R = U @ E @ Vt
     var = (w * (a ** 2).sum(1)).sum()
+    if var <= 1e-20:
+        raise ValueError("Reference baseline is degenerate")
     s = float(np.trace(np.diag(D) @ E) / var) if scale else 1.0
+    if not np.isfinite(s) or s <= 0:
+        raise ValueError("Invalid similarity scale")
     return s, R, md - s * R @ ms
 
 
@@ -435,6 +443,9 @@ def robust_helmert(src, dst, w=None, max_iter=5, k=3.0, min_pts=3):
         if new.sum() < min_pts or np.array_equal(new, keep):
             break
         keep = new
+    # The returned transform must fit the returned inliers, including when the
+    # final rejection step reaches the iteration limit.
+    s, R, t = umeyama(src[keep], dst[keep], None if w is None else np.asarray(w)[keep])
     return s, R, t, keep
 
 

@@ -322,10 +322,26 @@ def prepare_images(dataset, wd):
     os.makedirs(wd, exist_ok=True)
     cams = [c for c in dataset.cameras if c.enabled]
     dirs = {os.path.dirname(os.path.abspath(c.path)) for c in cams}
-    names = [os.path.basename(c.path) for c in cams]
-    if len(dirs) == 1 and len(set(n.lower() for n in names)) == len(names):
+    # A re-alignment must not renumber aliases when photos are disabled,
+    # removed, reordered or added: marker placements are keyed by those names.
+    stored = [c.colmap_name for c in dataset.cameras if getattr(c, "colmap_name", "")]
+    if len({name.lower() for name in stored}) != len(stored):
+        raise OSError("Duplicate stored photo aliases; repair photo identities before alignment")
+    used = {name.lower() for name in stored}
+    mapping = {}
+    for camera in cams:
+        name = getattr(camera, "colmap_name", "")
+        if not name:
+            base, ext = os.path.splitext(os.path.basename(camera.path))
+            name, suffix = base + ext, 1
+            while name.lower() in used:
+                name = f"{base}_{suffix}{ext}"; suffix += 1
+            used.add(name.lower())
+        if name != os.path.basename(name) or name in (".", ".."):
+            raise OSError("Unsupported stored photo alias; repair photo identities before alignment")
+        mapping[camera.path] = name
+    if len(dirs) == 1 and all(mapping[c.path] == os.path.basename(c.path) for c in cams):
         root = dirs.pop()
-        mapping = {c.path: os.path.basename(c.path) for c in cams}
     else:
         root = os.path.join(wd, "images")
         os.makedirs(root, exist_ok=True)
@@ -342,13 +358,9 @@ def prepare_images(dataset, wd):
             st = os.stat(path)
             return [st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns]
 
-        mapping, used, copied = {}, set(), {}
+        copied = {}
         for c in cams:
-            base, ext = os.path.splitext(os.path.basename(c.path))
-            name, i = base + ext, 1
-            while name.lower() in used:
-                name = f"{base}_{i}{ext}"; i += 1
-            used.add(name.lower()); mapping[c.path] = name
+            name = mapping[c.path]
             dst = os.path.join(root, name)
             source = os.path.normcase(os.path.abspath(c.path))
             source_stamp = stamp(c.path)

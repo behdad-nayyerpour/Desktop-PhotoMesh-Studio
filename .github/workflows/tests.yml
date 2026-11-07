@@ -79,6 +79,8 @@ jobs:
           done
       - name: Compare processing performance with 1.0.0
         run: python tools/benchmark_workflow_101.py
+      - name: Compare reference accuracy and runtime with pre-audit code
+        run: python tools/benchmark_reference_104.py
       - name: Summary
         if: always()
         run: |

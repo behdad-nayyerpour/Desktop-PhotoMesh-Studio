@@ -178,8 +178,8 @@ class OrthoView(QWidget):
         self.geographic, self.unit = bool(geographic), unit
 
     def begin_marker_move(self, label):
-        self._moving_marker = label
-        self.setCursor(Qt.CrossCursor); self.setFocus()
+        """Retained entry point: raster markers are display-only."""
+        self.cancel_marker_move()
 
     def cancel_marker_move(self):
         self._moving_marker = None
@@ -628,12 +628,6 @@ class OrthoView(QWidget):
         return X, Y, self.z_at(X, Y)
 
     def mousePressEvent(self, e):
-        if self._moving_marker and e.button() == Qt.LeftButton:
-            X, Y, Z = self.coordinates_at(e.position().x(), e.position().y())
-            label = self._moving_marker
-            self.cancel_marker_move()
-            self.moveMarkerRequested.emit(label, X, Y, Z)
-            return
         if e.button() in (Qt.LeftButton, Qt.MiddleButton):
             self._drag = (e.position(), self.center)
         self._press = e.position() if e.button() == Qt.LeftButton else None
@@ -650,12 +644,16 @@ class OrthoView(QWidget):
         self._drag = None
         p0 = getattr(self, "_press", None)
         self._press = None
-        if p0 is not None and e.button() == Qt.LeftButton and self.shapes:
+        if p0 is not None and e.button() == Qt.LeftButton:
             d = e.position() - p0
-            if abs(d.x()) + abs(d.y()) <= 4:                       # a click, not a pan
-                hit = self.shape_at(e.position().x(), e.position().y())
-                self.selected_shape = hit; self.update()
-                self.shapeClicked.emit(-1 if hit is None else int(hit))
+            if abs(d.x()) + abs(d.y()) <= 4:
+                marker = self.marker_at(e.position().x(), e.position().y())
+                if marker:
+                    self.markerAction.emit("select", marker)
+                elif self.shapes:
+                    hit = self.shape_at(e.position().x(), e.position().y())
+                    self.selected_shape = hit; self.update()
+                    self.shapeClicked.emit(-1 if hit is None else int(hit))
 
     def mouseDoubleClickEvent(self, e):
         self.fit()
@@ -672,19 +670,12 @@ class OrthoView(QWidget):
 
     def contextMenuEvent(self, e):
         m = QMenu(self)
-        from .marker_style import marker_menu
         hit = self.marker_at(e.pos().x(), e.pos().y())
         if hit:
-            marker_menu(m, hit, lambda action, lab: self.markerAction.emit(action, lab))
+            m.addAction(f"Select Marker: {hit}").triggered.connect(
+                lambda: self.markerAction.emit("select", hit))
             m.addSeparator()
         X, Y, Z = self.coordinates_at(e.pos().x(), e.pos().y())
-        if any(lay.visible for lay in self.layers.values()):
-            if self.active_marker is not None:
-                label = self.active_marker
-                m.addAction(f"Place Marker: {label}").triggered.connect(
-                    lambda: self.placeMarkerRequested.emit(label, X, Y, Z))
-            m.addAction("Add Marker").triggered.connect(lambda: self.addMarkerRequested.emit(X, Y, Z))
-            m.addSeparator()
         a = m.addAction("Copy Coordinates")
         a.triggered.connect(lambda: self.copy_coordinates(X, Y, Z))
         m.addAction("Reset View").triggered.connect(self.fit)

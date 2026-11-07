@@ -71,60 +71,33 @@ def test_ortho_never_paints_point_cloud_as_an_orthomosaic(window):
     assert ov.center is None
 
 
-def test_ortho_context_places_selected_control_without_creating_duplicate(window, tmp_path, monkeypatch):
+def test_ortho_context_selects_marker_without_any_edit_actions(window,tmp_path,monkeypatch):
     from PySide6.QtCore import QPoint
-    from PySide6.QtGui import QContextMenuEvent
-    from PySide6.QtWidgets import QMenu
-    ch = _scene(window, tmp_path)
-    original = g.Marker("G1", ref=[700., 800., 20.], acc=[.02, .03], enabled=False,
-                        projections={"IMG_0001.JPG": [500., 400., True]})
-    ch.markers = [original.to_dict()]
-    window.refresh_all()
-    window._select_marker_row("G1")
-    ov = window.ortho_view
-    assert ov.active_marker == "G1"
-    ov.layers["ortho"] = SimpleNamespace(visible=True, close=lambda: None)
-    monkeypatch.setattr(ov, "coordinates_at", lambda *a: (110., 100., 0.))
-    actions = []
-    def menu_exec(menu, *a):
-        actions[:] = [a.text() for a in menu.actions()]
-        next(a for a in menu.actions() if a.text() == "Place Marker: G1").trigger()
-    # Patch the module factory: some PySide versions retain native exec bindings.
+    from PySide6.QtGui import QContextMenuEvent,QAction
     from photomesh import orthoview
-    from PySide6.QtGui import QAction
+    ch=_scene(window,tmp_path)
+    original=g.Marker("G1",ref=[700.,800.,20.],enabled=False,
+                      projections={"IMG_0001.JPG":[500.,400.,True]})
+    ch.markers=[original.to_dict()]
+    window.refresh_all()
+    view=window.ortho_view
+    monkeypatch.setattr(view,"marker_at",lambda *a:"G1")
+    monkeypatch.setattr(view,"coordinates_at",lambda *a:(110.,100.,0.))
+    before=copy.deepcopy(ch.markers); history=len(window._mk_undo)
+    actions=[]
     class TestMenu:
-        def __init__(self, parent):
-            self.parent, self.items = parent, []
-        def addAction(self, text):
-            action = QAction(text, self.parent)
-            self.items.append(action)
-            return action
-        def addSeparator(self):
-            self.addAction("")
-        def actions(self):
-            return self.items
-        def exec(self, *args):
-            return menu_exec(self, *args)
-    monkeypatch.setattr(orthoview, "QMenu", TestMenu)
-    try:
-        ov.contextMenuEvent(QContextMenuEvent(QContextMenuEvent.Mouse, QPoint(20, 20), QPoint(20, 20)))
-    finally:
-        ov.layers.clear()
-    assert "Add Marker" in actions
-    assert len(ch.markers) == 1
-    marker = _marker(window, "G1")
-    assert marker["ref"] == original.ref and marker["acc"] == original.acc
-    assert marker["enabled"] is False
-    assert marker["projections"]["img_0001"] == [500., 400., True]  # manual pin preserved
-    assert marker["projections"]["img_0002"][2] is False
-    assert window.undo_markers()
-    assert _marker(window, "G1")["projections"] == original.projections
-    # Re-selecting multiple rows or clearing selection must not target a stale marker.
-    window.markers_pane.clearSelection()
-    assert ov.active_marker is None
-    before = copy.deepcopy(ch.markers)
-    assert window.add_marker_at_ortho(110, 100, 0, label="missing") is None
-    assert ch.markers == before
+        def __init__(self,parent): self.parent,self.items=parent,[]
+        def addAction(self,text):
+            action=QAction(text,self.parent); self.items.append(action); return action
+        def addSeparator(self): pass
+        def exec(self,*args):
+            actions.extend(a.text() for a in self.items)
+            next(a for a in self.items if a.text()=="Select Marker: G1").trigger()
+    monkeypatch.setattr(orthoview,"QMenu",TestMenu)
+    view.contextMenuEvent(QContextMenuEvent(QContextMenuEvent.Mouse,QPoint(20,20),QPoint(20,20)))
+    assert actions == ["Select Marker: G1","Copy Coordinates","Reset View"]
+    assert window.markers_pane.current_label() == "G1"
+    assert ch.markers == before and len(window._mk_undo) == history
 
 
 def test_imported_xyz_alone_is_not_a_usable_control(window, tmp_path):

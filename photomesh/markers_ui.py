@@ -1,16 +1,8 @@
-"""MainWindow mix-in: manual ground control (Metashape-like marker editing).
+"""Photo-only marker measurements and editable reference coordinates.
 
-- Add Marker at the cursor in the Photo tab (pinned there; no active marker
-  needed) or on the 3D surface in the Model view (ray cast); the new marker's
-  3D position comes from the surface (mesh, else DEM, else tie points) and it
-  is projected into every photo that sees it as unpinned (blue) placements,
-  ready for Refine Markers / Optimize Cameras.
-- Add Marker in the Ortho tab (GCP on the orthomosaic / DEM): world X, Y from
-  the raster's geotransform, Z from the DEM / ortho height grid, mapped into
-  the model frame and projected into the photos the same way.
-- Markers table cells (label, X, Y, Z, accuracy) are editable with validation;
-  every marker edit is undoable (Edit > Undo / Redo).
-- Rename / Remove Marker, Filter Photos by Markers / Reset Filter.
+Source-photo placements can be pinned, refined and undone. Model and raster
+views display/select markers without changing measurements or reference XYZ.
+Legacy spatial-edit entry points are retained as explicit no-ops.
 """
 from __future__ import annotations
 
@@ -82,7 +74,12 @@ def parse_accuracy(text):
 
 class MarkerEditMixin:
     def marker_view_action(self, action, label, view="photo"):
-        """Shared undoable marker menu; move modes are cancelled with Escape."""
+        """Photo edits are undoable; model/raster actions can only select."""
+        if view != "photo":
+            if action == "select" and any(m["label"] == label for m in self.dataset.markers):
+                self._select_marker_row(label)
+                return True
+            return False
         ms = self._marker_objs()
         m = next((m for m in ms if m.label == label), None)
         if m is None:
@@ -91,27 +88,19 @@ class MarkerEditMixin:
             return self.remove_markers([label])
         if action == "move":
             self._select_marker_row(label)
-            target = {"photo": self.photo_view, "ortho": self.ortho_view, "model": self.model_view}[view]
-            target.begin_marker_move(label)
+            self.photo_view.begin_marker_move(label)
             self.statusBar().showMessage(f"Move {label}: click its new position; Escape cancels")
             return True
-        self._markers_snapshot()
-        if action == "ignore":
-            m.disabled = True
-        elif action == "use":
-            m.disabled = False
-        elif action == "pin":
-            m.disabled = False
-            if view == "photo":
-                self._mk_undo.pop()  # pin_marker takes its own undo snapshot
-                k = self.current_photo
-                if not (0 <= k < len(self.dataset.cameras)):
-                    return False
-                point = next((p for lab, *p in self.photo_view.markers if lab == label), None)
-                return self.pin_marker(label, point[0], point[1]) if point else False
-            m.locked = True
-        else:
+        if action == "pin":
+            k = self.current_photo
+            if not (0 <= k < len(self.dataset.cameras)):
+                return False
+            point = next((p for lab, *p in self.photo_view.markers if lab == label), None)
+            return self.pin_marker(label, point[0], point[1]) if point else False
+        if action not in ("ignore", "use"):
             return False
+        self._markers_snapshot()
+        m.disabled = action == "ignore"
         self._commit_markers(ms, f"Marker {label}: {action}")
         return True
 
@@ -372,22 +361,8 @@ class MarkerEditMixin:
         return label
 
     def add_marker_at_ray(self, o, d, label=None):
-        """Model view > right-click > Add Marker: new marker at the surface point
-        under the cursor, projected into all photos that see it (unpinned)."""
-        X, src = self.surface_hit(o, d)
-        if X is None:
-            self.statusBar().showMessage(f"Add Marker: {src}", 6000); self.log(f"Add Marker: {src}")
-            return None
-        ms = self._marker_objs()
-        label = label or self._new_label(ms)
-        pred = self.predicted_projections(X)
-        m = g.Marker(label=label, projections=pred)
-        self._markers_snapshot()
-        ms.append(m)
-        self._commit_markers(ms, f"Added marker {label} on the {src} at ({X[0]:.3f}, {X[1]:.3f}, {X[2]:.3f}) "
-                                 f"(model frame); projected into {len(pred)} photos (unpinned)")
-        self._select_marker_row(label)
-        return label
+        """Compatibility entry point: spatial views cannot create/edit markers."""
+        return None
 
     # ------------------------------------------------------------ ortho view
     def _ortho_frame(self, ch=None):
@@ -439,56 +414,8 @@ class MarkerEditMixin:
         return None, ""
 
     def add_marker_at_ortho(self, X, Y, Z=None, label=None, replace_pins=False):
-        """Ortho tab > right-click > Add Marker: a new marker (GCP) at world (X, Y)
-        of the orthomosaic / DEM (its geotransform), Z from the DEM / ortho height
-        grid (else the surface below), projected into every photo that sees it
-        as unpinned placements - then enter its reference coordinates in the
-        Reference pane, pin / refine it on photos and Optimize Cameras."""
-        ms = self._marker_objs()
-        target = next((m for m in ms if m.label == label), None) if label else None
-        if label is not None and target is None:
-            self._marker_error("Place Marker", f"Marker '{label}' is no longer in this dataset.")
-            return None
-        if target is not None and target.locked and not replace_pins:
-            self.statusBar().showMessage(f"Marker {label} is pinned; choose Move Marker to reposition it.", 6000)
-            return None
-        src = ""
-        if Z is None:
-            Z, src = self._ortho_height(X, Y)
-        else:
-            src = "DEM" if "dem" in getattr(self.ortho_view, "layers", {}) else "orthomosaic height"
-        if Z is not None:
-            Xl = self.ortho_to_local([X, Y, Z])
-        else:
-            R, off = self._ortho_frame()
-            zr = [v for v in ((self.dataset.orthomosaic or {}).get("z_range") or []) if v is not None]
-            top = (max(zr) if zr else off[2]) + 1000.0
-            Xl, src = self.surface_hit(R.T @ (np.array([X, Y, top]) - off), R.T @ np.array([0.0, 0.0, -1.0]))
-            if Xl is None:
-                msg = f"Add Marker: {src}"
-                self.statusBar().showMessage(msg, 6000); self.log(msg)
-                return None
-            Z = float(self.ortho_from_local(Xl)[2])
-        pred = self.predicted_projections(Xl)
-        if not pred:
-            msg = (f"Add Marker: no aligned photo sees ({X:.3f}, {Y:.3f}); "
-                   f"align the photos first or place the marker inside the covered area")
-            self.statusBar().showMessage(msg, 8000); self.log(msg)
-            return None
-        label = label or self._new_label(ms)
-        self._markers_snapshot()
-        if target is None:
-            ms.append(g.Marker(label=label, projections=pred))
-        else:
-            # Ortho placements are predictions, never overwrite manually pinned photo observations.
-            pinned = {} if replace_pins else {g._stem(k): v for k, v in target.projections.items() if len(v) < 3 or v[2]}
-            target.projections = dict(pred, **pinned)
-            target.est = None
-            target.locked = False
-        self._commit_markers(ms, f"{'Placed' if target is not None else 'Added'} marker {label} in the ortho view at ({X:.3f}, {Y:.3f}, {Z:.3f}) "
-                                 f"(height from the {src}); projected into {len(pred)} photos (unpinned)")
-        self._select_marker_row(label)
-        return label
+        """Compatibility entry point: marker measurements belong on source photos."""
+        return None
 
     def pin_marker(self, label, u, v, k=None):
         """Pin `label` at (u, v) on photo k (replaces its placement there)."""
