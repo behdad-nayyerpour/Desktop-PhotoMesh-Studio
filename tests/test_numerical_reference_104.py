@@ -460,3 +460,12 @@ def test_invalid_reference_errors_are_unavailable_without_hiding_valid_markers()
     rows=g.marker_errors(markers,lambda ref:g.CRS.parse("LOCAL").to_metric([ref])[0],
                          {"bad":np.array([1.,2.,3.]),"good":np.array([4.,6.,3.])})
     assert len(rows) == 1 and rows[0]["label"] == "good" and rows[0]["total"] == 5.
+
+
+def test_invalid_geographic_control_identifies_marker_before_adjustment(monkeypatch):
+    model = synthetic_model(n_img=3, n_pts=50, two_cameras=False)
+    monkeypatch.setattr(g, "triangulate_marker", lambda *args, **kwargs: (np.array([1., 2., 3.]), 2))
+    marker = g.Marker("Bad GCP", [420000., 4400000., 100.], projections={
+        image.name: [300., 225., True] for image in model.images.values()})
+    with pytest.raises(ValueError, match="Bad GCP.*EPSG::4326"):
+        g.reference_status(model, [marker], g.CRS.parse("EPSG:4326"))

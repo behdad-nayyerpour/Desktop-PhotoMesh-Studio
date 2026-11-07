@@ -133,7 +133,8 @@ measure the result independently. Ignoring a marker is separate from its
 Control/Check classification.
 
 Add, pin, move, delete or ignore/use marker placements on the original photographs
-in **Plan View**. **Move** enables a crosshair; **Escape** cancels. Edit surveyed
+in **Plan View**. Right-click a photo and choose **Place Existing Marker** to pin
+any marker from the list at that pixel, without selecting it first. **Move** enables a crosshair; **Escape** cancels. Edit surveyed
 XYZ and accuracy in **Markers**. Photo edits never overwrite surveyed XYZ.
 
 **3D View** and an orthophoto/DEM in **Plan View** are display/select-only for
@@ -161,6 +162,10 @@ measurements show unavailable errors rather than zero or old values. Control
 RMSE measures fit to controls; independent check points are needed to assess
 accuracy away from those controls. Synthetic tests do not establish survey
 accuracy on a real project.
+
+Before Optimize Cameras starts, invalid control XYZ is reported with its marker
+label and coordinate system. For EPSG:4326, X is longitude, Y is latitude and Z
+is height. Metric UTM coordinates require the matching UTM CRS.
 
 Marker observations use original-photo pixels; clicks in empty margins and
 out-of-bounds imported measurements cannot become adjustment observations.

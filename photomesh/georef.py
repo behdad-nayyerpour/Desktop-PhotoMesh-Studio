@@ -1027,15 +1027,31 @@ def camera_gps_metric(model, gps, crs, zone_hint=None):
     return out
 
 
+def validate_control_reference(marker, crs):
+    """Identify the measured control whose XYZ cannot be used in this CRS."""
+    try:
+        crs.to_metric(np.asarray(marker.ref, float).reshape(1, 3))
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            f"Control marker '{marker.label}' has invalid XYZ for {crs.name}. "
+            "Check coordinate order, units and height. "
+            f"{error}") from error
+
+
 def reference_status(model, markers, crs, gps=None):
     """Count usable controls, not merely imported coordinate rows."""
     names = name_index(model)
     refs = [m for m in markers if m.enabled and not m.disabled and m.ref is not None]
     usable = 0
+    valid_controls = []
     for m in refs:
         X, n = triangulate_marker(model, m.projections, names, measured_only=True)
         if X is not None and n >= 2:
+            validate_control_reference(m, crs)
+            valid_controls.append(m.ref)
             usable += 1
+    if crs.kind == "wgs84" and len(valid_controls) >= 3:
+        geographic_zone(valid_controls)
     return {"imported": len(markers), "references": len(refs), "usable": usable,
             "gps": len(camera_gps_metric(model, gps, crs))}
 
@@ -1159,6 +1175,8 @@ def run_task(cfg, log=print):
         if X is not None:
             tri[m.label] = X
     control = [m for m in markers if m.enabled and m.ref is not None and m.label in tri]
+    for marker in control:
+        validate_control_reference(marker, crs)
     log(f"Markers: {len(markers)} imported, {len(tri)} with >=2 projections on aligned photos, "
         f"{len(control)} control, {sum(1 for m in markers if not m.enabled and m.label in tri)} check")
     # ---- initial similarity
