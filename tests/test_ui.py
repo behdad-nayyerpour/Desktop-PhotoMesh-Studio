@@ -60,7 +60,7 @@ def test_actions_with_photos_loaded(window, no_dialogs, image_dir, monkeypatch):
     wait_thumbnails(window)
     assert os.path.exists(cam.thumb) and os.path.exists(cam.desc)
     window.open_photo(2)
-    assert window.tabs.currentWidget() is window.photo_view
+    assert window.active_view() is window.photo_view
     window.step_photo(1)
     assert window.current_photo == 3
     from photomesh import colmap as cm
@@ -84,7 +84,7 @@ def test_project_switch_clears_photo_and_ortho_views(window, image_dir, tmp_path
     window.photo_view.open(str(photo), "Previous project")
     window.photo_view.set_markers([("old", 10, 10, "pinned")])
     window.current_photo = 0
-    window.tabs.setCurrentWidget(window.photo_view)
+    window.show_view(window.photo_view)
     window.ortho_view.set_data(np.array([[1.0, 2.0, 3.0]]), [])
     window.ortho_view.set_markers([("old", 1.0, 2.0)])
     window.ortho_view.center = (1.0, 2.0)
@@ -97,7 +97,7 @@ def test_project_switch_clears_photo_and_ortho_views(window, image_dir, tmp_path
         window.open_project(path)
 
     assert window.current_photo == -1
-    assert window.tabs.currentWidget() is window.model_view
+    assert window.active_view() is window.model_view
     assert window.photo_view.path is None
     assert window.photo_view.view.scene().items() == []
     assert window.photo_view.markers == []
@@ -135,7 +135,7 @@ def test_workspace_has_one_project_without_dataset_actions(window):
     assert len(window.project.datasets) == 1
     assert not hasattr(window, "merge_datasets")
     assert "Merge Datasets..." not in window.actions and "Append..." not in window.actions
-    assert "add_dataset" not in window.ws_actions
+    assert not hasattr(window, "ws_actions")
     with pytest.raises(ValueError):
         window._workspace_action("Add ProjectData", -1)
     assert len(window.project.datasets) == 1

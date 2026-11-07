@@ -405,7 +405,7 @@ def execution_settings(exe, settings, workdir, log=print):
     return s
 
 
-def gps_frame_available(cameras, crs="", existing_alignment=False):
+def gps_frame_available(cameras, crs="", existing_alignment=False, *, respect_legacy_flags=True):
     """GPS references must define a 2-D footprint, not just have three rows."""
     import numpy as np
     from .georef import CRS, utm_forward, geographic_zone, valid_gps
@@ -415,12 +415,12 @@ def gps_frame_available(cameras, crs="", existing_alignment=False):
         return False, "Choose a geographic/UTM project CRS before using camera GPS."
     values=[]
     for camera in cameras:
-        if not camera.enabled or not camera.use_reference:
+        if not camera.enabled or (respect_legacy_flags and not camera.use_reference):
             continue
         xyz=valid_gps((camera.lon,camera.lat,camera.alt))
         if xyz is not None: values.append(xyz)
     if len(values)<3:
-        return False, "At least three checked cameras with valid longitude, latitude and altitude are required."
+        return False, "At least three cameras with valid longitude, latitude and altitude are required."
     values=np.asarray(values,float)
     try:
         zone,south=geographic_zone(values)
@@ -431,7 +431,7 @@ def gps_frame_available(cameras, crs="", existing_alignment=False):
     singular=np.linalg.svd(ground-ground.mean(0),compute_uv=False)
     if len(singular)<2 or singular[1]<max(1e-3,singular[0]*1e-4):
         return False, "GPS positions are collinear or have insufficient footprint spread."
-    return True, "Apply a similarity from checked GPS positions. GPS measurement accuracy limits the result."
+    return True, "Apply a similarity from valid GPS positions. GPS measurement accuracy limits the result."
 
 
 def feature_executable(exe,settings):

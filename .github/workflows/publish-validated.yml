@@ -1,0 +1,86 @@
+name: Publish validated PhotoMesh release
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/publish-validated.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: publish-photomesh
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify validated source and artifact provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git show HEAD:photomesh/__init__.py | grep APP_VERSION | head -1)" = "$(git show 910d42f25c2d37b9a15da032f875b1f31c021e53:photomesh/__init__.py | grep APP_VERSION | head -1)"
+          git merge-base --is-ancestor 910d42f25c2d37b9a15da032f875b1f31c021e53 HEAD
+          git diff --exit-code 910d42f25c2d37b9a15da032f875b1f31c021e53 HEAD -- photomesh main.py requirements.txt requirements-dev.txt packaging/build_release.ps1 packaging/release.iss packaging/engine-assets.json packaging/fix_shortcut_icon.ps1 run.bat setup.bat LICENSE
+          test "$(gh api repos/$GH_REPO/actions/runs/42383383754 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/actions/runs/42383383754 --jq .head_sha)" = 910d42f25c2d37b9a15da032f875b1f31c021e53
+          test "$(gh api repos/$GH_REPO/actions/runs/42383383859 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/actions/runs/42383383859 --jq .head_sha)" = 910d42f25c2d37b9a15da032f875b1f31c021e53
+          test "$(gh api repos/$GH_REPO/actions/artifacts/13578838934 --jq .expired)" = false
+          test "$(gh api repos/$GH_REPO/actions/artifacts/13578838934 --jq .workflow_run.head_sha)" = 910d42f25c2d37b9a15da032f875b1f31c021e53
+          test "$(gh api repos/$GH_REPO/actions/artifacts/13578838934 --jq .workflow_run.id)" = 42383383859
+          gh api repos/$GH_REPO/actions/artifacts/13578838934/zip > candidate.zip
+          echo "c96d19d68456b62469725444d72e8978167310f725336bf008117d37f2aa2940  candidate.zip" | sha256sum -c -
+          unzip -q candidate.zip -d candidate
+          test -f candidate/PhotoMeshStudio_Setup_1.0.4.exe
+          test -f candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256
+          echo "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3  candidate/PhotoMeshStudio_Setup_1.0.4.exe" | sha256sum -c -
+          cd candidate
+          sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256
+      - name: Upload verified Setup and publish 1.0.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > release-notes.md <<'NOTES'
+          PhotoMesh Studio 1.0.4
+          
+          - Separate Project, Markers and Cameras panels; Photos on the right and floating Console/Jobs.
+          - Shared Plan View for photographs and orthophotos/DEMs, with one-click return to raster display after selecting a photo.
+          - Project-wide Use Photo GPS, saved layout/render styles and remembered file-picker paths.
+          - Offline About and full application license viewer.
+          - Fix GPS filename matching, theme switching, failed-photo identity and exported report titles.
+          - Photo/table-only marker edits; 3D and orthophoto views only display/select markers.
+          - Respect marker/GPS switches, retain camera calibration models and refresh current marker errors after edits.
+          - Exclude predictions and unconfirmed legacy unpinned locations from calculations until pinned/refined on photos.
+          
+          Personal and educational non-commercial use is permitted under the bundled LICENSE. Commercial use, including evaluation for company workflows, requires prior written permission.
+          
+          Validation: 775 tests passed on each of Linux and Windows; native COLMAP CPU numerical checks and upgrade/installed offline license validation passed. Real-data CUDA processing and target-driver behavior remain hardware-dependent.
+          
+          Includes the complete offline Windows Setup and SHA-256 checksum. Close the application before installing; keep projects and photos outside the installation folder.
+          NOTES
+          if gh release view v1.0.4 >/dev/null 2>&1; then
+            test "$(gh release view v1.0.4 --json isDraft --jq .isDraft)" = true
+            gh release upload v1.0.4 candidate/PhotoMeshStudio_Setup_1.0.4.exe candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256 --clobber
+            gh release edit v1.0.4 --notes-file release-notes.md --target "$GITHUB_SHA"
+          else
+            gh release create v1.0.4 candidate/PhotoMeshStudio_Setup_1.0.4.exe candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256 --draft --title "PhotoMesh Studio 1.0.4" --target "$GITHUB_SHA" --notes-file release-notes.md
+          fi
+          test "$(gh release view v1.0.4 --json assets --jq '.assets | length')" = 2
+          gh release edit v1.0.4 --draft=false --latest
+          gh release view v1.0.4 --json url,isDraft,isPrerelease,assets
+
+      - name: Verify public downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release download v1.0.4 --pattern 'PhotoMeshStudio_Setup_1.0.4.exe*' --dir public-verify
+          (cd public-verify && sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256)
+          cmp candidate/PhotoMeshStudio_Setup_1.0.4.exe public-verify/PhotoMeshStudio_Setup_1.0.4.exe
+          test "$(gh api repos/$GH_REPO/releases/latest --jq .tag_name)" = v1.0.4

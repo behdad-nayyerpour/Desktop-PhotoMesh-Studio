@@ -276,7 +276,7 @@ def distort(cam: Camera, x, y):
     rational k4..k6 denominator)."""
     p = cam.params
     if cam.model == 5:                                     # OPENCV_FISHEYE (equidistant)
-        k1, k2, k3, k4 = (float(v) for v in p[4:8])
+        k1, k2, k3, k4 = p[4:8]
         r = np.sqrt(x * x + y * y)
         th = np.arctan(r)
         th2 = th * th
@@ -286,20 +286,46 @@ def distort(cam: Camera, x, y):
     k1, k2, p1, p2, k3 = cam.dist()
     r2 = x * x + y * y
     rad = 1 + k1 * r2 + k2 * r2 * r2 + k3 * r2 ** 3
-    if cam.model == 6 and len(p) >= 12 and (p[9] or p[10] or p[11]):
+    if cam.model == 6 and len(p) >= 12:
         rad = rad / (1 + p[9] * r2 + p[10] * r2 * r2 + p[11] * r2 ** 3)
     return (x * rad + 2 * p1 * x * y + p2 * (r2 + 2 * x * x),
             y * rad + 2 * p2 * x * y + p1 * (r2 + 2 * y * y))
 
 
-def undistort_points(cam: Camera, uv, iters=10):
-    """Pixel -> normalised undistorted (x, y) by fixed-point iteration."""
+def undistort_points(cam: Camera, uv, iters=30):
+    """Invert the actual distortion by bounded Newton iterations; reject nonconvergence."""
+    uv = np.asarray(uv, float)
     fx, fy, cx, cy = cam.K()
-    xd = (uv[:, 0] - cx) / fx; yd = (uv[:, 1] - cy) / fy
+    if not np.isfinite(uv).all() or min(fx, fy) <= 0:
+        raise ValueError("Invalid image coordinates or calibration")
+    xd, yd = (uv[:,0]-cx)/fx, (uv[:,1]-cy)/fy
     x, y = xd.copy(), yd.copy()
     for _ in range(iters):
         dx, dy = distort(cam, x, y)
-        x = x - (dx - xd); y = y - (dy - yd)
+        rx, ry = dx-xd, dy-yd
+        done = np.maximum(np.abs(rx), np.abs(ry)) <= 1e-12
+        if done.all():
+            return x, y
+        h = 1e-6 * np.maximum(1., np.maximum(np.abs(x), np.abs(y)))
+        xp, yp = distort(cam, x+h, y)
+        xm, ym = distort(cam, x-h, y)
+        a, c = (xp-xm)/(2*h), (yp-ym)/(2*h)
+        xp, yp = distort(cam, x, y+h)
+        xm, ym = distort(cam, x, y-h)
+        b, d = (xp-xm)/(2*h), (yp-ym)/(2*h)
+        determinant = a*d-b*c
+        if np.any(~done & (~np.isfinite(determinant) | (np.abs(determinant) < 1e-14))):
+            raise ValueError("Camera distortion cannot be inverted at this pixel")
+        determinant = np.where(done, 1., determinant)
+        sx, sy = (d*rx-b*ry)/determinant, (a*ry-c*rx)/determinant
+        scale = np.maximum(1., np.hypot(sx, sy))
+        x -= np.where(done, 0., sx/scale)
+        y -= np.where(done, 0., sy/scale)
+        if not np.isfinite(x).all() or not np.isfinite(y).all():
+            raise ValueError("Non-finite distortion inverse")
+    dx, dy = distort(cam, x, y)
+    if np.any(np.maximum(np.abs(dx-xd), np.abs(dy-yd)) > 1e-10):
+        raise ValueError("Camera distortion inverse did not converge")
     return x, y
 
 

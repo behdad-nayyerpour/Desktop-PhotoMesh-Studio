@@ -70,7 +70,7 @@ def test_add_marker_on_photo_pins_and_predicts_other_photos(window, tmp_path):
     assert p["img_0002"][1] == pytest.approx(400.0, abs=1e-3)
     assert "img_0003" not in p                                   # -40 m at 60 m: outside the frame
     assert window.project.modified
-    X, n = g.triangulate_marker(window._sparse_model(), p)       # what Optimize Cameras will use
+    X, n = g.triangulate_marker(window._sparse_model(), p)       # provisional display position; prediction is not a measurement
     assert n == 2 and np.allclose(X, [100, 100, 0], atol=1e-3)
     labels = window.model_view.overlay.markers[1]
     assert lab in labels                                          # shown in the 3D view
@@ -84,15 +84,11 @@ def test_add_marker_falls_back_to_tie_points_and_reports_no_surface(window, tmp_
     assert len(window.dataset.markers) == 1
 
 
-def test_add_marker_from_model_view_ray(window, tmp_path):
+def test_model_view_cannot_add_markers_and_ray_math_stays_correct(window, tmp_path):
     ch = _scene(window, tmp_path)
     ch.model_ply = _ground_ply(str(tmp_path / "ground.ply"))
     lab = window.add_marker_at_ray(np.array([110.0, 100, 50]), np.array([0.0, 0, -1]))
-    p = _marker(window, lab)["projections"]
-    assert set(p) == {"img_0001", "img_0002"}                     # cam 3 sees it at u = 0: outside
-    assert all(v[2] is False for v in p.values())                 # all unpinned / predicted
-    assert p["img_0001"][0] == pytest.approx(500 + 1000 * 10 / 60, abs=1e-3)
-    assert p["img_0002"][0] == pytest.approx(500 - 1000 * 10 / 60, abs=1e-3)
+    assert lab is None and window.dataset.markers == []
     # model-view picking: the pyqtgraph MVP ray goes through the projected pixel
     from photomesh.overlay3d import pixel_ray, project
     P = np.array([[1.2, 0, 0, 0], [0, 1.6, 0, 0], [0, 0, -1.0002, -0.20002], [0, 0, -1, 0]])

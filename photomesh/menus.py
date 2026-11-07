@@ -21,6 +21,7 @@ MENUS = [
     ]),
     ("&Edit", [
         "Undo", "Redo", "-",
+        "Enable/Disable Selected Photos", "Remove Selected Photos", "-",
         ("Rotate Photo", ["Rotate Right", "Rotate Left"]),
     ]),
     ("Pro&cess", [
@@ -53,7 +54,7 @@ MENUS = [
         ("Photo Navigation", ["Open Next Photo", "Open Previous Photo"]),
         ("Ortho Product", ["DEM - Elevation", "Orthomosaic"]), "-",
         ("Panels and Toolbars", [
-            "Workspace*", "Reference*", "Photos*", "Console*", "Jobs*", "-", "Toolbar*",
+            "Project*", "Markers*", "Cameras*", "Photos*", "Console*", "Jobs*", "-", "Toolbar*",
         ]),
         "Capture View",
     ]),

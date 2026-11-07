@@ -2,7 +2,6 @@
 import os, uuid
 import numpy as np
 from PySide6.QtWidgets import QMessageBox, QInputDialog
-from .georef import _stem
 
 
 class RegistrationMixin:
@@ -23,20 +22,45 @@ class RegistrationMixin:
         from .bgjob import run_modal
         model_dir=self._model_dir()
         model=cio.read_model(model_dir)
-        positions={label:np.asarray(X,float) for label,X,_ctl in (self._marker_positions() or [])}
+        from . import georef as g
+        from .photonames import photo_dimensions
+        g.validate_projection_dimensions(model,photo_dimensions(ch))
+        positions={}
+        for marker in self._marker_objs():
+            if marker.disabled or not marker.enabled:
+                continue
+            if marker.ref is not None and ch.georef:
+                positions[marker.label] = (g.CRS.parse(ch.georef.get("crs") or ch.crs).to_metric(
+                    np.atleast_2d(marker.ref),ch.georef.get("zone"))[0] -
+                    np.asarray(ch.georef.get("offset") or [0,0,0],float))
+            else:
+                point,_n=g.triangulate_marker(model,marker.projections,measured_only=True)
+                if point is not None:
+                    positions[marker.label]=point
         photos=[]
         for index in indices:
             camera=ch.cameras[index]
             if not camera.width or not camera.height:
                 from PIL import Image
                 with Image.open(camera.path) as image: camera.width,camera.height=image.size
+            marker_key = self._photo_marker_key(index)
+            if marker_key is None:
+                QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: ambiguous photo identity; repair aliases first."); return
             xyz,xy=[],[]
             for marker in ch.markers:
                 if marker.get("disabled") or not marker.get("enabled",True) or marker["label"] not in positions:
                     continue
-                for name,projection in marker.get("projections",{}).items():
-                    if _stem(name)==_stem(camera.label) and (len(projection)<3 or projection[2]):
-                        xyz.append(positions[marker["label"]]); xy.append(projection[:2]); break
+                pins={name:projection for name,projection in marker.get("projections",{}).items()
+                      if len(projection)<3 or projection[2]}
+                try:
+                    # The new photo has no model image ID yet; resolve its stable
+                    # name through the same finite/deduplication/conflict policy.
+                    observations=g.marker_image_observations(model,pins,{marker_key:marker_key},measured_only=True)
+                except ValueError as error:
+                    QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: {error}"); return
+                if observations:
+                    _name,u,v=observations[0]
+                    xyz.append(positions[marker["label"]]); xy.append([u,v])
             try: validate_controls(xyz,xy,camera.width,camera.height)
             except ValueError as error:
                 QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: {error}"); return

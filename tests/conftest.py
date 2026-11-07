@@ -112,6 +112,8 @@ def no_dialogs(monkeypatch):
 @pytest.fixture
 def window(qtbot, no_dialogs):
     from photomesh.mainwindow import MainWindow
+    from PySide6.QtCore import QSettings
+    QSettings().remove("ui/layout_v104")  # independent fixtures; restore is tested explicitly
     w = MainWindow()
     qtbot.addWidget(w)
     w.show()

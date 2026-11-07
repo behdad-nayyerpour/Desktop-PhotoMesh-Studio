@@ -11,7 +11,9 @@ import time
 
 import numpy as np
 from PySide6.QtCore import Signal, QObject
-from PySide6.QtWidgets import QFileDialog, QMessageBox, QDialog
+from PySide6.QtWidgets import QMessageBox, QDialog
+
+from .filedialogs import QFileDialog
 
 from . import shapes as S
 

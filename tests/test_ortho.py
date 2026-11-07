@@ -326,7 +326,11 @@ def test_gui_build_export_import_orthomosaic(window, no_dialogs, monkeypatch, sc
     window.actions["Build Orthomosaic..."].trigger(); _wait(window)
     o = ch.orthomosaic
     assert o.get("pixel_size") == 0.04, window.dataset.log
-    assert window.tabs.currentWidget() is window.ortho_view and window.ortho_view.has_raster("ortho")
+    assert window.active_view() is window.ortho_view and window.ortho_view.has_raster("ortho")
+    window.show_view(window.photo_view)
+    window.layer_action("ortho").setChecked(False)
+    window.layer_action("ortho").setChecked(True)
+    assert window.active_view() is window.ortho_view  # toolbar selection replaces photo in Plan View
     assert "4 cm/pix" in pm.summary(ch, "ortho")
     rows = dict(pm.properties(ch, "ortho"))
     assert rows["Blending mode"] == "Mosaic" and rows["Resolution"] == "4 cm/pix" and "Date created" in rows

@@ -50,6 +50,18 @@ On Linux, with dependencies and Qt system libraries installed:
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
+The reference numerical audit can be run separately:
+
+```sh
+QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_numerical_reference_104.py
+python tools/benchmark_reference_104.py
+```
+
+The benchmark compares equivalent square-pixel calibration workloads with the
+pinned pre-audit source and retains accuracy/runtime evidence. Independent
+fixtures cover all supported camera models; incompatible models are not forced
+through that baseline comparison.
+
 The Tests workflow runs Linux regression checks on main, working branches and
 version tags. Windows also runs on release branches/tags or explicit manual
 selection. Batch-script changes run CI because they affect source setup/launch.

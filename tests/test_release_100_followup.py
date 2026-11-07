@@ -78,7 +78,7 @@ def test_camera_error_footer_is_under_error_column_and_not_a_camera(window):
     assert table.data_row_count == 2 and table.rowCount() == 3
     assert table.summary_row == 2
     assert table.item(2, 0).text() == "Total Error"
-    assert table.item(2, 5).text() == "5.000"
+    assert table.item(2, 5).text() == "—"  # conservative migration of legacy GPS opt-outs
     assert all(table.item(2, column).text() == "" for column in (1, 2, 3, 4, 6, 7, 8))
     assert not hasattr(table, "_summary_label")
     activated = []
@@ -90,11 +90,11 @@ def test_camera_error_footer_is_under_error_column_and_not_a_camera(window):
 def test_properties_belongs_to_workspace_only_and_uses_compact_rows(window):
     assert "Properties" not in window.docks
     assert "View/Properties" not in window.actions
-    workspace = window.docks["Workspace"].widget()
+    workspace = window.docks["Project"].widget()
     assert workspace is window.workspace_splitter
     assert workspace.isAncestorOf(window.properties)
-    assert not window.reference_panel.isAncestorOf(window.properties)
-    assert window.reference_panel.widget(0) is window.reference
+    assert not window.docks["Cameras"].isAncestorOf(window.properties)
+    assert window.docks["Cameras"].widget() is window.reference
     window.properties.show_props({f"Property {i}": f"Value {i}" for i in range(30)})
     assert window.properties.rowCount() == 30
     assert window.properties.rowHeight(0) <= max(18, window.properties.fontMetrics().height()+2)
@@ -164,18 +164,14 @@ def test_theme_reuses_native_style_when_stylesheet_wraps_it(qapp, monkeypatch):
     assert calls == []
 
 
-def test_left_tabs_extend_beside_all_bottom_panes(window):
+def test_side_panels_and_floating_diagnostics(window):
     assert window.corner(Qt.BottomLeftCorner) == Qt.LeftDockWidgetArea
-    window.resize(1500, 920)
-    for left_name in ("Workspace", "Reference"):
-        left = window.docks[left_name]
-        left.show(); left.raise_()
-        for bottom_name in ("Photos", "Console", "Jobs"):
-            bottom = window.docks[bottom_name]
-            bottom.show(); bottom.raise_()
-            QApplication.processEvents()
-            assert left.geometry().bottom() > bottom.geometry().top()
-            assert bottom.geometry().left() > left.geometry().right()
-            assert abs(bottom.geometry().left() - window.tabs.geometry().left()) <= 2
-            gap = window.statusBar().geometry().top() - left.geometry().bottom()
-            assert 0 <= gap <= 2 * window.fontMetrics().height() + 12
+    assert window.dockWidgetArea(window.docks["Photos"]) == Qt.RightDockWidgetArea
+    for name in ("Project", "Markers", "Cameras"):
+        assert window.dockWidgetArea(window.docks[name]) == Qt.LeftDockWidgetArea
+    for name in ("Console", "Jobs"):
+        window.actions[name].setChecked(True)
+        QApplication.processEvents()
+        assert window.docks[name].isFloating()
+        assert not window.docks[name].isHidden()
+        window.actions[name].setChecked(False)

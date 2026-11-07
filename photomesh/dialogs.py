@@ -3,7 +3,9 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import (
     QDialog, QFormLayout, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
     QVBoxLayout, QGroupBox, QLabel, QProgressBar, QPlainTextEdit, QPushButton,
-    QHBoxLayout, QLineEdit, QFileDialog, QTabWidget, QWidget, QMessageBox, QScrollArea)
+    QHBoxLayout, QLineEdit, QTabWidget, QWidget, QMessageBox, QScrollArea)
+
+from .filedialogs import QFileDialog
 
 from . import colmap as cm
 
@@ -67,7 +69,11 @@ class AlignPhotosDialog(_SettingsDialog):
         self.generic = QCheckBox("Generic preselection")
         self.generic.setChecked(True)
         self.reference = QCheckBox("GPS pair preselection")
-        self.reference.setChecked(True)
+        from .photo_gps import use_photo_gps
+        dataset = getattr(parent, "dataset", None)
+        self.photo_gps_on = use_photo_gps(dataset) if dataset is not None else True
+        self.reference.setChecked(self.photo_gps_on)
+        self.reference.setEnabled(self.photo_gps_on)
         self.reset = QCheckBox("Rebuild alignment transactionally")
         self.reset.hide()
         self.mode = _combo(["Fast", "Exhaustive", "Sequential"], "Fast")
@@ -96,15 +102,15 @@ class AlignPhotosDialog(_SettingsDialog):
             self.neural_warning.setVisible(self.feature_method.currentText() != "SIFT")
         self.feature_method.currentTextChanged.connect(update_neural_warning)
         update_neural_warning()
-        self.gps_frame = QCheckBox("Apply checked camera GPS to model scale, orientation and location")
+        self.gps_frame = QCheckBox("Apply photo GPS to model scale, orientation and location")
         cameras = getattr(getattr(parent, "dataset", None), "cameras", [])
         from .engine import gps_frame_available
         project_dataset=getattr(parent,"dataset",None)
         existing=bool(project_dataset and (project_dataset.georef or project_dataset.aligned_count()))
-        ready,reason=gps_frame_available(cameras,getattr(project_dataset,"crs",""),existing)
-        self.gps_frame.setChecked(ready)
-        self.gps_frame.setEnabled(ready)
-        self.gps_frame.setToolTip(reason)
+        ready,reason=gps_frame_available(cameras,getattr(project_dataset,"crs",""),existing, respect_legacy_flags=False)
+        self.gps_frame.setChecked(ready and self.photo_gps_on)
+        self.gps_frame.setEnabled(ready and self.photo_gps_on)
+        self.gps_frame.setToolTip(reason if self.photo_gps_on else "Photo GPS is disabled in Settings.")
         self.gform.addRow(self.gps_frame)
         self.gform.addRow(self.c2f)
         self.gform.addRow("Image resolution:", self.accuracy)
@@ -331,14 +337,21 @@ class OptimizeCamerasDialog(_SettingsDialog):
         from .georef import DEFAULTS
         s = dict(DEFAULTS); s.update(settings or {})
         self.use_markers = QCheckBox("Use control markers (XYZ + placements on 2 or more aligned photos)")
-        self.use_markers.setChecked(True)
-        self.use_markers.setToolTip("At least 3 non-collinear controls are needed to georeference. "
+        self.use_markers.setChecked(bool(s.get("use_markers", True)))
+        self.use_markers.setToolTip("Unchecked excludes marker coordinates and image observations from optimization. "
+                                    "Marker estimates/errors can still be displayed for checking. Predictions alone are display hints; pin or refine placements on photos before adjustment. "
+                                    "At least 3 non-collinear controls are needed to georeference. "
                                    "Without sufficient reference data, local bundle adjustment is offered.")
         self.use_cameras = QCheckBox("Use camera GPS (geographic/UTM coordinate systems)")
-        self.use_cameras.setChecked(bool(s.get("use_cameras", False)))
-        self.use_cameras.setToolTip("Use only enabled photos checked in the Reference panel.")
+        from .photo_gps import use_photo_gps
+        dataset = getattr(parent, "dataset", None)
+        gps_on = use_photo_gps(dataset) if dataset is not None else True
+        self.use_cameras.setChecked(bool(s.get("use_cameras", False)) and gps_on)
+        self.use_cameras.setEnabled(gps_on)
+        self.use_cameras.setToolTip("Uses valid GPS from enabled photos when Use Photo GPS is enabled in Settings.")
         self.bundle = QCheckBox("Bundle adjustment (otherwise similarity transform only)"); self.bundle.setChecked(True)
-        self.intr = QCheckBox("Fit focal length, principal point and k1"); self.intr.setChecked(True)
+        self.intr = QCheckBox("Fit camera calibration (focal lengths, principal point and distortion)"); self.intr.setChecked(True)
+        self.intr.setToolTip("Preserves each camera model and fits its supported calibration parameters.")
         for w in (self.use_markers, self.use_cameras, self.bundle, self.intr):
             self.gform.addRow(w)
         def dspin(v, dec=3, mx=1000):
@@ -568,6 +581,18 @@ class PreferencesDialog(QDialog):
         self.qt_dialogs = QCheckBox("Use built-in file dialogs (if the Windows Open/Add dialogs hang)")
         self.qt_dialogs.setChecked(s.value("ui/qt_file_dialogs", False, bool))
         gf.addRow(self.qt_dialogs)
+        from .photo_gps import use_photo_gps
+        self.dataset = getattr(parent, "dataset", None)
+        self.use_photo_gps = QCheckBox("Use Photo GPS")
+        self.use_photo_gps.setChecked(use_photo_gps(self.dataset) if self.dataset is not None else True)
+        self.use_photo_gps.setToolTip("Use valid photo GPS for pair preselection and camera references. "
+                                     "Adding markers does not change this setting. Photos remain included when GPS is off.")
+        gf.addRow(self.use_photo_gps)
+        if self.dataset is not None and "use_photo_gps" not in self.dataset.reference_settings and not self.use_photo_gps.isChecked():
+            legacy_note = QLabel("Photo GPS is off to preserve this older project's reference exclusions. "
+                                 "Enable Use Photo GPS to use all valid photo positions.")
+            legacy_note.setWordWrap(True)
+            gf.addRow(legacy_note)
         tabs.addTab(gen, "General")
         gpu = QWidget(); gl = QFormLayout(gpu)
         self.use_gpu = QCheckBox("Use GPU for feature extraction/matching")
@@ -601,6 +626,12 @@ class PreferencesDialog(QDialog):
 
     def _save(self):
         s = QSettings()
+        if self.dataset is not None:
+            from .photo_gps import use_photo_gps
+            changed = use_photo_gps(self.dataset) != self.use_photo_gps.isChecked()
+            self.dataset.reference_settings["use_photo_gps"] = self.use_photo_gps.isChecked()
+            if changed and self.parent() is not None:
+                self.parent().set_modified()
         s.setValue("ui/theme", self.theme.currentText())
         s.setValue("ui/default_view", self.default_view.currentText())
         s.setValue("gpu/use_gpu", self.use_gpu.isChecked())

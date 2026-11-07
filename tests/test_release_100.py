@@ -36,12 +36,16 @@ def test_reference_selection_does_not_change_usage_and_flags_persist(window, tmp
     window.refresh_all()
     window.reference.selectRow(1)
     assert all(c.use_reference for c in window.dataset.cameras)
-    window.reference.item(1, 0).setCheckState(Qt.Unchecked)
-    assert not window.dataset.cameras[1].use_reference
-    assert window.dataset.cameras[1].enabled
+    assert not window.reference.item(1, 0).flags() & Qt.ItemIsUserCheckable
+    from photomesh.dialogs import PreferencesDialog
+    dialog = PreferencesDialog(window)
+    dialog.use_photo_gps.setChecked(False)
+    dialog._save()
+    assert all(c.enabled for c in window.dataset.cameras)
     path = str(tmp_path / "references.pmsx")
     window.project.save(path)
-    assert not Project.load(path).dataset.cameras[1].use_reference
+    from photomesh.photo_gps import use_photo_gps
+    assert not use_photo_gps(Project.load(path).dataset)
 
 
 def test_photo_refresh_keeps_identity_selection_and_scroll(window, qtbot):
@@ -154,7 +158,8 @@ def test_workspace_root_is_project_and_markers_share_flag_icons(window):
     assert not any("dataset" == (item.data(0, Qt.UserRole) or [None])[0]
                    for item in window.workspace._iter())
     assert not window.markers_pane.item(0, 0).icon().isNull()
-    assert window.reference_panel.count() == 2
+    assert window.docks["Markers"].isAncestorOf(window.markers_pane)
+    assert window.docks["Cameras"].widget() is window.reference
 
 
 def test_native_dialogs_default_and_explicit_fallback(monkeypatch, qapp):
@@ -207,7 +212,8 @@ def test_default_view_setting_selects_loaded_product(window):
         setting.setValue("ui/default_view", old)
 
 
-def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, monkeypatch):
+@pytest.mark.parametrize("gps_on", [False, True])
+def test_project_gps_policy_filters_optimizer_inputs(window, tmp_path, monkeypatch, gps_on):
     import json
     from photomesh.dialogs import OptimizeCamerasDialog
     from test_markers_manual import _scene
@@ -216,6 +222,7 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
         camera.lon, camera.lat, camera.alt = 44. + i * .001, 40., 100.
     ch.cameras[1].use_reference = False
     ch.cameras[2].enabled = False
+    ch.reference_settings["use_photo_gps"] = gps_on
     from PySide6.QtWidgets import QMessageBox
     monkeypatch.setattr(QMessageBox, "question", staticmethod(lambda *a, **kw: QMessageBox.Yes))
     monkeypatch.setattr(OptimizeCamerasDialog, "exec", lambda self: True)
@@ -224,7 +231,7 @@ def test_camera_reference_checkboxes_filter_optimizer_inputs(window, tmp_path, m
     window.optimize_cameras()
     assert ran
     cfg = json.load(open(tmp_path / "work" / "georef_task.json", encoding="utf-8"))
-    assert set(cfg["camera_gps"]) == {ch.cameras[0].label}
+    assert set(cfg["camera_gps"]) == ({ch.cameras[0].label, ch.cameras[1].label} if gps_on else set())
 
 
 def test_ortho_context_hit_includes_flag_above_ground_point(window):

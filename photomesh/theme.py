@@ -1,6 +1,6 @@
 """Dark Fusion theme (original styling)."""
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStyleFactory
 
 
 def _ensure_fusion(app):
@@ -55,12 +55,20 @@ def apply_theme(app, name=None):
     if name == "Light":
         _ensure_fusion(app)
         app.setStyleSheet("")
-        app.setPalette(app.style().standardPalette())
+        # A stylesheet proxy can retain the dark Base/Text palette. Read a
+        # fresh Fusion palette without replacing the live style used by views.
+        fusion = QStyleFactory.create("Fusion")
+        app.setPalette(fusion.standardPalette())
     else:
         apply_dark_theme(app)
     app.setProperty("photomesh_active_theme", name)
     light = name == "Light"
-    for widget in app.allWidgets():
+    widgets = app.allWidgets()
+    # Widgets with local stylesheets can keep palettes resolved under the old
+    # application stylesheet. Reset them before applying custom viewport colors.
+    for widget in widgets:
+        widget.setPalette(app.palette())
+    for widget in widgets:
         if hasattr(widget, "apply_theme"):
             widget.apply_theme(light)
         widget.update()
@@ -68,4 +76,7 @@ def apply_theme(app, name=None):
 
 def viewport_color():
     from PySide6.QtCore import QSettings
-    return QColor(228, 230, 234) if QSettings().value("ui/theme", "Dark") == "Light" else QColor(74, 74, 80)
+    app = QApplication.instance()
+    name = app.property("photomesh_active_theme") if app is not None else None
+    name = name or QSettings().value("ui/theme", "Dark")
+    return QColor(228, 230, 234) if name == "Light" else QColor(74, 74, 80)

@@ -58,31 +58,31 @@ def test_pipeline_callback_does_not_block_gui_and_reports_failure(qtbot):
     assert done == [(True, "Finished")] and thread[0] != main
 
 
-def test_marker_menu_uses_hit_marker_and_movement_can_be_cancelled(window, tmp_path):
-    from PySide6.QtCore import Qt
-    from PySide6.QtWidgets import QApplication
-    ch = _scene(window, tmp_path)
-    label = window.add_marker_at_photo(500, 400, k=0)
-    window.marker_view_action("ignore", label, "ortho")
-    assert _marker(window, label)["disabled"] is True
-    assert _marker(window, label)["enabled"] is True  # still a control, not a check
-    assert window.model_view.marker_states[label] == "predicted"
-    window.marker_view_action("use", label, "model")
-    window.marker_view_action("pin", label, "ortho")
-    assert _marker(window, label)["locked"]
-    count = len(window._mk_undo)
-    for name, view in (("photo", window.photo_view), ("ortho", window.ortho_view), ("model", window.model_view)):
-        assert window.marker_view_action("move", label, name)
-        assert view._moving_marker == label
-        view.cancel_marker_move()
+def test_marker_menu_edits_only_photos_and_spatial_views_only_select(window,tmp_path):
+    import copy
+    _scene(window,tmp_path)
+    label=window.add_marker_at_photo(500,400,k=0)
+    window.marker_view_action("ignore",label,"photo")
+    assert _marker(window,label)["disabled"] is True
+    assert _marker(window,label)["enabled"] is True
+    window.marker_view_action("use",label,"photo")
+    before=copy.deepcopy(window.dataset.markers); history=len(window._mk_undo)
+    for name,view in (("ortho",window.ortho_view),("model",window.model_view)):
+        for action in ("ignore","use","pin","move","delete"):
+            assert not window.marker_view_action(action,label,name)
+            assert window.dataset.markers == before
+        assert window.marker_view_action("select",label,name)
+        assert window.markers_pane.current_label() == label
+        view.begin_marker_move(label)
         assert view._moving_marker is None
-    assert len(window._mk_undo) == count  # cancelling a pick makes no model edit
-    assert window.undo_markers()
-    assert not _marker(window, label)["locked"]
-
+    assert len(window._mk_undo) == history
+    assert window.marker_view_action("move",label,"photo")
+    assert window.photo_view._moving_marker == label
+    window.photo_view.cancel_marker_move()
+    assert len(window._mk_undo) == history
 
 def test_photo_move_click_pins_same_marker(window, tmp_path, qtbot):
-    from PySide6.QtCore import Qt, QPoint
+    from PySide6.QtCore import Qt, QPointF
     _scene(window, tmp_path)
     label = window.add_marker_at_photo(500, 400, k=0)
     window.open_photo(0)
@@ -91,8 +91,10 @@ def test_photo_move_click_pins_same_marker(window, tmp_path, qtbot):
     qtbot.keyClick(view.view, Qt.Key_Escape)
     assert view._moving_marker is None
     view.begin_marker_move(label)
-    scene = view.view.mapToScene(QPoint(100, 100))
-    qtbot.mouseClick(view.view.viewport(), Qt.LeftButton, pos=QPoint(100, 100))
+    screen = view.view.mapFromScene(QPointF(510., 410.))
+    scene = view.view.mapToScene(screen)
+    assert 0 <= scene.x() < 1000 and 0 <= scene.y() < 800
+    qtbot.mouseClick(view.view.viewport(), Qt.LeftButton, pos=screen)
     point = _marker(window, label)["projections"]["img_0001"]
     assert np.allclose(point[:2], [scene.x(), scene.y()]) and point[2]
     assert len(window.dataset.markers) == 1 and view._moving_marker is None
@@ -156,7 +158,8 @@ def test_marker_state_palette():
     assert color("pinned").getRgb()[:3] == (40, 220, 60)
     assert color("placed").getRgb()[:3] == (60, 140, 255)
     assert color("predicted").getRgb()[:3] == (190, 190, 190)
-    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False]}).to_dict()) == "placed"
+    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False]}).to_dict()) == "predicted"
+    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False, "refined"]}).to_dict()) == "placed"
     assert marker_state(g.Marker("A", projections={"photo": [1, 2, True]}).to_dict()) == "pinned"
     assert marker_state(g.Marker("A", disabled=True, locked=True).to_dict()) == "predicted"
 
@@ -171,16 +174,18 @@ def test_background_status_is_counted_independently(window):
     assert not busy.active
 
 
-def test_moving_marker_changes_estimate_without_overwriting_reference_xyz(window, tmp_path):
-    ch = _scene(window, tmp_path)
-    ch.georef = {"offset": [1000., 2000., 0.]}
-    ch.markers = [g.Marker("G1", ref=[1110., 2100., 0.]).to_dict()]
-    assert window.add_marker_at_ortho(1110., 2100., 0., label="G1") == "G1"
-    assert _marker(window, "G1")["ref"] == [1110., 2100., 0.]
-    assert window.add_marker_at_ortho(1115., 2100., 0., label="G1") == "G1"
-    assert _marker(window, "G1")["ref"] == [1110., 2100., 0.]
-    assert window.ortho_view.markers[0][1:] == pytest.approx((1115., 2100.), abs=1e-3)
-
+def test_photo_moves_change_estimate_without_overwriting_reference_xyz(window,tmp_path):
+    ch=_scene(window,tmp_path)
+    ch.georef={"offset":[1000.,2000.,0.]}
+    ch.markers=[g.Marker("G1",ref=[1110.,2100.,0.]).to_dict()]
+    window.pin_marker("G1",500.+1000.*10/60,400.,k=0)
+    window.pin_marker("G1",500.-1000.*10/60,400.,k=1)
+    assert window.ortho_view.markers[0][1:] == pytest.approx((1110.,2100.),abs=1e-6)
+    window.pin_marker("G1",500.+1000.*15/60,400.,k=0)
+    window.pin_marker("G1",500.-1000.*5/60,400.,k=1)
+    assert _marker(window,"G1")["ref"] == [1110.,2100.,0.]
+    assert window.ortho_view.markers[0][1:] == pytest.approx((1115.,2100.),abs=1e-6)
+    assert ch.georef["rows"][0]["total"] == pytest.approx(5.,abs=1e-6)
 
 def test_estimated_world_marker_offset_is_applied_once(window):
     window.dataset.georef = {"offset": [1000., 2000., 0.]}
@@ -189,17 +194,19 @@ def test_estimated_world_marker_offset_is_applied_once(window):
     assert window.ortho_view.markers == [("G1", 1110., 2100.)]
 
 
-def test_explicit_surface_move_can_replace_pins_and_is_undoable(window, tmp_path):
-    ch = _scene(window, tmp_path)
-    label = window.add_marker_at_photo(500., 400., k=0)
-    old = dict(_marker(window, label)["projections"])
-    window.ortho_view.moveMarkerRequested.emit(label, 110., 100., 0.)
-    points = _marker(window, label)["projections"]
-    assert all(not p[2] for p in points.values())
-    assert window.ortho_view.markers[0][1:] == pytest.approx((110., 100.), abs=1e-3)
-    assert window.undo_markers()
-    assert _marker(window, label)["projections"] == old
-
+def test_legacy_spatial_edit_signals_cannot_change_marker_data(window,tmp_path):
+    import copy
+    _scene(window,tmp_path)
+    label=window.add_marker_at_photo(500.,400.,k=0)
+    before=copy.deepcopy(window.dataset.markers); history=len(window._mk_undo)
+    window.ortho_view.moveMarkerRequested.emit(label,110.,100.,0.)
+    window.ortho_view.placeMarkerRequested.emit(label,115.,100.,0.)
+    window.ortho_view.addMarkerRequested.emit(115.,100.,0.)
+    window.model_view.addMarkerRay.emit(np.array([110.,100.,50.]),np.array([0.,0.,-1.]))
+    window.model_view.moveMarkerRay.emit(label,np.array([110.,100.,50.]),np.array([0.,0.,-1.]))
+    assert window.add_marker_at_ray([110.,100.,50.],[0.,0.,-1.]) is None
+    assert window.add_marker_at_ortho(110.,100.,0.,label=label,replace_pins=True) is None
+    assert window.dataset.markers == before and len(window._mk_undo) == history
 
 def test_runner_keeps_split_counter_lines(qtbot):
     import sys
@@ -224,19 +231,14 @@ def test_edited_marker_does_not_keep_old_error_measurements(window, tmp_path):
     assert window.markers_pane.error_summary["All points"]["error"] is None
 
 
-def test_pinned_surface_marker_requires_move_and_is_not_automatically_refined(window, tmp_path, monkeypatch):
-    import json
-    import os
-    ch = _scene(window, tmp_path)
-    label = window.add_marker_at_ortho(110., 100., 0.)
-    window.marker_view_action("pin", label, "ortho")
-    before = dict(_marker(window, label)["projections"])
-    assert window.add_marker_at_ortho(115., 100., 0., label=label) is None
-    assert _marker(window, label)["projections"] == before
-    monkeypatch.setattr(window, "_run", lambda *a, **kw: None)
+def test_legacy_locked_markers_are_not_automatically_refined(window,tmp_path,monkeypatch):
+    import json,os,copy
+    ch=_scene(window,tmp_path)
+    label=window.add_marker_at_photo(500.,400.,k=0)
+    ch.markers[0]["locked"]=True
+    before=copy.deepcopy(ch.markers)
+    monkeypatch.setattr(window,"_run",lambda *a,**kw:None)
     window.refine_markers()
-    cfg = json.load(open(os.path.join(ch.workdir, "refine_task.json")))
+    cfg=json.load(open(os.path.join(ch.workdir,"refine_task.json")))
     assert label not in [m["label"] for m in cfg["markers"]]
-    window.ortho_view.moveMarkerRequested.emit(label, 115., 100., 0.)
-    assert not _marker(window, label)["locked"]
-    assert window.ortho_view.markers[0][1:] == pytest.approx((115., 100.), abs=1e-3)
+    assert ch.markers == before

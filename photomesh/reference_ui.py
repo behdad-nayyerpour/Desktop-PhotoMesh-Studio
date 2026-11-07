@@ -6,7 +6,9 @@ import json
 import os
 
 import numpy as np
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMessageBox
+
+from .filedialogs import QFileDialog
 
 from . import colmap as cm
 from . import georef as g
@@ -82,7 +84,8 @@ class ReferenceMixin:
         f = os.path.join(d, "images.bin")
         if not os.path.exists(f):
             return None
-        key = (d, os.path.getmtime(f), os.path.getmtime(os.path.join(d, "points3D.bin")))
+        key = (d, tuple((os.stat(os.path.join(d, name)).st_mtime_ns, os.stat(os.path.join(d, name)).st_size)
+                        for name in ("images.bin", "points3D.bin", "cameras.bin")))
         if getattr(self, "_model_cache", (None,))[0] != key:
             self._model_cache = (key, cio.read_model(d))
         return self._model_cache[1]
@@ -95,15 +98,29 @@ class ReferenceMixin:
             self._markers_snapshot()              # Edit > Undo restores the previous markers
 
     def _invalidate_marker_error_rows(self, markers):
-        """Old residuals must not be presented as measurements of edited placements."""
-        before = {m["label"]: m for m in self.dataset.markers or []}
-        changed = {m.label for m in markers if m.label not in before or
-                   before[m.label].get("ref") != m.ref or
-                   before[m.label].get("projections", {}) != m.projections}
-        if changed and self.dataset.georef:
-            self.dataset.georef["rows"] = [row for row in self.dataset.georef.get("rows", [])
-                                        if row["label"] not in changed]
-            self.dataset.georef["control_rmse"] = self.dataset.georef["check_rmse"] = None
+        """Recompute edited residuals in the current frame; never keep old error rows."""
+        georef = self.dataset.georef
+        if not georef:
+            return
+        georef.update(rows=[], control_rmse=None, check_rmse=None)
+        model = self._sparse_model()
+        if model is None:
+            return
+        stamp = self._model_cache[0]
+        if getattr(self, "_marker_residual_cache", (None,))[0] != stamp:
+            self._marker_residual_cache = (stamp, {})
+        try:
+            from .photonames import photo_dimensions
+            g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
+            estimates, _pixels, _counts, rows = g.marker_diagnostics(
+                model, markers, g.CRS.parse(georef.get("crs") or self.dataset.crs),
+                georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1])
+        except (ValueError, np.linalg.LinAlgError) as error:
+            self.log(f"Marker residuals unavailable after edit: {error}")
+            return
+        georef.update(rows=rows, control_rmse=g.rmse(rows, "control"), check_rmse=g.rmse(rows, "check"))
+        for marker in markers:
+            marker.est = estimates[marker.label].tolist() if marker.label in estimates else None
 
     def _store_markers(self, ms):
         self._invalidate_marker_error_rows(ms)
@@ -118,21 +135,29 @@ class ReferenceMixin:
     def _marker_model_xyz(self, m, model, names):
         """Marker position in the model frame: reference (if georeferenced),
         else triangulated from its projections."""
-        # Display the surveyed feature's observed estimate, not its reference target.
-        # Moving its photo/Ortho placement must not edit its survey XYZ.
-        X, _n = g.triangulate_marker(model, m.projections, names)
+        # Display the observed estimate, independently of the surveyed target.
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
+        except ValueError:
+            return None
+        try:
+            X, _n = g.triangulate_marker(model, m.projections, names, measured_only=True)
+            if X is None:
+                X, _n = g.triangulate_marker(model, m.projections, names)
+        except (ValueError, np.linalg.LinAlgError):
+            return None
         if X is not None:
             return X
         gr = self.dataset.georef or {}
         if gr.get("offset") is not None and m.ref is not None:
             try:
-                crs = g.CRS.parse(self.dataset.crs)
+                crs = g.CRS.parse(gr.get("crs") or self.dataset.crs)
                 X = crs.to_metric(np.atleast_2d(np.asarray(m.ref, float)), gr.get("zone"))[0]
                 return X - np.asarray(gr["offset"], float)
             except Exception:
                 pass
-        X, _n = g.triangulate_marker(model, m.projections, names)
-        return X
+        return None
 
     def _marker_positions(self):
         """Model-frame positions of the active dataset's markers (list of xyz).
@@ -147,7 +172,8 @@ class ReferenceMixin:
         if model is None:
             return None
         key0 = (self._model_cache[0], _json.dumps(self.dataset.georef.get("offset") if self.dataset.georef else None),
-                self.dataset.crs)
+                self.dataset.crs, _json.dumps((self.dataset.georef or {}).get("zone")),
+                tuple((c.colmap_name, c.path, c.width, c.height) for c in self.dataset.cameras))
         cache = getattr(self, "_marker_xyz_cache", None)
         if cache is None or cache[0] != key0:
             cache = self._marker_xyz_cache = (key0, {})
@@ -186,7 +212,10 @@ class ReferenceMixin:
         cams = self.dataset.cameras
         if not (0 <= k < len(cams)) or self.photo_view.path is None:
             return
-        stem = g._stem(cams[k].label)
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            self.photo_view.set_markers([], self.markers_pane.current_label())
+            return
         items = []
         model = None
         try:
@@ -197,7 +226,7 @@ class ReferenceMixin:
         for m in self._marker_objs():
             p = {g._stem(a): v for a, v in m.projections.items()}.get(stem)
             if p is not None:
-                kind = "predicted" if m.disabled else ("pinned" if len(p) < 3 or p[2] else "placed")
+                kind = "predicted" if m.disabled or not g.projection_is_measured(p) else ("pinned" if len(p) < 3 or p[2] else "placed")
                 items.append((m.label, p[0], p[1], kind))
             elif model is not None and stem in names:
                 X = self._marker_model_xyz(m, model, names)
@@ -211,22 +240,16 @@ class ReferenceMixin:
 
     def place_marker(self, u, v):
         label = self.markers_pane.current_label()
-        k = self.current_photo
-        if not label or not (0 <= k < len(self.dataset.cameras)):
-            return
-        ms = self._marker_objs()
-        self._snap()
-        for m in ms:
-            if m.label == label:
-                stem = g._stem(self.dataset.cameras[k].label)
-                m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
-                m.projections[stem] = [float(u), float(v), True]
-        self._store_markers(ms)
-        self.log(f"Marker {label} placed on {self.dataset.cameras[k].label} at ({u:.1f}, {v:.1f})")
+        if label:
+            self.pin_marker(label, u, v, k=self.current_photo)
 
     def remove_marker_projection(self, label):
         k = self.current_photo
-        stem = g._stem(self.dataset.cameras[k].label)
+        if not (0 <= k < len(self.dataset.cameras)):
+            return
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            return
         ms = self._marker_objs()
         self._snap()
         for m in ms:
@@ -240,9 +263,7 @@ class ReferenceMixin:
         for m in ms:
             if m.label == label:
                 m.enabled = enabled
-        self.dataset.markers = [m.to_dict() for m in ms]
-        self.set_modified()
-        self._update_view_markers()
+        self._store_markers(ms)
 
     def add_marker(self):
         ms = self._marker_objs()
@@ -272,7 +293,7 @@ class ReferenceMixin:
         nproj = sum(len(m.projections) for m in new)
         self.log(f"Imported {len(new)} markers ({nproj} photo projections) from {path}; "
                  f"coordinate system: {crs.name if crs else 'unknown'}")
-        self.docks["Reference"].raise_()
+        self._show_dock("Markers", True)
 
     def export_markers(self):
         rows = (self.dataset.georef or {}).get("rows")
@@ -304,19 +325,29 @@ class ReferenceMixin:
         ch = self.dataset
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
+        self._photo_map(ch)  # recover legacy aliases; ambiguous inputs remain excluded
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(self._sparse_model(), photo_dimensions(ch))
+        except ValueError as error:
+            QMessageBox.information(self, "Optimize Cameras", str(error)); return
         defaults = dict(ch.reference_settings)
-        defaults.setdefault("use_cameras", any(c.enabled and c.use_reference and c.lat is not None and c.lon is not None
-                                             for c in ch.cameras))
+        from .photo_gps import camera_gps, use_photo_gps
+        defaults.setdefault("use_cameras", bool(camera_gps(ch)))
         dlg = OptimizeCamerasDialog(self, defaults)
         if not dlg.exec():
             return
         s = dlg.settings()
-        ch.reference_settings = dict(s["accuracies"], use_cameras=s["use_cameras"])
+        gps_on = use_photo_gps(ch)
+        requested_cameras = s["use_cameras"] if gps_on else ch.reference_settings.get("use_cameras", True)
+        s["use_cameras"] = gps_on and s["use_cameras"]
+        ch.reference_settings.update(s["accuracies"], use_cameras=requested_cameras,
+                                     use_photo_gps=gps_on, use_markers=s["use_markers"])
         wd = self.project.default_workdir(ch)
-        cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
+        cfg = {"model": self._model_dir(), "photo_sizes": photo_dimensions(ch),
+               "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
-               "camera_gps": {c.label: [c.lon, c.lat, c.alt] for c in ch.cameras
-                              if c.enabled and c.use_reference and c.lat is not None and c.lon is not None},
+               "camera_gps": camera_gps(ch) if s["use_cameras"] else {},
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
                "fit_intrinsics": s["fit_intrinsics"], "offset": (ch.georef or {}).get("offset"),
                "report": os.path.join(wd, "georef_report.txt"),
@@ -325,8 +356,9 @@ class ReferenceMixin:
                                               os.path.join(wd, "dense", "fused.ply")) if p]}
         if not ch.georef and cfg["camera_gps"] and (ch.crs or "") == "" and s["use_cameras"]:
             cfg["crs"] = "EPSG:4326"
-        status = g.reference_status(self._sparse_model(), self._marker_objs(),
+        status = g.reference_status(self._sparse_model(), self._marker_objs() if s["use_markers"] else [],
                                     g.CRS.parse(cfg["crs"]), cfg["camera_gps"])
+        status["imported"] = len(ch.markers or [])
         ready = ((s["use_markers"] and status["usable"] >= 3) or
                  (s["use_cameras"] and status["gps"] >= 3))
         if not ready:
@@ -335,8 +367,9 @@ class ReferenceMixin:
                    f"{status['gps']} camera GPS positions usable in the selected CRS.\n\n"
                    "Georeferencing needs at least 3 non-collinear controls or camera GPS positions. "
                    "Imported XYZ alone is insufficient: place each control on at least two aligned photos.\n\n"
-                   "Optimize cameras in the existing frame instead? This uses tie points and enabled marker "
-                   "projections, ignores reference coordinates and GPS, and does not georeference the model.")
+                   "Optimize cameras in the existing frame instead? This uses tie points" +
+                   (" and enabled control-marker image observations" if s["use_markers"] else "") +
+                   ", ignores reference coordinates and GPS, and does not georeference the model.")
             if not s["bundle"]:
                 QMessageBox.information(self, "Optimize Cameras", msg +
                                         "\nEnable Bundle adjustment for optimization without georeferencing.")
@@ -360,6 +393,7 @@ class ReferenceMixin:
             if not res.get("local_only"):
                 ch.georef = {k: res.get(k) for k in ("offset", "similarity", "crs", "crs_kind", "zone", "rows",
                                                      "control_rmse", "check_rmse")}
+                ch.crs = res.get("crs") or ch.crs
                 for r in ch.georef.get("rows") or []:
                     r["pix"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("pix")
                     r["n"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("n")
@@ -377,6 +411,8 @@ class ReferenceMixin:
                 m.est = e.get("est")
             ch.markers = [m.to_dict() for m in ms]
             self._reload_alignment(ch, wd)
+            if res.get("local_only") and ch.georef:
+                self._store_markers(self._marker_objs())
             c, k = res.get("control_rmse"), res.get("check_rmse")
             msg = ("Cameras optimized in the existing frame. " if res.get("local_only") else "Georeferenced. ") + (f"Control RMSE {c['total']:.3f} m (n={c['n']}). " if c else "") + \
                 (f"Check RMSE {k['total']:.3f} m (n={k['n']})." if k else "")
@@ -443,6 +479,11 @@ class ReferenceMixin:
         ch = self.dataset
         if not ch.markers or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Refine Markers", "Align photos and import markers first."); return
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(self._sparse_model(), photo_dimensions(ch))
+        except ValueError as error:
+            QMessageBox.information(self, "Refine Markers", str(error)); return
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "image_root": cm.image_dir(wd), "markers": [m for m in ch.markers if not m.get("disabled", False) and not m.get("locked", False)],
                "offset": (ch.georef or {}).get("offset"), "use_reference": bool(ch.georef),
@@ -464,7 +505,7 @@ class ReferenceMixin:
                         continue                     # never move a user-pinned placement
                     if how in ("saddle", "template"):
                         m.projections.pop(cur.get(stem, stem), None)
-                        m.projections[stem] = [u, v, False]; n += 1
+                        m.projections[stem] = [u, v, False, "refined"]; n += 1
             self._store_markers(ms)
             self.log(f"Refine Markers: {n} projections placed/refined (unpinned; pinned ones untouched)")
         self._run("Refine Markers", [("Placing markers", [cm.PYTHON, "refine_markers", path], 100)], loaded)

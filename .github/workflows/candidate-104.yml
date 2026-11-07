@@ -1,0 +1,105 @@
+# Final rebuild: source-photo and geographic reference boundaries validated.
+name: 1.0.4 test installer
+on:
+  push:
+    branches: ["release/1.0.4"]
+    paths: [".github/workflows/candidate-104.yml", "tools/validate_installed_104.py"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: candidate-104
+  cancel-in-progress: true
+jobs:
+  candidate:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install test dependencies
+        run: pip install -q -r requirements-dev.txt ruff
+      - name: Compile, static checks and full regression suite
+        shell: pwsh
+        run: |
+          python -m compileall -q photomesh main.py tests tools
+          if ($LASTEXITCODE) { throw "Compilation failed" }
+          python -m ruff check --select F401,F811,F841,F821,F822,F823 photomesh
+          if ($LASTEXITCODE) { throw "Static checks failed" }
+          python -m pytest -q -rs -p no:cacheprovider tests
+          if ($LASTEXITCODE) { throw "Regressions failed" }
+      - name: Reference numerical performance acceptance
+        run: python tools/benchmark_reference_104.py
+      - name: Fetch exact verified 1.0.3 runtime
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.3 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.3.exe" --dir released
+          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.3.exe"
+          $expected = "d58ef4eb69c754be04478d91cd17313873cd8707a9f8be86ce5862e3c422751b"
+          if ((Get-FileHash -LiteralPath $setupPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw "Released runtime checksum mismatch" }
+          $runtimePath = Join-Path $env:RUNNER_TEMP "PhotoMesh104Runtime"
+          $installArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', ('/DIR="' + $runtimePath + '"'), '/TASKS=""')
+          $process = Start-Process -FilePath $setupPath -ArgumentList $installArgs -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -ne 0) { throw "Runtime installation failed" }
+          "CANDIDATE_RUNTIME=$runtimePath" >> $env:GITHUB_ENV
+      - name: Native CPU numerical acceptance
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force preview | Out-Null
+          Copy-Item -LiteralPath "reference-performance-104.json" -Destination "preview/reference-performance-104.json"
+          & (Join-Path $env:CANDIDATE_RUNTIME "python/python.exe") "tools/benchmark_engine_102.py" --exe (Join-Path $env:CANDIDATE_RUNTIME "tools/colmap-cpu/bin/colmap.exe") --output "preview/native-engine-104.json"
+          if ($LASTEXITCODE) { throw "Native numerical benchmark failed" }
+      - name: Build with production packaging
+        shell: pwsh
+        run: |
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $isccPath)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE) { throw "Inno Setup installation failed" }
+          }
+          $stagePath = Join-Path $env:RUNNER_TEMP "PhotoMesh104Stage"
+          & "packaging/build_release.ps1" -RuntimeSource $env:CANDIDATE_RUNTIME -ISCC $isccPath -OutputDir (Join-Path $PWD "preview") -StageDir $stagePath
+          if ($LASTEXITCODE) { throw "Production builder failed" }
+          @("PhotoMesh Studio 1.0.4 TEST CANDIDATE; no public release has been published.",
+            "Source commit: ${{ github.sha }}", "Runtime reused from SHA256-verified public 1.0.3 Setup.",
+            "Close PhotoMesh Studio before installing. Review using a copy of your project.",
+            "Remaining checks: real CUDA reconstruction, target hardware and user acceptance.") |
+            Set-Content -LiteralPath "preview/TEST-BUILD.txt" -Encoding utf8
+      - name: Upgrade disposable 1.0.3 installation
+        shell: pwsh
+        run: |
+          $upgradeRoot = [IO.Path]::GetFullPath($env:CANDIDATE_RUNTIME)
+          $temporaryRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\') + '\'
+          if (-not $upgradeRoot.StartsWith($temporaryRoot, [StringComparison]::OrdinalIgnoreCase)) { throw "Fixture must stay inside runner temporary files" }
+          $obsoleteProbe = Join-Path $upgradeRoot "app/photomesh/obsolete_release_probe.py"
+          "obsolete" | Set-Content -LiteralPath $obsoleteProbe
+          $fixtureRoot = Join-Path $env:RUNNER_TEMP "PhotoMesh104UserData"
+          New-Item -ItemType Directory -Force $fixtureRoot | Out-Null
+          $fixture = Join-Path $fixtureRoot "project.pmsx"
+          '{"format":"photomesh-studio/2","datasets":[]}' | Set-Content -LiteralPath $fixture
+          $before = (Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash
+          $setupPath = Join-Path $PWD "preview/PhotoMeshStudio_Setup_1.0.4.exe"
+          $installArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', ('/DIR="' + $upgradeRoot + '"'), '/TASKS=""')
+          $process = Start-Process -FilePath $setupPath -ArgumentList $installArgs -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -ne 0) { throw "Candidate upgrade failed" }
+          if (Test-Path -LiteralPath $obsoleteProbe) { throw "Obsolete managed code survived" }
+          if ((Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash -ne $before) { throw "External project metadata changed" }
+          & (Join-Path $upgradeRoot "python/python.exe") "tools/validate_installed_104.py" (Join-Path $upgradeRoot "app") $PWD (Join-Path $PWD "preview")
+          if ($LASTEXITCODE) { throw "Installed candidate validation failed" }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PhotoMeshStudio-1.0.4-Candidate
+          path: preview/
+          retention-days: 14
+          if-no-files-found: ignore

@@ -23,7 +23,6 @@ from __future__ import annotations
 from .exif import rational as _rat, altitude as _gps_altitude
 
 import hashlib
-import math
 import os
 import re
 import sqlite3
@@ -549,16 +548,21 @@ def select_pairs(names, infos, k_desc=8, k_gps=8, window=3, use_desc=True, use_g
     for a in range(n):          # sequential neighbours (capture order)
         for b in range(a + 1, min(n, a + 1 + window)):
             add(order[a], order[b])
-    if use_gps:                 # spatial kNN from EXIF GPS
-        idx = [i for i in range(n) if infos[i].get("lat") is not None]
-        if len(idx) >= 2:
-            lat0 = math.radians(np.mean([infos[i]["lat"] for i in idx]))
-            xy = np.array([[infos[i]["lon"] * 111320 * math.cos(lat0),
-                            infos[i]["lat"] * 110540,
-                            infos[i].get("alt") or 0.0] for i in idx])
-            d = np.linalg.norm(xy[:, None, :] - xy[None, :, :], axis=2)
+    if use_gps:                 # spatial kNN from valid EXIF GPS
+        from .georef import valid_gps, geodetic_to_ecef
+        positions = [(i, valid_gps((infos[i].get("lon"), infos[i].get("lat"), infos[i].get("alt"))))
+                     for i in range(n)]
+        positions = [(i, xyz) for i, xyz in positions if xyz is not None]
+        if len(positions) >= 2:
+            idx = [i for i, _xyz in positions]
+            gps = np.array([xyz for _i, xyz in positions])
+            # Chord distances are continuous across the date line and do not
+            # mistake invalid longitude/latitude for usable reference data.
+            xyz = geodetic_to_ecef(gps[:, 1], gps[:, 0], gps[:, 2])
+            d = np.linalg.norm(xyz[:, None, :] - xyz[None, :, :], axis=2)
+            np.fill_diagonal(d, np.inf)
             for a, i in enumerate(idx):
-                for b in np.argsort(d[a])[1:k_gps + 1]:
+                for b in np.argsort(d[a])[:min(k_gps, len(idx)-1)]:
                     add(i, idx[b])
     if use_desc:                # global descriptor top-k (cosine similarity)
         idx, D = [], []

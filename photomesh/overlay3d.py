@@ -21,7 +21,7 @@ from PySide6.QtGui import QColor, QFont, QFontMetricsF, QPainter, QPen, QBrush
 CONTROL = QColor(40, 220, 60)        # enabled marker: used as control point
 CHECK = QColor(60, 140, 255)          # disabled marker: check point
 CAMERA = QColor(150, 190, 255)
-LEGEND = [(CONTROL, "Approved / used"), (CHECK, "Predicted / used"), (QColor(190, 190, 190), "Predicted / unused")]
+LEGEND = [(CONTROL, "Pinned measurement"), (CHECK, "Refined measurement"), (QColor(190, 190, 190), "Prediction / ignored")]
 
 
 def project(mvp, pts, width, height):

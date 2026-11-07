@@ -174,10 +174,7 @@ def _with_alpha(colors, a):
 
 
 class ModelView(QWidget):
-    """3D viewport: tie points, point cloud, mesh, camera frusta, grid.
-
-    Right-click: Add Marker on the surface under the cursor (addMarkerRay
-    carries the model-frame ray; the main window casts it on the surface)."""
+    """3D viewport with display/select-only marker interaction."""
     markerAction = Signal(str, str)
     moveMarkerRay = Signal(str, object, object)
     addMarkerRay = Signal(object, object)          # origin, direction (model frame)
@@ -299,15 +296,11 @@ class ModelView(QWidget):
 
     def eventFilter(self, obj, ev):
         t = ev.type()
-        if self._moving_marker and t == QEvent.KeyPress and ev.key() == Qt.Key_Escape:
-            self.cancel_marker_move(); return True
-        if self._moving_marker and t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton:
-            ray = self.ray_at(ev.position().x(), ev.position().y())
-            if ray is not None:
-                label = self._moving_marker
-                self.cancel_marker_move()
-                self.moveMarkerRay.emit(label, ray[0], ray[1])
-            return True
+        if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton:
+            label = self.marker_at(ev.position().x(), ev.position().y())
+            if label:
+                self.markerAction.emit("select", label)
+                return True
         if t in (QEvent.Resize, QEvent.Show):
             self._place_overlays()
         elif t in (QEvent.MouseMove, QEvent.Wheel, QEvent.MouseButtonRelease, QEvent.KeyPress):
@@ -561,9 +554,8 @@ class ModelView(QWidget):
         return o, d / np.linalg.norm(d)
 
     def begin_marker_move(self, label):
-        self._moving_marker = label
-        (self.gl or self).setCursor(Qt.CrossCursor)
-        (self.gl or self).setFocus()
+        """Retained entry point: model markers are display-only."""
+        self.cancel_marker_move()
 
     def cancel_marker_move(self):
         self._moving_marker = None
@@ -591,18 +583,13 @@ class ModelView(QWidget):
 
     def _context(self, pos):
         from PySide6.QtWidgets import QMenu
-        from .marker_style import marker_menu
-        menu = QMenu(self)
         label = self.marker_at(pos.x(), pos.y())
-        if label:
-            marker_menu(menu, label, lambda action, lab: self.markerAction.emit(action, lab))
-            menu.addSeparator()
-        a = menu.addAction("Add Marker")
-        a.setToolTip("New marker on the surface under the cursor, projected into the photos")
-        if menu.exec(self.gl.mapToGlobal(pos)) is a:
-            ray = self.ray_at(pos.x(), pos.y())
-            if ray is not None:
-                self.addMarkerRay.emit(ray[0], ray[1])
+        if not label:
+            return
+        menu = QMenu(self)
+        menu.addAction(f"Select Marker: {label}").triggered.connect(
+            lambda: self.markerAction.emit("select", label))
+        menu.exec((self.gl or self).mapToGlobal(pos))
 
     def _overlay_changed(self):
         if self.gl is not None:
@@ -978,7 +965,7 @@ class PhotoView(QWidget):
         super().__init__(parent)
         lay = QVBoxLayout(self); lay.setContentsMargins(0, 0, 0, 0)
         self.view = _ZoomView()
-        self.caption = QLabel("Double-click a photo in the Photos pane to open it.")
+        self.caption = QLabel("Select a photo in the Photos pane to open it.")
         lay.addWidget(self.view, 1); lay.addWidget(self.caption)
         self.path = None
         self.shapes = []           # projected shapes (see set_shapes)
@@ -1043,13 +1030,14 @@ class PhotoView(QWidget):
         self.path = None; self._pix = None
         self._overlay = []; self._shape_items = []
         self.shapes = []; self.markers = []; self.active_marker = None
-        self.caption.setText("Double-click a photo in the Photos pane to open it.")
+        self.caption.setText("Select a photo in the Photos pane to open it.")
 
     def open(self, path, caption=""):
         pm = QPixmap(path)
         sc = self.view.scene(); sc.clear(); self._overlay = []; self._shape_items = []; self._pix = None
         self.shapes = []
         if pm.isNull():
+            self.clear()
             self.caption.setText(f"Cannot open {path}"); return
         self._pix = sc.addPixmap(pm); sc.setSceneRect(pm.rect())
         self._pix.setOpacity(self.surface_opacity if self.transparent else 1.0)
@@ -1058,6 +1046,11 @@ class PhotoView(QWidget):
         self.path = path
         self.caption.setText(caption or path)
         self._draw_markers()
+
+    def fit(self):
+        if self._pix is not None:
+            self.view.resetTransform()
+            self.view.fitInView(self.view.sceneRect(), Qt.KeepAspectRatio)
 
     def set_markers(self, markers, active=None):
         self.markers = list(markers or []); self.active_marker = active

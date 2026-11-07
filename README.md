@@ -1,6 +1,6 @@
 # PhotoMesh Studio
 
-**Version 1.0.3** — clearer layer controls, independent reference XML, and safer project, processing and cleanup workflows.
+**Version 1.0.4** — a distinct panel layout, shared Plan View, photo-only marker measurements, and reviewed calibration/GPS/error workflows.
 
 PhotoMesh Studio is a desktop photogrammetry application for processing aerial
 imagery locally, without a cloud service. It is available at no charge for
@@ -26,7 +26,9 @@ Third-party components retain their respective licenses.
 
 ## Screenshots
 
-Project screenshots from the user-reviewed Windows installation of 1.0.3.
+Historical project screenshots from the user-reviewed Windows installation of 1.0.3.
+Version 1.0.4 uses the revised Project/Markers/Cameras and Plan View layout described
+in the [user guide](docs/user-guide.md).
 
 **Dark theme**
 
