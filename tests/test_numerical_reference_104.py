@@ -383,3 +383,28 @@ def test_mismatched_photo_and_model_pixels_are_rejected_before_adjustment(tmp_pa
         g.run_task({"model":path,"local_only":True,
                     "photo_sizes":{"img00.jpg":[6000,4500]}},log=lambda *_:None)
     assert (tmp_path/"model"/"cameras.bin").read_bytes() == before
+
+
+def test_model_context_menu_can_only_select_a_marker(window,tmp_path,monkeypatch):
+    from test_markers_manual import _scene
+    from PySide6 import QtWidgets
+    from PySide6.QtCore import QPoint
+    from PySide6.QtGui import QAction
+    _scene(window,tmp_path)
+    label=window.add_marker_at_photo(500.,400.,k=0)
+    before=copy.deepcopy(window.dataset.markers); history=len(window._mk_undo)
+    view=window.model_view
+    monkeypatch.setattr(view,"marker_at",lambda *args:label)
+    actions=[]
+    class Menu:
+        def __init__(self,parent): self.parent,self.items=parent,[]
+        def addAction(self,text):
+            action=QAction(text,self.parent); self.items.append(action); return action
+        def exec(self,*args):
+            actions.extend(action.text() for action in self.items)
+            self.items[0].trigger()
+    monkeypatch.setattr(QtWidgets,"QMenu",Menu)
+    view._context(QPoint(10,10))
+    assert actions == ["Select Marker: "+label]
+    assert window.markers_pane.current_label() == label
+    assert window.dataset.markers == before and len(window._mk_undo) == history

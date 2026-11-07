@@ -154,7 +154,8 @@ def test_confidence_cannot_silently_skip_missing_counts():
         filter_cloud({"xyz":np.zeros((10,3))},{"min_confidence":3})
 
 
-def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_path,monkeypatch):
+@pytest.mark.parametrize("measured", [True, False])
+def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_path,monkeypatch,measured):
     from PIL import Image as PILImage
     from photomesh.project import Project,Camera as Photo
     from photomesh import colmap_io as cio
@@ -176,14 +177,26 @@ def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_
     cio.write_model(model,cio.Model({1:cam},poses,points))
     original={name:open(os.path.join(model,name),"rb").read() for name in ("cameras.bin","images.bin","points3D.bin")}
     pixels,_=cio.project(cam,R,-R@np.array([.5,.3,10.]),xyz)
-    ch.markers=[{"label":f"G{i}","enabled":True,"projections":{"photo2":[*xy.tolist(),True]}}
-                for i,xy in enumerate(pixels)]
+    ch.markers=[]
+    for i,xy in enumerate(pixels):
+        projections={"photo2":[*xy.tolist(),True]}
+        for image in poses.values():
+            uv,_=cio.project(cam,image.R(),image.tvec,xyz[i:i+1])
+            projections[image.name]=[*uv[0].tolist(),True] if measured else [*uv[0].tolist(),False,"predicted"]
+        ch.markers.append({"label":f"G{i}","enabled":True,"projections":projections})
     project.save(project.path)
     window.project=project; window.refresh_all()
-    monkeypatch.setattr(window,"_marker_positions",lambda:[(f"G{i}",point,True) for i,point in enumerate(xyz)])
+    messages=[]
+    from PySide6.QtWidgets import QMessageBox
+    monkeypatch.setattr(QMessageBox,"information",lambda *args:messages.append(args[2]))
     refreshed=[]
     monkeypatch.setattr(window,"_update_photo_shapes",lambda:refreshed.append(window.current_photo))
     window.register_selected_photos([2])
+    if not measured:
+        assert not ch.cameras[2].aligned
+        assert messages and "At least 6 measured controls" in messages[0]
+        assert all(open(os.path.join(model,name),"rb").read()==data for name,data in original.items())
+        return
     assert ch.cameras[2].aligned and np.allclose(ch.cameras[2].est,[.5,.3,10.],atol=1e-3)
     assert ch.cameras[0].est==[-1.,0.,10.] and ch.cameras[1].est==[1.,0.,10.]
     assert all(open(os.path.join(model,name),"rb").read()==data for name,data in original.items())
