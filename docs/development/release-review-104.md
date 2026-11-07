@@ -130,3 +130,43 @@ local working copies were inspected or modified. Legacy unpinned locations canno
 be reliably classified as measured from old files; they require photo confirmation
 or refinement. Turning GPS off does not undo an already established coordinate
 frame. Dense products must be rebuilt after camera optimization.
+
+
+## User-requested pause checkpoint (2026-11-07)
+
+The user asked to stop at a safe checkpoint because the five-hour Codex limit
+was nearly exhausted. Implementation is committed; public release is intentionally
+not performed until the user resumes. GitHub Actions may finish independently.
+
+- Validated-source candidate: `910d42f25c2d37b9a15da032f875b1f31c021e53` on `release/1.0.4`.
+- [Final Tests run 42383383754](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383754).
+- [Final installer run 42383383859](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383859).
+- Draft PR: [#8](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/pull/8). Main/public latest remains
+  1.0.3; no 1.0.4 release has been published.
+- The final dedicated numerical suite passed (72 tests). Full final acceptance
+  is still running at this checkpoint; do not claim its completion.
+- The immediately preceding complete versions passed 768 tests on Linux/Windows.
+  Seven meaningful boundary regressions were added since then; the final expected
+  full count is 775, with the existing 8 hardware/data skips. Verify actual results.
+- This checkpoint is documentation-only and does not change candidate application
+  contents or trigger another build.
+
+### Resume procedure
+
+1. Inspect both final runs above and complete jobs/logs. If failures occur, diagnose
+   and correct them; otherwise avoid further scope expansion/rebuilding.
+2. Retain final Linux/Windows counts, clean static/inventory results, equivalent
+   reference accuracy/runtime, Mesa/layout and native CPU acceptance evidence.
+3. Verify production Setup, checksum, installed upgrade/source hashes and offline
+   About/license acceptance. Record artifact ID, ZIP digest, EXE digest and size.
+4. Finalize this review and release checklist, PR notes and publication workflow
+   using that exact validated source/run/artifact identity. The user already
+   authorized final release after fixes; no new permission is needed after resume.
+5. Make PR #8 ready and merge only with verified head. Publish through the
+   provenance-checked workflow; retain historical 1.0.3 assets. Verify public
+   downloads/checksum and that latest is v1.0.4.
+
+Keep photo-only marker edits, read-only model/orthophoto selection, measured-only
+adjustment/diagnostics, GPS policy, supported calibration models, stable aliases,
+pixel/geographic bounds and independent check points. User files/local checkouts
+must remain untouched; work has been performed through GitHub only.
