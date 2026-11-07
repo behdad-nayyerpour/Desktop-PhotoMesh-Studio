@@ -9,10 +9,10 @@
   label/X/Y/Z[/accuracy] text or CSV, survey XML (<surveydata>) and Metashape
   marker XML (with photo projections), plus a projections CSV
   (marker, photo, x, y).
-* Marker triangulation in the model, Helmert (7-parameter similarity) fit,
-  and a GCP-constrained bundle adjustment (scipy least_squares, sparse
-  Jacobian) weighting tie points, marker projections, marker coordinates and
-  optionally camera GPS by their accuracies. COLMAP 3.8 has no GCP-aware BA.
+* Marker triangulation, Helmert (7-parameter similarity) initialization and
+  GCP-constrained Levenberg-Marquardt bundle adjustment with a Schur point
+  elimination. Model-specific calibration, measured image observations,
+  surveyed control XYZ and optional photo GPS retain explicit units/weights.
 * Per-marker error report (X/Y/Z/total m, pixel) and RMSE for control and
   check points.
 """
@@ -182,7 +182,7 @@ class Marker:
     ref: list | None = None              # reference X, Y, Z (CRS units)
     acc: list | None = None              # [xy accuracy, z accuracy] (m); None = default
     enabled: bool = True                 # True = control point, False = check point
-    projections: dict = field(default_factory=dict)   # photo label -> [x, y, pinned]
+    projections: dict = field(default_factory=dict)   # source photo -> [x, y, pinned, optional source]
     est: list | None = None              # estimated position (CRS units)
     disabled: bool = False               # excluded from adjustment/report, independent of Control/Check
     locked: bool = False                 # explicit user lock against accidental repositioning

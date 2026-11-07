@@ -23,7 +23,6 @@ from __future__ import annotations
 from .exif import rational as _rat, altitude as _gps_altitude
 
 import hashlib
-import math
 import os
 import re
 import sqlite3

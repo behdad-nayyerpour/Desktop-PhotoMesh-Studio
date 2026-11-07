@@ -93,7 +93,9 @@ and model-preserving calibration projection. Obsolete simplified optimizer
 projection/calibration helpers were removed after checking callers. The photo
 Place command now uses the same validated pin operation. Obsolete spatial editing
 bodies and signal connections were removed; no-op compatibility entry points and
-signals are intentional. Existing CPU/GPU/legacy engine variants remain.
+signals are intentional. The retired Ortho marker-height editing helper and the
+now-unused flat-GPS math import were removed after checking their callers and
+replacement workflow. Existing CPU/GPU/legacy engine variants remain.
 
 ## Validation
 

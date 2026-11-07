@@ -1,4 +1,4 @@
-# Final rebuild includes strict marker identity checks for added-photo registration.
+# Final rebuild includes validated reference workflows and retired spatial-edit cleanup.
 name: 1.0.4 test installer
 on:
   push:

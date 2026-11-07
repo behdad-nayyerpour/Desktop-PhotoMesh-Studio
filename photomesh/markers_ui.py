@@ -386,36 +386,6 @@ class MarkerEditMixin:
         R, off = self._ortho_frame()
         return R.T @ (np.asarray(P, float) - off)
 
-    def _ortho_height(self, X, Y):
-        """World Z under (X, Y): the Ortho tab's height grid (DEM / ortho height), else
-        read from the height raster directly."""
-        z = self.ortho_view.z_at(X, Y) if hasattr(self, "ortho_view") else None
-        if z is not None:
-            return z, "DEM" if "dem" in getattr(self.ortho_view, "layers", {}) else "orthomosaic height"
-        from . import geotiff as gt
-        ch = self.dataset
-        for d, name in ((ch.dem, "DEM"), (ch.orthomosaic, "orthomosaic height")):
-            src = (d or {}).get("path") if name == "DEM" else (d or {}).get("height_path")
-            if not src or not os.path.exists(src):
-                continue
-            try:
-                with gt.TiffReader(src) as r:
-                    lev = 0                                   # an overview <= 16 MPix (fast, like the Ortho tab)
-                    while lev + 1 < len(r.levels) and r.levels[lev].width * r.levels[lev].height > 16_000_000:
-                        lev += 1
-                    a = r.read_level(lev)[..., 0]
-                    x0, y1, px, py = r.geo
-                    f = r.width / r.levels[lev].width
-                    px, py = px * f, (py or px) * f
-                    c = int(math.floor((X - x0) / px)); rr = int(math.floor((y1 - Y) / py))
-                    if 0 <= rr < a.shape[0] and 0 <= c < a.shape[1]:
-                        z = float(a[rr, c])
-                        if math.isfinite(z) and (r.nodata is None or z != r.nodata):
-                            return z, name
-            except Exception as e:  # noqa: BLE001
-                self.log(f"Add Marker: cannot read {src}: {e}")
-        return None, ""
-
     def add_marker_at_ortho(self, X, Y, Z=None, label=None, replace_pins=False):
         """Compatibility entry point: marker measurements belong on source photos."""
         return None
