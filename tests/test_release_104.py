@@ -1,6 +1,4 @@
 """1.0.4: shared Plan View, GPS policy, offline license and saved UI state."""
-import os
-import pytest
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtWidgets import QApplication
 from photomesh.project import Camera, Project, ProjectData
@@ -151,3 +149,29 @@ def test_light_theme_restores_readable_base_and_text_after_dark(qapp):
     assert qapp.palette().color(QPalette.Text).lightness() < 100
     assert viewport_color().lightness() > 200
     apply_theme(qapp, "Dark")
+
+
+def test_camera_table_evaluates_project_gps_policy_once(window, monkeypatch):
+    from photomesh import photo_gps
+    calls = []
+    original = photo_gps.use_photo_gps
+    monkeypatch.setattr(photo_gps, "use_photo_gps", lambda dataset: calls.append(dataset) or original(dataset))
+    window.dataset.cameras = [Camera(str(i)+".jpg", lon=44., lat=40., alt=100.) for i in range(50)]
+    window.reference.refresh(window.dataset)
+    assert calls == [window.dataset]
+
+
+def test_theme_switch_updates_existing_panels_and_photo_labels(window):
+    from PySide6.QtGui import QPalette
+    from photomesh.theme import apply_theme
+    app = QApplication.instance()
+    window.dataset.cameras = [Camera("sample.jpg")]
+    window.refresh_all()
+    for theme in ("Dark", "Light", "Dark", "Light"):
+        apply_theme(app, theme)
+        QApplication.processEvents()
+    for widget in (window.photos, window.photos.viewport(), window.properties, window.reference):
+        assert widget.palette().color(QPalette.Base).lightness() > 200
+        assert widget.palette().color(QPalette.Text).lightness() < 100
+    assert window.main_toolbar.palette().color(QPalette.Button).lightness() > 200
+    apply_theme(app, "Dark")

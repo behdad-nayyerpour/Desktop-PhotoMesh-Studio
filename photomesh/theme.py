@@ -63,7 +63,12 @@ def apply_theme(app, name=None):
         apply_dark_theme(app)
     app.setProperty("photomesh_active_theme", name)
     light = name == "Light"
-    for widget in app.allWidgets():
+    widgets = app.allWidgets()
+    # Widgets with local stylesheets can keep palettes resolved under the old
+    # application stylesheet. Reset them before applying custom viewport colors.
+    for widget in widgets:
+        widget.setPalette(app.palette())
+    for widget in widgets:
         if hasattr(widget, "apply_theme"):
             widget.apply_theme(light)
         widget.update()

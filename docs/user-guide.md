@@ -304,7 +304,7 @@ database. Coarse-to-fine is a SIFT path.
 
 **Apply photo GPS to model scale, orientation and location** is separate
 from GPS pair preselection. It is offered for an initial alignment when enough
-checked cameras have valid non-collinear positions in a supported projection
+enabled cameras have valid non-collinear positions in a supported projection
 region. It applies a similarity transformation; it does not turn ordinary EXIF
 GPS into survey-grade control or replace calibration/GCP validation.
 

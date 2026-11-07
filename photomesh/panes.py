@@ -393,6 +393,7 @@ class ReferencePane(QTableWidget):
         import numpy as np
         from .georef import CRS
         from .photo_gps import use_photo_gps
+        gps_enabled = use_photo_gps(dataset)
         selected = {self.item(r, 0).data(ROLE) for r in {i.row() for i in self.selectedIndexes()}
                     if self.item(r, 0)}
         scroll = self.verticalScrollBar().value()
@@ -423,7 +424,7 @@ class ReferencePane(QTableWidget):
                                 err = float(np.linalg.norm(np.asarray(est) - gps))
                             except (ValueError, TypeError):
                                 pass
-                    if err is not None and use_photo_gps(dataset) and camera.enabled:
+                    if err is not None and gps_enabled and camera.enabled:
                         errors.append(err)
                     values = [camera.label, _fmt(ref[0]), _fmt(ref[1]), _fmt(ref[2], 3),
                               _fmt((dataset.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
@@ -739,7 +740,7 @@ class PhotosPane(QListWidget):
                 item.setText(camera.label)
                 item.setIcon(self._icon(camera))
                 item.setToolTip(camera.path + ("\nAligned" if camera.aligned else "\nNot aligned"))
-                item.setForeground(self.palette().text() if camera.enabled else QBrush(QColor(130, 130, 130)))
+                item.setForeground(QBrush() if camera.enabled else QBrush(QColor(130, 130, 130)))
                 item.setHidden(self.filter is not None and k not in self.filter)
                 if not same:
                     item.setSelected(k in selected)

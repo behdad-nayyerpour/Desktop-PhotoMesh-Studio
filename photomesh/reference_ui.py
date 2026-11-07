@@ -314,7 +314,8 @@ class ReferenceMixin:
         if not dlg.exec():
             return
         s = dlg.settings()
-        ch.reference_settings.update(s["accuracies"], use_cameras=s["use_cameras"])
+        ch.reference_settings.update(s["accuracies"], use_cameras=s["use_cameras"],
+                                     use_photo_gps=use_photo_gps(ch))
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
