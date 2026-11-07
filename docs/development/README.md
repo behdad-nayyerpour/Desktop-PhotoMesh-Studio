@@ -116,18 +116,15 @@ manual findings, cleanup, validation and remaining target-hardware checks.
 
 ## Release validation and retained tools
 
-[1.0.3 release review](release-review-103.md) is the current consolidated review.
-The temporary toolbar/error/icon preview notes have been removed after their
-relevant findings and evidence were consolidated there. Earlier version-specific
-engine/workflow reports remain historical evidence, as do regression tests.
+The [1.0.4 release review](release-review-104.md) records the marker and GPS
+audit, regression results, installed upgrade and published installer identity.
+The [1.0.3 review](release-review-103.md) retains the earlier baseline.
 
+The production builder accepts a tested installed runtime. The version-specific
+1.0.4 candidate workflow used the former public 1.0.3 installer for its upgrade
+fixture. For a new build, follow the [packaging guide](../../packaging/RELEASE.md).
+The installed validators in `tools/validate_installed_103.py` and
+`tools/validate_installed_104.py` cover their respective versions.
 
-The completed 1.0.3 preview/publication/archive workflows have been retired;
-their successful Actions runs remain linked from the release review. The current
-Tests workflow and production Setup builder are the maintained paths.
-`tools/validate_installed_103.py` is a deliberately version-specific acceptance
-utility for a disposable 1.0.3 installation; it checks installed source identity,
-resources, About and captions. It is not the generic publisher for future versions.
-
-The unreferenced standalone toolbar preview PNG has been removed. The root
-Light/Dark project screenshots are the current user-approved 1.0.3 captures.
+The [project screenshots](../../README.md#screenshots) show the released Windows
+1.0.4 interface in Dark and Light themes.

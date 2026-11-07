@@ -1,6 +1,6 @@
 # Architecture and performance
 
-[Development guide](README.md) · [1.0.3 review](release-review-103.md)
+[Development guide](README.md) · [1.0.4 numerical review](release-review-104.md) · [1.0.3 baseline](release-review-103.md)
 
 ## Current processing pipeline
 

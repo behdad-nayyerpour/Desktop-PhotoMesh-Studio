@@ -5,9 +5,7 @@
 The user reviewed the test installer, explicitly requested the remaining fixes
 and final public release, then expanded the review to numerical alignment and
 marker error calculations. On 2026-11-07 the user also approved display/select-only
-markers in the 3D and orthophoto views. Release publication remains gated on
-successful final Linux/Windows tests, numerical/performance checks, native CPU
-acceptance, production packaging and disposable installed-upgrade validation.
+markers in the 3D and orthophoto views. [Version 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4) was published on 2026-11-07. The [publication run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42399927092) verified the public download against the installer that passed the upgrade test.
 
 This review covers the changed modules and their callers/workflows. It is not a
 claim that every repository path is bug-free or that synthetic accuracy establishes

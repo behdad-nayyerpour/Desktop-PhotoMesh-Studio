@@ -109,9 +109,7 @@ checksum, without rebuilding application code after the installed review.
 The publication workflow checks that application/runtime/build inputs match
 validated commit `127c682c6d05d61093843f5a1ed8a23f833005d8`, verifies the
 successful originating run/artifact and checks the Setup checksum before upload.
-The public download is [v1.0.3](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.3).
-The repository's full-project screenshots are the user's approved 1.0.3 Light
-and Dark captures. Test artifacts remain historical evidence with limited retention.
+The [v1.0.3 release record](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.3) contains the archived notes. The installer was removed after 1.0.4 shipped. The 1.0.3 tag preserves the Light and Dark screenshots used for that release. Test artifacts have limited retention.
 
 ## Post-release repository maintenance
 

@@ -77,10 +77,7 @@ it alone does not require rebuilding the Setup or increasing the app version.
 
 ## Approved scope for 1.0.4 (2026-11-07)
 
-The user approved the following scope for the next version. The goal is a
-cleaner layout and a more distinct visual identity while preserving application
-capabilities and integrity. Implementation and the reviewed test installer are complete on the release branch.
-The user subsequently requested the final fixes and explicitly authorized release.
+The following scope shipped in 1.0.4 after the user reviewed the test installer and authorized publication.
 The numerical review and later photo-only marker editing approval are recorded in
 [release-review-104.md](release-review-104.md), which retains final validation evidence.
 
@@ -119,20 +116,18 @@ The numerical review and later photo-only marker editing approval are recorded i
   requires the user's separate approval after that review; scope approval is
   not publication authorization.
 
-## Required for the next application release
+## License notice shipped in 1.0.4
 
 - [x] Add a concise license notice to Help > About PhotoMesh Studio: personal
   and educational non-commercial use; commercial use, including company
   evaluation, requires prior written permission. Provide access to the full
   bundled LICENSE text and keep third-party licenses distinct. Verify readable
   layout in both themes and that the license can be opened offline in the
-  installed application. This is scheduled for the next release; the current
-  1.0.3 executable is unchanged.
+  installed application.
 
 ### Approved About content (2026-11-07)
 
-Implement the following user-approved content in the next application release
-and retain it in subsequent versions. Use the actual application name/version
+Version 1.0.4 includes the following user-approved content. Retain it in subsequent versions. Use the actual application name/version
 from application metadata; the license itself has no version number.
 
 > **PhotoMesh Studio — [Application version]**

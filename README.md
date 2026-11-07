@@ -26,17 +26,17 @@ Third-party components retain their respective licenses.
 
 ## Screenshots
 
-Historical project screenshots from the user-reviewed Windows installation of 1.0.3.
-Version 1.0.4 uses the revised Project/Markers/Cameras and Plan View layout described
-in the [user guide](docs/user-guide.md).
+The `Odm_Wietrznia` project is open in PhotoMesh Studio 1.0.4 on Windows.
+Both themes show the same textured 3D model, reconstructed from 225 photographs.
+The Project panel is on the left and the photo thumbnails are on the right.
 
 **Dark theme**
 
-![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in dark mode](screenshot.png?v=ca492977)
+![Dark theme in PhotoMesh Studio 1.0.4 with the textured Wietrznia model in 3D View](screenshot.png)
 
 **Light theme**
 
-![PhotoMesh Studio 1.0.3 displaying a reconstructed aerial survey in light mode](screenshot-light.png?v=bf32d86b)
+![Light theme in PhotoMesh Studio 1.0.4 with the same model, project tree and photo thumbnails](screenshot-light.png)
 
 ## Install
 

@@ -4,7 +4,7 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
-### 1.0.4
+### 1.0.4 (2026-11-07)
 
 - Reset Ortho/DEM selection when opening a photo, allowing one-click return to a raster in Plan View.
 - Use the project filename in exported processing reports instead of legacy dataset names.
@@ -19,7 +19,7 @@ EXE. See [Updating](UPDATING.md).
 - Remember window/panel layout, render styles and successful file/folder picker directories.
 - Add the approved offline About/license text and full bundled license viewer.
 - Clear stale photo identity when a newly requested image cannot be opened.
-- Validation and installer identity are recorded in docs/development/release-review-104.md.
+- [Release validation](docs/development/release-review-104.md) records the numerical checks, upgrade test and checksum of the published installer.
 
 ### 1.0.3 (2026-11-07)
 

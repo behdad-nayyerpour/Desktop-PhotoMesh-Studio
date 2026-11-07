@@ -17,7 +17,7 @@ replaces an existing EXE installation. No separate Update EXE is produced.
 | `RELEASE.md` | Installer build and release validation instructions |
 | `README.md` | This overview |
 
-The installer includes the English README, screenshot, and documentation folder
+The installer includes the English README, both theme screenshots, and the documentation folder
 so **Help > Documentation** can open the local guide without a network connection.
 The shortcut repair helper is retained because the application calls it when
 available. Setup itself creates shortcuts with the application icon.

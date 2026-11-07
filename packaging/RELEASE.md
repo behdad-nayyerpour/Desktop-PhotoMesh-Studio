@@ -9,7 +9,7 @@ the new Setup on the existing installation; it replaces the managed app,
 Python, and tools folders. Projects, source photos, and processing results
 should be kept outside the installation folder.
 
-Build from the repository checkout with Inno Setup (the 1.0.3 candidate was verified with Inno Setup 6):
+Build from the repository checkout with Inno Setup:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File packaging/build_release.ps1 `
@@ -55,31 +55,19 @@ Native CPU integration and numerical benchmarks are documented in the
 [engine review](../docs/development/engine-modernization-102.md). GPU behavior
 must additionally be checked on target hardware before distributing a release.
 
-## Verified 1.0.3 distribution
+## Verified 1.0.4 distribution
 
-[Actions run 42310283579](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579)
-built the complete candidate from `127c682c6d05d61093843f5a1ed8a23f833005d8`.
-It reused the SHA256-verified 1.0.2 runtime, checked runtime identity and staged
-imports, then installed the new Setup over a disposable 1.0.2 installation.
-All 68 application module names and hashes matched; obsolete managed code was
-removed and an external project-metadata fixture was preserved. Installed
-version, About, resources and split-button captions passed.
+[PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4) includes the full offline Windows Setup and its checksum. The published EXE is 860,496,028 bytes. Its SHA-256 digest is `58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3`.
 
-The user approved the installed candidate for public distribution on 2026-11-07.
-The public release reuses that exact Setup/checksum. Remaining target-hardware
-checks are recorded in the [release review](../docs/development/release-review-103.md).
-Documentation-only follow-ups do not alter that tested executable or require a
-new Setup; a later source build will include the updated documentation.
+The [installer run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383859) tested upgrading a disposable 1.0.3 installation. The [publication run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42399927092) downloaded the public executable and compared it byte-for-byte with the tested installer. The [release review](../docs/development/release-review-104.md) records the validated source and numerical results.
 
-The one-time 1.0.3 publication and archive workflows were retired after success;
-use the production builder above for later versions. Historical Actions evidence
-remains in the release review. Retired workflows are recoverable from Git history
-and are not current release instructions.
+The 1.0.3 installer used in the original upgrade test has since been removed from its public release. For a new build with the same runtime layout, install the current release in a staging environment and supply its installation directory as `-RuntimeSource`. Reproducing the historical upgrade test requires a retained copy of the original 1.0.3 Setup.
+
+Documentation and screenshot changes appear on GitHub immediately. The offline documentation in each Setup reflects its build date.
 
 ## Application license
 
 The builder copies the root `LICENSE` into the staged application. Inno Setup
 shows that file as the application's license agreement. Preserve the separate
 third-party license notices; the application license does not replace them.
-These packaging changes apply to subsequent builds. The already published
-1.0.3 Setup predates the license addition and has not been rebuilt or replaced.
+The 1.0.4 installation also provides offline access to the bundled license through Help > About.

@@ -77,7 +77,7 @@ atlas and sampled multithreaded. Visibility is cached (`visibility_cache.npz`), 
 compatible re-texturing can reuse visibility work. Actual timings depend on the project.
 
 Output in `<project>.files/…/texture/`: `model_textured.obj/.mtl`, `texture_N.jpg`,
-`model_textured.glb`, `uv.npz`, `info.json`. The workspace row reads
+`model_textured.glb`, `uv.npz`, `info.json`. The Project tree row reads
 `3D Model (N faces, …, Texture 8192x8192)`; Properties lists texel size vs photo
 ground resolution (cm/pix when the dataset is georeferenced, model units otherwise).
 
@@ -204,7 +204,7 @@ Progress dialogs show observed stage progress separately from the weighted
 overall estimate. A stage with an unknown total remains indeterminate.
 Remaining time appears when enough measured progress is available.
 The status bar shows only Ready/Busy and CPU/GPU load. Progress stays in the
-processing dialog or relevant Model/Photos pane. A busy cursor acknowledges
+processing dialog or relevant view. A busy cursor acknowledges
 commands while their settings and input data are being prepared.
 
 ## Project, Markers and Cameras
@@ -247,7 +247,8 @@ background work continues; processing dialogs retain the wait cursor.
 3D marker labels and the legend are rasterized before GL composition to avoid
 driver-dependent glyph corruption over textured models.
 
-Project, Markers and Cameras occupy the left side; Photos is on the right.
+Project, Markers and Cameras occupy the left side, with Photos on the right.
+See the [dark and light theme screenshots](../README.md#screenshots).
 Console and Jobs are initially hidden. Open them from **Display > Panels and
 Toolbars** as floating windows. Their latest visibility and placement are saved.
 **3D View** shows reconstruction products. **Plan View** displays a photograph
