@@ -123,6 +123,8 @@ def test_marker_edit_refreshes_coordinate_pixel_errors_groups_and_undo(window,tm
 
 def test_marker_residual_does_not_hide_off_image_errors():
     model = synthetic_model(n_img=4,n_pts=100,two_cameras=False)
+    # Pinhole remains invertible beyond the image; radial models can fold there.
+    model.cameras[1] = cio.Camera(1,600,450,np.array([500.,500.,300.,225.]))
     X = np.array([400.,20.,1.])
     projections = {}
     for image in model.images.values():
@@ -142,3 +144,25 @@ def test_triangulation_rejects_behind_camera_intersection():
         uv,_ = cio.project(model.cameras[image.camera_id],image.R(),image.tvec,X[None])
         projections[image.name] = uv[0].tolist()
     assert g.triangulate_marker(model,projections)[0] is None
+
+
+def test_observation_aliases_are_not_double_weighted_or_arbitrarily_overwritten():
+    model = synthetic_model(n_img=3,n_pts=50,two_cameras=False)
+    photo = model.images[1].name
+    stem = g._stem(photo)
+    result = g.marker_image_observations(model,{photo:[10.,20.],stem:[10.,20.]})
+    assert result == [(1,10.,20.)]
+    with pytest.raises(ValueError,match="Conflicting"):
+        g.marker_image_observations(model,{photo:[10.,20.,True],stem:[11.,20.,True]})
+    assert g.marker_image_observations(model,{photo:[10.,20.,False],stem:[11.,20.,True]}) == [(1,11.,20.)]
+
+
+def test_marker_keys_follow_model_aliases_for_same_named_photos():
+    from photomesh.photonames import marker_camera_keys
+    from photomesh.project import ProjectData,Camera
+    dataset = ProjectData(cameras=[Camera("/a/photo.jpg",colmap_name="photo.jpg"),
+                                  Camera("/b/photo.jpg",colmap_name="photo_1.jpg")])
+    assert marker_camera_keys(dataset) == {0:"photo",1:"photo_1"}
+    dataset.cameras[0].colmap_name = ""
+    dataset.cameras[1].colmap_name = ""
+    assert marker_camera_keys(dataset) == {}

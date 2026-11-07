@@ -175,6 +175,10 @@ class MarkerEditMixin:
         return f"{base} {n}"
 
     # ------------------------------------------------------------ geometry helpers
+    def _photo_marker_key(self, k):
+        from .photonames import marker_camera_keys
+        return marker_camera_keys(self.dataset).get(k)
+
     def _camera_of_photo(self, k):
         """(model, image id, sx, sy): photo pixel = COLMAP pixel * (sx, sy)."""
         model = self._sparse_model()
@@ -182,7 +186,7 @@ class MarkerEditMixin:
             return None
         names = g.name_index(model)
         c = self.dataset.cameras[k]
-        iid = names.get(g._stem(c.label))
+        iid = names.get(self._photo_marker_key(k))
         if iid is None:
             return None
         cam = model.cameras[model.images[iid].camera_id]
@@ -305,12 +309,15 @@ class MarkerEditMixin:
             return {}
         X = np.asarray(X, float)
         sc = self._raycast_scene(build=False) if occlusion else None
-        by_stem = {g._stem(c.label): c for c in self.dataset.cameras}
+        from .photonames import marker_camera_keys
+        by_stem = {key: self.dataset.cameras[index]
+                   for index, key in marker_camera_keys(self.dataset, model).items()}
+        valid_names = g.name_index(model)
         out = {}
         rays, keys = [], []
         for iid, im in model.images.items():
             stem = g._stem(im.name)
-            if stem in skip:
+            if stem in skip or stem not in valid_names:
                 continue
             p = g.predict_projection(model, iid, X)
             if p is None:
@@ -344,7 +351,10 @@ class MarkerEditMixin:
             return None
         ms = self._marker_objs()
         label = label or self._new_label(ms)
-        stem = g._stem(self.dataset.cameras[k].label)
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            self._marker_error("Place Marker", "Photo identity is ambiguous; repair aliases before marking.")
+            return None
         X, src = None, None
         ray = self.photo_pixel_ray(k, u, v)
         if ray is not None:
@@ -487,8 +497,11 @@ class MarkerEditMixin:
         m = next((x for x in ms if x.label == label), None)
         if m is None or not (0 <= k < len(self.dataset.cameras)):
             return False
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            self._marker_error("Place Marker", "Photo identity is ambiguous; no observation was changed.")
+            return False
         self._markers_snapshot()
-        stem = g._stem(self.dataset.cameras[k].label)
         m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
         m.projections[stem] = [float(u), float(v), True]
         self._commit_markers(ms, f"Marker {label} pinned on {self.dataset.cameras[k].label} at ({u:.1f}, {v:.1f})")
@@ -615,7 +628,8 @@ class MarkerEditMixin:
         for m in self.dataset.markers or []:
             if m["label"] in labs:
                 stems |= {g._stem(p) for p in (m.get("projections") or {})}
-        return {k for k, c in enumerate(self.dataset.cameras) if g._stem(c.label) in stems}
+        from .photonames import marker_camera_keys
+        return {k for k, key in marker_camera_keys(self.dataset).items() if key in stems}
 
     def filter_photos_by_markers(self, labels=None):
         """Photos pane shows only the photos where the markers are placed (pinned or not)."""

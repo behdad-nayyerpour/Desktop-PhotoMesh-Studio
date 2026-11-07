@@ -308,7 +308,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self.markers_pane.selectRow(r); break
         proj = ms[0].get("projections") or {}
         order = sorted(proj, key=lambda n: not (len(proj[n]) < 3 or proj[n][2]))
-        stems = {os.path.splitext(c.label)[0].lower(): k for k, c in enumerate(self.dataset.cameras)}
+        from .photonames import marker_camera_keys
+        stems = {key: index for index, key in marker_camera_keys(self.dataset).items()}
         for n in order:
             k = stems.get(os.path.splitext(n)[0].lower())
             if k is not None:

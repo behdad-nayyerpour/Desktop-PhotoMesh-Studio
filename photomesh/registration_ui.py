@@ -30,12 +30,15 @@ class RegistrationMixin:
             if not camera.width or not camera.height:
                 from PIL import Image
                 with Image.open(camera.path) as image: camera.width,camera.height=image.size
+            marker_key = self._photo_marker_key(index)
+            if marker_key is None:
+                QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: ambiguous photo identity; repair aliases first."); return
             xyz,xy=[],[]
             for marker in ch.markers:
                 if marker.get("disabled") or not marker.get("enabled",True) or marker["label"] not in positions:
                     continue
                 for name,projection in marker.get("projections",{}).items():
-                    if _stem(name)==_stem(camera.label) and (len(projection)<3 or projection[2]):
+                    if _stem(name)==marker_key and (len(projection)<3 or projection[2]):
                         xyz.append(positions[marker["label"]]); xy.append(projection[:2]); break
             try: validate_controls(xyz,xy,camera.width,camera.height)
             except ValueError as error:

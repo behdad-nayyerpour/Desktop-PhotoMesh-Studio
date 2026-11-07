@@ -200,7 +200,10 @@ class ReferenceMixin:
         cams = self.dataset.cameras
         if not (0 <= k < len(cams)) or self.photo_view.path is None:
             return
-        stem = g._stem(cams[k].label)
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            self.photo_view.set_markers([], self.markers_pane.current_label())
+            return
         items = []
         model = None
         try:
@@ -228,11 +231,14 @@ class ReferenceMixin:
         k = self.current_photo
         if not label or not (0 <= k < len(self.dataset.cameras)):
             return
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            self._marker_error("Place Marker", "Photo identity is ambiguous; no observation was changed.")
+            return
         ms = self._marker_objs()
         self._snap()
         for m in ms:
             if m.label == label:
-                stem = g._stem(self.dataset.cameras[k].label)
                 m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
                 m.projections[stem] = [float(u), float(v), True]
         self._store_markers(ms)
@@ -240,7 +246,11 @@ class ReferenceMixin:
 
     def remove_marker_projection(self, label):
         k = self.current_photo
-        stem = g._stem(self.dataset.cameras[k].label)
+        if not (0 <= k < len(self.dataset.cameras)):
+            return
+        stem = self._photo_marker_key(k)
+        if stem is None:
+            return
         ms = self._marker_objs()
         self._snap()
         for m in ms:

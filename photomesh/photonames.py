@@ -114,3 +114,14 @@ def camera_for_names(dataset, names):
     for c in dataset.cameras:
         by_path.setdefault(c.path, c)
     return {n: by_path[pm[n]] for n in names if n in pm}, ambiguous
+
+def marker_camera_keys(dataset, model=None):
+    """Canonical, unambiguous marker stems per source photo."""
+    from .georef import _stem, name_index
+    aliases, _ambiguous = photo_map(dataset)
+    by_path = {path: _stem(name) for name, path in aliases.items()}
+    counts = Counter(by_path.values())
+    model_names = name_index(model) if model is not None else None
+    return {index: by_path[camera.path] for index, camera in enumerate(dataset.cameras)
+            if camera.path in by_path and counts[by_path[camera.path]] == 1 and
+            (not camera.aligned or model_names is None or by_path[camera.path] in model_names)}

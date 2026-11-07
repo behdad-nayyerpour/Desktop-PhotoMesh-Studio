@@ -471,15 +471,33 @@ def name_index(model):
     return {stem: iid for stem, iid in names.items() if stem not in ambiguous}
 
 
+def marker_image_observations(model, projections, names=None):
+    """One finite observation per camera; prefer pins, reject conflicting equal-status aliases."""
+    names = name_index(model) if names is None else names
+    observations = {}
+    for label, value in projections.items():
+        iid = names.get(_stem(label))
+        if iid is None:
+            continue
+        uv = np.asarray(value[:2], float)
+        if uv.shape != (2,) or not np.isfinite(uv).all():
+            raise ValueError(f"Invalid marker observation on {label}")
+        pinned = len(value) < 3 or bool(value[2])
+        if iid in observations:
+            old, old_pin = observations[iid]
+            if old_pin == pinned and not np.allclose(old, uv, rtol=0, atol=1e-7):
+                raise ValueError(f"Conflicting marker observations for camera {iid}")
+            if old_pin or not pinned:
+                continue
+        observations[iid] = (uv, pinned)
+    return [(iid, float(uv[0]), float(uv[1])) for iid, (uv, _pin) in observations.items()]
+
+
 def triangulate_marker(model, projections, names=None, refine=True):
     """Marker position in the model frame from its photo projections."""
     names = names or name_index(model)
     C, D, obs = [], [], []
-    projections = {_stem(lab): value for lab, value in projections.items()}
-    for lab, (x, y, *_r) in projections.items():
-        iid = names.get(_stem(lab))
-        if iid is None:
-            continue
+    for iid, x, y in marker_image_observations(model, projections, names):
         im = model.images[iid]; cam = model.cameras[im.camera_id]
         xn, yn = cio.undistort_points(cam, np.array([[x, y]], float))
         d = im.R().T @ np.array([xn[0], yn[0], 1.0])
@@ -521,18 +539,15 @@ def marker_observation_diagnostic(model, marker, names=None):
     X, _n = triangulate_marker(model, marker.projections, names)
     if X is None:
         return None, None, 0
-    residuals, seen = [], set()
-    for label, observation in marker.projections.items():
-        iid = names.get(_stem(label))
-        if iid is None or iid in seen:
-            continue
-        seen.add(iid)
+    residuals = []
+    observations = marker_image_observations(model, marker.projections, names)
+    for iid, x, y in observations:
         image = model.images[iid]
         uv, depth = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None])
         if depth[0] <= 0 or not np.isfinite(uv).all():
-            return None, None, len(seen)
-        residuals.append(float(np.sum((uv[0]-np.asarray(observation[:2], float))**2)))
-    return X, float(np.sqrt(np.mean(residuals))) if residuals else None, len(seen)
+            return None, None, len(observations)
+        residuals.append(float(np.sum((uv[0]-[x,y])**2)))
+    return X, float(np.sqrt(np.mean(residuals))) if residuals else None, len(observations)
 
 
 def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=None):
@@ -982,8 +997,7 @@ def run_local_task(cfg, log=print):
     for m in markers:
         X, _n = triangulate_marker(model, m.projections, names)
         if cfg.get("use_markers", True) and m.enabled and X is not None:
-            obs[m.label] = (X, [(names[_stem(k)], v[0], v[1])
-                               for k, v in m.projections.items() if _stem(k) in names])
+            obs[m.label] = (X, marker_image_observations(model, m.projections, names))
     acc = dict(DEFAULTS); acc.update(cfg.get("accuracies") or {})
     stats = gcp_bundle_adjust(model, obs, {}, {
         "tie_points": cfg.get("tie_points", 40000), "tie_accuracy": acc["tie_accuracy"],
@@ -1110,7 +1124,7 @@ def run_task(cfg, log=print):
             # check points stay independent: their projections are not used in the adjustment
             if m.label not in ctrl_labels and not cfg.get("check_projections_in_ba", False):
                 continue
-            o = [(names[_stem(p)], v[0], v[1]) for p, v in m.projections.items() if _stem(p) in names]
+            o = marker_image_observations(model, m.projections, names)
             obs[m.label] = (tri[m.label], o)
         ctrl = {}
         if use_markers:
