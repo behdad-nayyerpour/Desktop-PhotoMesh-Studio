@@ -154,8 +154,8 @@ def test_confidence_cannot_silently_skip_missing_counts():
         filter_cloud({"xyz":np.zeros((10,3))},{"min_confidence":3})
 
 
-@pytest.mark.parametrize("measured", [True, False])
-def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_path,monkeypatch,measured):
+@pytest.mark.parametrize("measured,conflict", [(True,False),(False,False),(True,True)])
+def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_path,monkeypatch,measured,conflict):
     from PIL import Image as PILImage
     from photomesh.project import Project,Camera as Photo
     from photomesh import colmap_io as cio
@@ -180,6 +180,8 @@ def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_
     ch.markers=[]
     for i,xy in enumerate(pixels):
         projections={"photo2":[*xy.tolist(),True]}
+        if conflict:
+            projections["photo2.jpg"]=[float(xy[0]+10),float(xy[1]),True]
         for image in poses.values():
             uv,_=cio.project(cam,image.R(),image.tvec,xyz[i:i+1])
             projections[image.name]=[*uv[0].tolist(),True] if measured else [*uv[0].tolist(),False,"predicted"]
@@ -192,9 +194,9 @@ def test_added_photo_registration_keeps_old_poses_and_updates_shapes(window,tmp_
     refreshed=[]
     monkeypatch.setattr(window,"_update_photo_shapes",lambda:refreshed.append(window.current_photo))
     window.register_selected_photos([2])
-    if not measured:
+    if not measured or conflict:
         assert not ch.cameras[2].aligned
-        assert messages and "At least 6 measured controls" in messages[0]
+        assert messages and ("Conflicting" if conflict else "At least 6 measured controls") in messages[0]
         assert all(open(os.path.join(model,name),"rb").read()==data for name,data in original.items())
         return
     assert ch.cameras[2].aligned and np.allclose(ch.cameras[2].est,[.5,.3,10.],atol=1e-3)

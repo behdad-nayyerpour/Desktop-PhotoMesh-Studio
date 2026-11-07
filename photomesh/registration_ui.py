@@ -2,7 +2,6 @@
 import os, uuid
 import numpy as np
 from PySide6.QtWidgets import QMessageBox, QInputDialog
-from .georef import _stem
 
 
 class RegistrationMixin:
@@ -51,9 +50,17 @@ class RegistrationMixin:
             for marker in ch.markers:
                 if marker.get("disabled") or not marker.get("enabled",True) or marker["label"] not in positions:
                     continue
-                for name,projection in marker.get("projections",{}).items():
-                    if _stem(name)==marker_key and (len(projection)<3 or projection[2]):
-                        xyz.append(positions[marker["label"]]); xy.append(projection[:2]); break
+                pins={name:projection for name,projection in marker.get("projections",{}).items()
+                      if len(projection)<3 or projection[2]}
+                try:
+                    # The new photo has no model image ID yet; resolve its stable
+                    # name through the same finite/deduplication/conflict policy.
+                    observations=g.marker_image_observations(model,pins,{marker_key:marker_key},measured_only=True)
+                except ValueError as error:
+                    QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: {error}"); return
+                if observations:
+                    _name,u,v=observations[0]
+                    xyz.append(positions[marker["label"]]); xy.append([u,v])
             try: validate_controls(xyz,xy,camera.width,camera.height)
             except ValueError as error:
                 QMessageBox.information(self,"Align Selected Photos",f"{camera.label}: {error}"); return

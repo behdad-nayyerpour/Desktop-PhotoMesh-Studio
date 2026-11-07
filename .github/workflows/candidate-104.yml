@@ -1,4 +1,4 @@
-# Final rebuild includes independent reference and camera-model numerical audit.
+# Final rebuild includes strict marker identity checks for added-photo registration.
 name: 1.0.4 test installer
 on:
   push:
