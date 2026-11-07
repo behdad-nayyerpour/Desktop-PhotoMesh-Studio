@@ -346,3 +346,40 @@ def test_robust_similarity_matches_final_inlier_mask():
     assert np.allclose(R,RR) and np.allclose(t,tt)
     with pytest.raises(ValueError,match="degenerate"):
         g.umeyama(np.ones((3,3)),np.ones((3,3)))
+
+
+def test_legacy_unpinned_locations_need_photo_confirmation_or_refinement():
+    model=synthetic_model(n_img=3,n_pts=50,two_cameras=False)
+    locations={image.name:[300.,225.,False] for image in model.images.values()}
+    assert g.marker_image_observations(model,locations,measured_only=True) == []
+    assert len(g.marker_image_observations(model,locations)) == 3
+    for value in locations.values(): value.append("refined")
+    assert len(g.marker_image_observations(model,locations,measured_only=True)) == 3
+
+
+def test_reference_xml_preserves_measurement_provenance_and_ignored_status(tmp_path):
+    marker=g.Marker("A",enabled=False,disabled=True,locked=True,
+                    projections={"one":[1.,2.,False,"predicted"],"two":[3.,4.,False,"refined"]})
+    path=str(tmp_path/"markers.xml")
+    g.write_markers_xml(path,[marker],"LOCAL")
+    restored,_=g.read_markers_xml(path)
+    assert restored[0].to_dict() == marker.to_dict()
+
+
+def test_reference_text_report_keeps_current_pixel_error_and_actual_count(tmp_path):
+    path=str(tmp_path/"report.txt")
+    row={"label":"A","type":"check","ref":[1.,2.,3.],"est":[4.,6.,3.],
+         "dx":3.,"dy":4.,"dz":0.,"total":5.,"pix":1.25,"n":3}
+    g.write_report(path,[row],g.CRS.parse("LOCAL"))
+    text=(tmp_path/"report.txt").read_text()
+    assert "\t1.250\t3\n" in text
+
+
+def test_mismatched_photo_and_model_pixels_are_rejected_before_adjustment(tmp_path):
+    model=synthetic_model(n_img=3,n_pts=100,two_cameras=False)
+    path=str(tmp_path/"model"); cio.write_model(path,model)
+    before=(tmp_path/"model"/"cameras.bin").read_bytes()
+    with pytest.raises(ValueError,match="original photo pixels"):
+        g.run_task({"model":path,"local_only":True,
+                    "photo_sizes":{"img00.jpg":[6000,4500]}},log=lambda *_:None)
+    assert (tmp_path/"model"/"cameras.bin").read_bytes() == before

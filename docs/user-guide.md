@@ -49,7 +49,7 @@ right-click to place the selected marker or edit an existing marker. **Survey > 
 refines it locally (template from a pinned placement, else a checkerboard-corner
 detector, multi-view consensus). **Process > Optimize Cameras** runs a robust Helmert
 fit followed by a GCP-constrained bundle adjustment (Levenberg–Marquardt with Schur
-complement: poses, f/cx/cy/k1-k3/p1/p2 per camera group, tie points, markers;
+complement: poses, model-specific calibration per camera group, tie points, markers;
 default accuracies: markers 0.005 m, projections 0.5 px, tie points 1 px,
 camera GPS 10 m). Check points are not used in the adjustment. The report
 (Export > Markers) contains X/Y/Z/total error and pixel error per
@@ -132,15 +132,40 @@ and pixel RMSE summaries. Control points participate in adjustment; check points
 measure the result independently. Ignoring a marker is separate from its
 Control/Check classification.
 
-Right-click an existing marker in the Photo, Ortho, or Model view to **Delete**,
-**Pin**, **Ignore/Use**, or **Move** it. Move enables a crosshair for the next
-placement; **Escape** cancels. Moving a marker does not overwrite its surveyed
-reference coordinates.
+Add, pin, move, delete or ignore/use marker placements on the original photographs
+in **Plan View**. **Move** enables a crosshair; **Escape** cancels. Edit surveyed
+XYZ and accuracy in **Markers**. Photo edits never overwrite surveyed XYZ.
 
-Marker display states are green for pinned placements, blue for placed/used
-predictions, and grey for unused predictions or ignored markers.
-To place an already selected marker on the orthomosaic, use **Place Marker**;
-**Add Marker** creates a new marker.
+**3D View** and an orthophoto/DEM in **Plan View** are display/select-only for
+markers. Click a flag or choose **Select Marker** to select its table row.
+There are no spatial-view Add, Place, Move, Pin, Delete or Ignore/Use commands.
+
+Green flags are manually pinned measurements. Blue flags are locations refined
+from image content. Gray locations are predicted hints, unconfirmed legacy
+unpinned locations, or ignored markers. Predictions can help locate a target,
+but are excluded from adjustment and error calculations. Confirm them on the
+photos or run **Refine Markers** first. A usable control needs observations on
+at least two different aligned photographs; imported XYZ alone is insufficient.
+Legacy unpinned records have no reliable provenance and must be pinned or refined
+again before they count as measurements. Project save/open and PhotoMesh XML
+preserve the new prediction/refinement provenance.
+
+Unchecking **Use control markers** excludes marker XYZ and image observations
+from optimization. Check points always remain independent. **Settings > Use Photo
+GPS** gates GPS use; the individual alignment/optimization GPS choices cannot
+override it. Disabling GPS does not remove photos or undo an existing map frame.
+
+Marker coordinate/pixel errors are recomputed from current measured placements
+and camera calibration after edits and Undo/Redo. Missing, invalid or degenerate
+measurements show unavailable errors rather than zero or old values. Control
+RMSE measures fit to controls; independent check points are needed to assess
+accuracy away from those controls. Synthetic tests do not establish survey
+accuracy on a real project.
+
+Marker observations use original-photo pixels. If stored photo dimensions and
+model calibration dimensions disagree, optimization/refinement stops with an
+explanation; re-align to restore original photo calibration rather than mixing
+pixel units.
 
 ## Rebuild after optimizing cameras
 

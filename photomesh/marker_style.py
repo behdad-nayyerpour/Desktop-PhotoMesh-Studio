@@ -1,5 +1,6 @@
 """Shared marker states and actions for Photo, Ortho and Model views."""
 from PySide6.QtGui import QColor
+from .georef import projection_is_measured
 
 COLORS = {"pinned": (40, 220, 60), "placed": (60, 140, 255), "predicted": (190, 190, 190)}
 
@@ -8,7 +9,7 @@ def marker_state(marker):
         return "predicted"
     if marker.get("locked", False) or any(len(v) < 3 or v[2] for v in marker.get("projections", {}).values()):
         return "pinned"
-    return "placed" if any(len(v) < 4 or v[3] != "predicted" for v in marker.get("projections", {}).values()) else "predicted"
+    return "placed" if any(projection_is_measured(v) for v in marker.get("projections", {}).values()) else "predicted"
 
 def color(state):
     return QColor(*COLORS.get(state, COLORS["predicted"]))

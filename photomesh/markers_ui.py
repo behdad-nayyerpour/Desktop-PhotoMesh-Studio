@@ -338,6 +338,9 @@ class MarkerEditMixin:
         k = self.current_photo if k is None else k
         if not (0 <= k < len(self.dataset.cameras)):
             return None
+        if not np.isfinite([u, v]).all():
+            self._marker_error("Place Marker", "Photo coordinates must be finite.")
+            return None
         ms = self._marker_objs()
         label = label or self._new_label(ms)
         stem = self._photo_marker_key(k)
@@ -423,6 +426,9 @@ class MarkerEditMixin:
         ms = self._marker_objs()
         m = next((x for x in ms if x.label == label), None)
         if m is None or not (0 <= k < len(self.dataset.cameras)):
+            return False
+        if not np.isfinite([u, v]).all():
+            self._marker_error("Place Marker", "Photo coordinates must be finite.")
             return False
         stem = self._photo_marker_key(k)
         if stem is None:

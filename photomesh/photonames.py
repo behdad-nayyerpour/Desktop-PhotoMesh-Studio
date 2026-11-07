@@ -125,3 +125,11 @@ def marker_camera_keys(dataset, model=None):
     return {index: by_path[camera.path] for index, camera in enumerate(dataset.cameras)
             if camera.path in by_path and counts[by_path[camera.path]] == 1 and
             (not camera.aligned or model_names is None or by_path[camera.path] in model_names)}
+
+
+def photo_dimensions(dataset):
+    """Known source-photo sizes keyed by the same stable aliases as references."""
+    aliases, _ambiguous = photo_map(dataset)
+    cameras = {camera.path: camera for camera in dataset.cameras}
+    return {name: [cameras[path].width, cameras[path].height] for name, path in aliases.items()
+            if cameras[path].width and cameras[path].height}

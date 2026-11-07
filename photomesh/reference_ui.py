@@ -110,6 +110,8 @@ class ReferenceMixin:
         if getattr(self, "_marker_residual_cache", (None,))[0] != stamp:
             self._marker_residual_cache = (stamp, {})
         try:
+            from .photonames import photo_dimensions
+            g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
             estimates, _pixels, _counts, rows = g.marker_diagnostics(
                 model, markers, g.CRS.parse(georef.get("crs") or self.dataset.crs),
                 georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1])
@@ -133,11 +135,18 @@ class ReferenceMixin:
     def _marker_model_xyz(self, m, model, names):
         """Marker position in the model frame: reference (if georeferenced),
         else triangulated from its projections."""
-        # Display the surveyed feature's observed estimate, not its reference target.
-        # Moving its photo/Ortho placement must not edit its survey XYZ.
-        X, _n = g.triangulate_marker(model, m.projections, names, measured_only=True)
-        if X is None:
-            X, _n = g.triangulate_marker(model, m.projections, names)
+        # Display the observed estimate, independently of the surveyed target.
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
+        except ValueError:
+            return None
+        try:
+            X, _n = g.triangulate_marker(model, m.projections, names, measured_only=True)
+            if X is None:
+                X, _n = g.triangulate_marker(model, m.projections, names)
+        except (ValueError, np.linalg.LinAlgError):
+            return None
         if X is not None:
             return X
         gr = self.dataset.georef or {}
@@ -163,7 +172,8 @@ class ReferenceMixin:
         if model is None:
             return None
         key0 = (self._model_cache[0], _json.dumps(self.dataset.georef.get("offset") if self.dataset.georef else None),
-                self.dataset.crs, _json.dumps((self.dataset.georef or {}).get("zone")))
+                self.dataset.crs, _json.dumps((self.dataset.georef or {}).get("zone")),
+                tuple((c.colmap_name, c.path, c.width, c.height) for c in self.dataset.cameras))
         cache = getattr(self, "_marker_xyz_cache", None)
         if cache is None or cache[0] != key0:
             cache = self._marker_xyz_cache = (key0, {})
@@ -216,7 +226,7 @@ class ReferenceMixin:
         for m in self._marker_objs():
             p = {g._stem(a): v for a, v in m.projections.items()}.get(stem)
             if p is not None:
-                kind = "predicted" if m.disabled or (len(p) > 3 and p[3] == "predicted") else ("pinned" if len(p) < 3 or p[2] else "placed")
+                kind = "predicted" if m.disabled or not g.projection_is_measured(p) else ("pinned" if len(p) < 3 or p[2] else "placed")
                 items.append((m.label, p[0], p[1], kind))
             elif model is not None and stem in names:
                 X = self._marker_model_xyz(m, model, names)
@@ -230,21 +240,8 @@ class ReferenceMixin:
 
     def place_marker(self, u, v):
         label = self.markers_pane.current_label()
-        k = self.current_photo
-        if not label or not (0 <= k < len(self.dataset.cameras)):
-            return
-        stem = self._photo_marker_key(k)
-        if stem is None:
-            self._marker_error("Place Marker", "Photo identity is ambiguous; no observation was changed.")
-            return
-        ms = self._marker_objs()
-        self._snap()
-        for m in ms:
-            if m.label == label:
-                m.projections = {a: b for a, b in m.projections.items() if g._stem(a) != stem}
-                m.projections[stem] = [float(u), float(v), True]
-        self._store_markers(ms)
-        self.log(f"Marker {label} placed on {self.dataset.cameras[k].label} at ({u:.1f}, {v:.1f})")
+        if label:
+            self.pin_marker(label, u, v, k=self.current_photo)
 
     def remove_marker_projection(self, label):
         k = self.current_photo
@@ -329,6 +326,11 @@ class ReferenceMixin:
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
         self._photo_map(ch)  # recover legacy aliases; ambiguous inputs remain excluded
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(self._sparse_model(), photo_dimensions(ch))
+        except ValueError as error:
+            QMessageBox.information(self, "Optimize Cameras", str(error)); return
         defaults = dict(ch.reference_settings)
         from .photo_gps import camera_gps, use_photo_gps
         defaults.setdefault("use_cameras", bool(camera_gps(ch)))
@@ -342,7 +344,8 @@ class ReferenceMixin:
         ch.reference_settings.update(s["accuracies"], use_cameras=requested_cameras,
                                      use_photo_gps=gps_on, use_markers=s["use_markers"])
         wd = self.project.default_workdir(ch)
-        cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
+        cfg = {"model": self._model_dir(), "photo_sizes": photo_dimensions(ch),
+               "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
                "camera_gps": camera_gps(ch) if s["use_cameras"] else {},
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
@@ -474,6 +477,11 @@ class ReferenceMixin:
         ch = self.dataset
         if not ch.markers or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Refine Markers", "Align photos and import markers first."); return
+        from .photonames import photo_dimensions
+        try:
+            g.validate_projection_dimensions(self._sparse_model(), photo_dimensions(ch))
+        except ValueError as error:
+            QMessageBox.information(self, "Refine Markers", str(error)); return
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "image_root": cm.image_dir(wd), "markers": [m for m in ch.markers if not m.get("disabled", False) and not m.get("locked", False)],
                "offset": (ch.georef or {}).get("offset"), "use_reference": bool(ch.georef),

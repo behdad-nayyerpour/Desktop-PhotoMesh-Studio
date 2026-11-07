@@ -23,7 +23,21 @@ class RegistrationMixin:
         from .bgjob import run_modal
         model_dir=self._model_dir()
         model=cio.read_model(model_dir)
-        positions={label:np.asarray(X,float) for label,X,_ctl in (self._marker_positions() or [])}
+        from . import georef as g
+        from .photonames import photo_dimensions
+        g.validate_projection_dimensions(model,photo_dimensions(ch))
+        positions={}
+        for marker in self._marker_objs():
+            if marker.disabled or not marker.enabled:
+                continue
+            if marker.ref is not None and ch.georef:
+                positions[marker.label] = (g.CRS.parse(ch.crs).to_metric(
+                    np.atleast_2d(marker.ref),ch.georef.get("zone"))[0] -
+                    np.asarray(ch.georef.get("offset") or [0,0,0],float))
+            else:
+                point,_n=g.triangulate_marker(model,marker.projections,measured_only=True)
+                if point is not None:
+                    positions[marker.label]=point
         photos=[]
         for index in indices:
             camera=ch.cameras[index]

@@ -156,7 +156,8 @@ def test_marker_state_palette():
     assert color("pinned").getRgb()[:3] == (40, 220, 60)
     assert color("placed").getRgb()[:3] == (60, 140, 255)
     assert color("predicted").getRgb()[:3] == (190, 190, 190)
-    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False]}).to_dict()) == "placed"
+    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False]}).to_dict()) == "predicted"
+    assert marker_state(g.Marker("A", projections={"photo": [1, 2, False, "refined"]}).to_dict()) == "placed"
     assert marker_state(g.Marker("A", projections={"photo": [1, 2, True]}).to_dict()) == "pinned"
     assert marker_state(g.Marker("A", disabled=True, locked=True).to_dict()) == "predicted"
 

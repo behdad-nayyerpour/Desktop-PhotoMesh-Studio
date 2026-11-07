@@ -319,6 +319,10 @@ def read_markers_xml(path):
         ref = mk.find("reference")
         r = [float(ref.get(k)) for k in ("x", "y", "z")] if ref is not None and ref.get("x") else None
         m = Marker(mk.get("label"), r)
+        if root.tag == "photomesh-reference":
+            m.enabled = mk.get("enabled", "true").lower() != "false"
+            m.disabled = mk.get("disabled", "false").lower() == "true"
+            m.locked = mk.get("locked", "false").lower() == "true"
         if ref is not None:
             m.enabled = ref.get("enabled", "true").lower() != "false"
             if ref.get("sx"):
@@ -334,6 +338,8 @@ def read_markers_xml(path):
                 if lab:
                     m.projections[lab] = [float(loc.get("x")), float(loc.get("y")),
                                           loc.get("pinned", "true").lower() == "true"]
+                    if root.tag == "photomesh-reference" and loc.get("source") in ("predicted", "refined"):
+                        m.projections[lab].append(loc.get("source"))
     return list(byid.values()), crs
 
 
@@ -349,7 +355,8 @@ def write_markers_xml(path, markers, crs_text=""):
         ET.SubElement(cams, "camera", id=str(i), label=p)
     mks = ET.SubElement(ch, "markers")
     for k, m in enumerate(markers):
-        mk = ET.SubElement(mks, "marker", id=str(k), label=m.label)
+        mk = ET.SubElement(mks, "marker", id=str(k), label=m.label, enabled=str(m.enabled).lower(),
+                           disabled=str(m.disabled).lower(), locked=str(m.locked).lower())
         if m.ref is not None:
             a = {"x": repr(float(m.ref[0])), "y": repr(float(m.ref[1])), "z": repr(float(m.ref[2])),
                  "enabled": "true" if m.enabled else "false"}
@@ -364,7 +371,8 @@ def write_markers_xml(path, markers, crs_text=""):
         e = ET.SubElement(fm, "marker", marker_id=str(k))
         for p, v in m.projections.items():
             ET.SubElement(e, "location", camera_id=str(pid[p]), pinned="true" if (len(v) < 3 or v[2]) else "false",
-                          x=repr(float(v[0])), y=repr(float(v[1])))
+                          x=repr(float(v[0])), y=repr(float(v[1])),
+                          **({"source": v[3]} if len(v) > 3 and v[3] in ("predicted", "refined") else {}))
     if crs_text:
         ET.SubElement(ch, "reference").text = crs_text
     ET.ElementTree(doc).write(path, encoding="utf-8", xml_declaration=True)
@@ -482,12 +490,31 @@ def name_index(model):
     return {stem: iid for stem, iid in names.items() if stem not in ambiguous}
 
 
+def validate_projection_dimensions(model, photo_sizes=None):
+    """Source-photo observations require calibration in original photo pixels."""
+    exact = {image.name: image for image in model.images.values()}
+    for name, size in (photo_sizes or {}).items():
+        image = exact.get(name)
+        if image is None:
+            continue
+        camera = model.cameras[image.camera_id]
+        if list(size) != [camera.width, camera.height]:
+            raise ValueError(f"{name}: source photo is {size[0]}x{size[1]}, calibration is "
+                             f"{camera.width}x{camera.height}. Re-align to restore original photo pixels "
+                             "before measuring or optimizing markers.")
+
+
+def projection_is_measured(value):
+    """Pins and image-refined locations are measurements; predictions/unknowns are not."""
+    return len(value) < 3 or bool(value[2]) or (len(value) > 3 and value[3] == "refined")
+
+
 def marker_image_observations(model, projections, names=None, measured_only=False):
     """One finite observation per camera; prefer pins, reject conflicting equal-status aliases."""
     names = name_index(model) if names is None else names
     observations = {}
     for label, value in projections.items():
-        if measured_only and len(value) > 3 and value[3] == "predicted":
+        if measured_only and not projection_is_measured(value):
             continue
         iid = names.get(_stem(label))
         if iid is None:
@@ -906,7 +933,11 @@ def rmse(rows, kind):
 
 def write_report(path, rows, crs, pixel=None, counts=None):
     """Reference-pane style tab-separated export (+ pixel error and type)."""
-    pixel = {key: value for key, value in (pixel or {}).items() if value is not None}; counts = counts or {}
+    if pixel is None:
+        pixel = {row["label"]: row.get("pix") for row in rows}
+    if counts is None:
+        counts = {row["label"]: row.get("n", 0) for row in rows}
+    pixel = {key: value for key, value in pixel.items() if value is not None}
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(f"# CoordinateSystem: {crs.name}\n")
         f.write("#Label\tType\tX\tY\tZ\tError_(m)\tX_error\tY_error\tZ_error\tX_est\tY_est\tZ_est\t"
@@ -1001,6 +1032,7 @@ def run_local_task(cfg, log=print):
         raise ValueError("Enable bundle adjustment for optimization without reference coordinates.")
     mdir = cfg["model"]
     model = cio.read_model(mdir)
+    validate_projection_dimensions(model, cfg.get("photo_sizes"))
     ids = sorted(model.images)
     if len(ids) < 2 or not np.any(model.points.track_len() >= 2):
         raise ValueError("Local optimization needs two aligned cameras and tracked tie points.")
@@ -1086,6 +1118,7 @@ def run_task(cfg, log=print):
     if not os.path.isdir(backup):
         shutil.copytree(mdir, backup)
     model = cio.read_model(mdir)
+    validate_projection_dimensions(model, cfg.get("photo_sizes"))
     crs = CRS.parse(cfg.get("crs", ""))
     markers = [Marker(**m) for m in cfg.get("markers", []) if not m.get("disabled", False)]
     names = name_index(model)
