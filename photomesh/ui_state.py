@@ -21,6 +21,10 @@ def restore_window_state(window):
     mode = settings.value(KEY + "/mesh_mode", "shaded", str)
     if mode in ("shaded", "solid", "textured", "wireframe"):
         window.model_view.set_mesh_mode(mode)
+        window._sync_mode_button("Model - " + mode.capitalize())
+    solid = settings.value(KEY + "/cloud_solid", False, bool)
+    window.model_view.set_solid("cloud", solid)
+    window._sync_mode_button("Point Cloud - " + ("Solid" if solid else "Colors"))
     mode = settings.value(KEY + "/tiled_mode", "textured", str)
     if mode in ("textured", "solid", "wireframe", "elevation"):
         window.model_view.set_tiled_mode(mode)
@@ -49,6 +53,7 @@ def save_window_state(window):
     settings.setValue(KEY + "/active_tab", window.tabs.currentIndex())
     settings.setValue(KEY + "/plan_content", "photo" if window.plan_view.currentWidget() is window.photo_view else "ortho")
     settings.setValue(KEY + "/mesh_mode", window.model_view.mesh_mode)
+    settings.setValue(KEY + "/cloud_solid", window.model_view.solid.get("cloud", False))
     settings.setValue(KEY + "/tiled_mode", window.model_view.tiled_mode)
     settings.setValue(KEY + "/orthographic", window.model_view.ortho)
     settings.sync()

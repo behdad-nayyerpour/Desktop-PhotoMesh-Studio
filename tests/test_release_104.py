@@ -76,6 +76,8 @@ def test_layout_roundtrip_and_independent_plan_content(window):
     try:
         window.resize(1300, 850)
         window.show_view(window.photo_view)
+        window.model_view.set_mesh_mode("wireframe")
+        window.model_view.set_solid("cloud", True)
         window._show_dock("Jobs", True)
         save_window_state(window)
         window.show_view(window.model_view)
@@ -83,6 +85,8 @@ def test_layout_roundtrip_and_independent_plan_content(window):
         restore_window_state(window)
         QApplication.processEvents()
         assert window.active_view() is window.photo_view
+        assert window.model_view.mesh_mode == "wireframe"
+        assert window.model_view.solid["cloud"]
         assert window.docks["Jobs"].isFloating()
         assert not window.docks["Jobs"].isHidden()
     finally:
@@ -175,3 +179,18 @@ def test_theme_switch_updates_existing_panels_and_photo_labels(window):
         assert widget.palette().color(QPalette.Text).lightness() < 100
     assert window.main_toolbar.palette().color(QPalette.Button).lightness() > 200
     apply_theme(app, "Dark")
+
+
+def test_saved_layout_prevents_default_view_overriding_user_choice(window, monkeypatch):
+    from photomesh.ui_state import save_window_state, KEY
+    settings = QSettings()
+    try:
+        window.show_view(window.photo_view)
+        save_window_state(window)
+        calls = []
+        monkeypatch.setattr(window, "_solo", calls.append)
+        monkeypatch.setattr(window.model_view, "has_layer", lambda key: True)
+        window._apply_default_view()
+        assert calls == [] and window.active_view() is window.photo_view
+    finally:
+        settings.remove(KEY)

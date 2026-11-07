@@ -576,11 +576,17 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self._update_stale_banners()
         self._update_menu_actions()
 
-    def _apply_default_view(self):
+    def _apply_default_view(self, force=False):
+        from .ui_state import KEY
+        if not force and QSettings().contains(KEY + "/state"):
+            return  # the saved layer choices take priority over the first-run default
         choice = QSettings().value("ui/default_view", "Point cloud", str)
         key = {"Tie points": "tie", "Point cloud": "cloud", "Model": "mesh"}.get(choice, "cloud")
         if self.model_view.has_layer(key):
+            active = self.active_view()
             self._solo(key)
+            if not force and active is not self.model_view:
+                self.show_view(active)
 
     def _update_title(self):
         self.setWindowTitle(window_title(self.project.path, self.project.modified))
@@ -2752,7 +2758,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def preferences(self):
         if PreferencesDialog(self).exec():
-            self._apply_default_view()
+            self._apply_default_view(force=True)
 
     # ---------------------------------------------------------------- Help
     def help_contents(self):
