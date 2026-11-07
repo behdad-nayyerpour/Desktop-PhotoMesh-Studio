@@ -523,56 +523,12 @@ def predict_projection(model, iid, X):
 
 
 # ======================================================== bundle adjustment
-def _proj_k(K, Xc):
-    """Project camera-frame points with per-row intrinsics K (n, 8):
-    f, cx, cy, k1, k2, k3, p1, p2 (Brown model, square pixels)."""
-    z = Xc[:, 2]
-    x = Xc[:, 0] / z; y = Xc[:, 1] / z
-    r2 = x * x + y * y
-    rad = 1 + r2 * (K[:, 3] + r2 * (K[:, 4] + r2 * K[:, 5]))
-    p1, p2 = K[:, 6], K[:, 7]
-    xd = x * rad + 2 * p1 * x * y + p2 * (r2 + 2 * x * x)
-    yd = y * rad + 2 * p2 * x * y + p1 * (r2 + 2 * y * y)
-    return np.stack([K[:, 0] * xd + K[:, 1], K[:, 0] * yd + K[:, 2]], 1)
-
-
 def _skew_rows(v):
     """(n,3) -> (n,3,3) cross-product matrices."""
     z = np.zeros(len(v))
     return np.stack([np.stack([z, -v[:, 2], v[:, 1]], 1),
                      np.stack([v[:, 2], z, -v[:, 0]], 1),
                      np.stack([-v[:, 1], v[:, 0], z], 1)], 1)
-
-
-def _camera_k8(cam):
-    fx, fy, cx, cy = cam.K()
-    k1, k2, p1, p2, k3 = cam.dist()
-    return np.array([0.5 * (fx + fy), cx, cy, k1, k2, k3, p1, p2], float)
-
-
-def _write_k8(cam, k, model_full):
-    f, cx, cy, k1, k2, k3, p1, p2 = k
-    if model_full:
-        # FULL_OPENCV: fx fy cx cy k1 k2 p1 p2 k3 k4 k5 k6
-        cam.model = 6
-        cam.params = np.array([f, f, cx, cy, k1, k2, p1, p2, k3, 0, 0, 0], float)
-    elif cam.model == 2:
-        cam.params = np.array([f, cx, cy, k1])
-    elif cam.model == 3:
-        cam.params = np.array([f, cx, cy, k1, k2])
-    elif cam.model == 4:
-        cam.params = np.array([f, f, cx, cy, k1, k2, p1, p2])
-    elif cam.model == 6:
-        cam.params = np.r_[[f, f, cx, cy, k1, k2, p1, p2, k3], cam.params[9:]]
-    else:
-        cam.model = 6
-        cam.params = np.array([f, f, cx, cy, k1, k2, p1, p2, k3, 0, 0, 0], float)
-
-
-# which of the 8 intrinsic parameters are adjusted
-INTRINSIC_SETS = {"none": [], "f": [0], "f,cx,cy,k1": [0, 1, 2, 3],
-                  "f,cx,cy,k1-k3": [0, 1, 2, 3, 4, 5],
-                  "f,cx,cy,k1-k3,p1,p2": [0, 1, 2, 3, 4, 5, 6, 7]}
 
 
 def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, cam_priors=None):
@@ -596,6 +552,14 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
          "fit_intrinsics": True, "intrinsics": "f,cx,cy,k1-k3,p1,p2", "max_iterations": 30,
          "huber": 4.0}
     o.update(opts or {})
+    for key in ("tie_accuracy", "projection_accuracy", "huber"):
+        if not np.isfinite(o[key]) or o[key] <= 0:
+            raise ValueError(f"{key} must be finite and positive")
+    for references in (control, cam_priors or {}):
+        for label, (position, sigma) in references.items():
+            position, sigma = np.asarray(position, float), np.asarray(sigma, float)
+            if position.shape != (3,) or sigma.shape != (3,) or not np.isfinite(position).all() or not np.isfinite(sigma).all() or np.any(sigma <= 0):
+                raise ValueError(f"Invalid coordinate/accuracy for reference {label}")
     P = model.points
     img_ids = sorted(model.images)
     ipos = {iid: k for k, iid in enumerate(img_ids)}
@@ -603,9 +567,10 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
     cpos = {cid: k for k, cid in enumerate(cam_ids)}
     R = np.array([model.images[i].R() for i in img_ids])
     C = np.array([model.images[i].center() for i in img_ids])
-    K = np.array([_camera_k8(model.cameras[c]) for c in cam_ids])
-    kidx = INTRINSIC_SETS[o["intrinsics"]] if o["fit_intrinsics"] else []
-    nk = len(kidx)
+    from .calibration import pack_calibrations, project_calibrations, apply_increment
+    K, camera_models, kidx, kactive = pack_calibrations(
+        [model.cameras[c] for c in cam_ids], o["intrinsics"] if o["fit_intrinsics"] else "none")
+    nk = kidx.shape[1]
     cam_of_img = np.array([cpos[model.images[i].camera_id] for i in img_ids])
     # ---- tie point subset (well observed, low error)
     tl = P.track_len()
@@ -646,17 +611,24 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         f"({len(t_pt):,} projections), {nM} markers ({len(m_pt)} projections, {len(ctrl)} control), "
         f"{len(priors)} camera GPS priors, intrinsics: {o['intrinsics'] if nk else 'fixed'}")
 
+    observation_models = camera_models[cam_of_img[o_img]]
+
     def residuals(R, C, K, X):
         Xc = np.einsum("nij,nj->ni", R[o_img], X[o_pt] - C[o_img])
-        r = (_proj_k(K[cam_of_img[o_img]], Xc) - o_uv) / o_sig[:, None]
+        r = (project_calibrations(K[cam_of_img[o_img]], observation_models, Xc) - o_uv) / o_sig[:, None]
         return r, Xc
 
     def cost(R, C, K, X):
+        if not np.isfinite(K).all() or np.any(K[:, 0] <= 0) or np.any(
+                K[~np.isin(camera_models, [0,2,3]), 1] <= 0):
+            return float("inf")
         r, Xc = residuals(R, C, K, X)
         e = np.sqrt((r ** 2).sum(1))
         hh = np.minimum(o_huber, e)
         rho = 2 * hh * e - hh * hh                                 # Huber (tie points only)
         rho[Xc[:, 2] <= 0] = 1e6
+        if not np.isfinite(rho).all():
+            return float("inf")
         c = rho.sum()
         for p, ref, s in ctrl:
             c += (((X[p] - ref) / s) ** 2).sum()
@@ -682,13 +654,17 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         Jxc = np.empty((nO, 2, 3))
         for j in range(3):
             d = np.zeros_like(Xc); d[:, j] = h
-            Jxc[:, :, j] = (_proj_k(Kobs, Xc + d) - _proj_k(Kobs, Xc - d)) / (2 * h[:, None])
+            Jxc[:, :, j] = (project_calibrations(Kobs, observation_models, Xc + d) - project_calibrations(Kobs, observation_models, Xc - d)) / (2 * h[:, None])
         Jk = np.empty((nO, 2, nk))
-        for a, j in enumerate(kidx):
-            hk = 1e-6 * max(abs(K[:, j]).max(), 1e-3) if j < 3 else 1e-7
-            Kp = Kobs.copy(); Kp[:, j] += hk
-            Km = Kobs.copy(); Km[:, j] -= hk
-            Jk[:, :, a] = (_proj_k(Kp, Xc) - _proj_k(Km, Xc)) / (2 * hk)
+        for a in range(nk):
+            selected = kidx[cam_of_img[o_img], a]
+            enabled = kactive[cam_of_img[o_img], a]
+            rows = np.arange(nO)
+            hk = np.maximum(1e-7, 1e-6 * np.abs(Kobs[rows, selected]))
+            Kp = Kobs.copy(); Kp[rows, selected] += hk * enabled
+            Km = Kobs.copy(); Km[rows, selected] -= hk * enabled
+            Jk[:, :, a] = (project_calibrations(Kp, observation_models, Xc) -
+                           project_calibrations(Km, observation_models, Xc)) / (2 * hk[:, None])
         Ro = R[o_img]
         # Xc = R (X - C); perturb R <- Exp(w) R:  dXc/dw = -[Xc]x ; dXc/dC = -R ; dXc/dX = R
         Jw = -np.einsum("nij,njk->nik", Jxc, _skew_rows(Xc))
@@ -744,7 +720,7 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
             Cn = C + dw[:, 3:]
             Kn = K.copy()
             if nk:
-                Kn[:, kidx] += dc[6 * nI:].reshape(nC, nk)
+                Kn = apply_increment(K, kidx, kactive, dc[6 * nI:].reshape(nC, nk))
             Xn = X + dp
             new = cost(Rn, Cn, Kn, Xn)
             if new < cur:
@@ -772,14 +748,14 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         im = model.images[iid]
         im.qvec = cio.rot_to_qvec(R[k]); im.tvec = -R[k] @ C[k]
     if nk:
-        full = any(j >= 4 for j in kidx)
         for k, cid in enumerate(cam_ids):
-            _write_k8(model.cameras[cid], K[k], full)
+            size = cio.CAMERA_MODELS[model.cameras[cid].model][1]
+            model.cameras[cid].params = K[k, :size].copy()
     retriangulate(model)
     r, _ = residuals(R, C, K, X)
-    tres = r[:len(t_pt)] * o_sig[:len(t_pt), None]
+    final_errors, _, _ = cio.observation_errors(model)
     return {"markers": {l: X[nT + k] for k, l in enumerate(mlabels)},
-            "tie_rms_px": float(np.sqrt((tres ** 2).sum(1).mean())) if len(tres) else 0.0,
+            "tie_rms_px": float(np.sqrt(np.mean(final_errors ** 2))) if len(final_errors) else 0.0,
             "iterations": it, "intrinsics": {cid: K[k].tolist() for k, cid in enumerate(cam_ids)}}
 
 
