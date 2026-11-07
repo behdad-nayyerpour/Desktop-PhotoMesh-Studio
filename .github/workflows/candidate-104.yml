@@ -2,8 +2,8 @@
 name: 1.0.4 test installer
 on:
   push:
-    branches: ["release/1.0.4"]
-    paths: [".github/workflows/candidate-104.yml", "tools/validate_installed_104.py"]
+    branches: ["release/1.0.4-hotfix"]
+    paths: [".github/workflows/candidate-104.yml", "tools/validate_installed_104.py", "photomesh/**", "tests/**"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -37,14 +37,14 @@ jobs:
           if ($LASTEXITCODE) { throw "Regressions failed" }
       - name: Reference numerical performance acceptance
         run: python tools/benchmark_reference_104.py
-      - name: Fetch exact verified 1.0.3 runtime
+      - name: Fetch exact verified 1.0.4 runtime
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.3 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.3.exe" --dir released
-          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.3.exe"
-          $expected = "d58ef4eb69c754be04478d91cd17313873cd8707a9f8be86ce5862e3c422751b"
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.4.exe" --dir released
+          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.4.exe"
+          $expected = "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3"
           if ((Get-FileHash -LiteralPath $setupPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw "Released runtime checksum mismatch" }
           $runtimePath = Join-Path $env:RUNNER_TEMP "PhotoMesh104Runtime"
           $installArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', ('/DIR="' + $runtimePath + '"'), '/TASKS=""')
@@ -70,12 +70,12 @@ jobs:
           $stagePath = Join-Path $env:RUNNER_TEMP "PhotoMesh104Stage"
           & "packaging/build_release.ps1" -RuntimeSource $env:CANDIDATE_RUNTIME -ISCC $isccPath -OutputDir (Join-Path $PWD "preview") -StageDir $stagePath
           if ($LASTEXITCODE) { throw "Production builder failed" }
-          @("PhotoMesh Studio 1.0.4 TEST CANDIDATE; no public release has been published.",
-            "Source commit: ${{ github.sha }}", "Runtime reused from SHA256-verified public 1.0.3 Setup.",
+          @("PhotoMesh Studio 1.0.4 HOTFIX CANDIDATE; replaces the published 1.0.4 Setup after validation.",
+            "Source commit: ${{ github.sha }}", "Runtime reused from SHA256-verified public 1.0.4 Setup.",
             "Close PhotoMesh Studio before installing. Review using a copy of your project.",
             "Remaining checks: real CUDA reconstruction, target hardware and user acceptance.") |
             Set-Content -LiteralPath "preview/TEST-BUILD.txt" -Encoding utf8
-      - name: Upgrade disposable 1.0.3 installation
+      - name: Upgrade disposable 1.0.4 installation
         shell: pwsh
         run: |
           $upgradeRoot = [IO.Path]::GetFullPath($env:CANDIDATE_RUNTIME)
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: PhotoMeshStudio-1.0.4-Candidate
+          name: PhotoMeshStudio-1.0.4-Hotfix-Candidate
           path: preview/
           retention-days: 14
           if-no-files-found: ignore

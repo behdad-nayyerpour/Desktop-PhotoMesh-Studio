@@ -973,6 +973,7 @@ class PhotoView(QWidget):
         self._moving_marker = None
         self.markers = []          # (label, u, v, kind) kind: pinned | placed | predicted
         self.active_marker = None
+        self.available_markers = []
         # Show Markers / Show Marker Labels, the same toggles as the Model and Ortho views
         self.vis = {"markers": True, "marker_labels": True}
         self._overlay = []
@@ -1030,6 +1031,7 @@ class PhotoView(QWidget):
         self.path = None; self._pix = None
         self._overlay = []; self._shape_items = []
         self.shapes = []; self.markers = []; self.active_marker = None
+        self.available_markers = []
         self.caption.setText("Select a photo in the Photos pane to open it.")
 
     def open(self, path, caption=""):
@@ -1052,8 +1054,10 @@ class PhotoView(QWidget):
             self.view.resetTransform()
             self.view.fitInView(self.view.sceneRect(), Qt.KeepAspectRatio)
 
-    def set_markers(self, markers, active=None):
-        self.markers = list(markers or []); self.active_marker = active
+    def set_markers(self, markers, active=None, available=None):
+        self.markers = list(markers or [])
+        self.active_marker = active
+        self.available_markers = list(available or [])
         self._draw_markers()
 
     def set_visible(self, key, on):
@@ -1198,6 +1202,12 @@ class PhotoView(QWidget):
         if self.active_marker:
             a = menu.addAction(f"Place Marker '{self.active_marker}' Here")
             a.triggered.connect(lambda: self.placeMarker.emit(p.x(), p.y()))
+        if self.available_markers:
+            existing = menu.addMenu("Place Existing Marker")
+            for label in self.available_markers:
+                action = existing.addAction(str(label))
+                action.triggered.connect(
+                    lambda _checked=False, selected=label: self.pinMarker.emit(selected, p.x(), p.y()))
         near = self.markers_near(p.x(), p.y())
         if near:
             menu.addSeparator()

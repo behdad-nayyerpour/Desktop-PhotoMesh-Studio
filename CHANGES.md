@@ -4,7 +4,10 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
-### 1.0.4 (2026-11-07)
+### 1.0.4 (2026-11-07, corrected installer 2026-11-08)
+
+- Validate control coordinates before Optimize Cameras and name the invalid marker and CRS in the error.
+- Right-click a photo to place any existing marker directly from the marker list.
 
 - Reset Ortho/DEM selection when opening a photo, allowing one-click return to a raster in Plan View.
 - Use the project filename in exported processing reports instead of legacy dataset names.
