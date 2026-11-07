@@ -22,7 +22,11 @@ def number(lo, hi, value, decimals=2):
 def alignment_context(d, parent):
     cameras = [c for c in getattr(getattr(parent, "dataset", None), "cameras", []) if c.enabled]
     gps = sum(all(v is not None and math.isfinite(v) for v in (c.lon, c.lat, c.alt)) for c in cameras)
-    d.reference.setChecked(gps >= 2); d.reference.setEnabled(gps >= 2)
+    from .photo_gps import use_photo_gps
+    dataset = getattr(parent, "dataset", None)
+    gps_on = use_photo_gps(dataset) if dataset is not None else True
+    d.reference.setChecked(gps_on and gps >= 2)
+    d.reference.setEnabled(gps_on and gps >= 2)
     d.reference.setToolTip(f"{gps}/{len(cameras)} photos have complete GPS; pair selection only, not georeferencing.")
     d.summary = note(d, "")
     d.single_camera.setToolTip("Groups use compatible model, image size and initial calibration. Poses remain independent.")
@@ -31,7 +35,7 @@ def alignment_context(d, parent):
     def update(*_):
         from .fastpipe import COARSE_MAX_SIZE
         mode = d.mode.currentText()
-        d.reference.setEnabled(mode == "Fast" and gps >= 2)
+        d.reference.setEnabled(gps_on and mode == "Fast" and gps >= 2)
         maximum = max([max(c.width, c.height) for c in cameras] or [0])
         from .colmap import ACCURACY_DOWNSCALE
         side = max(256, maximum // ACCURACY_DOWNSCALE[d.accuracy.currentData() or d.accuracy.currentText()]) if maximum else 0

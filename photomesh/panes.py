@@ -367,24 +367,6 @@ class WorkspacePane(QTreeWidget):
                 self.contextAction.emit(a.text(), ci)
 
 
-def workspace_panel(tree, actions):
-    """The Workspace dock content: a small pane toolbar (PANE_ICON px icons) above the tree."""
-    from PySide6.QtWidgets import QToolBar
-    from .icons import PANE_ICON
-    w = QWidget()
-    lay = QVBoxLayout(w); lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(0)
-    tb = QToolBar(); tb.setIconSize(QSize(PANE_ICON, PANE_ICON))
-    tb.setStyleSheet("QToolBar{spacing:1px;padding:0px;border:0px;} QToolButton{padding:1px;margin:0px;}")
-    for a in actions:
-        if a is None:
-            tb.addSeparator()
-        else:
-            tb.addAction(a)
-    lay.addWidget(tb); lay.addWidget(tree)
-    w.toolbar = tb
-    return w
-
-
 class ReferencePane(QTableWidget):
     """Camera coordinates and errors; GPS policy is project-wide in Settings."""
     COLS = ["Cameras", "X / Longitude", "Y / Latitude", "Z / Altitude", "Accuracy (m)",

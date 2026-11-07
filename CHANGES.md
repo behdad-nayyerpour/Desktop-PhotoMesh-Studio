@@ -4,6 +4,16 @@ Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
 
+### 1.0.4 (candidate)
+
+- Separate Project, Markers and Cameras panels; Photos on the right and floating Console/Jobs.
+- Use 3D View and shared Plan View for photographs and orthophotos/DEMs, retaining marker tools.
+- Replace camera reference checkboxes with project-wide Use Photo GPS; preserve legacy opt-outs conservatively.
+- Remember window/panel layout, render styles and successful file/folder picker directories.
+- Add the approved offline About/license text and full bundled license viewer.
+- Clear stale photo identity when a newly requested image cannot be opened.
+- Candidate only: tests, visual review and installer acceptance are recorded in release-review-104.md; public release needs separate approval.
+
 ### 1.0.3 (2026-11-07)
 
 - Widen Tie Points, Cloud, Mesh and Transparency captions, including selected states; retain native split visibility/style controls and compact icon sizes. Keep the display row within 1280 logical pixels by tightening view/zoom side padding.

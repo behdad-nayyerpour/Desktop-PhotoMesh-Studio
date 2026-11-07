@@ -306,6 +306,7 @@ class ReferenceMixin:
         ch = self.dataset
         if not ch.aligned_count() or not os.path.isdir(self._model_dir()):
             QMessageBox.information(self, "Optimize Cameras", "Align photos first."); return
+        self._photo_map(ch)  # recover legacy aliases; ambiguous inputs remain excluded
         defaults = dict(ch.reference_settings)
         from .photo_gps import camera_gps, use_photo_gps
         defaults["use_cameras"] = use_photo_gps(ch) and bool(camera_gps(ch))
@@ -317,8 +318,7 @@ class ReferenceMixin:
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
-               "camera_gps": {c.label: [c.lon, c.lat, c.alt] for c in ch.cameras
-                              if c.enabled and c.use_reference and c.lat is not None and c.lon is not None},
+               "camera_gps": camera_gps(ch),
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
                "fit_intrinsics": s["fit_intrinsics"], "offset": (ch.georef or {}).get("offset"),
                "report": os.path.join(wd, "georef_report.txt"),

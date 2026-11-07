@@ -4,7 +4,7 @@
 
 1. *Project → Add Photos…* / *Add Photo Folder…* — photos are analysed in parallel
    (EXIF GPS, thumbnails, global descriptors) and appear in **Photos**,
-   **Workspace** and **Reference** panes.
+   **Project** and **Cameras** panes.
 2. *Process → Align Photos…* — image resolution, matching mode (**Fast** default /
    Exhaustive / Sequential), **camera estimation** (Auto / Global / Incremental /
    Hierarchical), coarse-to-fine, key point limit, guided matching…
@@ -127,7 +127,7 @@ are not required to generate the DXF.
 
 ## Ground control and check points
 
-The marker section of the Reference pane provides **All**, **Control**, and **Check** tabs and coordinate
+The Markers panel provides **All**, **Control**, and **Check** tabs and coordinate
 and pixel RMSE summaries. Control points participate in adjustment; check points
 measure the result independently. Ignoring a marker is separate from its
 Control/Check classification.
@@ -164,7 +164,7 @@ added again.
 Use **Process > Build DEM...** to create an elevation raster from the mesh or
 point cloud. Use **Build Orthomosaic...** with the required Mesh or DEM surface.
 
-The Ortho tab displays an actual orthomosaic or DEM after one has been built
+Plan View displays an actual orthomosaic or DEM after one has been built
 or imported; it does not substitute the sparse point cloud for a raster.
 Use **Export** to export orthomosaic and DEM products.
 
@@ -177,15 +177,19 @@ The status bar shows only Ready/Busy and CPU/GPU load. Progress stays in the
 processing dialog or relevant Model/Photos pane. A busy cursor acknowledges
 commands while their settings and input data are being prepared.
 
-## Reference and Workspace
+## Project, Markers and Cameras
 
-Reference combines camera GPS and marker tables. Checking a camera enables its
-GPS for optimization (when camera GPS is enabled in Optimize Cameras); it does
-not enable/disable the photo for alignment. Selecting a row only selects it.
+Separate Markers and Cameras panels contain their respective reference tables.
+Cameras has no per-photo reference checkbox. **Settings > Use Photo GPS**
+controls GPS pair preselection and camera references for this project; it is on
+by default for new projects and does not change when a marker is added. Turning
+it off does not exclude photographs from alignment. A legacy project with
+explicit GPS opt-outs starts with GPS off until you explicitly enable the new
+policy, so hidden old exclusions do not silently become active references.
 Uncheck a marker to use it as a check point instead of a control point.
 Ignored markers are excluded independently of that classification.
 
-Workspace lists the project's photos and products directly, without an intermediate dataset row or dataset-management commands. One dataset is opened per
+Project lists the project's photos and products directly, without an intermediate dataset row or dataset-management commands. One dataset is opened per
 project. A legacy multi-dataset file is rejected with instructions to separate its
 datasets in an older version; its original file is not modified.
 
@@ -199,22 +203,33 @@ Project preparation runs off the UI thread and is transactional: a failed or
 cancelled open leaves the current project in place.
 
 
-### Reference layout and interactive settings
+### Layout and interactive settings
 
 Camera RMSE occupies the last camera-table row under Error (m). Control-point
 and check-point RMSE occupy the last two marker-table rows under Error (m) and
 Error (pix). These footer rows cannot be selected or edited as cameras/markers.
 No separate error-summary section is shown.
 
-Properties is part of the Workspace tab and uses compact rows. It is not shown
-with Reference. Interactive settings use the normal pointer, including while
+Properties is part of the Project tab and uses compact rows. It is not shown
+with Markers or Cameras. Interactive settings use the normal pointer, including while
 background work continues; processing dialogs retain the wait cursor.
 
 3D marker labels and the legend are rasterized before GL composition to avoid
 driver-dependent glyph corruption over textured models.
 
-Workspace and Reference extend down to the status bar. Photos, Console and Jobs
-share the bottom area beneath the viewport, to the right of the left tabs.
+Project, Markers and Cameras occupy the left side; Photos is on the right.
+Console and Jobs are initially hidden. Open them from **Display > Panels and
+Toolbars** as floating windows. Their latest visibility and placement are saved.
+**3D View** shows reconstruction products. **Plan View** displays a photograph
+when opened from Photos/Cameras, or the orthophoto/DEM selected from the project
+or toolbar. Photo and raster interactions retain their own renderer state.
+
+Window geometry, panel arrangement, active tab, Plan View content type and
+render styles are restored on restart. File pickers remember successful selection
+directories; cancelling does not change them. The Project tree's former small
+action strip has been removed; add commands remain in Project/main toolbar, and
+selected-photo enable/remove commands are in Edit. Application layout settings
+are separate from project data; projects are not automatically reopened.
 
 
 ## Workflow settings
@@ -261,7 +276,7 @@ photos). Spread them over the image; collinear or tightly clustered controls are
 rejected. A compatible calibrated camera is required; choose its calibration
 when multiple groups are available.
 
-Right-click the photo(s) in Photos or Workspace and select **Align Selected
+Right-click the photo(s) in Photos or Project and select **Align Selected
 Photos from GCPs**. The batch is published only when every selected pose passes
 the reprojection/geometry checks. Existing camera poses are unchanged. Shapes
 refresh on the registered photo when their display is enabled.
@@ -287,7 +302,7 @@ accurate on every aerial block. Their feature count is explicit (default 2,048,
 maximum 4,096); neural matching does not reuse SIFT descriptors or a coarse SIFT
 database. Coarse-to-fine is a SIFT path.
 
-**Apply checked camera GPS to model scale, orientation and location** is separate
+**Apply photo GPS to model scale, orientation and location** is separate
 from GPS pair preselection. It is offered for an initial alignment when enough
 checked cameras have valid non-collinear positions in a supported projection
 region. It applies a similarity transformation; it does not turn ordinary EXIF

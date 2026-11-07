@@ -70,34 +70,9 @@ jobs:
       - name: Toolbar visual check
         if: always()
         run: |
-          python - <<'PY'
-          import base64, os
-          from PySide6.QtCore import Qt, QCoreApplication, QBuffer, QIODevice
-          QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
-          from PySide6.QtWidgets import QApplication
-          app = QApplication([])
-          app.setOrganizationName("PhotoMeshToolbarReview")
-          app.setApplicationName("PhotoMeshToolbarReview")
-          from photomesh.mainwindow import MainWindow
-          from photomesh.theme import apply_theme
-          apply_theme(app, "Dark")
-          w = MainWindow(); w.resize(1280, 800); w.show()
-          for _ in range(10): app.processEvents()
-          for theme in ("Dark", "Light"):
-              apply_theme(app, theme)
-              for _ in range(5): app.processEvents()
-              image = w.grab().copy(0, 0, 1280, 230)
-              buffer = QBuffer(); buffer.open(QIODevice.WriteOnly); image.save(buffer, "PNG")
-              print("TOOLBAR_" + theme.upper() + "_IMAGE=" + base64.b64encode(bytes(buffer.data())).decode(), flush=True)
-          from photomesh.dialogs import AlignPhotosDialog
-          dialog = AlignPhotosDialog(w)
-          dialog.feature_method.setCurrentText("ALIKED + LightGlue")
-          dialog.show()
-          for _ in range(5): app.processEvents()
-          buffer = QBuffer(); buffer.open(QIODevice.WriteOnly); dialog.grab().save(buffer, "PNG")
-          print("WARNING_IMAGE=" + base64.b64encode(bytes(buffer.data())).decode(), flush=True)
-          os._exit(0)
-          PY
+          for scale in 1 1.5 2; do
+            QT_SCALE_FACTOR=$scale python tools/review_ui104.py
+          done
       - name: Compare processing performance with 1.0.0
         run: python tools/benchmark_workflow_101.py
       - name: Summary

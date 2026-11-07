@@ -110,7 +110,7 @@ class AlignPhotosDialog(_SettingsDialog):
         ready,reason=gps_frame_available(cameras,getattr(project_dataset,"crs",""),existing, respect_legacy_flags=False)
         self.gps_frame.setChecked(ready and self.photo_gps_on)
         self.gps_frame.setEnabled(ready and self.photo_gps_on)
-        self.gps_frame.setToolTip(reason)
+        self.gps_frame.setToolTip(reason if self.photo_gps_on else "Photo GPS is disabled in Settings.")
         self.gform.addRow(self.gps_frame)
         self.gform.addRow(self.c2f)
         self.gform.addRow("Image resolution:", self.accuracy)
@@ -585,6 +585,11 @@ class PreferencesDialog(QDialog):
         self.use_photo_gps.setToolTip("Use valid photo GPS for pair preselection and camera references. "
                                      "Adding markers does not change this setting. Photos remain included when GPS is off.")
         gf.addRow(self.use_photo_gps)
+        if self.dataset is not None and "use_photo_gps" not in self.dataset.reference_settings and not self.use_photo_gps.isChecked():
+            legacy_note = QLabel("Photo GPS is off to preserve this older project's reference exclusions. "
+                                 "Enable Use Photo GPS to use all valid photo positions.")
+            legacy_note.setWordWrap(True)
+            gf.addRow(legacy_note)
         tabs.addTab(gen, "General")
         gpu = QWidget(); gl = QFormLayout(gpu)
         self.use_gpu = QCheckBox("Use GPU for feature extraction/matching")
@@ -619,8 +624,10 @@ class PreferencesDialog(QDialog):
     def _save(self):
         s = QSettings()
         if self.dataset is not None:
+            from .photo_gps import use_photo_gps
+            changed = use_photo_gps(self.dataset) != self.use_photo_gps.isChecked()
             self.dataset.reference_settings["use_photo_gps"] = self.use_photo_gps.isChecked()
-            if self.parent() is not None:
+            if changed and self.parent() is not None:
                 self.parent().set_modified()
         s.setValue("ui/theme", self.theme.currentText())
         s.setValue("ui/default_view", self.default_view.currentText())

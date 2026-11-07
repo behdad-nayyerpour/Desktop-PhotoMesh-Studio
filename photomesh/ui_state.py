@@ -24,6 +24,12 @@ def restore_window_state(window):
     mode = settings.value(KEY + "/tiled_mode", "textured", str)
     if mode in ("textured", "solid", "wireframe", "elevation"):
         window.model_view.set_tiled_mode(mode)
+    window.actions["Perspective/Orthographic"].setChecked(settings.value(KEY + "/orthographic", False, bool))
+    # Toolbar visibility is restored by Qt; synchronize the shared menu action.
+    toolbar_action = window.actions["Toolbar"]
+    toolbar_action.blockSignals(True)
+    toolbar_action.setChecked(any(not toolbar.isHidden() for toolbar in window.toolbars))
+    toolbar_action.blockSignals(False)
     for name, dock in window.docks.items():
         action = window.actions[name]
         action.blockSignals(True)
@@ -44,4 +50,5 @@ def save_window_state(window):
     settings.setValue(KEY + "/plan_content", "photo" if window.plan_view.currentWidget() is window.photo_view else "ortho")
     settings.setValue(KEY + "/mesh_mode", window.model_view.mesh_mode)
     settings.setValue(KEY + "/tiled_mode", window.model_view.tiled_mode)
+    settings.setValue(KEY + "/orthographic", window.model_view.ortho)
     settings.sync()

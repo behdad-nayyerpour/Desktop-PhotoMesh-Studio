@@ -153,6 +153,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         else:
             self.tabs.setCurrentWidget(self.model_view)
 
+    def _sync_dock_action(self, name):
+        action = self.actions[name]
+        blocked = action.blockSignals(True)
+        action.setChecked(not self.docks[name].isHidden())
+        action.blockSignals(blocked)
+
     def _show_dock(self, name, on):
         dock = self.docks[name]
         if on and name in ("Console", "Jobs"):
@@ -243,6 +249,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         return self.workspace_splitter
 
     def _ws_toggle_selected(self):
+        if not self._can_change_project():
+            return
         sel = [r for r in self.workspace.selected_roles() if r[0] == "camera"]
         if not sel:
             self.statusBar().showMessage("Select cameras in Project first", 4000); return
@@ -251,6 +259,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self.set_modified()
 
     def _ws_remove_selected(self):
+        if not self._can_change_project():
+            return
         indices = sorted({r[2] for r in self.workspace.selected_roles() if r[0] == "camera"}, reverse=True)
         if not indices:
             QMessageBox.information(self, "Remove Photos", "Select photos in Project first.")
@@ -340,6 +350,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             "Optimize Cameras...": self.optimize_cameras, "Refine Markers": self.refine_markers,
             "Add Marker": self.add_marker,
             "Undo": self.undo_markers, "Redo": self.redo_markers,
+            "Enable/Disable Selected Photos": self._ws_toggle_selected,
+            "Remove Selected Photos": self._ws_remove_selected,
             "Filter Point Cloud...": lambda: self.filter_point_cloud(False),
             "Filter by Confidence...": lambda: self.filter_point_cloud(True),
             "Gradual Selection...": self.gradual_selection,
@@ -383,6 +395,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.menus[top] = menu
             self._fill_menu(menu, items, handlers, top)
             menu.aboutToShow.connect(self._update_menu_actions)
+        self.actions["Workspace"] = self.actions["Project"]  # legacy script IDs
+        self.actions["Reference"] = self.actions["Cameras"]
         # Preserve script/action lookup IDs without retaining the previous layout.
         for group, names in LEGACY_ACTION_GROUPS.items():
             for name in names:
@@ -392,9 +406,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             action = self.actions[name]
             action.setChecked(dock.isVisible())
             action.toggled.connect(lambda on, n=name: self._show_dock(n, on))
-            dock.visibilityChanged.connect(lambda vis, a=action, d=dock: a.setChecked(not d.isHidden()))
-        self.actions["Workspace"] = self.actions["Project"]  # legacy script IDs
-        self.actions["Reference"] = self.actions["Cameras"]
+            dock.visibilityChanged.connect(lambda vis, n=name: self._sync_dock_action(n))
         st = QSettings()
         for key, label, default in LAYERS:
             action = self.layer_action(key)

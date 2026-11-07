@@ -116,3 +116,14 @@ def test_full_license_is_bundled_readable_text():
     text = LICENSE_PATH.read_text(encoding="utf-8")
     assert "Personal and Educational Non-Commercial License" in text
     assert "prior written permission" in text
+
+
+def test_camera_gps_uses_exact_model_aliases_for_duplicate_filenames():
+    from photomesh.photo_gps import camera_gps
+    dataset = ProjectData(cameras=[
+        Camera("/a/photo.jpg", lon=44., lat=40., alt=100., colmap_name="photo.jpg"),
+        Camera("/b/photo.jpg", lon=45., lat=41., alt=200., colmap_name="photo_1.jpg")])
+    assert camera_gps(dataset) == {"photo.jpg": [44., 40., 100.], "photo_1.jpg": [45., 41., 200.]}
+    for camera in dataset.cameras:
+        camera.colmap_name = ""
+    assert not camera_gps(dataset)  # unresolved legacy aliases must never swap GPS references

@@ -21,6 +21,10 @@ project compatibility, failure/cancellation, offline operation and performance.
   per-operation file picker directories.
 - Approved About and full bundled offline license viewer.
 - Fixed failed photo-open retaining the previously opened photo identity.
+- Route GPS references through exact model aliases; unresolved duplicate legacy
+  photo names are excluded instead of swapping coordinates.
+- Retain selected-photo enable/remove commands in Edit after removing the local
+  strip, and block those commands during project preparation/processing.
 
 ## Validation
 

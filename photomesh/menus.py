@@ -21,6 +21,7 @@ MENUS = [
     ]),
     ("&Edit", [
         "Undo", "Redo", "-",
+        "Enable/Disable Selected Photos", "Remove Selected Photos", "-",
         ("Rotate Photo", ["Rotate Right", "Rotate Left"]),
     ]),
     ("Pro&cess", [

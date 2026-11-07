@@ -17,12 +17,16 @@ def use_photo_gps(dataset):
 def camera_gps(dataset, names=None):
     if not use_photo_gps(dataset):
         return {}
+    if names is None:
+        from .photonames import photo_map
+        mapping, _ambiguous = photo_map(dataset)
+        names = {path: name for name, path in mapping.items()}
     result = {}
     for camera in dataset.cameras:
         if not camera.enabled:
             continue
         xyz = valid_gps((camera.lon, camera.lat, camera.alt))
-        name = names.get(camera.path) if names is not None else camera.label
+        name = names.get(camera.path)
         if xyz is not None and name:
             result[name] = xyz.tolist()
     return result
