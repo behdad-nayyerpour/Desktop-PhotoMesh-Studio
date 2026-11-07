@@ -164,6 +164,9 @@ accuracy on a real project.
 
 Marker observations use original-photo pixels; clicks in empty margins and
 out-of-bounds imported measurements cannot become adjustment observations.
+Geographic references are limited to the supported UTM latitude range (-80° to
+84°); longitudes at the date line use a valid zone. GPS and surveyed heights
+must use compatible vertical datums; no geoid-height conversion is applied.
 If stored photo dimensions and
 model calibration dimensions disagree, optimization/refinement stops with an
 explanation; re-align to restore original photo calibration rather than mixing

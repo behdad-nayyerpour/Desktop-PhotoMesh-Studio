@@ -68,7 +68,7 @@ def enu_basis(lat0, lon0):
 
 
 def utm_zone(lon, lat=0.0):
-    z = int((lon + 180) // 6) + 1
+    z = min(60, max(1, int((lon + 180) // 6) + 1))
     if 56 <= lat < 64 and 3 <= lon < 12:
         z = 32
     if 72 <= lat < 84 and lon >= 0:
@@ -149,6 +149,8 @@ class CRS:
             return cls("local", name=_wkt_name(t) or "Local Coordinates (m)")
         m2 = re.search(r"UTM ZONE\s*(\d{1,2})\s*([NS])", u)
         if m2:
+            if not 1 <= int(m2.group(1)) <= 60:
+                raise ValueError("UTM zone must be between 1 and 60")
             return cls("utm", int(m2.group(1)), m2.group(2) == "S", f"WGS 84 / UTM zone {int(m2.group(1))}{m2.group(2)}")
         if code and (32601 <= code <= 32660 or 32701 <= code <= 32760):
             z = code % 100; s = code > 32700
@@ -163,9 +165,19 @@ class CRS:
         """Marker/camera coordinates -> metric frame used for fitting:
         local/UTM: unchanged; WGS84 (lon, lat, alt) -> UTM of the zone_hint."""
         xyz = np.asarray(xyz, float)
+        if not np.isfinite(xyz).all():
+            raise ValueError("Reference coordinates must be finite")
+        if self.kind == "utm" and not 1 <= self.zone <= 60:
+            raise ValueError("UTM zone must be between 1 and 60")
         if self.kind != "wgs84":
             return xyz.copy()
-        zone, south = zone_hint or (utm_zone(np.mean(xyz[:, 0]), np.mean(xyz[:, 1])), np.mean(xyz[:, 1]) < 0)
+        if xyz.ndim != 2 or xyz.shape[1:] != (3,) or any(valid_gps(row) is None for row in xyz):
+            raise ValueError("Geographic coordinates require longitude within ±180° and latitude from -80° to 84°")
+        if not len(xyz):
+            return xyz.copy()
+        zone, south = zone_hint or geographic_zone(xyz)
+        if not 1 <= zone <= 60:
+            raise ValueError("UTM zone must be between 1 and 60")
         E, N = utm_forward(xyz[:, 1], xyz[:, 0], zone, south)
         return np.column_stack([E, N, xyz[:, 2]])
 
@@ -917,7 +929,12 @@ def marker_errors(markers, crs_metric_of, est_world):
     for m in markers:
         if m.ref is None or m.label not in est_world:
             continue
-        ref = crs_metric_of(m.ref); e = est_world[m.label]
+        try:
+            ref = np.asarray(crs_metric_of(m.ref), float); e = np.asarray(est_world[m.label], float)
+        except (ValueError, TypeError):
+            continue
+        if ref.shape != (3,) or e.shape != (3,) or not np.isfinite(ref).all() or not np.isfinite(e).all():
+            continue
         d = e - ref
         rows.append({"label": m.label, "type": "control" if m.enabled else "check",
                      "ref": ref.tolist(), "est": e.tolist(), "dx": d[0], "dy": d[1], "dz": d[2],

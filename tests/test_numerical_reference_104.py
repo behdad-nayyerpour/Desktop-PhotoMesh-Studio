@@ -439,3 +439,24 @@ def test_imported_outside_photo_observation_cannot_enter_adjustment():
     model=synthetic_model(n_img=3,n_pts=50,two_cameras=False)
     with pytest.raises(ValueError,match="outside source photo"):
         g.triangulate_marker(model,{"img00":[-1.,225.,True],"img01":[300.,225.,True]},measured_only=True)
+
+
+def test_geographic_boundaries_use_valid_utm_zone_and_reject_unsupported_latitudes():
+    assert g.utm_zone(180.,0.) == 60
+    assert g.utm_zone(-180.,0.) == 1
+    assert g.geographic_zone([[180.,1.,0.]])[0] == 60
+    assert g.geographic_zone([[180.,1.,0.],[-179.999,1.,0.]])[0] in (1,60)
+    metric=g.CRS.parse("EPSG:4326").to_metric([[180.,1.,0.],[-179.999,1.,0.]])
+    assert np.linalg.norm(metric[1]-metric[0]) == pytest.approx(111.3,abs=1.)
+    for latitude in (-81.,85.):
+        with pytest.raises(ValueError,match="latitude"):
+            g.CRS.parse("EPSG:4326").to_metric([[44.,latitude,100.]])
+    with pytest.raises(ValueError,match="zone"):
+        g.CRS.parse("WGS 84 / UTM zone 61N")
+
+
+def test_invalid_reference_errors_are_unavailable_without_hiding_valid_markers():
+    markers=[g.Marker("bad",[float("nan"),2.,3.]),g.Marker("good",[1.,2.,3.])]
+    rows=g.marker_errors(markers,lambda ref:g.CRS.parse("LOCAL").to_metric([ref])[0],
+                         {"bad":np.array([1.,2.,3.]),"good":np.array([4.,6.,3.])})
+    assert len(rows) == 1 and rows[0]["label"] == "good" and rows[0]["total"] == 5.

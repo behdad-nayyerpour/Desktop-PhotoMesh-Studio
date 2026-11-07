@@ -502,9 +502,10 @@ class MarkerEditMixin:
                 crs_text = (self.dataset.georef or {}).get("crs") or self.dataset.crs
                 crs = g.CRS.parse(crs_text) if crs_text else None
                 if v is not None and crs is not None and getattr(crs, "kind", "") == "wgs84":
-                    lim = 180.0 if col == 1 else 90.0 if col == 2 else None
-                    if lim is not None and abs(v) > lim:
-                        raise ValueError(f"{'longitude' if col == 1 else 'latitude'} must be within ±{lim:g}°")
+                    if col == 1 and abs(v) > 180.:
+                        raise ValueError("longitude must be within ±180°")
+                    if col == 2 and not -80. <= v <= 84.:
+                        raise ValueError("latitude must be within the supported UTM range (-80° to 84°)")
                 self._markers_snapshot()
                 if all(c is not None for c in cur):
                     m.ref = [float(c) for c in cur]; self._ref_pending.pop(label, None)

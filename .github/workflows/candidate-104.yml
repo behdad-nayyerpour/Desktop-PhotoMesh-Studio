@@ -1,4 +1,4 @@
-# Final rebuild: source-photo measurement bounds, reviewed numerical workflows and documentation.
+# Final rebuild: source-photo and geographic reference boundaries validated.
 name: 1.0.4 test installer
 on:
   push:

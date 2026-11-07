@@ -65,18 +65,21 @@ accuracy on real survey data.
 6. GPS pair selection validates complete positions and uses continuous ECEF chord
    distances across the date line. Similarity fitting validates finite paired
    positions/weights and returns a transform fitted to its final inlier mask.
-7. Known source-photo/calibration dimension mismatches fail before marker
+7. Geographic references consistently enforce the supported UTM latitude/zone
+   range. Longitude +180 uses zone 60, never invalid zone 61. Invalid reference
+   errors are unavailable while valid markers retain their independent rows.
+8. Known source-photo/calibration dimension mismatches fail before marker
    optimization/refinement rather than mixing pixel units. Out-of-photo margin clicks cannot create/move
    measurements, and imported out-of-bounds observations are rejected before
    adjustment. Normal pipelines
    restore original-photo dimensions; native fixtures verify that contract.
-8. Added-photo resection requires measured 3D controls or surveyed coordinates
+9. Added-photo resection requires measured 3D controls or surveyed coordinates
    in an existing referenced frame. Predicted-only 3D hints cannot initialize
    its camera. Existing poses and calibration remain intact.
-9. The active CRS follows a successfully applied georeferencing result, and
+10. The active CRS follows a successfully applied georeferencing result, and
    legacy blank project CRS falls back to its persisted frame for marker edits
    and selected-photo registration.
-10. Exported reference reports retain current pixel errors/counts. Reference XML
+11. Exported reference reports retain current pixel errors/counts. Reference XML
    preserves ignored/locked/control status and measurement provenance.
 
 ## Maintainability and affected-caller review
