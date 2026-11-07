@@ -1,4 +1,4 @@
-# Rebuild after user acceptance fixes: photo/raster selection and report project title.
+# Final rebuild after user acceptance fixes: photo/raster selection and report project title.
 name: 1.0.4 test installer
 on:
   push:

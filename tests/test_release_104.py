@@ -219,6 +219,7 @@ def test_gps_reference_matching_keeps_same_stem_different_extensions_distinct():
 def test_each_photo_selection_resets_raster_tools_for_one_click_return(window, image_dir, monkeypatch):
     window.dataset.add_photos([str(next(image_dir.glob("*.jpg")))])
     monkeypatch.setattr(window.ortho_view, "has_raster", lambda kind=None: True)
+    window.layer_action("ortho").setChecked(False)
     for _ in range(2):
         window.layer_action("ortho").setChecked(True)
         assert window.active_view() is window.ortho_view
