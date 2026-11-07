@@ -1,0 +1,52 @@
+name: Diagnose Optimize marker option
+on:
+  push:
+    branches: ["diagnose/optimize-markers-104"]
+    paths: [".github/workflows/diagnose-optimize-markers.yml"]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -q numpy scipy pytest
+      - name: Capture actual local worker inputs before any optimization or output write
+        shell: python
+        run: |
+          import sys, tempfile, json
+          from pathlib import Path
+          sys.path[:0] = [str(Path.cwd()), str(Path.cwd() / "tests")]
+          from test_dense_mesh_gcp import synthetic_model
+          from photomesh import georef as g, colmap_io as cio
+          model = synthetic_model(n_img=5, n_pts=100, two_cameras=False)
+          X = model.points.xyz[0]
+          projections = {}
+          for image in model.images.values():
+              uv, z = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None,:])
+              projections[image.name] = [float(uv[0,0]), float(uv[0,1]), True]
+          marker = g.Marker("G1", [0.,0.,0.], projections=projections).to_dict()
+          class Captured(Exception): pass
+          captured = []
+          def capture(model, observations, control, *args, **kwargs):
+              captured.append({"marker_labels":list(observations), "projection_count":sum(len(v[1]) for v in observations.values()),
+                               "XYZ_control_count":len(control)})
+              raise Captured()
+          g.gcp_bundle_adjust = capture
+          with tempfile.TemporaryDirectory() as root:
+              model_dir = str(Path(root) / "sparse")
+              cio.write_model(model_dir, model)
+              for enabled in (False, True):
+                  try:
+                      g.run_task({"model":model_dir, "markers":[marker], "use_markers":enabled,
+                                  "local_only":True, "fit_intrinsics":False}, log=lambda *_:None)
+                  except Captured: pass
+                  result = dict(captured[-1], use_markers=enabled, local_only=True)
+                  print("WORKER_INPUT_EVIDENCE=" + json.dumps(result), flush=True)
+              assert captured[0]["marker_labels"] == ["G1"]
+              assert captured[0] == captured[1]
+              assert not Path(model_dir + "_original").exists()
+          print("CONFIRMED: local worker includes marker image observations with use_markers=False; stopped before BA and output writes.")
