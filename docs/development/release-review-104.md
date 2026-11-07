@@ -132,3 +132,36 @@ local working copies were inspected or modified. Legacy unpinned locations canno
 be reliably classified as measured from old files; they require photo confirmation
 or refinement. Turning GPS off does not undo an already established coordinate
 frame. Dense products must be rebuilt after camera optimization.
+
+## Corrected 1.0.4 installer (2026-11-08)
+
+[Issue #9](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/9)
+showed that invalid geographic control coordinates could pass the initial usable
+count and fail later in the worker with no marker name. The four marker XYZ values
+were redacted in the report, so the data's CRS/order cannot be determined from it.
+The validation now checks each usable control against the selected CRS before
+submitting the worker and names the offending marker. The worker applies the
+same validation for direct task callers. It retains the existing geographic
+range and region checks, with no change to coordinate equations.
+
+Photo right-click now offers **Place Existing Marker**, using the same
+`pin_marker` path as the selected-marker command. It retains source-pixel bounds,
+stable photo identity and undo behavior. The list excludes ignored markers.
+
+Changed callers and state were reviewed in `PhotoView`,
+`ReferenceMixin.optimize_cameras`, `georef.reference_status`, the worker,
+project marker refresh and installed packaging. The two regressions cover
+preflight error identity and placement from a photo without prior selection.
+The [test run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42411191960)
+passed 777 tests with eight skips on each of Linux and Windows. Static checks,
+Mesa/layout and equivalent reference-performance gates passed. The
+[installer run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42411192019)
+passed the same Windows suite, native CPU geometry and an installed 1.0.4-to-1.0.4
+upgrade. Candidate application source is `3ef0a11fed93afc0a547f10966099708e8bde8c9`.
+The Setup is 861,743,162 bytes with SHA-256
+`059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
+Artifact `13590106433` has ZIP SHA-256
+`baf65f455b19e5c434465461a0d473ff355ab94aede2bd1aecdcee8866429619`.
+Its public replacement is verified by the publication workflow. Real-project
+marker values, survey accuracy, CUDA and target-driver checks remain outside
+this synthetic acceptance.

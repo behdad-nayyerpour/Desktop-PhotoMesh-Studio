@@ -1,0 +1,67 @@
+name: Publish corrected 1.0.4 Setup
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/replace-104-setup.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: replace-104-setup
+  cancel-in-progress: false
+jobs:
+  replace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify source, regression runs and candidate archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 3ef0a11fed93afc0a547f10966099708e8bde8c9 HEAD
+          git diff --exit-code 3ef0a11fed93afc0a547f10966099708e8bde8c9 HEAD -- photomesh main.py requirements.txt requirements-dev.txt packaging/build_release.ps1 packaging/release.iss packaging/engine-assets.json LICENSE
+          test "$(gh api repos/$GH_REPO/actions/runs/42411191960 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/actions/runs/42411191960 --jq .head_sha)" = 3ef0a11fed93afc0a547f10966099708e8bde8c9
+          test "$(gh api repos/$GH_REPO/actions/runs/42411192019 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/actions/runs/42411192019 --jq .head_sha)" = 3ef0a11fed93afc0a547f10966099708e8bde8c9
+          test "$(gh api repos/$GH_REPO/actions/artifacts/13590106433 --jq .expired)" = false
+          test "$(gh api repos/$GH_REPO/actions/artifacts/13590106433 --jq .workflow_run.head_sha)" = 3ef0a11fed93afc0a547f10966099708e8bde8c9
+          test "$(gh api repos/$GH_REPO/releases/latest --jq .tag_name)" = v1.0.4
+          gh api repos/$GH_REPO/actions/artifacts/13590106433/zip > candidate.zip
+          echo "baf65f455b19e5c434465461a0d473ff355ab94aede2bd1aecdcee8866429619  candidate.zip" | sha256sum -c -
+          unzip -q candidate.zip -d candidate
+          echo "059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f  candidate/PhotoMeshStudio_Setup_1.0.4.exe" | sha256sum -c -
+          (cd candidate && sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256)
+      - name: Replace public installer and update release record
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload v1.0.4 candidate/PhotoMeshStudio_Setup_1.0.4.exe candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256 --clobber
+          gh api --method PATCH repos/$GH_REPO/git/refs/tags/v1.0.4 -f sha="$GITHUB_SHA" -F force=true --silent
+          gh release view v1.0.4 --json body --jq .body > release-notes.md
+          sed -i 's/775 tests passed on each of Linux and Windows/777 tests passed on each of Linux and Windows/' release-notes.md
+          if ! grep -q 'Corrected installer (2026-11-08)' release-notes.md; then
+            cat >> release-notes.md <<'NOTES'
+
+          Corrected installer (2026-11-08)
+          - Optimize Cameras checks usable control XYZ before processing and names the invalid marker and CRS.
+          - Right-click a photo and choose Place Existing Marker to pin a listed marker at that location.
+          - Version remains 1.0.4. The installer was rebuilt from the validated source and tested as an upgrade over the earlier 1.0.4 Setup.
+          NOTES
+          fi
+          gh release edit v1.0.4 --notes-file release-notes.md --target "$GITHUB_SHA" --latest
+      - name: Verify public installer bytes and tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release download v1.0.4 --pattern 'PhotoMeshStudio_Setup_1.0.4.exe*' --dir public
+          (cd public && sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256)
+          cmp candidate/PhotoMeshStudio_Setup_1.0.4.exe public/PhotoMeshStudio_Setup_1.0.4.exe
+          test "$(gh api repos/$GH_REPO/git/ref/tags/v1.0.4 --jq .object.sha)" = "$GITHUB_SHA"
+          test "$(gh api repos/$GH_REPO/releases/latest --jq .tag_name)" = v1.0.4
