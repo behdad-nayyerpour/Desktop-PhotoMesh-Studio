@@ -74,3 +74,13 @@ before preparing the version for release.
 
 This checklist changes development practice, not application behavior. Updating
 it alone does not require rebuilding the Setup or increasing the app version.
+
+## Required for the next application release
+
+- [ ] Add a concise license notice to Help > About PhotoMesh Studio: personal
+  and educational non-commercial use; commercial use, including company
+  evaluation, requires prior written permission. Provide access to the full
+  bundled LICENSE text and keep third-party licenses distinct. Verify readable
+  layout in both themes and that the license can be opened offline in the
+  installed application. This is scheduled for the next release; the current
+  1.0.3 executable is unchanged.
