@@ -337,8 +337,10 @@ class OptimizeCamerasDialog(_SettingsDialog):
         from .georef import DEFAULTS
         s = dict(DEFAULTS); s.update(settings or {})
         self.use_markers = QCheckBox("Use control markers (XYZ + placements on 2 or more aligned photos)")
-        self.use_markers.setChecked(True)
-        self.use_markers.setToolTip("At least 3 non-collinear controls are needed to georeference. "
+        self.use_markers.setChecked(bool(s.get("use_markers", True)))
+        self.use_markers.setToolTip("Unchecked excludes marker coordinates and image observations from optimization. "
+                                    "Marker estimates/errors can still be displayed for checking. "
+                                    "At least 3 non-collinear controls are needed to georeference. "
                                    "Without sufficient reference data, local bundle adjustment is offered.")
         self.use_cameras = QCheckBox("Use camera GPS (geographic/UTM coordinate systems)")
         from .photo_gps import use_photo_gps

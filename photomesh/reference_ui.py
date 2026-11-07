@@ -309,17 +309,20 @@ class ReferenceMixin:
         self._photo_map(ch)  # recover legacy aliases; ambiguous inputs remain excluded
         defaults = dict(ch.reference_settings)
         from .photo_gps import camera_gps, use_photo_gps
-        defaults["use_cameras"] = use_photo_gps(ch) and bool(camera_gps(ch))
+        defaults.setdefault("use_cameras", bool(camera_gps(ch)))
         dlg = OptimizeCamerasDialog(self, defaults)
         if not dlg.exec():
             return
         s = dlg.settings()
-        ch.reference_settings.update(s["accuracies"], use_cameras=s["use_cameras"],
-                                     use_photo_gps=use_photo_gps(ch))
+        gps_on = use_photo_gps(ch)
+        requested_cameras = s["use_cameras"] if gps_on else ch.reference_settings.get("use_cameras", True)
+        s["use_cameras"] = gps_on and s["use_cameras"]
+        ch.reference_settings.update(s["accuracies"], use_cameras=requested_cameras,
+                                     use_photo_gps=gps_on, use_markers=s["use_markers"])
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
-               "camera_gps": camera_gps(ch),
+               "camera_gps": camera_gps(ch) if s["use_cameras"] else {},
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
                "fit_intrinsics": s["fit_intrinsics"], "offset": (ch.georef or {}).get("offset"),
                "report": os.path.join(wd, "georef_report.txt"),
@@ -338,8 +341,9 @@ class ReferenceMixin:
                    f"{status['gps']} camera GPS positions usable in the selected CRS.\n\n"
                    "Georeferencing needs at least 3 non-collinear controls or camera GPS positions. "
                    "Imported XYZ alone is insufficient: place each control on at least two aligned photos.\n\n"
-                   "Optimize cameras in the existing frame instead? This uses tie points and enabled marker "
-                   "projections, ignores reference coordinates and GPS, and does not georeference the model.")
+                   "Optimize cameras in the existing frame instead? This uses tie points" +
+                   (" and enabled control-marker image observations" if s["use_markers"] else "") +
+                   ", ignores reference coordinates and GPS, and does not georeference the model.")
             if not s["bundle"]:
                 QMessageBox.information(self, "Optimize Cameras", msg +
                                         "\nEnable Bundle adjustment for optimization without georeferencing.")

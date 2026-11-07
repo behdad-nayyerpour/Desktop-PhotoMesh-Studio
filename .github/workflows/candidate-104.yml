@@ -1,4 +1,4 @@
-# Final rebuild after user acceptance fixes: photo/raster selection and report project title.
+# Final rebuild includes coherent marker and GPS optimization switches.
 name: 1.0.4 test installer
 on:
   push:

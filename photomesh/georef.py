@@ -957,7 +957,7 @@ def run_local_task(cfg, log=print):
     obs = {}
     for m in markers:
         X, _n = triangulate_marker(model, m.projections, names)
-        if m.enabled and X is not None:
+        if cfg.get("use_markers", True) and m.enabled and X is not None:
             obs[m.label] = (X, [(names[_stem(k)], v[0], v[1])
                                for k, v in m.projections.items() if _stem(k) in names])
     acc = dict(DEFAULTS); acc.update(cfg.get("accuracies") or {})
@@ -995,6 +995,7 @@ def run_local_task(cfg, log=print):
     if cfg.get("result"):
         with open(cfg["result"], "w", encoding="utf-8") as f:
             json.dump(out, f, indent=1, default=float)
+    log(f"Reference use: marker image observations={len(obs)}, marker XYZ controls=0, camera GPS=0.")
     log("Cameras optimized in the existing frame; no georeferencing was performed. "
         "Rebuild dense products to use the optimized cameras.")
     return out
@@ -1027,9 +1028,10 @@ def run_task(cfg, log=print):
     names = name_index(model)
     # Camera references outside the aligned model must not select its map zone.
     gps={}
+    exact_names = {image.name for image in model.images.values()}
     for label,value in (cfg.get("camera_gps") or {}).items():
         clean=valid_gps(value)
-        if clean is not None and _stem(label) in names:
+        if clean is not None and (label in exact_names or _stem(label) in names):
             gps[label]=clean.tolist()
     # ---- triangulate markers in the current model
     tri = {}
@@ -1079,7 +1081,7 @@ def run_task(cfg, log=print):
         obs = {}
         ctrl_labels = {m.label for m in control} if use_markers else set()
         for m in markers:
-            if m.label not in tri:
+            if not cfg.get("use_markers", True) or m.label not in tri:
                 continue
             # check points stay independent: their projections are not used in the adjustment
             if m.label not in ctrl_labels and not cfg.get("check_projections_in_ba", False):
@@ -1103,6 +1105,8 @@ def run_task(cfg, log=print):
                                                      "max_iterations": cfg.get("max_iterations", 30),
                                                      "verbose": cfg.get("verbose", False)},
                                   log=log, cam_priors=pri)
+    log(f"Reference use: marker image observations={len(obs) if cfg.get('bundle', True) else 0}, "
+        f"marker XYZ controls={len(control) if use_markers else 0}, camera GPS={len(cam_gps)}.")
     # ---- final marker estimates: re-triangulate with optimised cameras
     est, pix, cnt = {}, {}, {}
     for m in markers:

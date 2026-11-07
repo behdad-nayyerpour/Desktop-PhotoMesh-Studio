@@ -1756,6 +1756,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         names = [mapping[c.path] for c in enabled]
         s["calibration_groups"] = {mapping[path]: group for path,group in s.get("calibration_groups",{}).items()
                                    if path in mapping}
+        from .photo_gps import camera_gps
+        alignment_gps = camera_gps(ch, mapping) if s.get("gps_frame") else {}
         previous_poses = {mapping[c.path]: {"center":c.est,"rotation":c.rot}
                           for c in enabled if c.aligned and c.est is not None and c.rot is not None}
         def prepare_alignment():
@@ -1771,11 +1773,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 index=next((i for i,(label,*_) in enumerate(planned) if label=="Exporting tie points"),len(planned))
                 planned.insert(index,("Preserving project frame",[cm.PYTHON,"preserve_frame",path],2))
             if s.get("gps_frame"):
-                from .photo_gps import camera_gps
                 gps_path = os.path.join(wd, "alignment_gps.json")
                 gps_cfg = {"model": os.path.join(wd,"sparse","0"), "markers": [],
                            "crs": ch.crs or "EPSG:4326", "use_markers": False, "use_cameras": True,
-                           "camera_gps": camera_gps(ch, mapping),
+                           "camera_gps": alignment_gps,
                            "bundle": False, "transform_files": [], "result": os.path.join(wd,"alignment_georef.json"),
                            "report": os.path.join(wd,"alignment_georef.txt")}
                 with open(gps_path,"w",encoding="utf-8") as handle:

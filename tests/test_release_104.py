@@ -246,3 +246,78 @@ def test_export_report_uses_project_name_instead_of_legacy_dataset(window, tmp_p
     assert "&lt;camera&gt;" in html and "Processing &lt;complete&gt;" in html
     assert window.dataset.name == "Chunk 1"
     assert destination.with_name("report_view.png").exists()
+
+
+def test_optimize_local_marker_switch_controls_worker_observations(tmp_path, monkeypatch):
+    import numpy as np
+    from photomesh import georef as g, colmap_io as cio
+    from test_dense_mesh_gcp import synthetic_model
+    model = synthetic_model(n_img=5, n_pts=100, two_cameras=False)
+    X = model.points.xyz[0]
+    projections = {}
+    for image in model.images.values():
+        uv, _ = cio.project(model.cameras[image.camera_id], image.R(), image.tvec, X[None,:])
+        projections[image.name] = [float(uv[0,0]), float(uv[0,1]), True]
+    marker = g.Marker("G1", [0.,0.,0.], projections=projections).to_dict()
+    path = str(tmp_path / "sparse")
+    cio.write_model(path, model)
+    captured = []
+    class Stop(Exception): pass
+    def capture(model, observations, control, *a, **kw):
+        captured.append((set(observations), set(control), kw.get("cam_priors")))
+        raise Stop()
+    monkeypatch.setattr(g, "gcp_bundle_adjust", capture)
+    for on in (False, True):
+        with __import__("pytest").raises(Stop):
+            g.run_task({"model":path, "markers":[marker], "local_only":True,
+                        "use_markers":on, "use_cameras":False}, log=lambda *_:None)
+    assert captured[0] == (set(), set(), None)
+    assert captured[1] == ({"G1"}, set(), None)
+
+
+def test_optimize_reference_switch_matrix_reaches_worker(tmp_path, monkeypatch):
+    import numpy as np
+    import pytest
+    from photomesh import georef as g, colmap_io as cio
+    from test_dense_mesh_gcp import synthetic_model
+    original = synthetic_model(n_img=5, n_pts=100, two_cameras=False)
+    second = original.images[2]
+    second.tvec = -second.R() @ np.array([8., 10., 50.])
+    markers = []
+    for k, X in enumerate(original.points.xyz[:3]):
+        projections = {}
+        for image in original.images.values():
+            uv, _ = cio.project(original.cameras[image.camera_id], image.R(), image.tvec, X[None,:])
+            projections[image.name] = [float(uv[0,0]), float(uv[0,1]), True]
+        markers.append(g.Marker("G"+str(k), (X + [400000.,4400000.,100.]).tolist(),
+                                projections=projections).to_dict())
+    gps = {image.name:[44.+image.center()[0]*.0001,40.+image.center()[1]*.0001,100.]
+           for image in original.images.values()}
+    captured = []
+    class Stop(Exception): pass
+    def capture(model, observations, controls, *a, **kw):
+        captured.append((len(observations), len(controls), len(kw.get("cam_priors") or {})))
+        raise Stop()
+    monkeypatch.setattr(g, "gcp_bundle_adjust", capture)
+    for marker_on, gps_on in ((False,True),(True,False),(True,True)):
+        path = str(tmp_path / ("model-"+str(marker_on)+str(gps_on)))
+        cio.write_model(path, original)
+        with pytest.raises(Stop):
+            g.run_task({"model":path, "markers":markers, "crs":"EPSG:32638",
+                        "use_markers":marker_on,"use_cameras":gps_on,"camera_gps":gps,
+                        "check_projections_in_ba":True}, log=lambda *_:None)
+        assert captured[-1] == (3 if marker_on else 0, 3 if marker_on else 0, 5 if gps_on else 0)
+
+
+def test_optimize_remembers_marker_and_gps_choices_and_global_gate(window):
+    from photomesh.dialogs import OptimizeCamerasDialog, AlignPhotosDialog
+    window.dataset.reference_settings.update(use_photo_gps=False, use_markers=False, use_cameras=True)
+    dialog = OptimizeCamerasDialog(window, window.dataset.reference_settings)
+    assert not dialog.use_markers.isChecked()
+    assert not dialog.use_cameras.isChecked() and not dialog.use_cameras.isEnabled()
+    alignment = AlignPhotosDialog(window)
+    assert not alignment.reference.isChecked() and not alignment.gps_frame.isChecked()
+    window.dataset.reference_settings["use_photo_gps"] = True
+    dialog = OptimizeCamerasDialog(window, window.dataset.reference_settings)
+    assert not dialog.use_markers.isChecked()
+    assert dialog.use_cameras.isChecked() and dialog.use_cameras.isEnabled()
