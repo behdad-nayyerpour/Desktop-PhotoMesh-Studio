@@ -183,8 +183,9 @@ def test_noisy_bundle_reduces_independent_pixel_residuals(kind,fit):
     def rms():
         residuals = []
         for image in model.images.values():
-            xyz = model.points.xyz[image.point3D_ids] @ image.R().T + image.tvec
-            residuals.extend(np.sum((independent_uv(kind,model.cameras[1].params,xyz)-image.xys)**2,axis=1))
+            tracked = image.point3D_ids >= 0
+            xyz = model.points.xyz[image.point3D_ids[tracked]] @ image.R().T + image.tvec
+            residuals.extend(np.sum((independent_uv(kind,model.cameras[1].params,xyz)-image.xys[tracked])**2,axis=1))
         return np.sqrt(np.mean(residuals))
     before = rms()
     result = g.gcp_bundle_adjust(model,{}, {},{"fit_intrinsics":fit,"max_iterations":10},log=lambda *_:None)
@@ -211,7 +212,7 @@ def test_predicted_placements_are_display_hints_until_measured(window,tmp_path):
     window.project.save(window.project.path)
     from photomesh.project import Project
     saved = Project.load(window.project.path)
-    assert saved.active.markers[0]["projections"] == window.dataset.markers[0]["projections"]
+    assert saved.dataset.markers[0]["projections"] == window.dataset.markers[0]["projections"]
 
 
 def test_two_marker_controls_still_constrain_bundle_when_gps_initializes_frame(tmp_path,monkeypatch):
@@ -285,3 +286,17 @@ def test_predicted_only_controls_cannot_initialize_georeferencing(tmp_path):
     with pytest.raises(ValueError,match="Cannot georeference"):
         g.run_task({"model":path,"markers":markers,"use_markers":True},log=lambda *_:None)
     assert (tmp_path/"model"/"images.bin").read_bytes() == before
+
+
+def test_gps_preselection_rejects_invalid_positions_and_handles_date_line():
+    from photomesh.fastpipe import select_pairs
+    names=["a.jpg","b.jpg","c.jpg","invalid.jpg","missing.jpg"]
+    info=[{"lon":179.999,"lat":1.,"alt":10.},
+          {"lon":-179.999,"lat":1.,"alt":10.},
+          {"lon":179.99,"lat":1.,"alt":10.},
+          {"lon":float("nan"),"lat":1.,"alt":10.},
+          {"lat":1.}]
+    result=select_pairs(names,info,k_gps=1,window=0,use_desc=False,use_gps=True)
+    assert ("a.jpg","b.jpg") in result
+    assert all("invalid.jpg" not in pair and "missing.jpg" not in pair for pair in result)
+    assert select_pairs(names,info,window=0,use_desc=True,use_gps=False) == []

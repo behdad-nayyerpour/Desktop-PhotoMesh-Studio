@@ -339,7 +339,7 @@ class OptimizeCamerasDialog(_SettingsDialog):
         self.use_markers = QCheckBox("Use control markers (XYZ + placements on 2 or more aligned photos)")
         self.use_markers.setChecked(bool(s.get("use_markers", True)))
         self.use_markers.setToolTip("Unchecked excludes marker coordinates and image observations from optimization. "
-                                    "Marker estimates/errors can still be displayed for checking. "
+                                    "Marker estimates/errors can still be displayed for checking. Predictions alone are display hints; pin or refine placements on photos before adjustment. "
                                     "At least 3 non-collinear controls are needed to georeference. "
                                    "Without sufficient reference data, local bundle adjustment is offered.")
         self.use_cameras = QCheckBox("Use camera GPS (geographic/UTM coordinate systems)")
@@ -350,7 +350,8 @@ class OptimizeCamerasDialog(_SettingsDialog):
         self.use_cameras.setEnabled(gps_on)
         self.use_cameras.setToolTip("Uses valid GPS from enabled photos when Use Photo GPS is enabled in Settings.")
         self.bundle = QCheckBox("Bundle adjustment (otherwise similarity transform only)"); self.bundle.setChecked(True)
-        self.intr = QCheckBox("Fit focal length, principal point and k1"); self.intr.setChecked(True)
+        self.intr = QCheckBox("Fit camera calibration (focal lengths, principal point and distortion)"); self.intr.setChecked(True)
+        self.intr.setToolTip("Preserves each camera model and fits its supported calibration parameters.")
         for w in (self.use_markers, self.use_cameras, self.bundle, self.intr):
             self.gform.addRow(w)
         def dspin(v, dec=3, mx=1000):
