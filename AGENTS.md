@@ -31,3 +31,20 @@ planning a version, changing application code, or preparing a release.
 See the [development guide](docs/development/README.md) for the repository map
 and existing test commands. Documentation-only changes do not require a new
 application version or Setup.
+
+## User manual maintenance (approved 2026-11-08)
+
+- For every application update, assess whether changed menus, settings,
+  workflows, defaults or installation/export behavior affect the user manual.
+- If an update is needed, explain the affected sections and ask the user before
+  editing the manual. Approval of application changes is not approval to rewrite
+  the manual. If no manual change is needed, retain it unchanged.
+- After approval, update only the affected text, screenshots and necessary
+  version/index/cross-reference metadata. Preserve approved unaffected content;
+  do not regenerate or redesign the whole manual for a small application change.
+- Preserve the complete English 1.0.4 manual approved by the user as the baseline,
+  not the superseded short example guide. Retain editable sources and original
+  screenshots. Keep screenshots sharp and lossless; render and visually verify
+  affected PDF pages and any pagination/index changes before delivery.
+- The next-version checklist includes offline access to the bundled PDF from
+  Help. Follow that checklist for implementation and installed-build validation.

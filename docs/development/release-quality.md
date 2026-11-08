@@ -75,6 +75,26 @@ before preparing the version for release.
 This checklist changes development practice, not application behavior. Updating
 it alone does not require rebuilding the Setup or increasing the app version.
 
+## User manual review for each update
+
+- [ ] Assess the update against the approved complete English PDF manual:
+  menu/submenu commands, dialogs and option choices, defaults, workflows,
+  installation, reference behavior and export formats.
+- [ ] If documentation changes are needed, list the affected sections and obtain
+  the user's approval **before editing the manual**, as required by
+  [AGENTS.md](../../AGENTS.md#user-manual-maintenance-approved-2026-11-08).
+  If no change is needed, retain the current approved PDF.
+- [ ] After approval, revise only affected material and necessary version,
+  contents/index and cross-reference metadata. Preserve unrelated approved text,
+  layout and screenshots. Verify sharp lossless screenshots, current option
+  semantics, affected page rendering and any changed pagination/links.
+- [ ] Record which manual revision is bundled with the application and whether
+  affected sections were reviewed, approved and updated. Keep the editable source
+  and original screenshot evidence alongside the approved manual archive.
+
+The approved baseline is `PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf`
+(105 pages, approved 2026-11-08), not the superseded example-focused guide.
+
 ## Approved scope for the next version (2026-11-08)
 
 The user approved the following work areas for the release following 1.0.4.
@@ -104,6 +124,13 @@ refer to the external review discussed with the user.
   ownership and existing script behavior (F21/F22). Introduce locked runtime
   dependencies and a reusable validated release workflow (F25/F26). Add installer
   signing when signing credentials and infrastructure are available (F27).
+- [ ] Add **User Manual (PDF)** access in the **Help** menu in the next version.
+  Open the bundled approved English PDF offline using a suitable local viewer.
+  Include the PDF in application resources and the final installer; resolve its
+  installed path reliably and show an actionable message if it cannot be opened.
+  Preserve existing Help commands. Verify opening it from the installed build,
+  including a custom install location and an offline session. Carry this entry
+  forward in later releases and apply the manual-review approval policy above.
 - [ ] Ship the next Windows Setup with **Select Destination Location** visible
   during both fresh installation and reinstall/upgrade. The source now sets
   `DisableDirPage=no`; an existing installation directory remains the initial
