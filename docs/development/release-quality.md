@@ -77,7 +77,7 @@ it alone does not require rebuilding the Setup or increasing the app version.
 
 ## Approved scope for the next version (2026-11-08)
 
-The user approved these six work areas for the release following 1.0.4.
+The user approved the following work areas for the release following 1.0.4.
 Start with the confirmed EXIF and calibration defects, then validate the
 coordinate-frame and height-reference changes numerically. The F identifiers
 refer to the external review discussed with the user.
@@ -110,6 +110,21 @@ refer to the external review discussed with the user.
   suggestion. Before release, verify browsing to a custom folder, reinstalling,
   and the installed shortcut and launcher paths. Keep project/photo data outside
   managed installation folders.
+- [ ] Review progress reporting across alignment, camera optimization, cloud,
+  mesh, texture, DEM, orthomosaic, import and export operations. Use one progress
+  bar when it communicates the operation clearly; show overall and current-stage
+  bars together only when each represents useful, distinct measured progress.
+  Label their meaning clearly and remove redundant bars.
+- [ ] Base percentages on available work counters and meaningful stage estimates.
+  Show indeterminate progress when a total cannot be measured. Handle long
+  preparation/finalization stages, cached work, retries and cancellation
+  consistently, and report completion only after outputs are successfully
+  published.
+- [ ] Improve remaining-time estimates using observed throughput and stage
+  duration, with sufficient samples before displaying an estimate. Update or
+  suppress unreliable estimates when stages or workloads change. Compare the
+  displayed percentages and ETA with actual completion times on representative
+  small and large workloads, including CPU/GPU and cached/rebuild paths.
 - [ ] Before releasing numerical changes, verify independent surveyed check
   points and controlled synthetic fixtures, calibration behavior, compatible
   horizontal/vertical reference systems, old-project load/export, affected
