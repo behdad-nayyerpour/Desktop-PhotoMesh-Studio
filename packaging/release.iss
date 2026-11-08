@@ -14,6 +14,7 @@ AppVersion={#AppVersion}
 AppPublisher=Behdad Nayyerpour
 LicenseFile={#StageDir}\app\LICENSE
 DefaultDirName={localappdata}\Programs\PhotoMesh Studio
+DisableDirPage=no
 DefaultGroupName=PhotoMesh Studio
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible

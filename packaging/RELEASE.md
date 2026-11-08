@@ -38,6 +38,14 @@ the target hardware. The automated test suite does not exercise a full
 COLMAP/GPU reconstruction. The EXE is not code signed.
 
 
+## Destination selection in the next installer
+
+The next build explicitly sets `DisableDirPage=no` so the destination page is
+shown during fresh installation and reinstall/upgrade. `UsePreviousAppDir`
+still supplies the previous installation folder as the initial suggestion.
+Before release, verify a custom destination and the resulting Start menu and
+desktop shortcut targets, including paths with spaces and non-ASCII characters.
+
 ## Engine bundle retained from 1.0.2
 
 The builder prepares COLMAP 4.2.1 CPU/CUDA engines plus the local ALIKED/LightGlue

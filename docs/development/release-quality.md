@@ -104,6 +104,12 @@ refer to the external review discussed with the user.
   ownership and existing script behavior (F21/F22). Introduce locked runtime
   dependencies and a reusable validated release workflow (F25/F26). Add installer
   signing when signing credentials and infrastructure are available (F27).
+- [ ] Ship the next Windows Setup with **Select Destination Location** visible
+  during both fresh installation and reinstall/upgrade. The source now sets
+  `DisableDirPage=no`; an existing installation directory remains the initial
+  suggestion. Before release, verify browsing to a custom folder, reinstalling,
+  and the installed shortcut and launcher paths. Keep project/photo data outside
+  managed installation folders.
 - [ ] Before releasing numerical changes, verify independent surveyed check
   points and controlled synthetic fixtures, calibration behavior, compatible
   horizontal/vertical reference systems, old-project load/export, affected
