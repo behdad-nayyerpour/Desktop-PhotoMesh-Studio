@@ -137,6 +137,15 @@ refer to the external review discussed with the user.
   suggestion. Before release, verify browsing to a custom folder, reinstalling,
   and the installed shortcut and launcher paths. Keep project/photo data outside
   managed installation folders.
+- [ ] After each successful build/rebuild, automatically load and activate the
+  resulting product's display (approved 2026-11-10): alignment/tie points,
+  point cloud, mesh, texture, tiled model, DEM and orthomosaic. Show the result
+  in the appropriate **3D View** or **Plan View**; a completed texture build
+  selects the textured mesh display. Keep the related toolbar, menu and Project
+  tree visibility/selection states consistent. Switch only after the output is
+  successfully published and available to display; failed or cancelled work
+  must not activate an incomplete result. Verify completion callbacks cannot
+  switch another project's view and retain unrelated overlay preferences.
 - [ ] Review progress reporting across alignment, camera optimization, cloud,
   mesh, texture, DEM, orthomosaic, import and export operations. Use one progress
   bar when it communicates the operation clearly; show overall and current-stage
