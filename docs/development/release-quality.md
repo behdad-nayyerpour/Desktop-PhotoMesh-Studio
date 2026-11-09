@@ -124,6 +124,18 @@ refer to the external review discussed with the user.
   ownership and existing script behavior (F21/F22). Introduce locked runtime
   dependencies and a reusable validated release workflow (F25/F26). Add installer
   signing when signing credentials and infrastructure are available (F27).
+- [ ] Implement incremental test delivery (approved 2026-11-10): for each app
+  change, provide a runnable Windows `.bat` updater that fetches only changed
+  installed components and necessary dependencies from an exact candidate
+  artifact. Verify the installed baseline, download checksums and install path;
+  require the app to be closed, back up replaced files and support rollback.
+  Preserve projects, photos and user settings. Include added/removed dependencies
+  deliberately and test the actual packaged layout, custom paths and an
+  interrupted/failed update. Do not redownload unchanged Python/engine bundles.
+- [ ] Deliver the incremental candidate for the user's test and wait for explicit
+  acceptance before building the complete Setup. Build from the accepted
+  revision, then validate the full installer. Public publication still requires
+  separate authorization; see [AGENTS.md](../../AGENTS.md).
 - [ ] Add **User Manual (PDF)** access in the **Help** menu in the next version.
   Open the bundled approved English PDF offline using a suitable local viewer.
   Include the PDF in application resources and the final installer; resolve its

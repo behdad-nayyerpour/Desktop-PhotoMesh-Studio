@@ -2,6 +2,20 @@
 
 [Packaging overview](README.md) · [Development guide](../docs/development/README.md)
 
+## Required test-and-approval order
+
+For application changes, first deliver a Windows `.bat` updater that downloads
+only changed installed components and required dependencies for the user's test.
+Use an exact baseline/candidate, verify file hashes, require the app to be closed,
+and preserve backups and user data. See the repository's
+[incremental delivery policy](../AGENTS.md#incremental-test-delivery-before-setup-approved-2026-11-10)
+and the [next-version checklist](../docs/development/release-quality.md).
+
+Do not build a complete Setup until the user explicitly accepts that tested
+candidate. Build from the accepted revision and validate the installer afterward.
+Public publication remains a separate authorization. The commands below describe
+the full installer stage after candidate acceptance.
+
 Each release produces one offline file: `PhotoMeshStudio_Setup_<version>.exe`.
 It contains the app, Python, Python packages and COLMAP, with optional legacy
 GLOMAP. Users run

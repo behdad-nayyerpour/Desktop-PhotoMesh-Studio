@@ -48,3 +48,21 @@ application version or Setup.
   affected PDF pages and any pagination/index changes before delivery.
 - The next-version checklist includes offline access to the bundled PDF from
   Help. Follow that checklist for implementation and installed-build validation.
+
+## Incremental test delivery before Setup (approved 2026-11-10)
+
+- For each application-change iteration, prepare a Windows `.bat` test updater
+  that downloads and replaces only the changed installed components and their
+  required dependencies. Do not make the user download the full application,
+  Python environment or engine bundles again when those components are unchanged.
+- Bind the patch to a known installed baseline and an exact candidate revision;
+  describe the changes and deliver the runnable updater for the user's testing.
+  Changes to bundled archives or dependencies must use the real installed layout,
+  not a source-only copy that leaves the installed application inconsistent.
+- Require the app to be closed, validate the target and downloaded file hashes,
+  and retain a backup/rollback path before replacing managed application files.
+  Never replace project files, source photos or user settings as part of a patch.
+- Build the complete Setup only after the user explicitly approves the tested
+  candidate. Candidate test approval does not authorize public publication.
+  Build the installer from that approved revision and retain final installer
+  validation. Do not treat checklist/scope approval as candidate acceptance.
