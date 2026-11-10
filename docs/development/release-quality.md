@@ -124,6 +124,22 @@ refer to the external review discussed with the user.
   outlier/confidence filtering and ordinary RGB display. Connect classified
   ground to the DTM workflow while retaining the existing DSM option; validate
   classification on representative terrain and structures before release.
+- [ ] Add an interactive measurement/ruler tool (approved 2026-11-10), starting
+  with point-to-point 3D distance and coordinate differences. Show the measured
+  endpoints, units and result clearly. Respect the current coordinate frame and
+  scale; do not label arbitrary local model units as metres without an
+  established scale. Verify measurements against known geometry.
+- [ ] Add direct point selection and deletion for both **Tie Points** and the
+  dense/imported **Point Cloud** (approved 2026-11-10). Provide clear selection
+  feedback/counts and practical rectangle/freehand selection; make visible-only
+  versus through-depth selection behavior explicit. Support deselection and
+  undo/restore for deletion, and keep marker/camera selection separate.
+- [ ] Persist point edits in the actual product/model, not only the rendered
+  preview: keep tie-point tracks/observation references consistent and preserve
+  cloud attributes, normals, confidence and class labels for retained points.
+  Review effects on optimization, meshing, DEM/orthomosaic, export and stale
+  products. Verify save/reopen, rebuild behavior, cancellation and large-cloud
+  responsiveness, without silently restoring removed points from a stale cache.
 - [ ] Improve large-project capacity with a sparse camera-optimization solver
   (F10), efficient GPS-neighbor pair selection (F14), and DEM median aggregation
   (F15). Compare accuracy, deterministic behavior, peak memory and runtime on
