@@ -116,6 +116,14 @@ refer to the external review discussed with the user.
 - [ ] Add streaming LAS/LAZ export with coordinate-system metadata (F4), ground
   classification and DTM generation (F5). Retain the existing DSM workflow and
   distinguish measured ground from interpolated surfaces.
+- [ ] Incorporate the user's point-cloud classification feedback (2026-11-10):
+  provide a clearly named, discoverable **Point Cloud Classification** command,
+  starting with the planned ground/non-ground classification. Add colour-by-class
+  display and class-based visibility/filtering, and preserve class labels through
+  project save/load and supported exports. Keep classification distinct from
+  outlier/confidence filtering and ordinary RGB display. Connect classified
+  ground to the DTM workflow while retaining the existing DSM option; validate
+  classification on representative terrain and structures before release.
 - [ ] Improve large-project capacity with a sparse camera-optimization solver
   (F10), efficient GPS-neighbor pair selection (F14), and DEM median aggregation
   (F15). Compare accuracy, deterministic behavior, peak memory and runtime on
