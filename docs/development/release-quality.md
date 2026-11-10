@@ -129,6 +129,21 @@ refer to the external review discussed with the user.
   endpoints, units and result clearly. Respect the current coordinate frame and
   scale; do not label arbitrary local model units as metres without an
   established scale. Verify measurements against known geometry.
+- [ ] Add **Display > Cross Section** (approved 2026-11-10). Let the user
+  draw a section line on the mesh in **3D View** or on a co-registered orthophoto
+  in **Plan View**. Open a floating window showing distance along the line
+  against elevation, calculated from the actual mesh rather than orthophoto
+  colours. Moving the line or either endpoint updates the profile interactively.
+  Require a usable mesh and matching coordinate frames; show gaps where no mesh
+  surface exists instead of inventing elevations. Respect project scale/units
+  and label distances/heights in metres only when a metric scale is established.
+  Allow selecting two profile points to show the slope between them, with clear
+  units and handling for zero horizontal distance. Define the vertical section
+  plane and ambiguous/multiple mesh intersections explicitly during implementation.
+  Validate known mesh sections, gaps, coordinate offsets, line/endpoint movement,
+  project changes and large-mesh responsiveness; prevent stale background results
+  from replacing the current profile. Assess the affected manual sections and
+  follow the separate manual-edit approval policy above.
 - [ ] Add direct point selection and deletion for both **Tie Points** and the
   dense/imported **Point Cloud** (approved 2026-11-10). Provide clear selection
   feedback/counts and practical rectangle/freehand selection; make visible-only
