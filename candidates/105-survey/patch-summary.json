@@ -1,0 +1,343 @@
+{
+  "candidate": "269d482f2bef6721807f10b978680d142f7664fc",
+  "archive": "Lens2Mesh_TestPatch_269d482f2bef.zip",
+  "sha256": "cc7c01ec80e295561ab05e73511f87a1d46c4e344cfe40613febb4bb73c3a967",
+  "bytes": 757430,
+  "files": [
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/METADATA",
+      "sha256": "609d0e0b527cb0cb1a819cb9cc68747259e0e2699956fccef005d8c2df9f06d1"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/RECORD",
+      "sha256": "eb582c5151a079c3a4c18c7ea981f51e3b4389d29e0653349a2dbc73db5b51d9"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/WHEEL",
+      "sha256": "ff309ddcdd65ebd02bc724dbf2bcc4a0ff53a5b61792a44548d383e4ebb19d3b"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/entry_points.txt",
+      "sha256": "b39e6fed0bba3d18445f99fbdf17f7ed3eb666da279f08a6011f544b967720c0"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/licenses/LICENSE.txt",
+      "sha256": "586e5e4d12f36050240d2702abcd3319593f13841440920244f95f15cb83eb63"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/top_level.txt",
+      "sha256": "16717330c915e767314974fdae692a5067d2524b7bc0be7475d8606b765ebb29"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/__init__.py",
+      "sha256": "7ee272a8aa30941c4d34fb275b648db9eadd50c90ed872aebbd93c563a5c8cce"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/backend.py",
+      "sha256": "3185a059ce921aff5af462652c82d8b55b2a11359087dcc8ccf260ebc84ec1bc"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/format.py",
+      "sha256": "11fb13df19c259b1f66ac6015b9e5db704cf01006634db26864a63fef78412e7"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/laszipbackend.py",
+      "sha256": "03acf78f031f01edf729ab6be92fb6a474d4314ba1ef69d7f2cf5dfb6f1e9b47"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/lazbackend.py",
+      "sha256": "1bf48e43f8fa01224b81d92ec576f1bec6e43799d9b01f3d9c8c67df82bd5f80"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/lazrsbackend.py",
+      "sha256": "7099533600e16d5c759ad76c49effea27d87eb0f244cbe1797963bb07ca4b211"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_compression/selection.py",
+      "sha256": "1db67b4311e18e5d57b682cb2c1367539c47ffa786040421f21ea19874021652"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_pointappender.py",
+      "sha256": "6321efea778ff4402f8e13b6c8fd148c63ed730c6ca56ebf794c57ad4abc3fb4"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_pointreader.py",
+      "sha256": "6f5367c57cf46c830b1f4de0445a5f764e6fbbcd752b94cd217431a8379f0c91"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/_pointwriter.py",
+      "sha256": "169141e97a23e4c7bf9bd8f082795a6ce5992d6fe059e8c3807aca24e74a8593"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/cli/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/cli/copc.py",
+      "sha256": "b73ffe2207cc91a9827d4ea8cb7e47271958c9612ae1706a518634ca37416347"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/cli/core.py",
+      "sha256": "630df1f8d24f22d304358e60bac734ab6d08f7891c63be3de29fe9e2d43d3da3"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/cli/main.py",
+      "sha256": "e5c1fc6ae6e73f9864a7028d9a01e46d60168c8a7bde2614c075feb3c85cb1c3"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/compression.py",
+      "sha256": "d2111251b2384a1f962cec0ac53db6f1836015f5303888a08c20129ba9d7d71c"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/copc.py",
+      "sha256": "6dcb7c2edea19d4ed8f9994ea253671f608a1c1cab90da148a9dd50f6753765a"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/errors.py",
+      "sha256": "a6817ba1f325bc5dc2f696dde22b17042666359b0a01ddc5819d1a09181c5ae5"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/extradims.py",
+      "sha256": "88041e940d91902213b6963c2d4a9925107a2114742300df3f28c5efe204502c"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/file.py",
+      "sha256": "4cda0b6fea2c18951f685a121f159fb68a5d5fc501fe6ac83ec41ea06c8c06dd"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/header.py",
+      "sha256": "5d8888bf81f6aa5bfeca72a55ade3cdcc528b812454efad2fa5a7b38b70099e8"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lasappender.py",
+      "sha256": "2b6cad69efa32e2d208f803e57b3a86969cb51f197ce535fd6f88de55c7818f9"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lasdata.py",
+      "sha256": "5654dee231cb3ca6eaf162448e033aba07c6d4451bd54310ab0259c63316c2e9"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lasmmap.py",
+      "sha256": "2d7c85d007f756453f2c8e2d84582b31a0e77f1bf973f2edc2d8a3cb6e316d2f"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lasreader.py",
+      "sha256": "44e26c9506f66cc55a14f60f221bfc16be396031ea74120805fbb6ebd0a8e763"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/laswriter.py",
+      "sha256": "e418b0ba0085631377c0841116e222d65bfceef3dc1e5dc5d755c86778045864"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lib.py",
+      "sha256": "9cb46d62e099d5b4a66b05f5be46d25c1bd7cbd0227c842e83d13bc2c3bd7a3c"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/lib.pyi",
+      "sha256": "3be44965e429bcb2357824a7d6cc54e5e7aa3db56527ea019582e25a209b5c10"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/point/__init__.py",
+      "sha256": "6ec073044e36f81d59dad748017c8b8dbe24c4cdd5a16d16cf5f40949ef54e3b"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/point/dims.py",
+      "sha256": "4b4fd6bce3da4bb27d89365e6575f4f04f154c9f4d11ee9ef5a344045df09301"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/point/format.py",
+      "sha256": "ab6c8de1922cfccfcebac0637194a6c5daec2b610f86f58b796507aa3d839651"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/point/packing.py",
+      "sha256": "c91ab86ed3a77408f85f5ffea6e0248af4d301588df0920fc2905d5dc630c9fc"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/point/record.py",
+      "sha256": "40f88935d8f493fd91b9ef4a2e2a1a49c17882d0216fa3a9852abb3576b5099a"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/typehints.py",
+      "sha256": "d93fede0e602d53cc42c1d54926de9e1160d3bb241d6280588a9482a925090aa"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/utils.py",
+      "sha256": "5b516ac6fa745dfa7ec777d92be453a68c2009a0ad675bb1354ee415a175a6cb"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/vlrs/__init__.py",
+      "sha256": "086ac931d2d527c3e29dd9c77fdd6525819e239586627822ba29012a6bbb4b30"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/vlrs/geotiff.py",
+      "sha256": "db90bd1cd6699d3f06d545cba64474abab9fb3956a8f4e55c57e4ea1665b23a1"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/vlrs/known.py",
+      "sha256": "730abf7c0b7aa764ea1088e58184aa8830d0f84c263ec2effa77c41ab50a49b3"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/vlrs/vlr.py",
+      "sha256": "776d900ad2fdf85acb680df1369cce1260ad1049675beb487290a3411d829495"
+    },
+    {
+      "path": "app/photomesh/_vendor/laspy/vlrs/vlrlist.py",
+      "sha256": "2b9c7cc93ebafd79f1801d5af66b9107e0950e745171f9a9d1a09639f9c569e6"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs-0.7.0.dist-info/METADATA",
+      "sha256": "8b8fc4e510a2d9c591a2846a5ab3f1d620cdde9c96bd023d4cfd8060af056e78"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs-0.7.0.dist-info/RECORD",
+      "sha256": "26e6659cd07024b23dee4ef535dcf69e97b66afecbd361865c6e6ba7fc20e89f"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs-0.7.0.dist-info/WHEEL",
+      "sha256": "164d7de558124be2c2451240c73e8edfd7aed8d7438410aade1f6ae33a1382e6"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs-0.7.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "ea4859b568b12e154bb34140e8737616ddaabc170a3e5da5f3ffa644dee00d70"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs/__init__.py",
+      "sha256": "bcd7cc8b20109a4adf046d35b13c3a04872bd52e015e4df0e4fa4a40ca858186"
+    },
+    {
+      "path": "app/photomesh/_vendor/lazrs/lazrs.cp313-win_amd64.pyd",
+      "sha256": "937de87fa628a3486c22affb9141e2150f4ae7e23a0ec290fadd1184d7df32e0"
+    },
+    {
+      "path": "app/photomesh/_vendor/wheel-provenance.json",
+      "sha256": "1750300bf99253d5a9eae37a681a51aa346a39123f41015db2b4f740efed5591"
+    },
+    {
+      "path": "app/photomesh/calibration.py",
+      "sha256": "ffd93c86912eb936a8457241ea72aa4d4cec81bcf3da45431aca732c49e15437"
+    },
+    {
+      "path": "app/photomesh/colmap.py",
+      "sha256": "6887734b562387cb8b6c2aa2ca787717f67e5927f97343a4a7b49e0c4308bdd4"
+    },
+    {
+      "path": "app/photomesh/coordinates.py",
+      "sha256": "b872f63bbbc3bbabc7d4723d1d8bde049d232b89e309d00532caed1e6ba8d0ef"
+    },
+    {
+      "path": "app/photomesh/dem_engine.py",
+      "sha256": "98583d8889c704f2c00e154e5a4da269bde49254090611900d1846edec9478c1"
+    },
+    {
+      "path": "app/photomesh/dialogs.py",
+      "sha256": "e76493b63f4766c97439eda530e0ad72c7ed1ef8a32d7bec0987f80c85934ff6"
+    },
+    {
+      "path": "app/photomesh/exif.py",
+      "sha256": "9b4bfe696629a3c80868b910befb2fd7b253964e51f6919c37e5f2c1753c9a3f"
+    },
+    {
+      "path": "app/photomesh/fastpipe.py",
+      "sha256": "a8ca59775c313e5fc95ae90a53a70c8fd33eee9a79cbbc865d7b2b7c14e0481e"
+    },
+    {
+      "path": "app/photomesh/georef.py",
+      "sha256": "fc6913a7e4479e3f53f444571463dcf5f3ea2d1348dd4a40f58313216f2b9a7f"
+    },
+    {
+      "path": "app/photomesh/ground.py",
+      "sha256": "bcd35b2bd02f477aa81ab90c049b5dc30e6a071e9ad10a16ff742ef04a991897"
+    },
+    {
+      "path": "app/photomesh/las_export.py",
+      "sha256": "5f19ef13de2692ffcf1fb262386ab3773dfe2ab2051effadcdad677235e79048"
+    },
+    {
+      "path": "app/photomesh/mainwindow.py",
+      "sha256": "732528f078a93594a0873f9ba8e2ab9e189f85c128abe505d7192cbdcb22186a"
+    },
+    {
+      "path": "app/photomesh/markers_ui.py",
+      "sha256": "8b9987a7b144c83f3112e4646445399376d0a577021b008eb5eca00dc81e8788"
+    },
+    {
+      "path": "app/photomesh/menus.py",
+      "sha256": "2a9615edda3b89cd26e5de90067de9333a41668230810125797cc354c7b00326"
+    },
+    {
+      "path": "app/photomesh/orthoview.py",
+      "sha256": "1dbeb7a8a6286f5fcd27613940a232de609adfe49d9b664641612565e1f6b33b"
+    },
+    {
+      "path": "app/photomesh/panes.py",
+      "sha256": "e87bef317398839e5274b4a2af0babddb8966a6c5a68459a546d9ac8dc903c4d"
+    },
+    {
+      "path": "app/photomesh/photo_gps.py",
+      "sha256": "d16002be21bb4bc5b2f63b11d17b0c073709b242a05f1e99a97eb40eb8f27d6a"
+    },
+    {
+      "path": "app/photomesh/plyio.py",
+      "sha256": "45ec966fd8b662e4c744e938c7741661e531011c46a9633c067513273fe074b7"
+    },
+    {
+      "path": "app/photomesh/project.py",
+      "sha256": "f2ae4bace3de1b9a17a65b6d729d09ffc3e36cbc22c6ed89f0145a615b8fff49"
+    },
+    {
+      "path": "app/photomesh/reference_ui.py",
+      "sha256": "940b470ea52ac1097450354832b2517bfdd97b3043ba58380a22699f64cc0964"
+    },
+    {
+      "path": "app/photomesh/registration_ui.py",
+      "sha256": "6a4df38864fdd274265a58d331760904c88d9fe3e3019c1b09008a0bfb1b25d6"
+    },
+    {
+      "path": "app/photomesh/shapes.py",
+      "sha256": "a0a910867529a1e21faaf16c803f6e4bd0756894ec5ea7c17c3d95fdbab1b0d0"
+    },
+    {
+      "path": "app/photomesh/survey_deps.py",
+      "sha256": "76a86815985f7b1f4372aae35551a5cf7e464f56b6914abb7b623858ace3e656"
+    },
+    {
+      "path": "app/photomesh/survey_geometry.py",
+      "sha256": "a373eac6339dcf2fcb8df09de4237850a90be9eca4f77ef9aa5cd83be0870a2e"
+    },
+    {
+      "path": "app/photomesh/survey_ui.py",
+      "sha256": "77cd274b5e445397a9241ca487cf188cfdc35fd8e43d5951f4b687051a71cd1b"
+    },
+    {
+      "path": "app/photomesh/tiles.py",
+      "sha256": "45821abc87bccdf1c0e1d67c782a2e82759c7f9aafd18c7ec205062b443246ce"
+    },
+    {
+      "path": "app/photomesh/toolbar.py",
+      "sha256": "6d5bbeeedc6af359feea98ce299a360570bb4a2a53dd7923d5f92547b7b65404"
+    },
+    {
+      "path": "app/photomesh/views.py",
+      "sha256": "d48462a70c2357cb74b9d8dfca9d2ed936100ae61a885f061299de5504d54bc6"
+    },
+    {
+      "path": "app/photomesh/workflow.py",
+      "sha256": "9a26279e40a929da7485ffc0e255906a35c57add2151ffe1d010439aa2df1ee5"
+    },
+    {
+      "path": "app/requirements.txt",
+      "sha256": "5d5058132ced968e9cbcb2a559beeb95bdcffc7a849f3061bc1606ee7bfe2059"
+    },
+    {
+      "path": "app/release_manifest.txt",
+      "sha256": "13bb0df986028732355569c519a1f8d9ca6a439fb4b4167b20d025d43b549675"
+    }
+  ],
+  "unchanged_python_and_engines": true,
+  "removed_dependency": false,
+  "setup_built": false
+}
