@@ -98,9 +98,42 @@ The approved baseline is `PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf`
 ## Approved scope for the next version (2026-11-08)
 
 The user approved the following work areas for the release following 1.0.4.
-Start with the confirmed EXIF and calibration defects, then validate the
+Complete the priority-one licensing work below first (approved 2026-11-12).
+Then address the confirmed EXIF and calibration defects and validate the
 coordinate-frame and height-reference changes numerically. The F identifiers
 refer to the external review discussed with the user.
+
+### Priority one: dependency licensing and redistribution (2026-11-12)
+
+These three items take precedence over the remaining next-version scope.
+The source-level review identified direct use of GPL-licensed `plyfile`;
+the complete published binary bundle has not yet been audited. Do not describe
+this preliminary review as legal clearance or proof of full compliance.
+
+- [ ] Replace direct `plyfile` usage with an independently implemented reader/writer
+  or a dependency with a verified compatible license. Do not copy GPL implementation
+  code into the replacement. Review all callers and remove the dependency from the
+  actual packaged runtime as well as requirements when no longer needed. Verify
+  supported ASCII/binary PLY layouts, point/mesh attributes, round trips, large-file
+  behavior and existing workflows before accepting the replacement.
+- [ ] Audit the exact published installer and the next candidate on a remote
+  runner, without using the user's computer or personal files. Extract and inventory
+  exact versions, provenance and licenses of direct/transitive Python packages,
+  native DLLs/executables, legacy and modern COLMAP/GLOMAP engines, Qt modules,
+  CUDA components and neural model weights. Review redistribution conditions,
+  GPL-only components and LGPL obligations against the actual bundle; record
+  unresolved items and retain a reproducible inventory with evidence. A top-level
+  project license or passing tests is not sufficient evidence for embedded components.
+- [ ] Complete third-party license texts, copyright/NOTICE attribution and applicable
+  corresponding-source/source-offer and replacement/relinking information for the
+  exact distributed versions. Verify Qt LGPL conditions and NVIDIA redistribution
+  permissions where applicable; remove unnecessary bundled components only after
+  dependency/behavior review. Preserve third-party rights independently of PhotoMesh's
+  license. Do not change the application's own license without separate approval.
+  Validate the corrected installed bundle and retain the audit evidence before
+  preparing the next release; do not claim full clearance while findings remain open.
+
+### Remaining approved next-version scope
 
 - [ ] Fix invalid EXIF rational/GPS decoding so corrupt metadata cannot become
   plausible zero coordinates (F7). Correct intrinsic fit presets so the named
