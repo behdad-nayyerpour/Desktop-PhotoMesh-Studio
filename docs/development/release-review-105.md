@@ -364,3 +364,33 @@ points and excludes all 841 roof points; a smaller explicit edge-regression test
 is included. Local classification took 0.776 s; mesh indexing 0.389 s and profile
 0.110 s with maximum plane-height error 8.9e-15 units. These are controlled local
 workloads, not a promise for real terrain or multi-million-face interactive speed.
+
+Final application revision: `52f18f45a505d6bb5fdb33310bf1a11867ed75ae`.
+[Windows installed inventory/regression run43298006020](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298006020)
+passed compilation/static checks, **861 passed / 8 skipped**, PLY equal-workload
+benchmark, installed apply, exact inventory of **26,249 files** and rollback.
+Python and engine bytes were preserved; new app/vendor files were intentional.
+[General Linux/Windows run43298006009](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298006009)
+passed: Linux857/12 skipped, Windows861/8 skipped, and the separate Mesa OpenGL
+overlay test passed. Skipped real datasets/CUDA and target hardware are still
+outside this evidence. The reused local runtime's final focused suite passed147.
+
+[Actual single-BAT run43298054143](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298054143)
+passed download and registry discovery with a trailing backslash and a Unicode
+custom install path, **35 installed new-feature tests** with module-origin and
+offline network guards, PLY processing, splash at four scales, byte-exact full-app
+rollback including removal of added dependencies, reapply and second rollback.
+The user installation was read-only matched to106 authenticated managed app files
+from R2+splash+display+progress; test mutation occurred only on disposable runners.
+Verified BAT artifact13980981100 outer ZIP SHA256
+`2f3f1d6de9b395ef649096ed2e7492835d62a2b3b17d7b5544d885a5bc6de950`.
+The final delta is757822 bytes, SHA256
+`07ee1d62958391f88115eb4641774f251b85b2b271f4b7e3e60300b6208716be`.
+Its single BAT is byte-identical to the locally reproduced launcher and public
+raw download, SHA256
+`e3300528f598e9b15b35b74f27e410bfd90424d09a3d2f9844f6f17ba245af6b`.
+Published for candidate testing only at artifact commit
+`8710ba0b66b63bab74b439e1fdac8ad6655b04e5`,
+`downloads/105/Lens2Mesh_Update_SurveyTools_1.0.5.bat`.
+User acceptance, representative surveyed terrain/checkpoints and full runtime
+licensing closure remain open. No Setup/public release or PDF update was made.

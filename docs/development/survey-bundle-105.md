@@ -57,6 +57,14 @@ are exact laspy 2.6.1 (BSD) and lazrs 0.7.0 Windows CPython3.13 (MIT) wheel memb
 including licenses/RECORD and wheel hashes, vendored under app only; no pip on
 the user's installation. Whole-runtime licensing review remains a separate item.
 
+Delivery status (2026-11-13): final app52f18f45a505d6bb5fdb33310bf1a11867ed75ae
+passed Windows861/8 skipped and Linux857/12 skipped, installed inventory26249
+with runtime bundles unchanged, and actual combined BAT35 installed tests plus
+full byte-exact rollback/reapply/second rollback. See release-review-105.md for
+run links and hashes. One BAT delivered from artifact commit8710ba0b66b63bab74b439e1fdac8ad6655b04e5;
+757822-byte delta against the verified current progress baseline. Await the user's
+candidate test before a full Setup; real surveyed checks remain outstanding.
+
 Existing code map: reference_ui.py mixin for GPS/markers/optimization;
 georef.CRS and run_task for adjustments, workflow.processing_crs/source_unit;
 calibration.py has model-specific fit indices, colmap_io models0..6;
