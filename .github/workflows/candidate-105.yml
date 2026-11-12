@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   candidate:
-    runs-on: windows-latest
+    # Pin the supported Windows image instead of waiting on the migrating latest pool.
+    runs-on: windows-2022
     timeout-minutes: 60
     env:
       QT_QPA_PLATFORM: offscreen
