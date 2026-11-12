@@ -1586,11 +1586,13 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.statusBar().showMessage("COLMAP not found", 6000)
         return exe
 
-    def _run(self, title, steps, on_success, meta=None, params=None, on_fail=None, engine_exe=None):
+    def _run(self, title, steps, on_success, meta=None, params=None, on_fail=None, engine_exe=None,
+             product=None):
         """meta: callable(seconds, stage_seconds) run after on_success, to record
         processing metadata (procmeta.record) for the step. params: the step's
         settings (dialog values), for the error report if it fails. on_fail: run
         when the step fails or is cancelled (e.g. show the previous result again)."""
+        owner_project, owner_dataset = self.project, self.dataset
         from .engine import bundle_manifest,selection_known
         candidate=cm.locate_colmap()
         if not engine_exe and candidate and bundle_manifest(candidate) and not selection_known(candidate):
@@ -1602,6 +1604,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 return
         else:
             exe=engine_exe or cm.find_colmap()
+        if self.project is not owner_project or self.dataset is not owner_dataset:
+            return
         if self.runner is not None and getattr(self.runner, "busy", False):
             QMessageBox.information(self, title, "Another processing task is running."); return
         dlg = ProgressDialog(title, self)
@@ -1634,10 +1638,20 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             dlg._timer.stop()
             dt = time.perf_counter() - t0
             self.jobs.add_job(f"[{'done' if ok else 'failed'}] {job}  ({dt:.1f} s)")
-            self.dataset.log.append(f"{title}: {'OK' if ok else msg} ({dt:.1f} s)")
+            current = self.project is owner_project and self.dataset is owner_dataset
+            owner_dataset.log.append(f"{title}: {'OK' if ok else msg} ({dt:.1f} s)")
+            if not current:
+                ok, msg = False, "Project changed during processing; results remain on disk. Reopen the original project to import them."
             if ok:
                 try:
                     on_success()
+                    if product is not None:
+                        # Publication succeeded: use the same actions as explicit display
+                        # selection, keeping toolbar/tree state and overlays consistent.
+                        if product in ("tie", "cloud"):
+                            self.show_layer(product)
+                        elif product == "mesh":
+                            self.show_model_mode("shaded")
                 except Exception as e:
                     import traceback
                     ok, msg = False, f"Could not load results: {e}"
@@ -1659,7 +1673,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 dlg.accept()
                 self.statusBar().showMessage(f"{title} finished in {dt:.1f} s", 8000)
             self.log(f"{title}: {'finished' if ok else msg} ({dt:.1f} s)")
-            if not ok and on_fail is not None:
+            if not ok and current and on_fail is not None:
                 try:
                     on_fail()
                 except Exception as e:  # noqa: BLE001 - must not hide the error dialog
@@ -1812,7 +1826,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                 ("Estimating", "Triangulating", "Registering", "Optimizing", "Reconstruct",
                                  "Mapping", "Bundle"))), 2) or None)
             ch.meta.pop("sparse_stats", None)          # recomputed by the view loader
-        self._run("Align Photos", steps, loaded, meta, params=s)
+        self._run("Align Photos", steps, loaded, meta, params=s, product="tie")
 
     def _report_unaligned(self, missing, total):
         """List photos that could not be aligned (Console + status bar) so the
@@ -1915,7 +1929,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                             filtering=filter_statistics.get("filters",[]),
                             **procmeta.file_info(ch.point_cloud_ply))
         self._run("Build Point Cloud", steps,
-                  loaded, meta, params=s, on_fail=source_backup.restore, engine_exe=exe)
+                  loaded, meta, params=s, on_fail=source_backup.restore, engine_exe=exe, product="cloud")
 
     def build_model(self):
         if not self._require_saved("Build Model"):
@@ -1950,7 +1964,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         def loaded():
             self.load_result("model", out)
             self._model_replaced(ch)
-        self._run("Build Model", steps, loaded, meta, params=s)
+        self._run("Build Model", steps, loaded, meta, params=s, product="mesh")
 
     STALE = "built from an earlier model"
 

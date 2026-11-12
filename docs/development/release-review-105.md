@@ -205,3 +205,20 @@ remote delta attempt rejected an extra baseline file before replacement; the
 corrected archive is 12,794 bytes and still changes only appicon.py/splash.py.
 
 [Actual splash BAT run 43274835496](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43274835496) passed on exact104+R2: registry-discovered delta apply, installed splash renders at four scales, all window/ICO sizes, offline PLY pipeline, exact two-file rollback hashes, explicit trailing-slash reapply, second rollback. Artifact 13970755466 includes runner previews and the byte-identical reproduced BAT. No Setup built; broader checklist remains open.
+
+
+### Build display activation iteration (2026-11-12)
+
+Alignment, cloud and mesh completion now uses the existing explicit display
+commands after successful result publication. Reconstruction layers are selected
+consistently while camera/marker overlays are retained. Texture/tiled/DEM/ortho
+already activate their outputs in success callbacks; reviewed those callers and
+the asynchronous generation guards. _run captures the owning project/dataset;
+late completion skips success/metadata/view-recovery callbacks for a different
+project and leaves outputs on disk with an actionable message.
+Seven new UI tests cover product activation, overlays, two stale-context cases,
+cancel and failed publication. Together with existing busy/cursor tests, 11 pass.
+Broader local checks hit missing dash in the reused development runtime; 49 pass,
+18 setup errors and 3 failures require fresh remote-environment verification.
+No numerical processing or manual/PDF content is changed. Candidate Setup remains
+gated on user testing; this iteration is one pending checklist item only.
