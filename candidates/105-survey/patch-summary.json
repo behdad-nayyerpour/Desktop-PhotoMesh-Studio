@@ -1,8 +1,8 @@
 {
-  "candidate": "269d482f2bef6721807f10b978680d142f7664fc",
-  "archive": "Lens2Mesh_TestPatch_269d482f2bef.zip",
-  "sha256": "cc7c01ec80e295561ab05e73511f87a1d46c4e344cfe40613febb4bb73c3a967",
-  "bytes": 757430,
+  "candidate": "8473e2248e0a98fd7c55c61ac6157435f01838b2",
+  "archive": "Lens2Mesh_TestPatch_8473e2248e0a.zip",
+  "sha256": "320fc1ea2423385936c222589211868c335b0a57b2494b56b13e768d78ff1481",
+  "bytes": 757686,
   "files": [
     {
       "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/METADATA",
@@ -246,7 +246,7 @@
     },
     {
       "path": "app/photomesh/georef.py",
-      "sha256": "fc6913a7e4479e3f53f444571463dcf5f3ea2d1348dd4a40f58313216f2b9a7f"
+      "sha256": "9ab9188edc83351720ae3713c5eb0ee2c0bd915a0f0d70a733e127bf29f1bde9"
     },
     {
       "path": "app/photomesh/ground.py",
@@ -258,7 +258,7 @@
     },
     {
       "path": "app/photomesh/mainwindow.py",
-      "sha256": "732528f078a93594a0873f9ba8e2ab9e189f85c128abe505d7192cbdcb22186a"
+      "sha256": "26d2a12c72e4426606cc8c8aa34f1c65173c5cd78e391a98b638f64d28a650bd"
     },
     {
       "path": "app/photomesh/markers_ui.py",
@@ -274,7 +274,7 @@
     },
     {
       "path": "app/photomesh/panes.py",
-      "sha256": "e87bef317398839e5274b4a2af0babddb8966a6c5a68459a546d9ac8dc903c4d"
+      "sha256": "764a2d8f15f20bed6cbc8c11a1d14c3ca515e6b8788b1ee7790f9803f918057b"
     },
     {
       "path": "app/photomesh/photo_gps.py",
@@ -290,7 +290,7 @@
     },
     {
       "path": "app/photomesh/reference_ui.py",
-      "sha256": "940b470ea52ac1097450354832b2517bfdd97b3043ba58380a22699f64cc0964"
+      "sha256": "316bf5b67e28d7d5397b10cbbd16f7fc655b4034896391c1c77e9eaa0245d4cf"
     },
     {
       "path": "app/photomesh/registration_ui.py",
@@ -334,7 +334,7 @@
     },
     {
       "path": "app/release_manifest.txt",
-      "sha256": "13bb0df986028732355569c519a1f8d9ca6a439fb4b4167b20d025d43b549675"
+      "sha256": "e7863ade2dc749cb9cadc8ccdcee6f62927c052ae188121a0f1b1efbf70566bb"
     }
   ],
   "unchanged_python_and_engines": true,

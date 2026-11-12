@@ -80,6 +80,17 @@ def test_dtm_path_is_independent_and_persisted(window, tmp_path):
     assert project.dataset.dtm['surface_type'] == 'DTM'
 
 
+def test_unknown_height_keeps_image_error_visible_without_xyz_rmse(window):
+    window.dataset.markers = [{'label': 'check', 'enabled': False, 'ref': [1, 2, 3]}]
+    window.dataset.georef = {'rows': [], 'reference_heights_verified': False,
+        'marker_image_errors': {'check': {'pix': .25, 'n': 4}}}
+    window.markers_pane.refresh(window.dataset)
+    assert window.markers_pane.item(0, 5).text() == ''
+    assert window.markers_pane.item(0, 7).text() == '0.250'
+    assert window.markers_pane.error_summary['Check points']['error'] is None
+    assert window.markers_pane.error_summary['Check points']['pixel'] == .25
+
+
 def test_dtm_build_publishes_ground_only_and_activates_without_replacing_dsm(window, tmp_path, monkeypatch, no_dialogs):
     import json
     from test_terrain_bundle_105 import cloud

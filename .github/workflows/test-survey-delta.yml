@@ -115,7 +115,7 @@ jobs:
           & $python tools/validate_splash_105.py
           if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
           $before=Get-Content survey-before.json -Raw | ConvertFrom-Json -AsHashtable
-          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '269d482*' | Select-Object -First 1
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '8473e22*' | Select-Object -First 1
           $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
           & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
           if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
@@ -134,7 +134,7 @@ jobs:
           if ($LASTEXITCODE) { throw 'BAT reapplication after rollback failed' }
           & $python tools/validate_installed_ply_105.py
           if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }
-          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '269d482*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
+          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '8473e22*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
           if (-not $active -or $active.FullName -eq $receipt.FullName) { throw 'Recovery history was not preserved' }
           & $env:ComSpec /d /c ('call "'+(Join-Path $active.FullName 'ROLLBACK.bat')+'" <NUL')
           if ($LASTEXITCODE) { throw 'Second actual BAT rollback failed' }
