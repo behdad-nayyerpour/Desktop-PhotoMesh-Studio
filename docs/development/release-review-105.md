@@ -499,3 +499,38 @@ Mesa and installed-BAT evidence are recorded below when complete. Dark/Light
 synthetic previews inspected. These checks do not establish target-data survey
 accuracy or absence of unrelated bugs. Manual sections are affected, but the
 user explicitly deferred PDF changes; retain the approved PDF unchanged.
+
+Final app revision `02c42b5c0fa4fd920ffa3e1a2f7ff0139fc246d3` also disables
+per-keystroke spinbox updates, so manual coordinates commit after editing instead
+of locking the field while a number is still being typed. Its additional keyboard
+test passes (10 new section workflow cases). Local final affected suite before
+that isolated addition:95 passed/2 skipped; final Ruff clean.
+
+[General checks](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319457112)
+pass: Linux882 passed/13 skipped, Windows886 passed/9 skipped, plus2 separate
+Mesa OpenGL checks for rotation, rubber preview and midpoint dragging.
+[Installed BAT validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319513095)
+passes60 tests from isolated installed modules with outgoing sockets/DNS blocked,
+offline PLY processing and splash rendering. Actual BAT discovery in a Unicode
+custom path with a trailing backslash, two byte-exact full-app rollbacks and
+reapplication pass. All168 managed prior app files were independently compared
+read-only against the authenticated patch chain before constructing this delta.
+
+Final delta98700 bytes /8 app files, SHA256
+`fe09f1eadc62899509ea07b6b35356f27af45482eeef3e2b27181fbe3ff0feaa`.
+Artifact13989562799 outer ZIP SHA256
+`dab6bfd896c457f34af7065069f6a642b2912a244cc6cc9ec5aec53b84a45965`
+was downloaded and checked. Its6166-byte BAT matches local reproduction,
+SHA256 `47a641168f294f1f3b1e30c16a5ddb6c85214792f6845955dd99bc06d9df3af8`.
+The payload URL pins artifact commit`a7b884b3ab59bd06a3e22aa4bc96f82bb879734e`.
+
+[Full candidate validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319457096)
+passes886 tests/9 skipped, installed apply/rollback and the exact26252-file runtime
+inventory comparison. Full validation artifact13989169066 retained locally with
+verified outer SHA256
+`5258a989d65b036d4d690d53fbf61cd86bf9afb7037a8bd3d521f032be5f0052`.
+One BAT and its checksum are available at artifact commit
+`0f462129f5b0ed093197cb71c9df6cfa9367900e`,
+`downloads/105/Lens2Mesh_Update_SectionFixes_1.0.5.bat`; public raw download was
+read back and matches the verified BAT hash above. User target-project/display
+testing and candidate acceptance remain pending. No full Setup or PDF change.
