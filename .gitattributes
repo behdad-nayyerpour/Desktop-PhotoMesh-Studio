@@ -15,3 +15,5 @@
 *.shp  binary
 *.shx  binary
 *.dbf  binary
+# Preserve the exact verified downloadable BAT, including its Windows newlines.
+downloads/105/*.bat -text
