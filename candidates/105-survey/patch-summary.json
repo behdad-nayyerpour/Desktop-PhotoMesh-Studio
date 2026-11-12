@@ -1,8 +1,8 @@
 {
-  "candidate": "8473e2248e0a98fd7c55c61ac6157435f01838b2",
-  "archive": "Lens2Mesh_TestPatch_8473e2248e0a.zip",
-  "sha256": "320fc1ea2423385936c222589211868c335b0a57b2494b56b13e768d78ff1481",
-  "bytes": 757686,
+  "candidate": "f5bc47397377ef0db246343d96eff761f0539412",
+  "archive": "Lens2Mesh_TestPatch_f5bc47397377.zip",
+  "sha256": "2357f2d9c66740f71084a9423935a9bfd03ca77a1e4eec75fb9a5fd67cbf19bf",
+  "bytes": 757708,
   "files": [
     {
       "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/METADATA",
@@ -238,7 +238,7 @@
     },
     {
       "path": "app/photomesh/exif.py",
-      "sha256": "9b4bfe696629a3c80868b910befb2fd7b253964e51f6919c37e5f2c1753c9a3f"
+      "sha256": "38d1b212dd1ca38684454d1f190de5b5761b503fd25c9b9e10e940904381a786"
     },
     {
       "path": "app/photomesh/fastpipe.py",
@@ -334,7 +334,7 @@
     },
     {
       "path": "app/release_manifest.txt",
-      "sha256": "e7863ade2dc749cb9cadc8ccdcee6f62927c052ae188121a0f1b1efbf70566bb"
+      "sha256": "aab05e3cc5124f52a37febd14a90ac808937347d86ad9ac87b1a363e0c61a7c7"
     }
   ],
   "unchanged_python_and_engines": true,

@@ -11,6 +11,7 @@ def mesh_project(window, tmp_path):
     save_ply(str(path), vertices, faces=np.array([[0, 1, 2], [1, 3, 2]], np.int32))
     window.dataset.model_ply = str(path)
     window.dataset.face_count = 2
+    window.set_layer_visible('mesh', True)
     return path
 
 
