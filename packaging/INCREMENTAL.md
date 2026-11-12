@@ -46,3 +46,9 @@ a custom installation path containing spaces and Persian letters. Tests must
 verify installed module origins so a source checkout cannot accidentally satisfy
 an installed-build assertion. The full Setup remains gated on explicit user
 acceptance; publishing a final release requires separate authorization.
+
+Bootstrap paths are passed to installed Python through process environment
+variables. Windows PowerShell 5.1 native argument quoting must not transport
+quoted installation paths ending in a backslash: that can swallow the next
+argument. Acceptance covers automatic Inno registry discovery and explicit
+trailing-backslash paths, in addition to Unicode/spaces, rollback and retry.

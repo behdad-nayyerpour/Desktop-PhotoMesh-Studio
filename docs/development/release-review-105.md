@@ -165,3 +165,19 @@ Candidate acceptance is pending user feedback. No complete Setup, final release,
 repository rename or PDF update is authorized/completed by this milestone.
 All remaining approved next-version work and open licensing/hardware checks stay
 open; this is not a claim that the complete checklist has shipped.
+
+
+### Reported BAT path handoff failure (2026-11-12)
+
+The user's Inno registry InstallLocation ends in a backslash. Windows PowerShell
+5.1 native argument quoting combined --root with --payload; Python failed resolving
+that malformed path before any managed-file replacement. Previous acceptance
+passed an explicit root without a final backslash and missed registry discovery.
+The bootstrap now transports both paths through process environment variables
+and constructs argv within Python, preserving drive/UNC roots and Unicode paths.
+Four real Windows PowerShell child-process tests pass, including the reported
+path, Unicode/spaces/apostrophe/ampersand, drive root and UNC with trailing slashes.
+The actual BAT acceptance workflow now exercises registry discovery first and an
+explicit trailing-backslash root on reapplication. Application/payload bytes are
+unchanged. Reviewed generator, child entry point and acceptance callers; no PDF
+or application/numerical changes are needed for this bootstrap-only fix.
