@@ -354,3 +354,13 @@ instead of being silently interpreted as above sea level. All valid 0/1 integer
 and byte reference cases remain tested. Focused reproduction: 22 passed. A later
 review also kept independent pixel diagnostics visible in the marker table when
 XYZ height references are unconfirmed, with stale-image-error invalidation.
+
+A controlled capacity check used 640,000 points on a 3% slope with a known
+841-point roof and a 100,352-triangle plane. It exposed cumulative-opening and
+final-tolerance bias at the classification grid boundary. The classifier now
+applies thresholds per progressive opening and carries the final window's slope
+tolerance into point classification. The fixture retains all 639,159 ground
+points and excludes all 841 roof points; a smaller explicit edge-regression test
+is included. Local classification took 0.776 s; mesh indexing 0.389 s and profile
+0.110 s with maximum plane-height error 8.9e-15 units. These are controlled local
+workloads, not a promise for real terrain or multi-million-face interactive speed.

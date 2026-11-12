@@ -82,7 +82,6 @@ def classify_cloud(source, destination, cell_size=1., slope=.15, initial_height=
     nearest = distance_transform_edt(~occupied, return_distances=False, return_indices=True)
     surface = surface[tuple(nearest)]
     del nearest
-    original = surface.copy()
     ground_cells = occupied.copy()
     radii = []
     radius = 1
@@ -94,7 +93,10 @@ def classify_cloud(source, destination, cell_size=1., slope=.15, initial_height=
     for i, radius in enumerate(radii):
         opened = grey_opening(surface, size=(2 * radius + 1, 2 * radius + 1), mode='nearest')
         threshold = min(max_height, initial_height + slope * cell_size * (radius - last))
-        ground_cells &= original - opened <= threshold
+        # Each progressive threshold applies to this opening, not the
+        # cumulative change since the original grid. Cumulative differences
+        # incorrectly reject a gradual slope near a padded grid boundary.
+        ground_cells &= surface - opened <= threshold
         surface = opened
         last = radius
         report(30 + 30 * (i + 1) / len(radii), 'Separating ground and above-ground objects')
@@ -110,8 +112,9 @@ def classify_cloud(source, destination, cell_size=1., slope=.15, initial_height=
                   b''.join(line + b'\n' for line in comments) + ('\n'.join(lines) + '\n').encode('ascii'))
         for records in vertex_blocks(source):
             row, col, z = cells(records)
+            final_tolerance = min(max_height, initial_height + slope * cell_size * int(max_radius))
             labels = np.where(ground_cells[row, col] &
-                              (z - low[2] - surface[row, col] <= initial_height + slope * cell_size), 2, 1)
+                              (z - low[2] - surface[row, col] <= final_tolerance), 2, 1)
             result = np.empty(len(records), dtype=dtype)
             for name in records.dtype.names:
                 result[name] = records[name]

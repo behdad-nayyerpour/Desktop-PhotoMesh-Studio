@@ -65,6 +65,20 @@ def test_cancel_never_replaces_existing_classification(tmp_path):
     assert dst.read_bytes() == b'previous product'
 
 
+def test_progressive_windows_do_not_remove_gradual_slope_at_grid_edges(tmp_path):
+    x, y = np.meshgrid(np.arange(121, dtype=float), np.arange(121, dtype=float))
+    records = np.empty(x.size, dtype=[('x', 'f8'), ('y', 'f8'), ('z', 'f8')])
+    records['x'], records['y'], records['z'] = x.ravel(), y.ravel(), (.03*x).ravel()
+    roof = ((x >= 50) & (x <= 60) & (y >= 50) & (y <= 60)).ravel()
+    records['z'][roof] += 10
+    source, result = tmp_path / 'slope.ply', tmp_path / 'classes.ply'
+    PlyDocument([PlyElement.describe(records, 'vertex')]).write(source)
+    classify_cloud(source, result, max_radius=32)
+    labels = np.concatenate(list(vertex_blocks(result)))['classification']
+    assert np.all(labels[~roof] == 2)
+    assert np.all(labels[roof] == 1)
+
+
 def test_dtm_uses_only_classified_ground_and_retains_real_coverage(tmp_path):
     from photomesh.dem_engine import build_dem
     from photomesh.geotiff import TiffReader
