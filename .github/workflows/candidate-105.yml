@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m compileall -q photomesh main.py packaging tests tools
           if ($LASTEXITCODE) { throw 'Compilation failed' }
-          ruff check --select F401,F811,F841,F821,F822,F823 photomesh packaging/apply_patch.py packaging/build_patch.py tools/audit_runtime.py
+          ruff check --select F401,F811,F841,F821,F822,F823 photomesh packaging/*.py tools/audit_runtime.py
           if ($LASTEXITCODE) { throw 'Static checks failed' }
       - name: Fetch exact published 1.0.4 for remote-only inventory and patch baseline
         shell: pwsh
@@ -60,7 +60,7 @@ jobs:
           & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --payload $payload
           if ($LASTEXITCODE) { throw 'Installed patch application failed' }
           $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
-          & $python -c "from photomesh import APP_NAME, APP_VERSION; from photomesh import appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); print('Installed patch identity/icon OK')"
+          & $python -c "import importlib.util; from photomesh import APP_NAME, APP_VERSION; from photomesh import appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); assert importlib.util.find_spec('plyfile') is None; print('Installed patch identity/icon and dependency removal OK')"
           if ($LASTEXITCODE) { throw 'Installed candidate smoke failed' }
           python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate
           & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --rollback (Join-Path $env:BASELINE_ROOT '.lens2mesh-patches/${{ github.sha }}')

@@ -6,6 +6,8 @@ from pathlib import Path
 import subprocess
 import zipfile
 
+from runtime_dependencies import plyfile_files
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -21,10 +23,18 @@ def build(source, installed, output, revision):
     # untracked files, personal projects or the reusable Python/engine runtime.
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=source).decode().split("\0")
     files = []
+    # Never blindly delete a copied environment's packages. Only this exact
+    # distribution's installed RECORD files are considered, and declared
+    # transitive requirements block removal for manual review.
+    ply = plyfile_files(installed)
+    for path in ply:
+        target = path.relative_to(installed.resolve()).as_posix()
+        baseline[target] = digest(path)
+        files.append({"path": target, "sha256": None, "remove": True})
     for relative in tracked:
         path = source / relative
         allowed = (relative.startswith("photomesh/")
-                   or relative in ("main.py", "packaging/fix_shortcut_icon.ps1"))
+                   or relative in ("main.py", "requirements.txt", "packaging/fix_shortcut_icon.ps1"))
         if not allowed or not path.is_file():
             continue
         target = "app/" + relative
@@ -36,6 +46,18 @@ def build(source, installed, output, revision):
             continue
         if baseline.get(target) != sha:
             files.append({"path": target, "sha256": sha})
+    generated = {}
+    if ply:
+        # Keep the runtime identity honest after dependency removal, while
+        # downloading no unchanged Python or native engine components.
+        old_id = (installed / "app/runtime.id").read_text().strip()
+        runtime_id = hashlib.sha256((old_id + "\nremoved:plyfile\n" + revision).encode()).hexdigest()
+        generated["app/runtime.id"] = (runtime_id + "\n").encode("ascii")
+        generated["app/release_manifest.txt"] = (
+            f"Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n"
+            "Runtime change: removed plyfile; no Python/engine replacement\n").encode("utf-8")
+        for target, data in generated.items():
+            files.append({"path": target, "sha256": hashlib.sha256(data).hexdigest()})
     if not files:
         raise ValueError("Candidate has no changed installed components")
     manifest = {"schema": 1, "candidate": revision,
@@ -48,13 +70,18 @@ def build(source, installed, output, revision):
         archive.writestr("manifest.json", json.dumps(manifest, indent=2))
         archive.write(source / "packaging/apply_patch.py", "apply_patch.py")
         for entry in files:
-            archive.write(source / entry["path"][4:], entry["path"])
+            if entry.get("remove"):
+                continue
+            if entry["path"] in generated:
+                archive.writestr(entry["path"], generated[entry["path"]])
+            else:
+                archive.write(source / entry["path"][4:], entry["path"])
     sha = digest(archive_path)
     (output / (filename + ".sha256")).write_text(f"{sha} *{filename}\n", encoding="ascii")
     (output / "patch-summary.json").write_text(json.dumps({
         "candidate": revision, "archive": filename, "sha256": sha,
         "bytes": archive_path.stat().st_size, "files": files,
-        "unchanged_runtime": True, "setup_built": False,
+        "unchanged_python_and_engines": True, "removed_dependency": bool(ply), "setup_built": False,
     }, indent=2), encoding="utf-8")
     return archive_path
 

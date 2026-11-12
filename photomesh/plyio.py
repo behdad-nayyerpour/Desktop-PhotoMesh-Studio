@@ -2,7 +2,7 @@
 
 Files are read with plain file I/O (never memory-mapped: on Windows a mapped
 file can't be replaced while the viewer holds it). Binary vertex/triangle
-blocks are read with numpy directly; anything else falls back to plyfile."""
+blocks are read with numpy directly; other layouts use the independent codec."""
 import numpy as np
 
 _PLY_TYPES = {"char": "i1", "int8": "i1", "uchar": "u1", "uint8": "u1", "short": "i2", "int16": "i2",
@@ -117,7 +117,7 @@ def load_ply(path, max_points=2_000_000):
     if fast is not None:
         v, faces = fast["vertex"], fast["face"]
     else:
-        from plyfile import PlyData
+        from .plycodec import PlyDocument as PlyData
         with open(path, "rb") as fh:          # no memory map: never keep the file mapped/locked
             ply = PlyData.read(fh, mmap=False)
         v = ply["vertex"].data
@@ -146,7 +146,7 @@ def load_ply(path, max_points=2_000_000):
 
 
 def save_ply(path, points, colors=None, faces=None):
-    from plyfile import PlyData, PlyElement
+    from .plycodec import PlyDocument as PlyData, PlyElement
     n = len(points)
     dt = [("x", "f4"), ("y", "f4"), ("z", "f4")]
     if colors is not None:

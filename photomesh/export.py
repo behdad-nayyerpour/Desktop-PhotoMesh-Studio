@@ -124,8 +124,8 @@ def export_ply_world(src, dst, offset=None, block_size=2_000_000, log=None):
 
 
 def _export_ply_world_general(src, dst, off):
-    """ascii / unusual layouts: plyfile, in memory, written as binary."""
-    from plyfile import PlyData, PlyElement
+    """ASCII/unusual layouts: independent codec, in memory, written as binary."""
+    from .plycodec import PlyDocument as PlyData, PlyElement
     with open(src, "rb") as fh:
         ply = PlyData.read(fh, mmap=False)
     v = ply["vertex"].data
@@ -135,11 +135,14 @@ def _export_ply_world_general(src, dst, off):
         o[name] = v[name]
     for k, name in enumerate("xyz"):
         o[name] = np.asarray(v[name], np.float64) + off[k]
-    els = [PlyElement.describe(o, "vertex")] + [e for e in ply.elements if e.name != "vertex"]
+    properties = [(p[0], "f8") if p[0] in ("x", "y", "z") else p
+                  for p in ply["vertex"].properties]
+    # Keep list-valued vertex attributes and their declared item/count types.
+    els = [PlyElement("vertex", o, properties)] + [e for e in ply.elements if e.name != "vertex"]
     comments = list(ply.comments) + ["Lens2Mesh export: world coordinates (local + offset "
                                      + " ".join(f"{x:.3f}" for x in off) + ")"]
     with atomic_write(dst) as out:
-        PlyData(els, text=False, comments=comments).write(out)
+        PlyData(els, text=False, comments=comments, obj_info=ply.obj_info).write(out)
     return dst
 
 

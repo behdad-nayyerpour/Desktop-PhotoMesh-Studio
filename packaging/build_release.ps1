@@ -86,6 +86,9 @@ if ($sourceMode -eq "venv") {
 } else {
     Copy-Tree (Join-Path $runtime "python") $pythonStage @("__pycache__") @("*.pyc")
 }
+Write-Host "Removing the independently replaced PLY dependency from the fresh stage"
+& (Join-Path $pythonStage "python.exe") (Join-Path $app "packaging\runtime_dependencies.py") --stage $stage
+if ($LASTEXITCODE -ne 0) { throw "Staged dependency cleanup failed" }
 Write-Host "Retaining the tested legacy reconstruction engine"
 $legacyColmap = Join-Path $runtime "tools\colmap-legacy"
 if (-not (Test-Path -LiteralPath $legacyColmap)) { $legacyColmap = $colmap }
@@ -98,7 +101,7 @@ if ($OfflineBuild) { $engineArgs += "--offline" }
 if ($LASTEXITCODE -ne 0) { throw "Offline engine bundle preparation failed" }
 
 if ($sourceMode -eq "venv") {
-    $freeze = @(& $venvPy -m pip freeze --exclude-editable | Sort-Object)
+    $freeze = @(& (Join-Path $pythonStage "python.exe") -m pip freeze --exclude-editable | Sort-Object)
     if ($LASTEXITCODE -ne 0) { throw "pip freeze failed" }
     $pyver = (& $venvPy -c "import sys; print(sys.version.split()[0])")
     $colhash = (Get-FileHash -LiteralPath (Join-Path $colmap "bin\colmap.exe") -Algorithm SHA256).Hash

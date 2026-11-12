@@ -1323,7 +1323,7 @@ def _xform_vertices(v, R, t, Rn):
         v["nx"], v["ny"], v["nz"] = N[:, 0], N[:, 1], N[:, 2]
 
 
-def _reverse_winding_plyfile(ply):
+def _reverse_winding_document(ply):
     names = [e.name for e in ply.elements]
     if "face" not in names:
         return
@@ -1387,13 +1387,13 @@ def transform_ply(path, M, out=None, block_size=2_000_000):
     try:
         with open(path, "rb") as src:
             lay = _ply_vertex_layout(src)
-            if lay is None:                       # ascii / unusual layout: plyfile, in memory
-                from plyfile import PlyData
+            if lay is None:                       # ASCII/unusual layout: general document
+                from .plycodec import PlyDocument as PlyData
                 src.seek(0)
                 ply = PlyData.read(src, mmap=False)
                 _xform_vertices(ply["vertex"].data, R, t, Rn)
                 if mirror:
-                    _reverse_winding_plyfile(ply)
+                    _reverse_winding_document(ply)
                 with open(tmp, "wb") as dst:
                     ply.write(dst)
                     dst.flush(); os.fsync(dst.fileno())

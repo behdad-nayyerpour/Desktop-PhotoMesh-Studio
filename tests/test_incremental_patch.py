@@ -102,3 +102,38 @@ def test_running_application_blocks_update(fixture, monkeypatch):
     monkeypatch.setattr(psutil, "process_iter", lambda *args: [Process()])
     with pytest.raises(RuntimeError, match="Close"):
         updater.ensure_closed(root)
+
+
+def test_power_loss_temporary_file_can_be_recovered(fixture):
+    root, payload, manifest = fixture
+    state = updater.apply(root, payload, manifest)
+    interrupted = root / "app/main.py.lens2mesh-patch-tmp"
+    interrupted.write_bytes(b"incomplete copy")
+    updater.rollback(root, state)
+    assert (root / "app/main.py").read_bytes() == b"previous"
+    assert not interrupted.exists()
+
+
+def test_exact_dependency_removal_is_reversible(fixture):
+    root, payload, manifest = fixture
+    relative = "python/Lib/site-packages/plyfile.py"
+    dependency = root / relative
+    dependency.parent.mkdir(parents=True)
+    dependency.write_bytes(b"previous dependency")
+    manifest["baseline"][relative] = updater.digest(dependency)
+    manifest["files"].append({"path": relative, "sha256": None, "remove": True})
+    state = updater.apply(root, payload, manifest)
+    assert not dependency.exists()
+    updater.rollback(root, state)
+    assert dependency.read_bytes() == b"previous dependency"
+
+
+def test_runtime_replacement_is_not_allowed(fixture):
+    root, payload, manifest = fixture
+    relative = "python/Lib/site-packages/plyfile.py"
+    target = payload / relative
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"unexpected runtime replacement")
+    manifest["files"].append({"path": relative, "sha256": updater.digest(target)})
+    with pytest.raises(ValueError, match="cannot replace"):
+        updater.apply(root, payload, manifest)

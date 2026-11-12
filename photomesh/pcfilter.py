@@ -23,7 +23,7 @@ def read_cloud(path):
     if fast is not None:
         v = fast["vertex"]
     else:
-        from plyfile import PlyData
+        from .plycodec import PlyDocument as PlyData
         with open(path, "rb") as fh:          # no memory map (Windows locks mapped files)
             v = PlyData.read(fh, mmap=False)["vertex"].data
     names = v.dtype.names
@@ -37,7 +37,7 @@ def read_cloud(path):
 
 
 def write_cloud(path, xyz, rgb=None, normals=None, confidence=None, offset=None, double=False):
-    from plyfile import PlyData, PlyElement
+    from .plycodec import PlyDocument as PlyData, PlyElement
     ft = "f8" if double else "f4"
     dt = [("x", ft), ("y", ft), ("z", ft)]
     if normals is not None:

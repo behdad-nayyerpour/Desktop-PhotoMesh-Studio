@@ -34,7 +34,8 @@ def inventory(root, output):
             "requires": meta.get_all("Requires-Dist", []),
         })
     for path in sorted(root.rglob("*")):
-        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
+        if (not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc"
+                or ".lens2mesh-patches" in path.parts):
             continue
         relative = path.relative_to(root).as_posix()
         files.append({"path": relative, "bytes": path.stat().st_size, "sha256": sha256(path)})
@@ -46,7 +47,7 @@ def inventory(root, output):
     with zipfile.ZipFile(output / "license-evidence.zip", "w", zipfile.ZIP_DEFLATED) as archive:
         for path in evidence:
             archive.write(path, path.relative_to(root).as_posix())
-    report = {"scope": "Exact extracted installer runtime; no package imports",
+    report = {"scope": "Exact extracted installer runtime; no package imports; local patch recovery backups excluded",
               "legal_clearance": False, "files": files,
               "packages": sorted(packages, key=lambda p: (p["name"] or "").casefold()),
               "remaining_review": [

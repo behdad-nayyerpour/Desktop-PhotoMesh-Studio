@@ -1,4 +1,6 @@
 -r requirements.txt
 pytest>=8
 pytest-qt>=4.4
+# Independent read/write oracle in tests only; never copy into the app runtime.
+plyfile>=1.0
 ezdxf>=1.4,<2
