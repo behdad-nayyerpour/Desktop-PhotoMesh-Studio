@@ -2,7 +2,7 @@ name: Verify downloadable BAT candidate
 on:
   push:
     branches: ["candidate-artifacts/lens2mesh-105"]
-    paths: ["candidates/105/**", ".github/workflows/test-patch-download.yml"]
+    paths: ["candidates/105/**", ".github/workflows/test-patch-download.yml", "packaging/make_patch_launcher.py", "tools/validate_installed_ply_105.py"]
 permissions:
   contents: read
 jobs:
