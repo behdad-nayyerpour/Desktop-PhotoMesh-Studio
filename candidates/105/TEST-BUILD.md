@@ -3,8 +3,9 @@
 This is a user-test candidate, not a final release or full installer.
 
 - Source: `0f112b74f09dbeb99673a473cc7b6bb8918389f2`.
-- Patch: `Lens2Mesh_TestPatch_0f112b74f09d.zip`, 1,693,857 bytes.
-- SHA256: `3eef46fc95a0ab12d3d9cbfb2ec8e4d8b35a144887b03b0eeccadec81867233a`.
+- Updater revision: `defc97310563b6c11228271ea1cfafd596c6ccb5`.
+- Patch: `Lens2Mesh_TestPatch_0f112b74f09d_r2.zip`, 1,694,003 bytes.
+- SHA256: `f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f`.
 - Baseline: exact corrected public PhotoMesh Studio 1.0.4 installation,
   Setup SHA256 `059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
 - Verified candidate run: https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43256088287
@@ -17,6 +18,12 @@ incremental-update and recovery infrastructure. Unchanged Python and reconstruct
 engines are not downloaded. Existing settings/project storage identifiers remain.
 The scalar PLY attribute name `list` is supported through load, rewrite,
 coordinate transforms and world export; the superseded first ZIP must not be used.
+
+R2 preserves every application/resource/dependency-manifest byte from the verified
+application candidate. Only the updater script and its explicit revision metadata
+were repacked and independently compared. It allows applying the same candidate
+again after rollback while retaining all earlier recovery journals. The BAT uses
+framework SHA256/ZIP APIs to avoid optional PowerShell-command availability issues.
 
 Use the separately verified single-file BAT with the application closed. It
 verifies the exact baseline and download before replacement, then retains changed
