@@ -222,3 +222,20 @@ Broader local checks hit missing dash in the reused development runtime; 49 pass
 18 setup errors and 3 failures require fresh remote-environment verification.
 No numerical processing or manual/PDF content is changed. Candidate Setup remains
 gated on user testing; this iteration is one pending checklist item only.
+
+
+Actual display BAT [run 43277499726](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43277499726)
+passed on installed 1.0.4 + accepted R2 + splash: apply, 7 UI tests with installed
+module-origin assertions, offline PLY, splash at four scales, byte-exact rollback,
+reapply and second rollback. Artifact13970867636 outer ZIP SHA256
+`a0c6f1c7d7f7edd87219baabfb8b98b39ebde447cf105eb4d99d7bebacf4b5da`.
+The reproduced BAT matches the runner artifact, SHA256
+`3fd7d52de3b752b7f5bdab07888e43336395abd86b59a3800a6f7b4c6e99cfc8`.
+Reviewed all seven build callbacks, import/load_result callers, _solo mode helpers,
+async generation checks and _run users. No extra PLY reads or processing-loop work
+introduced; no camera/marker overlay changes. Full remote regression pending.
+The first installed test run passed UI tests but its later splash verifier rejected
+an appended test-dependency PYTHONPATH; the workflow now restores app-only path.
+Application payload bytes did not change for that test-harness correction.
+
+Full Windows candidate [run43276695466](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43276695466) passed: 821 tests, 8 skipped, static/compile checks, PLY workload benchmark and exact installed candidate inventory/rollback. Verified 26,190 installed files with unchanged Python/engines preserved. This resolves the incomplete local-development-environment run above; actual CUDA/native engine accuracy tests remain outside this UI-only change. Display BAT published at artifact commit a3aadcfd5124e980b9b768feb258887f33b2a182; user acceptance pending.
