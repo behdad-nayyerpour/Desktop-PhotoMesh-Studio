@@ -208,6 +208,13 @@ this preliminary review as legal clearance or proof of full compliance.
   project changes and large-mesh responsiveness; prevent stale background results
   from replacing the current profile. Assess the affected manual sections and
   follow the separate manual-edit approval policy above.
+  The 2026-11-13 request supersedes the menu/window details: use **Survey >
+  Cross Section** in a closable bottom panel, merge standalone measurement into
+  this tool, remove Pick Start/End, and support calibrated photos as well. Keep
+  endpoint and midpoint handles, native navigation and manual coordinates.
+  Lock new drawing during calculation with explicit busy/cancel feedback; block
+  photo/ortho marker/context edits only while the panel is open. Preserve all
+  coordinate-frame, mesh-gap, numerical and stale-result requirements above.
 - [ ] Add direct point selection and deletion for both **Tie Points** and the
   dense/imported **Point Cloud** (approved 2026-11-10). Provide clear selection
   feedback/counts and practical rectangle/freehand selection; make visible-only

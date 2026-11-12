@@ -23,10 +23,12 @@ Implementation/maintainability plan:
    so updater never redownloads Python/engines or runs pip on user machine.
 5. Ground-only DTM path alongside DSM. Preserve measured vs interpolated masks;
    never interpolate across unbounded gaps without an explicit limit.
-6. Interactive 3D distance/coordinate differences with actual surface/point picks,
-   correct model scale/offset and m only when established.
-7. Interactive mesh-derived profile in floating window, draw/edit section line
-   in 3D or co-registered orthophoto; gaps, multi-intersection semantics, slope,
+6. Interactive 3D distance/coordinate differences with actual surface picks,
+   correct model scale/offset and m only when established. The 2026-11-13 request
+   merges the visible measurement command into Survey > Cross Section.
+7. Interactive mesh-derived profile in a closable bottom panel (superseding the
+   original floating-window scope), draw/edit section line in 3D, a calibrated
+   photo or co-registered orthophoto; gaps, multi-intersection semantics, slope,
    cancel and stale-result guards. Keep slow mesh work off GUI thread.
 8. Synthetic numerical tests + independent references; affected-caller/workflow
    review and full Windows regressions. Document target surveyed-data/GPU checks

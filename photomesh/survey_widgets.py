@@ -44,6 +44,7 @@ class SurveyPanel(QDockWidget):
             row = QHBoxLayout(); spins = []
             for _ in range(2):
                 box = QDoubleSpinBox(); box.setRange(-1e12, 1e12); box.setDecimals(6)
+                box.setKeyboardTracking(False)
                 box.valueChanged.connect(lambda _value, i=index: parent._survey_coordinates_changed(i))
                 row.addWidget(box); spins.append(box)
             form.addRow(f'{label} X / Y ({unit}):', row)

@@ -153,6 +153,20 @@ def test_ortho_context_is_blocked_until_panel_closes(window, tmp_path, monkeypat
     assert menus == [True]
 
 
+def test_manual_coordinates_commit_after_typing_not_each_digit(window, tmp_path, qtbot):
+    mesh_project(window, tmp_path); window.show_cross_section()
+    window._survey_set_point([1, 1]); window._survey_set_point([4, 1])
+    wait_picks(window, qtbot)
+    box = window._survey_dialog.coordinates[1][0]
+    box.setFocus(); box.selectAll()
+    qtbot.keyClicks(box, '6.25')
+    assert not window._survey_busy and box.isEnabled()
+    np.testing.assert_allclose(window._survey_dialog.points[1], [4, 1])
+    qtbot.keyClick(box, Qt.Key_Return); wait_picks(window, qtbot)
+    np.testing.assert_allclose(window._survey_dialog.points[1], [6.25, 1])
+    assert window._survey_profile is not None
+
+
 @pytest.mark.parametrize('kind', ['photo', 'ortho'])
 def test_double_click_end_is_committed_without_resetting_view(window, tmp_path, qtbot, kind):
     if kind == 'photo':
