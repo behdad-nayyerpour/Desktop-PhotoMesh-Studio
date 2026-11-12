@@ -13,7 +13,7 @@ import os
 
 import numpy as np
 
-from .plyio import read_header
+from .plyio import read_header, is_list_property
 
 _TYPE_NAMES = {"i1": "char", "u1": "uchar", "i2": "short", "u2": "ushort",
                "i4": "int", "u4": "uint", "f4": "float", "f8": "double"}
@@ -116,17 +116,17 @@ class PlyDocument:
                 if name in seen or count < 0 or any(p is None for p in props):
                     raise ValueError("Invalid PLY element declaration")
                 seen.add(name)
-                fields = [p[1] if p[0] == "list" else p[0] for p in props]
+                fields = [p[1] if is_list_property(p) else p[0] for p in props]
                 if len(set(fields)) != len(fields) or not fields:
                     raise ValueError("Invalid PLY properties")
                 for prop in props:
-                    if prop[0] == "list" and np.dtype(prop[2]).kind not in "iu":
+                    if is_list_property(prop) and np.dtype(prop[2]).kind not in "iu":
                         raise ValueError("PLY list counts must be integers")
-                minimum = sum(np.dtype(p[2] if p[0] == "list" else p[1]).itemsize for p in props)
+                minimum = sum(np.dtype(p[2] if is_list_property(p) else p[1]).itemsize for p in props)
                 if count * (minimum if endian else 1) > _remaining(fh):
                     raise ValueError("Truncated PLY element data")
-                dtype = np.dtype([(p[1], object) if p[0] == "list" else p for p in props])
-                if endian and not any(p[0] == "list" for p in props):
+                dtype = np.dtype([(p[1], object) if is_list_property(p) else p for p in props])
+                if endian and not any(is_list_property(p) for p in props):
                     data = np.frombuffer(_exact(fh, count * dtype.itemsize), dtype=dtype).copy()
                 else:
                     data = np.empty(count, dtype=dtype)
@@ -134,7 +134,7 @@ class PlyDocument:
                         tokens = fh.readline().split() if endian is None else None
                         cursor = 0
                         for prop in props:
-                            is_list = prop[0] == "list"
+                            is_list = is_list_property(prop)
                             field, scalar_type = (prop[1], prop[2]) if is_list else prop
                             scalar_dt = np.dtype(scalar_type)
                             if tokens is not None:
@@ -179,7 +179,7 @@ class PlyDocument:
         for element in self.elements:
             header.append(f"element {element.name} {len(element.data)}")
             for prop in element.properties:
-                if prop[0] == "list":
+                if is_list_property(prop):
                     header.append(f"property list {_type_name(prop[2])} {_type_name(prop[3])} {prop[1]}")
                 else:
                     header.append(f"property {_type_name(prop[1])} {prop[0]}")
@@ -194,17 +194,17 @@ class PlyDocument:
         # Fixed-size vertex/face records are vectorised, including count bytes;
         # saving multi-million-triangle meshes must not loop through Python rows.
         props = element.properties
-        if not self.text and all(p[0] != "list" for p in props):
+        if not self.text and not any(is_list_property(p) for p in props):
             dtype = np.dtype([(p[0], np.dtype(p[1]).newbyteorder(self.byte_order)) for p in props])
             for start in range(0, len(element.data), 1_000_000):
                 block = np.ascontiguousarray(element.data[start:start + 1_000_000].astype(dtype, copy=False))
                 fh.write(memoryview(block).cast("B"))
             return
-        fixed = all(p[0] != "list" or element.data.dtype.fields[p[1]][0].subdtype for p in props)
+        fixed = all(not is_list_property(p) or element.data.dtype.fields[p[1]][0].subdtype for p in props)
         if not self.text and fixed:
             fields = []
             for i, prop in enumerate(props):
-                if prop[0] == "list":
+                if is_list_property(prop):
                     shape = element.data.dtype.fields[prop[1]][0].subdtype[1]
                     if shape[0] > np.iinfo(np.dtype(prop[2])).max:
                         raise ValueError("PLY list length exceeds its count type")
@@ -216,16 +216,16 @@ class PlyDocument:
                 source = element.data[start:start + 1_000_000]
                 block = np.empty(len(source), dtype=fields)
                 for i, prop in enumerate(props):
-                    field = prop[1] if prop[0] == "list" else prop[0]
+                    field = prop[1] if is_list_property(prop) else prop[0]
                     block[f"value{i}"] = source[field]
-                    if prop[0] == "list":
+                    if is_list_property(prop):
                         block[f"count{i}"] = source[field].shape[1]
                 fh.write(memoryview(block).cast("B"))
             return
         for row in element.data:
             tokens = []
             for prop in props:
-                is_list = prop[0] == "list"
+                is_list = is_list_property(prop)
                 field, dtype = (prop[1], prop[2]) if is_list else prop
                 values = [len(row[field])] if is_list else [row[field]]
                 if is_list:

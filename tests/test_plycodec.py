@@ -74,3 +74,24 @@ def test_standard_large_cloud_still_uses_fast_path(tmp_path, monkeypatch):
         raise AssertionError("Standard clouds must use the streaming/NumPy fast reader")
     monkeypatch.setattr(PlyDocument, "read", not_general)
     np.testing.assert_array_equal(read_cloud(str(path))["xyz"], xyz)
+
+
+@pytest.mark.parametrize("text,endian", [(True, "<"), (False, "<"), (False, ">")])
+def test_scalar_named_list_is_not_a_list_declaration(tmp_path, text, endian):
+    from photomesh.plyio import load_ply
+    from photomesh.export import export_ply_world
+    from photomesh.georef import transform_ply
+    vertices = np.array([(1., 2., 3., 4.)],
+                        dtype=[("x", "f4"), ("y", "f4"), ("z", "f4"), ("list", "f4")])
+    source, rewritten, world = (tmp_path / name for name in ("input.ply", "rewrite.ply", "world.ply"))
+    PlyData([PlyElement.describe(vertices, "vertex")], text=text, byte_order=endian).write(source)
+    document = PlyDocument.read(source)
+    document.write(rewritten)
+    np.testing.assert_array_equal(PlyData.read(rewritten, mmap=False)["vertex"].data["list"], [4.])
+    np.testing.assert_array_equal(load_ply(str(source))["points"], [[1., 2., 3.]])
+    transform = np.eye(4); transform[:3, 3] = [10., 20., 30.]
+    transform_ply(str(source), transform)
+    export_ply_world(str(source), str(world), [1000., 2000., 3000.])
+    recovered = PlyData.read(world, mmap=False)["vertex"].data
+    np.testing.assert_array_equal(recovered["list"], [4.])
+    np.testing.assert_array_equal(np.column_stack([recovered[n] for n in "xyz"]), [[1011., 2022., 3033.]])

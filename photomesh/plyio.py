@@ -10,6 +10,11 @@ _PLY_TYPES = {"char": "i1", "int8": "i1", "uchar": "u1", "uint8": "u1", "short":
               "float": "f4", "float32": "f4", "double": "f8", "float64": "f8"}
 
 
+def is_list_property(prop):
+    """A list declaration has four fields; a scalar may itself be named 'list'."""
+    return prop is not None and len(prop) == 4 and prop[0] == "list"
+
+
 def read_header(fh):
     """Parse a PLY header from an open binary file (left positioned at the data).
     Returns (header_bytes, endian '<'/'>' or None for ascii, elements) with
@@ -50,7 +55,7 @@ def vertex_layout(fh):
     if h is None or h[1] is None or not h[2]:
         return None
     name, n, props = h[2][0]
-    if name != "vertex" or any(p is None or p[0] == "list" for p in props):
+    if name != "vertex" or any(p is None or is_list_property(p) for p in props):
         return None
     return h[0], np.dtype(props), n
 
@@ -73,7 +78,7 @@ def read_fast(path):
         faces = None
         if len(elems) > 1:
             name, m, props = elems[1]
-            if name != "face" or len(props) != 1 or props[0] is None or props[0][0] != "list":
+            if name != "face" or len(props) != 1 or not is_list_property(props[0]):
                 return None
             fdt = np.dtype([("n", props[0][2]), ("i", props[0][3], (3,))])
             f = np.fromfile(fh, dtype=fdt, count=m)

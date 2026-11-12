@@ -1339,7 +1339,7 @@ def _reverse_winding_document(ply):
 
 def _reverse_winding_stream(src, dst, path, faces_at):
     """Copy the face element (next after the vertices) with reversed winding."""
-    from .plyio import read_header
+    from .plyio import read_header, is_list_property
     pos = src.tell()
     src.seek(0)
     elems = read_header(src)[2]
@@ -1347,7 +1347,7 @@ def _reverse_winding_stream(src, dst, path, faces_at):
     if len(elems) < 2 or elems[1][0] != "face":
         return
     _name, m, props = elems[1]
-    if len(props) != 1 or props[0] is None or props[0][0] != "list":
+    if len(props) != 1 or not is_list_property(props[0]):
         raise ValueError(f"{path}: cannot mirror faces with extra properties")
     cdt = np.dtype(props[0][2]); idt = np.dtype(props[0][3])
     done = 0

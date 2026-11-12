@@ -92,7 +92,16 @@ The ZIP is preserved on the artifact-only branch at commit
 `dddd2d6c11da6dbefd345fba4edbdb6c895fba9e`; the downloader binds to that exact
 commit rather than a moving branch.
 
-The actual standalone download/apply/recovery-BAT test is tracked separately in
+Subsequent review reproduced one valid-format incompatibility: a scalar vertex
+attribute literally named `list` was confused with the internal list-property
+tag. The independent reference reader accepted it. A shared declaration-shape
+check now distinguishes the two in the fast reader, general codec and reflected
+face streaming. ASCII and both binary byte orders are covered through load,
+rewrite, coordinate transform and world export. The affected local regression
+group passed 127 tests. The `0fcdf3c` archive is superseded and must not be delivered;
+the corrected source requires new candidate validation and a new immutable ZIP.
+
+The earlier standalone download/apply/recovery-BAT test is tracked separately in
 [run 43251700970](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43251700970).
 Do not deliver the BAT until that test succeeds. No full Setup or final release
 has been built or published, and no user acceptance has been recorded.
