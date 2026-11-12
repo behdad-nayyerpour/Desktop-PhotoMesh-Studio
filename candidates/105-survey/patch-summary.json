@@ -1,8 +1,8 @@
 {
-  "candidate": "f5bc47397377ef0db246343d96eff761f0539412",
-  "archive": "Lens2Mesh_TestPatch_f5bc47397377.zip",
-  "sha256": "2357f2d9c66740f71084a9423935a9bfd03ca77a1e4eec75fb9a5fd67cbf19bf",
-  "bytes": 757708,
+  "candidate": "52f18f45a505d6bb5fdb33310bf1a11867ed75ae",
+  "archive": "Lens2Mesh_TestPatch_52f18f45a505.zip",
+  "sha256": "07ee1d62958391f88115eb4641774f251b85b2b271f4b7e3e60300b6208716be",
+  "bytes": 757822,
   "files": [
     {
       "path": "app/photomesh/_vendor/laspy-2.6.1.dist-info/METADATA",
@@ -250,7 +250,7 @@
     },
     {
       "path": "app/photomesh/ground.py",
-      "sha256": "bcd35b2bd02f477aa81ab90c049b5dc30e6a071e9ad10a16ff742ef04a991897"
+      "sha256": "cc01eb53da18cb01d36dec6ea9008265105649fefc473c6ca304960af537efd3"
     },
     {
       "path": "app/photomesh/las_export.py",
@@ -334,7 +334,7 @@
     },
     {
       "path": "app/release_manifest.txt",
-      "sha256": "aab05e3cc5124f52a37febd14a90ac808937347d86ad9ac87b1a363e0c61a7c7"
+      "sha256": "70f2ef44fc3a2b9ef4ce2f144dae49c076b8733626567751a632f48e89f01676"
     }
   ],
   "unchanged_python_and_engines": true,
