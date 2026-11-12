@@ -1,5 +1,6 @@
 """Update delivery tooling while preserving every verified application byte."""
 import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -24,7 +25,9 @@ def repack(archive, expected_sha, updater, revision, output):
                     data = updater.read_bytes()
                 elif info.filename == "manifest.json":
                     data = json.dumps(manifest, indent=2).encode("utf-8")
-                target.writestr(info, data)
+                # ZipFile updates offsets on ZipInfo during writing; the input
+                # reader must retain its own immutable offsets for verification.
+                target.writestr(copy.copy(info), data)
         with zipfile.ZipFile(output) as target:
             for info in source.infolist():
                 if info.filename not in ("manifest.json", "apply_patch.py"):
