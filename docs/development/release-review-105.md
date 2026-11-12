@@ -427,3 +427,38 @@ classification, export, reference weighting or project-format changes. The PDF
 would need interaction/menu illustrations updated, but remains unchanged under
 the user's existing instruction. Target-display/GPU testing remains separate
 from offscreen Qt and Mesa checks. Final run links/hashes follow after validation.
+
+Final app revision `de38ba9e9b3759596061d59fd26b737ea7b1a884` passed
+[candidate run43310387898](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310387898):
+compile/static, **876 passed / 9 skipped**, PLY equal-workload benchmark, installed
+apply, exact inventory of **26,252 files** with Python/engines preserved, rollback.
+[General run43310387996](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310387996)
+passed Linux872/13 skipped, Windows876/9 skipped and two separate Mesa OpenGL
+tests, including native rotation while the survey tool is active and actual
+midpoint-handle ray events. Focused local survey/view/reference tests:90/2 skipped;
+15 new interaction tests and later40-test survey/1.0.4 subset passed. Dark/Light
+1500x900 previews inspected; explicit Close, all measurement text and plot fit.
+
+[Actual BAT run43310676928](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310676928)
+passed **50 installed tests**, including calibrated/distorted/scaled photo picks,
+photo rotation, ortho frame/world-offset round trips, real mouse endpoint/centre
+gestures, closable bottom docks, manual input and stale-worker closure/reopening.
+Module origins and offline processing were asserted; PLY/splash checks, all-app
+byte-exact rollback, reapplication and second rollback succeeded in a Unicode
+custom install path with registry/trailing-backslash discovery. New source-only
+modules were removed by rollback. No user projects, photos or settings patched.
+The165 managed app files in the installed prior survey build were verified
+read-only against the authenticated patch chain before constructing the baseline.
+
+Final delta90178 bytes / 8 app files, SHA256
+`ab0e759239503c0982f4dfddc250d521be41c61c9356cf359e9f406cad4f9cb8`.
+Verified BAT artifact13985647332 outer ZIP SHA256
+`6da89bc5c2611a5c3883b58dd87c4f64ab2e50425c50aab9d65eafa2698f0f6c`.
+The6146-byte BAT matches local reproduction and the public raw download,
+SHA256 `d92fc45fc05f81d2517694591e483435e6ffd81c67bea4bb81b327007faa3cdb`.
+Candidate download at artifact commit`302a8a77787311366590115b844091f64c815cd8`,
+`downloads/105/Lens2Mesh_Update_SurveyPanel_1.0.5.bat`.
+Full validation artifact13985344101 SHA256
+`c048086f6b5734011572b13260bbf156804a606499fafce3e0433cd7e5657613`.
+Await user target-display testing/acceptance. Full Setup, PDF changes and public
+installer publication remain deferred under the existing instructions.

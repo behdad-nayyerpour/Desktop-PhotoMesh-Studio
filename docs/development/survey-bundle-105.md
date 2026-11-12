@@ -79,6 +79,13 @@ editing interactions. Test click versus drag, both tools in all views, live
 preview versus committed results, closure/reopen, manual inputs and known
 geometry. Deliver one hash-bound BAT; retain PDF and defer Setup as instructed.
 
+User added endpoint dragging and a midpoint grip for moving the whole line.
+Implemented and verified in appde38ba9e9b3759596061d59fd26b737ea7b1a884:
+Windows876/9 skipped, Linux872/13 skipped, two separate Mesa GL checks and50 actual
+installed tests with rollback/reapply. The single panel BAT downloads90178 bytes
+and updates8 app components against the verified current survey build; public
+artifact commit302a8a77787311366590115b844091f64c815cd8. Acceptance pending.
+
 Existing code map: reference_ui.py mixin for GPS/markers/optimization;
 georef.CRS and run_task for adjustments, workflow.processing_crs/source_unit;
 calibration.py has model-specific fit indices, colmap_io models0..6;
