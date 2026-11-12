@@ -127,3 +127,41 @@ The separate existing limitation remains open: a source changed while preserving
 all cached identity/size/timestamp fields cannot be detected by that metadata-only
 cache. Review source freshness and its performance/accuracy tradeoff before final
 release; do not describe this test correction as fixing that application behavior.
+
+## Initial milestone ready for user testing
+
+Application source `0f112b74f09dbeb99673a473cc7b6bb8918389f2` passed
+[candidate run 43256088287](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43256088287):
+809 passed / 8 skipped, exact installed icon/identity/dependency checks,
+whole-runtime hash comparison and rollback. The PLY benchmark retained exact
+tested attributes; warm-cache medians were 0.01193 s (reference) and 0.01343 s
+(independent writer), so no generic speedup is claimed.
+
+Delivery-only follow-up fixed two issues before handoff: Windows PowerShell did
+not expose `Get-FileHash` in the inherited runner environment, so the bootstrap
+now uses framework SHA256 and ZIP APIs; and the same candidate could not be
+reapplied after rollback because its recovery directory already existed. New
+attempts now retain distinct journals instead of overwriting previous evidence.
+The new regression was reproduced failing before the fix and passes afterward.
+The focused updater/branding/codec group passed 33 tests.
+
+Updater revision `defc97310563b6c11228271ea1cfafd596c6ccb5` was repacked separately.
+Every verified application/resource/dependency entry and original application
+manifest field was compared byte-for-byte unchanged. R2 is 1,694,003 bytes,
+SHA256 `f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f`.
+Artifact commit: `6da996b744a655247d9655db579de17da89214b0`.
+
+[Actual BAT run 43265345704](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43265345704)
+passed download/apply, offline installed PLY mesh/RGB/faces/coordinate-transform
+and world-export checks, actual ROLLBACK.bat, reapplication of the same candidate,
+preservation of the first journal, and a second actual rollback to 1.0.4. Both
+applications used the installed Python and a custom path with Persian letters
+and spaces. No personal projects or installed user application were touched.
+
+The delivered single BAT was downloaded from that successful run and reproduced
+byte-for-byte by the generator. The enclosing BAT artifact is `13966421668`, ZIP
+SHA256 `b047ddcfc3a3764b73b7c9583dbe2ff2717398da8ae08fd01c478912219c277a`.
+Candidate acceptance is pending user feedback. No complete Setup, final release,
+repository rename or PDF update is authorized/completed by this milestone.
+All remaining approved next-version work and open licensing/hardware checks stay
+open; this is not a claim that the complete checklist has shipped.

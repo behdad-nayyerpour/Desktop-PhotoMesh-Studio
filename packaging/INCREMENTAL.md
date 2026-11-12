@@ -26,11 +26,20 @@ installed Python. No pip, Setup or full runtime download occurs.
 
 The updater validates containment, baseline/payload hashes and running processes
 before replacement. It saves changed files and a recovery journal under
-`<installation>/.lens2mesh-patches/<candidate-sha>/`. `ROLLBACK.bat` in that folder
+`<installation>/.lens2mesh-patches/<candidate-sha>/` (with a unique suffix on later
+attempts so previous recovery journals remain intact). `ROLLBACK.bat` in that folder
 restores the previous managed files and removed dependency. New files are removed
 on rollback; later user modifications block automatic rollback. Replacement
 failures attempt immediate restoration. After a power interruption, use the
 retained rollback before retrying; never delete the recovery folder first.
+Reapplying the same candidate after rollback creates a fresh recovery journal.
+
+Application payloads and delivery tooling can be versioned separately. When only
+the updater needs a correction, `repack_patch_tools.py` checks the original ZIP
+SHA256, preserves every application/resource byte and original application manifest
+field, and adds the exact updater revision. The new ZIP gets a new checksum and
+must pass actual BAT acceptance. Never claim the whole application was rebuilt or
+rerun unrelated processing benchmarks for a tooling-only change.
 
 The downloadable BAT itself is exercised by `test-patch-download.yml`, including
 a custom installation path containing spaces and Persian letters. Tests must
