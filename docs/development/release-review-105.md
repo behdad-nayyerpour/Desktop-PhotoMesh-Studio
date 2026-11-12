@@ -203,3 +203,5 @@ only after all installed hashes match. Local extra development files are exclude
 from the baseline, not weakened or removed from the installation. The first
 remote delta attempt rejected an extra baseline file before replacement; the
 corrected archive is 12,794 bytes and still changes only appicon.py/splash.py.
+
+[Actual splash BAT run 43274835496](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43274835496) passed on exact104+R2: registry-discovered delta apply, installed splash renders at four scales, all window/ICO sizes, offline PLY pipeline, exact two-file rollback hashes, explicit trailing-slash reapply, second rollback. Artifact 13970755466 includes runner previews and the byte-identical reproduced BAT. No Setup built; broader checklist remains open.
