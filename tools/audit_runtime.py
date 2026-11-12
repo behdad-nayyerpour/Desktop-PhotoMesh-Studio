@@ -35,7 +35,7 @@ def inventory(root, output):
         })
     for path in sorted(root.rglob("*")):
         if (not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc"
-                or ".lens2mesh-patches" in path.parts):
+                or ".lens2mesh-patches" in path.parts or path.name == ".lens2mesh-patch.lock"):
             continue
         relative = path.relative_to(root).as_posix()
         files.append({"path": relative, "bytes": path.stat().st_size, "sha256": sha256(path)})

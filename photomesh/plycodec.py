@@ -194,6 +194,12 @@ class PlyDocument:
         # Fixed-size vertex/face records are vectorised, including count bytes;
         # saving multi-million-triangle meshes must not loop through Python rows.
         props = element.properties
+        if not self.text and all(p[0] != "list" for p in props):
+            dtype = np.dtype([(p[0], np.dtype(p[1]).newbyteorder(self.byte_order)) for p in props])
+            for start in range(0, len(element.data), 1_000_000):
+                block = np.ascontiguousarray(element.data[start:start + 1_000_000].astype(dtype, copy=False))
+                fh.write(memoryview(block).cast("B"))
+            return
         fixed = all(p[0] != "list" or element.data.dtype.fields[p[1]][0].subdtype for p in props)
         if not self.text and fixed:
             fields = []
@@ -214,7 +220,7 @@ class PlyDocument:
                     block[f"value{i}"] = source[field]
                     if prop[0] == "list":
                         block[f"count{i}"] = source[field].shape[1]
-                fh.write(block.tobytes())
+                fh.write(memoryview(block).cast("B"))
             return
         for row in element.data:
             tokens = []

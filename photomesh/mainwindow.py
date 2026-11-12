@@ -2100,7 +2100,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 err = (f"This texture was built for a model with {info.get('faces'):,} faces, but the current model "
                        f"has {ch.face_count:,} faces. Build Texture again for the current model.")
         except (OSError, ValueError) as e:
-            err = f"Not a PhotoMesh texture folder ({e})."
+            err = f"Not a {APP_NAME} texture folder ({e})."
         if err:
             if not quiet:
                 QMessageBox.warning(self, "Import Texture", err)
@@ -2139,7 +2139,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             if not str(idx.get("format", "")).startswith("photomesh-tiles"):
                 raise ValueError("unknown index format")
         except (OSError, ValueError) as e:
-            msg = f"Not a PhotoMesh tiled model folder ({e})."
+            msg = f"Not a {APP_NAME} tiled model folder ({e})."
             if not quiet:
                 QMessageBox.warning(self, "Import Tiled Model", msg)
             self.log(f"Import Tiled Model: {msg}"); return False

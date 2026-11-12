@@ -115,6 +115,7 @@ if ($sourceMode -eq "venv") {
     $runtimeDescription = @("Reused installed runtime ID: $runtimeId")
 }
 $engineHash = (Get-FileHash -LiteralPath (Join-Path $stage "tools\colmap\photomesh-engine.json") -Algorithm SHA256).Hash.ToLowerInvariant()
+$runtimeDescription += "runtime-cleanup=independent-ply-codec; removed-plyfile"
 $runtimeDescription += "modern-engine-manifest=$engineHash"
 $sha = [Security.Cryptography.SHA256]::Create()
 $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()

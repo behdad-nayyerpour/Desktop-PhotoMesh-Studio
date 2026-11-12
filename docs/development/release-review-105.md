@@ -36,10 +36,39 @@ or repository rename is authorized by candidate approval.
 ## Manual assessment
 
 Branding and later UI additions affect cover/About/Help and corresponding
-workflow sections. The approved 105-page PDF remains unchanged pending separate
-manual-edit approval. Do not regenerate unrelated pages.
+workflow sections. The approved 105-page PDF remains unchanged: the user declined
+PDF changes on 2026-11-12. Do not regenerate unrelated pages or change its branding.
 
 ## Evidence
 
 Implementation and validation are in progress. No installer or licensing
-clearance is claimed. Record actual results and remaining limitations here.
+clearance is claimed. The exact-runtime evidence and unresolved licensing
+work are in [dependency-audit-105.md](dependency-audit-105.md).
+
+- Branding commit `38691f5`: Linux and Windows regression workflows passed.
+  The candidate workflow reported 793 passed / 8 skipped on Windows. Its
+  installed update check exposed a non-ASCII console message problem, corrected
+  in the next revision. This candidate was not delivered.
+- Independent PLY commit `c2bd80b`: Linux and Windows regression workflows
+  passed; the candidate workflow reported 806 passed / 8 skipped. Its installed
+  rollback smoke assertion mistakenly imported the checkout ahead of the installed
+  application. The corrected check now asserts the imported module's installed
+  path explicitly. An independent complete-file inventory comparison is added.
+- Local focused codec/export/numerical/updater checks passed (110 tests).
+  Local full-suite execution used an old development environment missing dash
+  and ezdxf and hit long temporary paths; that run is not full-suite acceptance.
+  One marker-filter failure was also reproduced on the untouched source baseline;
+  the fresh remote test environment passes it. Do not change marker calculations
+  or weaken tests to hide that environment discrepancy.
+- One-million-vertex scalar PLY comparison, three repeated writes: local medians
+  0.00502 s (development reference) and 0.00517 s (independent writer), with
+  exact attribute equality via the separate reader. This is a warm-cache local
+  microbenchmark, not an end-to-end GPU or peak-memory benchmark.
+- Updater fixtures cover modified baselines, corrupt payloads, path traversal,
+  running processes, a failed second replacement, power-loss temporary files,
+  deliberate dependency removal and preservation of later user edits on rollback.
+
+Remaining: final corrected installed/downloaded-BAT validation, full licensing
+review, complete rename/documentation/shortcut migration, and the remaining
+approved next-version scope. Real CUDA reconstruction and surveyed target-data
+checks have not been run for this candidate.

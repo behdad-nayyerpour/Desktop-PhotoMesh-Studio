@@ -48,6 +48,8 @@ jobs:
         run: python tools/audit_runtime.py --root "${{ env.BASELINE_ROOT }}" --output evidence/published-104
       - name: Full regression suite
         run: python -m pytest -q --tb=short -rs -p no:cacheprovider tests
+      - name: PLY interoperability and equal-workload performance
+        run: python tools/benchmark_ply_105.py --output evidence/ply-performance.json
       - name: Build only changed application components
         run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}"
       - name: Apply and roll back on installed Python with unchanged runtime
@@ -60,12 +62,15 @@ jobs:
           & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --payload $payload
           if ($LASTEXITCODE) { throw 'Installed patch application failed' }
           $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
-          & $python -c "import importlib.util; from photomesh import APP_NAME, APP_VERSION; from photomesh import appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); assert importlib.util.find_spec('plyfile') is None; print('Installed patch identity/icon and dependency removal OK')"
+          & $python -c "import os,sys,importlib.util; sys.path.insert(0,os.environ['PYTHONPATH']); import photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PYTHONPATH']).resolve()); from photomesh import APP_NAME, APP_VERSION, appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); assert importlib.util.find_spec('plyfile') is None; print('Installed patch identity/icon and dependency removal OK')"
           if ($LASTEXITCODE) { throw 'Installed candidate smoke failed' }
           python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate
+          if ($LASTEXITCODE) { throw 'Candidate inventory collection failed' }
+          python tools/verify_patch_inventory.py --before evidence/published-104/inventory.json --after evidence/candidate/inventory.json --manifest (Join-Path $payload 'manifest.json')
+          if ($LASTEXITCODE) { throw 'Unexpected runtime mutation' }
           & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --rollback (Join-Path $env:BASELINE_ROOT '.lens2mesh-patches/${{ github.sha }}')
           if ($LASTEXITCODE) { throw 'Installed rollback failed' }
-          & $python -c "from photomesh import APP_NAME,APP_VERSION; assert APP_NAME == 'PhotoMesh Studio' and APP_VERSION == '1.0.4'; print('Rollback identity OK')"
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); import photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PYTHONPATH']).resolve()); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME == 'PhotoMesh Studio' and APP_VERSION == '1.0.4'; print('Rollback identity OK')"
           if ($LASTEXITCODE) { throw 'Rolled-back app identity differs' }
       - uses: actions/upload-artifact@v4
         if: always()
