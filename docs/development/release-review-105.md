@@ -196,3 +196,10 @@ checked at 100/125/150/200 percent; six existing startup/splash tests pass.
 No user manual text/screenshots are edited, per the user's explicit instruction.
 This small delta targets the already-applied first 1.0.5 candidate, with backups
 and rollback; it is not acceptance/completion of the broader next-version scope.
+
+Splash delta baseline is reconstructed from the SHA256-authenticated R2 manifest
+plus its replacements/removals (106 app files), copied into a disposable stage
+only after all installed hashes match. Local extra development files are excluded
+from the baseline, not weakened or removed from the installation. The first
+remote delta attempt rejected an extra baseline file before replacement; the
+corrected archive is 12,794 bytes and still changes only appicon.py/splash.py.
