@@ -110,3 +110,20 @@ Remaining: actual downloaded-BAT validation, full licensing
 review, complete rename/documentation/shortcut migration, and the remaining
 approved next-version scope. Real CUDA reconstruction and surveyed target-data
 checks have not been run for this candidate.
+
+## Windows 2022 follow-up
+
+The default Windows runner queue delayed acceptance, so the candidate and BAT
+workflows now pin the supported Windows 2022 image. This changes CI configuration,
+not application code. Its first full run exposed a timing-dependent pre-existing
+test in photo staging: a rapid same-size rewrite did not reliably advance the
+host filesystem's observed modification timestamp. `prepare_images` and its
+metadata-stamp cache are unchanged from the source baseline. The test now advances
+source and staged-file mtime explicitly by two seconds; all original copy-count
+and byte-content assertions remain. This verifies the intended invalidation
+contract deterministically without sleeps or a retry-to-green rule.
+
+The separate existing limitation remains open: a source changed while preserving
+all cached identity/size/timestamp fields cannot be detected by that metadata-only
+cache. Review source freshness and its performance/accuracy tradeoff before final
+release; do not describe this test correction as fixing that application behavior.

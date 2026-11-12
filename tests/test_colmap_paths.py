@@ -1,4 +1,5 @@
 """Regression tests for executable capability detection and photo staging."""
+import os
 from types import SimpleNamespace
 
 from photomesh import colmap
@@ -70,7 +71,12 @@ def test_prepare_images_reuses_unchanged_copies(tmp_path, monkeypatch):
     colmap.prepare_images(dataset, wd)
     assert len(copies) == 2
 
+    before = photo.stat()
     photo.write_bytes(b"fresh")
+    # The cache contract observes file metadata. Rapid same-length writes can
+    # share a filesystem timestamp on Windows; advance it explicitly so this
+    # tests invalidation rather than the host's clock granularity.
+    os.utime(photo, ns=(before.st_atime_ns, before.st_mtime_ns + 2_000_000_000))
     colmap.prepare_images(dataset, wd)
     assert len(copies) == 3
     staged = tmp_path / "work" / "images" / "same.jpg"
@@ -81,7 +87,9 @@ def test_prepare_images_reuses_unchanged_copies(tmp_path, monkeypatch):
     assert len(copies) == 4
     assert staged.read_bytes() == b"newer"
 
+    before = staged.stat()
     staged.write_bytes(b"wrong")
+    os.utime(staged, ns=(before.st_atime_ns, before.st_mtime_ns + 2_000_000_000))
     colmap.prepare_images(dataset, wd)
     assert len(copies) == 5
     assert staged.read_bytes() == b"newer"
