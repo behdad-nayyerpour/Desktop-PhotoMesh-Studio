@@ -98,10 +98,41 @@ The approved baseline is `PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf`
 ## Approved scope for the next version (2026-11-08)
 
 The user approved the following work areas for the release following 1.0.4.
-Complete the priority-one licensing work below first (approved 2026-11-12).
+Complete the priority-one Lens2Mesh rename and licensing work below first
+(approved 2026-11-12).
 Then address the confirmed EXIF and calibration defects and validate the
 coordinate-frame and height-reference changes numerically. The F identifiers
 refer to the external review discussed with the user.
+
+### Priority one: rename the application to Lens2Mesh (2026-11-12)
+
+The user approved **Lens2Mesh** as the target name and placed the rename first
+in the next-version checklist. This records implementation scope, not completed
+trademark registration or a guarantee of name clearance. Keep the licensing
+audit below at priority one as well.
+
+- [ ] Rename the application and all current related branding to **Lens2Mesh**:
+  application metadata, window/splash/About text, icon/logo branding where needed,
+  menus and dialogs, reports and export titles, error/log presentation, installer
+  and uninstaller labels, executable/Setup names, shortcuts and build/patch scripts.
+  Inventory references and inspect callers; do not perform an indiscriminate
+  string replacement in compatibility identifiers or third-party material.
+- [ ] Prepare the repository rename and update current repository metadata,
+  README/docs, download links, workflows/badges, packaging guides, screenshots
+  and affected manual branding. Preserve historical release provenance and
+  third-party names/notices. Follow the existing separate manual-edit approval
+  policy before modifying the approved PDF. Prepare related public-announcement
+  updates for review; do not send messages or publish announcements without
+  explicit authorization for those communications.
+- [ ] Preserve existing projects, photos, products, file associations and user
+  preferences through the rename. Review project formats/extensions, internal
+  package names, QSettings keys, install directories and installer identity
+  individually; retain legacy identifiers or provide tested migrations instead
+  of breaking compatibility solely for branding. Verify upgrade from 1.0.4,
+  custom install paths, shortcuts, uninstall behavior and save/open/export.
+  Deliver the tested candidate under the existing acceptance policy; this scope
+  does not authorize immediate repository renaming, installer publication or
+  alteration of the application's license.
 
 ### Priority one: dependency licensing and redistribution (2026-11-12)
 
