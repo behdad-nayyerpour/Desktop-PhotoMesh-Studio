@@ -79,7 +79,7 @@ def _world_header(head, offset):
             l = f"property double {t[2]}"
         out.append(l)
         if t[:1] == ["format"]:
-            out.append("comment PhotoMesh Studio export: world coordinates (local + offset "
+            out.append("comment Lens2Mesh export: world coordinates (local + offset "
                        + " ".join(f"{v:.3f}" for v in offset) + ")")
     while out and out[-1] == "":
         out.pop()
@@ -136,7 +136,7 @@ def _export_ply_world_general(src, dst, off):
     for k, name in enumerate("xyz"):
         o[name] = np.asarray(v[name], np.float64) + off[k]
     els = [PlyElement.describe(o, "vertex")] + [e for e in ply.elements if e.name != "vertex"]
-    comments = list(ply.comments) + ["PhotoMesh Studio export: world coordinates (local + offset "
+    comments = list(ply.comments) + ["Lens2Mesh export: world coordinates (local + offset "
                                      + " ".join(f"{x:.3f}" for x in off) + ")"]
     with atomic_write(dst) as out:
         PlyData(els, text=False, comments=comments).write(out)

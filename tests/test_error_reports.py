@@ -186,7 +186,7 @@ def test_save_report_md_and_zip(tmp_path):
         assert set(z.namelist()) == {"report.md", "step_log.txt", "report.json", "session_log.txt"}
         s = z.read("session_log.txt").decode()
         assert "40.181234" not in s and "<coords>" in s
-    assert open(md, encoding="utf-8").read().startswith("# PhotoMesh Studio error report")
+    assert open(md, encoding="utf-8").read().startswith(f"# {rp.APP_NAME} error report")
     # unique names within the same second
     assert rp.new_id(directory=str(tmp_path / "reports")) != r["id"] or True
 
@@ -235,7 +235,7 @@ def test_issue_url_long_report_is_trimmed(tmp_path, n_log, desc):
     q = _decode(url)
     body = q["body"]
     assert "Shortened to fit in the link" in body and r["id"] + ".zip" in body
-    assert body.startswith("# PhotoMesh Studio error report") and q["labels"] == "bug"
+    assert body.startswith(f"# {rp.APP_NAME} error report") and q["labels"] == "bug"
     if n_log and not desc:
         assert "## Log (last" in body and "## System" in body      # system info kept, log tail trimmed
         assert body.rstrip().endswith("```")
@@ -276,7 +276,7 @@ def test_error_dialog_actions(qtbot, tmp_path, monkeypatch):
     d.description.setPlainText(r"Built cloud from C:\Users\Alice\x")
     d.copy_btn.click()
     clip = QGuiApplication.clipboard().text()
-    assert clip.startswith("# PhotoMesh Studio error report") and "Built cloud from" in clip
+    assert clip.startswith(f"# {rp.APP_NAME} error report") and "Built cloud from" in clip
     assert "Built cloud from" in open(d.md_path, encoding="utf-8").read()       # re-saved with the description
     d.folder_btn.click()
     assert os.path.normcase(os.path.normpath(opened[-1].toLocalFile())) == os.path.normcase(os.path.normpath(os.path.dirname(md)))

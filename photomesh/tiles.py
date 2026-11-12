@@ -282,7 +282,7 @@ def build_tiles(cfg, log=print, progress=None, cancel=None):
         transform = np.asarray(rt[0]).reshape(4, 4).T.copy()
         transform[:3, :3] = transform[:3, :3] @ Rup.T
         rj["transform"] = transform.T.ravel().tolist()
-    ts = {"asset": {"version": "1.1" if c["format"] == "glb" else "1.0", "generator": "PhotoMesh Studio",
+    ts = {"asset": {"version": "1.1" if c["format"] == "glb" else "1.0", "generator": "Lens2Mesh",
                     "tilesetVersion": time.strftime("%Y-%m-%dT%H:%M:%S")},
           "geometricError": float(root.error * 2 or 1.0), "root": rj,
           "extras": {"up_frame_rotation": Rup.tolist(), "georeferenced": metric,

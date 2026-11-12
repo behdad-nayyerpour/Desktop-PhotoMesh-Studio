@@ -697,7 +697,7 @@ def build_orthomosaic(cfg, log=print, progress=None, cancel=None):
     world_geo = (x0 + off[0], y1 + off[1], px, px) if True else None
     writer = gt.TiledTiffWriter(path, levels, 4, np.uint8, tile, "Deflate", alpha=True, geo=world_geo,
                                 crs=crs or 'LOCAL_CS["Local coordinates (model units)"]',
-                                description="PhotoMesh Studio orthomosaic")
+                                description="Lens2Mesh orthomosaic")
     hf = int(c["height_factor"])
     HW, HH = math.ceil(W / hf), math.ceil(H / hf)
     hgrid = np.full((HH, HW), np.nan, np.float32)
@@ -960,7 +960,7 @@ def _placement_notes(dst, raster_path, info, lev, wpx, hpx, px, zref):
     xmax, ymin = xmin + wpx * px, ymax - hpx * px
     base = os.path.splitext(dst)[0]
     name = os.path.basename(raster_path)
-    txt = f"""PhotoMesh Studio - orthomosaic placement ({name})
+    txt = f"""Lens2Mesh - orthomosaic placement ({name})
 Coordinates are REAL world coordinates (project CRS: {info.get('crs') or 'Local Coordinates (m)'}).
 
 Raster: {wpx} x {hpx} px, pixel size {px:.6f} m
@@ -988,7 +988,7 @@ project CRS to the same local system (or leave "unknown"); the coordinates match
 """
     with open(base + "_placement.txt", "w", encoding="utf-8") as f:
         f.write(txt)
-    script = f'''# PhotoMesh Studio: place the orthomosaic in Rhino at its real coordinates.
+    script = f'''# Lens2Mesh: place the orthomosaic in Rhino at its real coordinates.
 # Run with _RunPythonScript (Rhino 7/8). Edit Z below to move the picture up/down.
 import os
 import rhinoscriptsyntax as rs
@@ -1090,7 +1090,7 @@ def export_raster(info, dst, fmt=None, compression="LZW", alpha=True, nodata=0, 
                                                 (None if bands == 4 else nodata)),
                                         geo=(x0 + c0 * px, y1 - r0 * px, px, px), crs=crs or 'LOCAL_CS["Local Coordinates (m)"]',
                                         bigtiff=big, jpeg_quality=jpeg_quality,
-                                        description=f"PhotoMesh Studio {'DEM' if is_dem else 'orthomosaic'}")
+                                        description=f"Lens2Mesh {'DEM' if is_dem else 'orthomosaic'}")
                 try:
                     with ThreadPoolExecutor(max(2, (os.cpu_count() or 4) // 2)) as ex:
                         for li, (lw, lh) in enumerate(levs):

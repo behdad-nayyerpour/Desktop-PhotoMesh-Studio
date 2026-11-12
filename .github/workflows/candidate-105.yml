@@ -1,0 +1,78 @@
+name: Lens2Mesh incremental candidate and runtime inventory
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: ["photomesh/**", "main.py", "tests/**", "packaging/**", "tools/audit_runtime.py", ".github/workflows/candidate-105.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lens2mesh-105-candidate
+  cancel-in-progress: true
+jobs:
+  candidate:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install development checks
+        run: pip install -q -r requirements-dev.txt ruff
+      - name: Compile and static checks
+        shell: pwsh
+        run: |
+          python -m compileall -q photomesh main.py packaging tests tools
+          if ($LASTEXITCODE) { throw 'Compilation failed' }
+          ruff check --select F401,F811,F841,F821,F822,F823 photomesh packaging/apply_patch.py packaging/build_patch.py tools/audit_runtime.py
+          if ($LASTEXITCODE) { throw 'Static checks failed' }
+      - name: Fetch exact published 1.0.4 for remote-only inventory and patch baseline
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Could not fetch verified baseline' }
+          $setup = Join-Path $PWD 'released/PhotoMeshStudio_Setup_1.0.4.exe'
+          if ((Get-FileHash -LiteralPath $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline checksum mismatch' }
+          $root = Join-Path $env:RUNNER_TEMP 'Lens2Mesh fixture فارسی'
+          $args = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="' + $root + '"'),'/TASKS=""')
+          $p = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Disposable baseline install failed' }
+          "BASELINE_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Collect exact runtime licensing evidence remotely
+        run: python tools/audit_runtime.py --root "${{ env.BASELINE_ROOT }}" --output evidence/published-104
+      - name: Full regression suite
+        run: python -m pytest -q --tb=short -rs -p no:cacheprovider tests
+      - name: Build only changed application components
+        run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}"
+      - name: Apply and roll back on installed Python with unchanged runtime
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem candidate/Lens2Mesh_TestPatch_*.zip | Select-Object -First 1
+          $payload = Join-Path $env:RUNNER_TEMP 'candidate-payload'
+          Expand-Archive -LiteralPath $zip.FullName -DestinationPath $payload
+          $python = Join-Path $env:BASELINE_ROOT 'python/python.exe'
+          & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --payload $payload
+          if ($LASTEXITCODE) { throw 'Installed patch application failed' }
+          $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
+          & $python -c "from photomesh import APP_NAME, APP_VERSION; from photomesh import appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); print('Installed patch identity/icon OK')"
+          if ($LASTEXITCODE) { throw 'Installed candidate smoke failed' }
+          python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate
+          & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --rollback (Join-Path $env:BASELINE_ROOT '.lens2mesh-patches/${{ github.sha }}')
+          if ($LASTEXITCODE) { throw 'Installed rollback failed' }
+          & $python -c "from photomesh import APP_NAME,APP_VERSION; assert APP_NAME == 'PhotoMesh Studio' and APP_VERSION == '1.0.4'; print('Rollback identity OK')"
+          if ($LASTEXITCODE) { throw 'Rolled-back app identity differs' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-105-incremental-${{ github.sha }}
+          path: |
+            candidate/
+            evidence/
+          retention-days: 30
+          if-no-files-found: ignore

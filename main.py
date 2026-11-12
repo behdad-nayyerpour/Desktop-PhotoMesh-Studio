@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PhotoMesh Studio - entry point."""
+"""Lens2Mesh - entry point."""
 import multiprocessing
 import sys
 
@@ -10,7 +10,7 @@ def main():
     from photomesh import diag
     diag.setup(log_system=False)
     from PySide6.QtWidgets import QApplication
-    from photomesh import APP_NAME, appicon
+    from photomesh import APP_NAME, SETTINGS_ORGANIZATION, SETTINGS_APPLICATION, appicon
 
     from PySide6.QtCore import Qt, QCoreApplication
     appicon.set_app_user_model_id()      # Windows: own taskbar button + icon (before any window)
@@ -18,8 +18,9 @@ def main():
     # and buffers built in the first one (pyqtgraph compiles its shaders once)
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    app.setOrganizationName("PhotoMesh")
-    app.setApplicationName(APP_NAME)
+    app.setOrganizationName(SETTINGS_ORGANIZATION)
+    app.setApplicationName(SETTINGS_APPLICATION)
+    app.setApplicationDisplayName(APP_NAME)
     appicon.install(app)
     # splash first, then the heavy imports (NumPy, OpenGL / pyqtgraph, main window)
     from photomesh import splash as splash_mod

@@ -228,7 +228,7 @@ class TiledTiffWriter:
 
     def __init__(self, path, levels, bands, dtype=np.uint8, tile=512, compression="Deflate",
                  alpha=True, nodata=None, geo=None, crs=None, bigtiff=None, jpeg_quality=90,
-                 software="PhotoMesh Studio", description=None):
+                 software="Lens2Mesh", description=None):
         self.path = path
         self.levels = [(int(w), int(h)) for w, h in levels]
         self.bands, self.dtype, self.tile = int(bands), np.dtype(dtype), int(tile)

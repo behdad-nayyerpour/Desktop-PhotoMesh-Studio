@@ -1,4 +1,4 @@
-"""fastpipe - PhotoMesh Studio's own speed-optimised alignment pipeline.
+"""fastpipe - Lens2Mesh's own speed-optimised alignment pipeline.
 
 Original code. Ideas follow well-known published techniques, no proprietary code:
   * Pair preselection instead of exhaustive O(n^2) matching:

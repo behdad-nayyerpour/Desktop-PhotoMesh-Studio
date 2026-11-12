@@ -1,7 +1,5 @@
-"""PhotoMesh Studio application icon: original artwork drawn with QPainter
-(a triangulated mesh peak over terrain with a camera lens; no third-party
-or Agisoft assets). Used for the window / taskbar / splash, and written as
-a multi-size .ico (photomesh/resources/photomesh.ico) for the shortcut."""
+"""Lens2Mesh icon from user-approved L2M drone/terrain artwork.
+The internal ICO filename remains stable for existing shortcuts."""
 from __future__ import annotations
 
 import os
@@ -14,42 +12,18 @@ ICO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources",
 
 
 def draw(p, n):
-    """Draw the icon into painter p on an n x n canvas."""
-    from PySide6.QtCore import Qt, QPointF, QRectF
-    from PySide6.QtGui import QColor, QPen, QBrush, QLinearGradient, QPolygonF, QPainter, QPainterPath
-    p.setRenderHint(QPainter.Antialiasing)
-    k = n / 64.0
-    p.save(); p.scale(k, k)
-    g = QLinearGradient(0, 0, 0, 64)
-    g.setColorAt(0, QColor(38, 110, 170)); g.setColorAt(1, QColor(18, 52, 92))
-    p.setPen(Qt.NoPen); p.setBrush(QBrush(g))
-    p.drawRoundedRect(QRectF(2, 2, 60, 60), 12, 12)
-    clip = QPainterPath(); clip.addRoundedRect(QRectF(2, 2, 60, 60), 12, 12)
-    p.setClipPath(clip)
-    # terrain
-    ground = QPolygonF([QPointF(4, 50), QPointF(18, 42), QPointF(30, 46), QPointF(46, 38), QPointF(60, 44),
-                        QPointF(60, 60), QPointF(4, 60)])
-    p.setBrush(QBrush(QColor(46, 150, 110))); p.drawPolygon(ground)
-    # triangulated peak (the reconstructed mesh)
-    V = [QPointF(10, 47), QPointF(22, 26), QPointF(32, 12), QPointF(42, 24), QPointF(54, 45), QPointF(32, 40),
-         QPointF(20, 44), QPointF(43, 42)]
-    F = [(0, 1, 6), (1, 5, 6), (1, 2, 5), (2, 3, 5), (3, 7, 5), (3, 4, 7)]
-    shades = [QColor(232, 240, 248), QColor(200, 216, 232), QColor(246, 250, 255), QColor(214, 228, 242),
-              QColor(190, 206, 226), QColor(226, 236, 246)]
-    pen = QPen(QColor(20, 50, 85), max(1.2, 1.6 / max(k, 0.25) * 0.5)); pen.setJoinStyle(Qt.RoundJoin)
-    for f, c in zip(F, shades):
-        p.setBrush(QBrush(c)); p.setPen(pen)
-        p.drawPolygon(QPolygonF([V[i] for i in f]))
-    if n >= 24:                                   # vertices (hidden at tiny sizes)
-        p.setPen(Qt.NoPen); p.setBrush(QBrush(QColor(255, 160, 40)))
-        for v in V[:6]:
-            p.drawEllipse(v, 1.6, 1.6)
-    # camera lens (top right)
-    p.setPen(QPen(QColor(255, 255, 255), 2.4)); p.setBrush(QBrush(QColor(255, 160, 40)))
-    p.drawEllipse(QPointF(50, 14), 7, 7)
-    p.setPen(Qt.NoPen); p.setBrush(QBrush(QColor(18, 52, 92)))
-    p.drawEllipse(QPointF(50, 14), 3, 3)
-    p.restore()
+    """Draw the approved artwork, shared by splash, window and ICO output."""
+    from PySide6.QtCore import QRectF
+    from PySide6.QtGui import QImage, QPainter
+    artwork = QImage(os.path.join(os.path.dirname(ICO_PATH), "lens2mesh.png"))
+    if artwork.isNull():
+        raise RuntimeError("Lens2Mesh icon resource is missing or unreadable")
+    p.save()
+    try:
+        p.setRenderHint(QPainter.SmoothPixmapTransform)
+        p.drawImage(QRectF(0, 0, n, n), artwork)
+    finally:
+        p.restore()
 
 
 def image(n):
@@ -68,7 +42,7 @@ _ICON = None
 
 
 def app_icon():
-    """QIcon with every size drawn as a vector (crisp at 100-200 % scaling)."""
+    """QIcon with pre-sized entries from the approved high-resolution master."""
     global _ICON
     if _ICON is None:
         from PySide6.QtGui import QIcon, QPixmap

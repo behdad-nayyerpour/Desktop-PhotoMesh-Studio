@@ -106,7 +106,7 @@ def to_glb(primitives, z_up=True, extras=None, translation=None):
     if translation is not None:
         T = np.asarray(translation, np.float64)
         node["translation"] = [float(x) for x in (ZUP_TO_YUP @ T if z_up else T)]
-    gl = {"asset": {"version": "2.0", "generator": "PhotoMesh Studio"},
+    gl = {"asset": {"version": "2.0", "generator": "Lens2Mesh"},
           "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [node],
           "meshes": [{"primitives": meshes_prims}], "accessors": accessors, "bufferViews": views,
           "buffers": [{"byteLength": off}], "materials": materials}

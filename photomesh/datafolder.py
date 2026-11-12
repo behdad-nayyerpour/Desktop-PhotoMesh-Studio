@@ -348,7 +348,7 @@ def execute(items, report=None, cancelled=None):
             os.makedirs(dst)
             started.append(it)
             with open(os.path.join(dst, INCOMPLETE_MARK), "w", encoding="utf-8") as f:
-                f.write("PhotoMesh Studio is copying project data into this folder.\n"
+                f.write("Lens2Mesh is copying project data into this folder.\n"
                         "If this file is still here, the copy did not finish and the folder can be deleted.\n")
             skip = DEPTH_REL if it.get("skip_depth") else ()
             done += copy_tree(it["src"], dst, report, cancelled, done, total, skip=skip, photos=it.get("photos"))

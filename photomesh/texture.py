@@ -1266,7 +1266,7 @@ def export_ply_textured(mesh, tex_dir, dst, offset=None):
     names = _copy_pages(tex, os.path.dirname(os.path.abspath(dst)))
     m = len(F)
     ft = "float" if offset is None else "double"
-    hdr = ["ply", "format binary_little_endian 1.0", "comment PhotoMesh Studio textured model"]
+    hdr = ["ply", "format binary_little_endian 1.0", "comment Lens2Mesh textured model"]
     if offset is not None:
         hdr.append("comment world coordinates (local + offset " + " ".join(f"{x:.3f}" for x in offset) + ")")
     hdr += [f"comment TextureFile {n}" for n in names]
@@ -1307,7 +1307,7 @@ def write_obj(path, V, F, uvp, page, size, textures, offset=None):
     if offset is not None:
         V = np.asarray(V, np.float64) + np.asarray(offset, np.float64)
     with atomic_write(path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(f"# PhotoMesh Studio textured model: {len(V)} vertices, {m} faces\n")
+        fh.write(f"# Lens2Mesh textured model: {len(V)} vertices, {m} faces\n")
         if offset is not None:
             fh.write("# world coordinates (local + offset " + " ".join(f"{x:.3f}" for x in offset) + ")\n")
         fh.write(f"mtllib {base}.mtl\n")

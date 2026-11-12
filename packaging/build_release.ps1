@@ -47,7 +47,7 @@ if ((Test-Path -LiteralPath $venvPy -PathType Leaf) -and (Test-Path -LiteralPath
 $versionText = Get-Content -LiteralPath (Join-Path $app "photomesh\__init__.py") -Raw
 if ($versionText -notmatch 'APP_VERSION\s*=\s*"([^"]+)"') { throw "APP_VERSION missing" }
 $version = $Matches[1]
-$installerName = "PhotoMeshStudio_Setup_$version.exe"
+$installerName = "Lens2Mesh_Setup_$version.exe"
 if (Test-Path -LiteralPath (Join-Path $out $installerName)) { throw "Output already exists: $installerName" }
 
 function Copy-Tree([string]$Source, [string]$Destination, [string[]]$ExcludeDirs = @(), [string[]]$ExcludeFiles = @()) {
@@ -61,7 +61,7 @@ function Copy-Tree([string]$Source, [string]$Destination, [string[]]$ExcludeDirs
 }
 
 New-Item -ItemType Directory -Force -Path $stage, $out | Out-Null
-Write-Host "Staging PhotoMesh Studio $version"
+Write-Host "Staging Lens2Mesh $version"
 $appStage = Join-Path $stage "app"
 Copy-Tree (Join-Path $app "photomesh") (Join-Path $appStage "photomesh") @("__pycache__") @("*.pyc", "*.log")
 foreach ($name in @("main.py", "LICENSE", "README.md", "CHANGES.md", "UPDATING.md", "requirements.txt", "run.bat", "setup.bat")) {
@@ -118,7 +118,7 @@ $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.Ge
 $sha.Dispose()
 Set-Content -LiteralPath (Join-Path $appStage "runtime.id") -Value $runtimeId -Encoding ascii
 Set-Content -LiteralPath (Join-Path $stage "runtime.lock") -Value $runtimeDescription -Encoding utf8
-Set-Content -LiteralPath (Join-Path $appStage "release_manifest.txt") -Value @("PhotoMesh Studio $version", "Runtime ID: $runtimeId") -Encoding utf8
+Set-Content -LiteralPath (Join-Path $appStage "release_manifest.txt") -Value @("Lens2Mesh $version", "Runtime ID: $runtimeId") -Encoding utf8
 
 Write-Host "Validating copied runtime"
 $env:PYTHONDONTWRITEBYTECODE = "1"

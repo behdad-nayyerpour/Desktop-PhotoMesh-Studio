@@ -9,13 +9,13 @@
 #endif
 [Setup]
 AppId={{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}
-AppName=PhotoMesh Studio
+AppName=Lens2Mesh
 AppVersion={#AppVersion}
 AppPublisher=Behdad Nayyerpour
 LicenseFile={#StageDir}\app\LICENSE
-DefaultDirName={localappdata}\Programs\PhotoMesh Studio
+DefaultDirName={localappdata}\Programs\Lens2Mesh
 DisableDirPage=no
-DefaultGroupName=PhotoMesh Studio
+DefaultGroupName=Lens2Mesh
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -24,7 +24,7 @@ Compression=lzma2
 SolidCompression=yes
 SetupIconFile={#StageDir}\app\photomesh\resources\photomesh.ico
 OutputDir={#OutputDir}
-OutputBaseFilename=PhotoMeshStudio_Setup_{#AppVersion}
+OutputBaseFilename=Lens2Mesh_Setup_{#AppVersion}
 UninstallDisplayIcon={app}\app\photomesh\resources\photomesh.ico
 Uninstallable=not PortableCheck
 UsePreviousAppDir=not PortableCheck
@@ -41,14 +41,14 @@ Type: filesandordirs; Name: "{app}\python"
 Type: filesandordirs; Name: "{app}\tools"
 
 [Icons]
-Name: "{autoprograms}\PhotoMesh Studio"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; IconFilename: "{app}\app\photomesh\resources\photomesh.ico"; Check: not PortableCheck
-Name: "{autodesktop}\PhotoMesh Studio"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; IconFilename: "{app}\app\photomesh\resources\photomesh.ico"; Tasks: desktopicon; Check: not PortableCheck
+Name: "{autoprograms}\Lens2Mesh"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; IconFilename: "{app}\app\photomesh\resources\photomesh.ico"; Check: not PortableCheck
+Name: "{autodesktop}\Lens2Mesh"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; IconFilename: "{app}\app\photomesh\resources\photomesh.ico"; Tasks: desktopicon; Check: not PortableCheck
 
 [Tasks]
 Name: desktopicon; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"
 
 [Run]
-Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; Description: "Launch PhotoMesh Studio"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; Description: "Launch Lens2Mesh"; Flags: postinstall nowait skipifsilent
 
 [Code]
 function PortableCheck: Boolean;

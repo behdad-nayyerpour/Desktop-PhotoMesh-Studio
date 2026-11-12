@@ -73,6 +73,8 @@ MENUS = [
 
 # Presentation labels do not change command IDs or toolbar text.
 ACTION_LABELS = {
+    # Keep the legacy command ID for scripts; change only its visible caption.
+    "About PhotoMesh Studio...": "About Lens2Mesh...",
     "New": "New Project", "Open...": "Open Project...",
     "Add Folder...": "Add Photo Folder...", "Change Image Paths...": "Relocate Photos...",
     "Build Model...": "Build Mesh...", "Gradual Selection...": "Clean Tie Points...",

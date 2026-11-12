@@ -43,7 +43,7 @@ def open_issue(url, directory, rid):
     u = html.escape(url, quote=True)
     with open(page, "w", encoding="utf-8") as f:
         f.write(f"""<!doctype html><html><head><meta charset="utf-8">
-<meta http-equiv="refresh" content="1; url={u}"><title>PhotoMesh Studio - report to GitHub</title>
+<meta http-equiv="refresh" content="1; url={u}"><title>Lens2Mesh - report to GitHub</title>
 <style>body{{font-family:Segoe UI,Arial,sans-serif;max-width:46em;margin:3em auto;line-height:1.5}}</style></head>
 <body><h2>Opening GitHub...</h2>
 <p>Your error report is being filled into a new GitHub issue. Check it, attach <b>{html.escape(rid)}.zip</b>
@@ -76,7 +76,7 @@ class ErrorDialog(QDialog):
         self.report, self.md_path, self.zip_path = report, md_path, zip_path
         self.session_log, self.manual = session_log, manual
         self.setObjectName("error_dialog")
-        self.setWindowTitle(("Report a Problem" if manual else report["title"] or "Error") + " - PhotoMesh Studio")
+        self.setWindowTitle(("Report a Problem" if manual else report["title"] or "Error") + " - Lens2Mesh")
         self.setMinimumWidth(620)
         lay = QVBoxLayout(self)
         top = QHBoxLayout()

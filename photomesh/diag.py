@@ -16,6 +16,8 @@ Help > Open Log Folder opens it, so a user can send the newest log.
 """
 from __future__ import annotations
 
+from . import APP_NAME
+
 import datetime
 import faulthandler
 import glob
@@ -112,7 +114,7 @@ def setup(log_system=True):
         threading.excepthook = _thread_excepthook
     except Exception:
         pass
-    log.info("PhotoMesh Studio session start, log %s", path)
+    log.info("%s session start, log %s", APP_NAME, path)
     if log_system:
         log_system_info()
     return path
@@ -195,7 +197,7 @@ def _excepthook(etype, value, tb):
     try:
         from PySide6.QtWidgets import QApplication, QMessageBox
         if QApplication.instance() is not None:
-            QMessageBox.critical(None, "PhotoMesh Studio",
+            QMessageBox.critical(None, APP_NAME,
                                  f"Unexpected error:\n{value}\n\nDetails were written to the log file:\n{log_path()}")
     except Exception:
         pass
