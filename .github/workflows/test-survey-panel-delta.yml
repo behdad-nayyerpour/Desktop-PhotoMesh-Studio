@@ -1,0 +1,167 @@
+name: Verify docked live survey tools BAT update
+on:
+  push:
+    branches: ["candidate-artifacts/lens2mesh-105"]
+    paths: ["candidates/105-survey-panel/**", "validation/survey-panel/**", ".github/workflows/test-survey-panel-delta.yml", "packaging/make_patch_launcher.py", "tools/validate_installed_ply_105.py"]
+permissions:
+  contents: read
+jobs:
+  download-apply-rollback:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact disposable baseline
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Could not fetch verified baseline' }
+          $setup=Join-Path $PWD 'released/PhotoMeshStudio_Setup_1.0.4.exe'
+          if ((Get-FileHash -LiteralPath $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline checksum mismatch' }
+          $root=Join-Path $env:RUNNER_TEMP 'BAT test فارسی'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Baseline install failed' }
+          "PATCH_TEST_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Restore exact previously accepted candidate baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105/Lens2Mesh_TestPatch_0f112b74f09d_r2.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f') { throw 'Prior candidate checksum mismatch' }
+          Expand-Archive -LiteralPath $zip.FullName -DestinationPath prior-payload
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python prior-payload/apply_patch.py --root $env:PATCH_TEST_ROOT --payload prior-payload
+          if ($LASTEXITCODE) { throw 'Prior candidate fixture failed' }
+          $before=@{}
+          foreach ($name in @('mainwindow.py','activity.py','dialogs.py','progress.py')) { $before[$name]=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+      - name: Apply accepted splash baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-splash/Lens2Mesh_TestPatch_03a12f826c5b.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '7388bfb3f806f900a3e35307dec6a8ab0c6345d9f05e222092fab7f217d29a5e') { throw 'Splash checksum mismatch' }
+          Expand-Archive $zip.FullName splash-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python splash-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload splash-baseline
+          if ($LASTEXITCODE) { throw 'Splash baseline failed' }
+          $before=@{ 'mainwindow.py'=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT 'app/photomesh/mainwindow.py')).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+          python -m pip install --quiet --target test-deps pytest pytest-qt
+          if ($LASTEXITCODE) { throw 'Test dependency preparation failed' }
+      - name: Apply accepted display baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-display/Lens2Mesh_TestPatch_b1fd490ab9d8.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'b117d3d89b455cb43e80896ff90d133c05a299407ac5ef7c13c207f9f47161b5') { throw 'Display checksum mismatch' }
+          Expand-Archive $zip.FullName display-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python display-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload display-baseline
+          if ($LASTEXITCODE) { throw 'Display baseline failed' }
+          $before=@{}
+          foreach ($name in @('mainwindow.py','activity.py','dialogs.py','progress.py')) { $before[$name]=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+      - name: Apply verified progress baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-progress/Lens2Mesh_TestPatch_eb5d544da880.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '2273624944cbf7428ac3cc286ab96a9e0a856c942647a02e52814fe2ae421cf4') { throw 'Progress checksum mismatch' }
+          Expand-Archive $zip.FullName progress-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python progress-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload progress-baseline
+          if ($LASTEXITCODE) { throw 'Progress baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Apply verified combined survey baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-survey/Lens2Mesh_TestPatch_52f18f45a505.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '07ee1d62958391f88115eb4641774f251b85b2b271f4b7e3e60300b6208716be') { throw 'Survey baseline checksum mismatch' }
+          Expand-Archive $zip.FullName survey-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python survey-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload survey-baseline
+          if ($LASTEXITCODE) { throw 'Survey baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Generate, download and run the actual single-file BAT
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force verified-download | Out-Null
+          $zip=Get-ChildItem candidates/105-survey-panel/*.zip | Select-Object -First 1
+          $sha=(Get-FileHash -LiteralPath $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-survey-panel/'+$zip.Name
+          $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_SurveyPanel_1.0.5.bat'
+          python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
+          if ($LASTEXITCODE) { throw 'Launcher generation failed' }
+          # Reproduce registry discovery with a trailing backslash.
+          $key='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
+          Set-ItemProperty -LiteralPath $key -Name InstallLocation -Value ($env:PATCH_TEST_ROOT+'\')
+          $cmd='call "'+$bat+'" <NUL'
+          & $env:ComSpec /d /c $cmd
+          if ($LASTEXITCODE) { throw 'Actual BAT download/apply failed' }
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME; assert APP_NAME=='Lens2Mesh'"
+          if ($LASTEXITCODE) { throw 'Installed download candidate identity failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Installed offline PLY processing failed' }
+          $suite=Join-Path $env:RUNNER_TEMP 'installed-survey-panel-tests'
+          New-Item -ItemType Directory -Force $suite | Out-Null
+          Copy-Item validation/survey-panel/*.py $suite
+          $env:PYTHONPATH=$env:PYTHONPATH+';'+(Join-Path $PWD 'test-deps')
+          Push-Location $suite
+          & $python -m pytest test_survey_metadata_105.py test_photo_accuracy_105.py test_coordinate_frames_105.py test_terrain_bundle_105.py test_survey_geometry_105.py test_survey_ui_105.py test_survey_interaction_105.py -q -p no:cacheprovider --basetemp (Join-Path $env:RUNNER_TEMP 'display-test-temp')
+          $result=$LASTEXITCODE
+          Pop-Location
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
+          if ($result) { throw 'Actual installed UI tests failed' }
+          & $python tools/validate_splash_105.py
+          if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
+          $before=Get-Content survey-before.json -Raw | ConvertFrom-Json -AsHashtable
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like 'de38ba9*' | Select-Object -First 1
+          $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
+          & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME=='Lens2Mesh' and APP_VERSION=='1.0.5'"
+          if ($LASTEXITCODE) { throw 'Rollback identity failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $after=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $after[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          if ($before.Count -ne $after.Count) { throw 'Rollback did not remove all added components' }
+          foreach ($name in $before.Keys) { if ($after[$name] -ne $before[$name]) { throw "Rollback bytes differ: $name" } }
+          Copy-Item -LiteralPath (Join-Path $receipt.FullName 'state.json') verified-download/first-rollback-state.json
+
+          # Retrying after rollback must preserve the first recovery journal.
+          $cmdTrailing='call "'+$bat+'" "'+$env:PATCH_TEST_ROOT+'\" <NUL'
+          & $env:ComSpec /d /c $cmdTrailing
+          if ($LASTEXITCODE) { throw 'BAT reapplication after rollback failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }
+          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like 'de38ba9*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
+          if (-not $active -or $active.FullName -eq $receipt.FullName) { throw 'Recovery history was not preserved' }
+          & $env:ComSpec /d /c ('call "'+(Join-Path $active.FullName 'ROLLBACK.bat')+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Second actual BAT rollback failed' }
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME=='Lens2Mesh' and APP_VERSION=='1.0.5'"
+          if ($LASTEXITCODE) { throw 'Second rollback identity failed' }
+          $after=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $after[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          if ($before.Count -ne $after.Count) { throw 'Second rollback left added components' }
+          foreach ($name in $before.Keys) { if ($after[$name] -ne $before[$name]) { throw "Second rollback bytes differ: $name" } }
+          Copy-Item -LiteralPath (Join-Path $active.FullName 'state.json') verified-download/second-rollback-state.json
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: Verified-survey-panel-BAT
+          path: verified-download/
+          retention-days: 30
