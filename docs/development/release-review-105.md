@@ -181,3 +181,5 @@ The actual BAT acceptance workflow now exercises registry discovery first and an
 explicit trailing-backslash root on reapplication. Application/payload bytes are
 unchanged. Reviewed generator, child entry point and acceptance callers; no PDF
 or application/numerical changes are needed for this bootstrap-only fix.
+
+Actual BAT run [43269518547](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43269518547) passed registry-discovered apply, installed offline PLY checks, rollback, explicit trailing-backslash reapply and second rollback. Verified BAT artifact 13966643906 matches local generator bytes; BAT SHA256 `3ad0a82d96b30bebb7e6e91603bfc9039f559298e760304ff1912cc12ce3a7f1`.
