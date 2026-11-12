@@ -105,9 +105,11 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
         self.photo_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "photo"))
         self.ortho_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "ortho"))
         self.model_view.surveyRay.connect(self._survey_pick_ray)
-        self.model_view.surveyEndpointMoved.connect(self._survey_move_model)
+        self.model_view.surveyEditRays.connect(self._survey_edit_rays)
         self.ortho_view.surveyPoint.connect(self._survey_pick_plan)
-        self.ortho_view.surveyEndpointMoved.connect(self._survey_move_plan)
+        self.ortho_view.surveyEditPoints.connect(self._survey_edit_plan)
+        self.photo_view.surveyPoint.connect(self._survey_pick_photo)
+        self.photo_view.surveyEditPixels.connect(self._survey_edit_photo)
         self.model_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "model"))
         self._thumb_job = None
         apply_dialog_setting()
@@ -1458,6 +1460,9 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
                 self._update_photo_shapes()
             except Exception as e:  # noqa: BLE001
                 self.log(f"Shapes overlay on the photo: {e}")
+
+            if getattr(self, '_survey_dialog', None) is not None:
+                self._survey_sync_views()
 
     def step_photo(self, d):
         if self.dataset.cameras:
@@ -2855,6 +2860,8 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
 
     def closeEvent(self, e):
         if self._confirm_discard():
+            if getattr(self, '_survey_dialog', None) is not None:
+                self._survey_dialog.close()
             from .ui_state import save_window_state
             save_window_state(self)
             if getattr(self, "monitor", None) is not None:

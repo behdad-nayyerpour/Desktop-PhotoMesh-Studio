@@ -394,3 +394,36 @@ Published for candidate testing only at artifact commit
 `downloads/105/Lens2Mesh_Update_SurveyTools_1.0.5.bat`.
 User acceptance, representative surveyed terrain/checkpoints and full runtime
 licensing closure remain open. No Setup/public release or PDF update was made.
+
+### Docked live survey tools / three-handle editing (2026-11-13)
+
+User requests both tools as closable bottom panels, live click/move/click drafts,
+native rotation/pan/zoom throughout drawing, calibrated photo and co-registered
+orthophoto interaction, preserved manual coordinates and draggable endpoint plus
+midpoint handles. The midpoint moves both screen endpoints together and resolves
+both new surface hits atomically; on a varying surface the measured 3D length
+can change. A failed/missing hit retains the complete previous line.
+
+Extracted survey controls and session orchestration into survey_widgets.py and
+survey_tools.py, retaining terrain/classification in survey_ui.py. Shared
+survey_gestures.py distinguishes click/drag and endpoint/midpoint handles across
+the three viewports; normal drags still reach native view navigation. The bottom
+dock has an explicit Close control because the application theme hides native
+dock close icons. Visual preview is a screen-space rubber line, with no invented
+depth or premature measurement/profile result. Clicks resolve actual mesh/cloud
+hits using cancellable non-modal workers; drag requests keep only the latest
+pending position and mesh indexes are reused. Existing calibrated photo_pixel_ray
+and distortion inversion are shared, including original/photo-model dimension
+scales, rotation of the photo view and model world offsets. Orthophotos still
+require the existing matching mesh/frame provenance. Unaligned photos or missing
+surface depth produce actionable messages rather than fabricated coordinates.
+
+Reviewed event filters versus marker Ctrl-click/context editing, dock closure/
+replacement, project/camera/source file changes, profile request generations,
+single active workers, manual coordinate edits, queued clicks and paired endpoint
+updates. Slow geometry work does not run in mouse-move handlers or block rotation.
+Profiles retain the prior highest-intersection/gap semantics. No alignment,
+classification, export, reference weighting or project-format changes. The PDF
+would need interaction/menu illustrations updated, but remains unchanged under
+the user's existing instruction. Target-display/GPU testing remains separate
+from offscreen Qt and Mesa checks. Final run links/hashes follow after validation.

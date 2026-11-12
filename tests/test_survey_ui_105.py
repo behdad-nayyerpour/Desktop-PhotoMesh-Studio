@@ -15,12 +15,13 @@ def mesh_project(window, tmp_path):
     return path
 
 
-def test_measurement_uses_actual_points_and_local_units(window, tmp_path):
+def test_measurement_uses_actual_points_and_local_units(window, tmp_path, qtbot):
     mesh_project(window, tmp_path)
     window.show_measurement()
     window._survey_pick_ray(np.array([1, 1, 50]), np.array([0, 0, -1]))
     window._survey_pick_ray(np.array([4, 5, 50]), np.array([0, 0, -1]))
     dialog = window._survey_dialog
+    qtbot.waitUntil(lambda: all(p is not None for p in dialog.points), timeout=10000)
     np.testing.assert_allclose(dialog.points, [[1, 1, 3], [4, 5, 14]])
     assert 'model units' in dialog.result.text()
     assert '3D distance:' in dialog.result.text()

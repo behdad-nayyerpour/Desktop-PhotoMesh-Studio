@@ -176,7 +176,7 @@ def _with_alpha(colors, a):
 
 class ModelView(QWidget):
     surveyRay = Signal(object, object)
-    surveyEndpointMoved = Signal(int, object)
+    surveyEditRays = Signal(object)
     """3D viewport with display/select-only marker interaction."""
     markerAction = Signal(str, str)
     moveMarkerRay = Signal(str, object, object)
@@ -185,6 +185,9 @@ class ModelView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._moving_marker = None
+        from .survey_gestures import LineGesture
+        self._survey_gesture = LineGesture()
+        self._survey_anchor = self._survey_pointer = self._survey_pending_anchor = None
         self.marker_states = {}
         self.flip = FLIP.copy()
         lay = QVBoxLayout(self); lay.setContentsMargins(0, 0, 0, 0)
@@ -212,6 +215,7 @@ class ModelView(QWidget):
         if HAVE_GL and not offscreen and not os.environ.get("PHOTOMESH_NO_GL"):
             try:
                 self.gl = OverlayGLView()
+                self.gl.setMouseTracking(True)
                 self.gl.overlay_cb = self._paint_overlay
                 self.gl.setContextMenuPolicy(Qt.CustomContextMenu)
                 self.gl.customContextMenuRequested.connect(self._context)
@@ -300,30 +304,36 @@ class ModelView(QWidget):
     def eventFilter(self, obj, ev):
         t = ev.type()
         if getattr(self, 'survey_enabled', False):
-            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and not (ev.modifiers() & Qt.ShiftModifier):
-                point = ev.position()
-                endpoint = self._survey_endpoint_at(point.x(), point.y()) if getattr(self, 'survey_drag_enabled', False) else None
-                if endpoint is not None:
-                    self._survey_drag = endpoint
-                else:
-                    ray = self.ray_at(point.x(), point.y())
+            gesture = self._survey_gesture
+            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
+                return gesture.start([ev.position().x(), ev.position().y()], self._survey_line_screen())
+            if t == QEvent.MouseMove:
+                self._survey_pointer = [ev.position().x(), ev.position().y()]
+                edits = gesture.move(self._survey_pointer)
+                if edits:
+                    rays = [(i, self.ray_at(*point)) for i, point in edits]
+                    if all(ray is not None for _i, ray in rays):
+                        self.surveyEditRays.emit([(i, *ray) for i, ray in rays])
+                self._overlay_changed()
+                if gesture.editing is not None:
+                    return True
+            if t == QEvent.MouseButtonRelease and ev.button() == Qt.LeftButton:
+                editing = gesture.editing is not None
+                edits = gesture.move([ev.position().x(), ev.position().y()])
+                if edits:
+                    rays = [(i, self.ray_at(*point)) for i, point in edits]
+                    if all(ray is not None for _i, ray in rays):
+                        self.surveyEditRays.emit([(i, *ray) for i, ray in rays])
+                if gesture.finish([ev.position().x(), ev.position().y()]):
+                    ray = self.ray_at(ev.position().x(), ev.position().y())
                     if ray is not None:
                         self.surveyRay.emit(*ray)
-                return True
-            if t == QEvent.MouseMove and getattr(self, '_survey_drag', None) is not None:
-                ray = self.ray_at(ev.position().x(), ev.position().y())
-                if ray is not None:
-                    normal = np.asarray(getattr(self, 'survey_plane_normal', [0, 0, 1]), float)
-                    origin, direction = ray
-                    denominator = float(normal @ direction)
-                    if abs(denominator) > 1e-10:
-                        distance = float(normal @ (self._survey_line[self._survey_drag] - origin)) / denominator
-                        if distance >= 0:
-                            self.surveyEndpointMoved.emit(self._survey_drag, origin + distance * direction)
-                return True
-            if t == QEvent.MouseButtonRelease and getattr(self, '_survey_drag', None) is not None:
-                self._survey_drag = None
-                return True
+                        if getattr(self, '_survey_line', None) is None and self._survey_anchor is None:
+                            self._survey_pending_anchor = [ev.position().x(), ev.position().y()]
+                            self._overlay_changed()
+                return editing
+            if t == QEvent.Leave:
+                self._survey_pointer = None; self._overlay_changed()
         if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton:
             label = self.marker_at(ev.position().x(), ev.position().y())
             if label:
@@ -335,8 +345,7 @@ class ModelView(QWidget):
             self._sync_gizmo()
         return False
 
-    def _survey_endpoint_at(self, x, y):
-        points = getattr(self, '_survey_line', None)
+    def _survey_project(self, points):
         matrix = self.view_mvp()
         if points is None or matrix is None or self.gl is None:
             return None
@@ -344,9 +353,15 @@ class ModelView(QWidget):
         valid = q[:, 3] > 0
         xy = q[:, :2] / np.where(valid, q[:, 3], 1)[:, None]
         xy = np.column_stack([(xy[:, 0] + 1) * self.gl.width() / 2, (1 - xy[:, 1]) * self.gl.height() / 2])
-        distances = np.linalg.norm(xy - [x, y], axis=1)
-        distances[~valid] = np.inf
-        return int(np.argmin(distances)) if distances.min() <= 12 else None
+        return xy if valid.all() and np.isfinite(xy).all() else None
+
+    def _survey_line_screen(self):
+        return self._survey_project(getattr(self, '_survey_line', None))
+
+    def set_survey_anchor(self, point):
+        self._survey_pending_anchor = None
+        self._survey_anchor = None if point is None else np.asarray(point, float)
+        self._overlay_changed()
 
     def set_survey_line(self, points):
         self._remove('survey_line')
@@ -681,6 +696,10 @@ class ModelView(QWidget):
         p = QPainter(glw)
         try:
             self.overlay.paint(p, items, w, h)
+            if getattr(self, 'survey_enabled', False):
+                from .survey_gestures import paint_survey_line
+                anchor = self._survey_project(None if self._survey_anchor is None else self._survey_anchor[None])
+                paint_survey_line(p, self._survey_line_screen(), self._survey_pending_anchor if anchor is None else anchor[0], self._survey_pointer)
         finally:
             p.end()
 
@@ -1012,11 +1031,19 @@ class PhotoView(QWidget):
     addMarker = Signal(float, float)        # new marker pinned at this pixel
     markerAction = Signal(str, str)
     pinMarker = Signal(str, float, float)   # pin an existing marker here
+    surveyPoint = Signal(float, float)
+    surveyEditPixels = Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         lay = QVBoxLayout(self); lay.setContentsMargins(0, 0, 0, 0)
         self.view = _ZoomView()
+        self.view.viewport().setMouseTracking(True)
+        from .survey_gestures import LineGesture
+        self._survey_gesture = LineGesture()
+        self._survey_line = self._survey_anchor = None
+        self._survey_items = []
+        self._survey_preview_item = None
         self.caption = QLabel("Select a photo in the Photos pane to open it.")
         lay.addWidget(self.view, 1); lay.addWidget(self.caption)
         self.path = None
@@ -1043,6 +1070,33 @@ class PhotoView(QWidget):
 
     def eventFilter(self, obj, ev):
         """Ctrl+click: pin the active marker here (or add a new marker if none is active)."""
+        if getattr(self, 'survey_enabled', False) and obj is self.view.viewport() and self.path is not None:
+            gesture = self._survey_gesture
+            t = ev.type()
+            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
+                pixels = None if self._survey_line is None else [self.view.viewportTransform().map(QPointF(*p)) for p in self._survey_line]
+                return gesture.start([ev.position().x(), ev.position().y()],
+                    None if pixels is None else [[p.x(), p.y()] for p in pixels])
+            if t == QEvent.MouseMove:
+                edits = gesture.move([ev.position().x(), ev.position().y()])
+                if edits:
+                    self.surveyEditPixels.emit([(i, *self._survey_scene_point(p)) for i, p in edits])
+                if self._survey_anchor is not None and self._survey_preview_item is not None:
+                    u, v = self._survey_scene_point([ev.position().x(), ev.position().y()])
+                    self._survey_preview_item.setLine(*self._survey_anchor, u, v)
+                if gesture.editing is not None:
+                    return True
+            if t == QEvent.MouseButtonRelease and ev.button() == Qt.LeftButton:
+                editing = gesture.editing is not None
+                edits = gesture.move([ev.position().x(), ev.position().y()])
+                if edits:
+                    self.surveyEditPixels.emit([(i, *self._survey_scene_point(p)) for i, p in edits])
+                if gesture.finish([ev.position().x(), ev.position().y()]):
+                    point = self._survey_scene_point([ev.position().x(), ev.position().y()])
+                    self.surveyPoint.emit(*point)
+                    if self._survey_line is None and self._survey_anchor is None:
+                        self.set_survey_anchor(point)
+                return editing
         if ev.type() == QEvent.KeyPress and ev.key() == Qt.Key_Escape and self._moving_marker:
             self.cancel_marker_move(); return True
         if (self._moving_marker and ev.type() == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton
@@ -1058,6 +1112,49 @@ class PhotoView(QWidget):
             self.ctrl_click(p.x(), p.y())
             return True
         return False
+
+    def _survey_scene_point(self, point):
+        inverse, valid = self.view.viewportTransform().inverted()
+        if not valid:
+            raise ValueError('Photo display transform is singular')
+        p = inverse.map(QPointF(*point))
+        return p.x(), p.y()
+
+    def set_survey_line(self, points):
+        self._survey_line = None if points is None else np.asarray(points, float)
+        self._draw_survey()
+
+    def set_survey_anchor(self, point):
+        self._survey_anchor = None if point is None else np.asarray(point, float)
+        self._draw_survey()
+
+    def _draw_survey(self):
+        from PySide6.QtWidgets import QGraphicsItem
+        scene = self.view.scene()
+        for item in self._survey_items:
+            scene.removeItem(item)
+        self._survey_items = []; self._survey_preview_item = None
+        if self.path is None:
+            return
+        pen = QPen(QColor(255, 165, 25), 2); pen.setCosmetic(True)
+        points = self._survey_line
+        if points is not None:
+            item = scene.addLine(*points[0], *points[1], pen)
+            self._survey_items.append(item)
+            handles = np.vstack([points, points.mean(0)])
+        elif self._survey_anchor is not None:
+            anchor = self._survey_anchor
+            self._survey_preview_item = scene.addLine(*anchor, *anchor, pen)
+            self._survey_items.append(self._survey_preview_item)
+            handles = [anchor]
+        else:
+            handles = []
+        for i, point in enumerate(handles):
+            item = scene.addRect(-5, -5, 10, 10, pen, QColor(45, 45, 48)) if i == 2 else scene.addEllipse(-6, -6, 12, 12, pen, QColor(45, 45, 48))
+            item.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+            item.setPos(*point); self._survey_items.append(item)
+        for item in self._survey_items:
+            item.setZValue(1000); item.setAcceptedMouseButtons(Qt.NoButton)
 
     def begin_marker_move(self, label):
         self._moving_marker = label
@@ -1079,6 +1176,8 @@ class PhotoView(QWidget):
         self.cancel_marker_move()
         sc = self.view.scene()
         sc.clear(); sc.setSceneRect(0, 0, 0, 0)
+        self._survey_items = []; self._survey_preview_item = None
+        self._survey_line = self._survey_anchor = None
         self.view.resetTransform()
         self.path = None; self._pix = None
         self._overlay = []; self._shape_items = []
@@ -1089,6 +1188,7 @@ class PhotoView(QWidget):
     def open(self, path, caption=""):
         pm = QPixmap(path)
         sc = self.view.scene(); sc.clear(); self._overlay = []; self._shape_items = []; self._pix = None
+        self._survey_items = []; self._survey_preview_item = None
         self.shapes = []
         if pm.isNull():
             self.clear()

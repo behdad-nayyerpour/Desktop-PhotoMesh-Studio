@@ -166,3 +166,44 @@ def test_gl_overlay_pass_runs_after_geometry_with_depth_test_off(qapp):
     for _k, t, r in mv.overlay.last["label_rects"]:
         c = img.pixelColor(int((r.left() + 2) * k), int(r.center().y() * k))
         assert c.red() < 110, (t, c.name())                               # dark label box, not the mesh
+
+
+@pytest.mark.opengl
+@pytest.mark.skipif(os.environ.get('QT_QPA_PLATFORM', '') in ('offscreen', 'minimal') or
+                    not os.environ.get('PHOTOMESH_GL_TESTS'), reason='needs a real OpenGL display')
+def test_survey_keeps_native_rotation_and_renders_rubber_line_and_three_handles(qapp, qtbot):
+    from PySide6.QtWidgets import QWidget
+    from PySide6.QtCore import QPoint, QPointF, Qt, QEvent, QCoreApplication
+    from PySide6.QtGui import QMouseEvent
+    from photomesh.views import ModelView
+    mv = ModelView(); mv.resize(600, 400); qtbot.addWidget(mv); QWidget.show(mv)
+    vertices = np.array([[-10, -10, 0], [10, -10, 0], [10, 10, 0], [-10, 10, 0]], float)
+    mv.set_mesh(vertices, np.array([[0, 1, 2], [0, 2, 3]]))
+    mv.survey_enabled = True
+    clicks = []; edits = []
+    mv.surveyRay.connect(lambda *_: clicks.append(True))
+    mv.surveyEditRays.connect(edits.append)
+    old_angles = mv.gl.opts['azimuth'], mv.gl.opts['elevation']
+    qtbot.mousePress(mv.gl, Qt.LeftButton, pos=QPoint(60, 60))
+    event = QMouseEvent(QEvent.MouseMove, QPointF(150, 100), QPointF(150, 100),
+                        Qt.NoButton, Qt.LeftButton, Qt.NoModifier)
+    QCoreApplication.sendEvent(mv.gl, event)
+    qtbot.mouseRelease(mv.gl, Qt.LeftButton, pos=QPoint(150, 100))
+    assert (mv.gl.opts['azimuth'], mv.gl.opts['elevation']) != old_angles
+    assert clicks == []
+    mv.gl.setCameraPosition(elevation=90, azimuth=0, distance=30)
+    mv.set_survey_anchor(np.array([0., 0., 0.]))
+    qtbot.mouseMove(mv.gl, QPoint(420, 250)); qapp.processEvents()
+    image = mv.gl.grabFramebuffer()
+    assert image.width() > 0 and mv._survey_pointer == [420, 250]
+    mv.set_survey_anchor(None)
+    mv.set_survey_line(np.array([[-4., 0., 0.], [4., 0., 0.]]))
+    qapp.processEvents()
+    pixels = mv._survey_line_screen()
+    mid = np.mean(pixels, axis=0)
+    start = QPoint(round(mid[0]), round(mid[1])); end = start + QPoint(15, 8)
+    qtbot.mousePress(mv.gl, Qt.LeftButton, pos=start)
+    assert mv._survey_gesture.editing == 2
+    qtbot.mouseMove(mv.gl, end); qtbot.mouseRelease(mv.gl, Qt.LeftButton, pos=end)
+    assert edits and [row[0] for row in edits[-1]] == [0, 1]
+    assert clicks == []

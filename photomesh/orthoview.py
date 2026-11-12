@@ -97,7 +97,7 @@ class RasterLayer:
 
 class OrthoView(QWidget):
     surveyPoint = Signal(float, float)
-    surveyEndpointMoved = Signal(int, float, float)
+    surveyEditPoints = Signal(object)
     tileReady = Signal(int, object, object)        # generation, key, QImage
     heightReady = Signal(int, object)
     coordinatesChanged = Signal(str)
@@ -211,6 +211,10 @@ class OrthoView(QWidget):
 
     def set_survey_line(self, points):
         self.survey_line = None if points is None else np.asarray(points, float)
+        self.update()
+
+    def set_survey_anchor(self, point):
+        self._survey_anchor = None if point is None else np.asarray(point, float)
         self.update()
 
     def set_markers(self, markers):
@@ -503,13 +507,12 @@ class OrthoView(QWidget):
                    if not self.layers else "Orthomosaic / DEM hidden (toolbar layer toggles)")
             p.drawText(10, 20, msg)
         p.setRenderHint(QPainter.Antialiasing)
-        line = getattr(self, 'survey_line', None)
-        if line is not None:
-            p.setPen(QColor(255, 165, 25))
-            a, b = [QPointF(*self.to_screen(*point)) for point in line]
-            p.drawLine(a, b)
-            for point in (a, b):
-                p.drawEllipse(point, 6, 6)
+        if self.center is not None:
+            from .survey_gestures import paint_survey_line
+            line = getattr(self, 'survey_line', None)
+            anchor = getattr(self, '_survey_anchor', None)
+            paint_survey_line(p, None if line is None else [self.to_screen(*point) for point in line],
+                None if anchor is None else self.to_screen(*anchor), getattr(self, '_survey_pointer', None))
         p.setPen(QColor(80, 160, 255)); p.setBrush(QColor(80, 160, 255))
         if self.vis.get("shapes", True) and self.shapes:
             self._draw_shapes(p)
@@ -646,23 +649,27 @@ class OrthoView(QWidget):
         return X, Y, self.z_at(X, Y)
 
     def mousePressEvent(self, e):
-        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton:
+        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton and e.modifiers() == Qt.NoModifier:
+            from .survey_gestures import LineGesture
+            self._survey_gesture = LineGesture()
             line = getattr(self, 'survey_line', None)
-            if line is not None:
-                pixels = np.array([self.to_screen(*point) for point in line])
-                distances = np.linalg.norm(pixels - [e.position().x(), e.position().y()], axis=1)
-                if distances.min() <= 12:
-                    self._survey_drag = int(np.argmin(distances))
-                    return
+            pixels = None if line is None or self.center is None else [self.to_screen(*point) for point in line]
+            if self._survey_gesture.start([e.position().x(), e.position().y()], pixels):
+                return
         if e.button() in (Qt.LeftButton, Qt.MiddleButton):
             self._drag = (e.position(), self.center)
         self._press = e.position() if e.button() == Qt.LeftButton else None
 
     def mouseMoveEvent(self, e):
-        if getattr(self, '_survey_drag', None) is not None:
-            x, y = self.to_world(e.position().x(), e.position().y())
-            self.surveyEndpointMoved.emit(self._survey_drag, x, y)
-            return
+        if getattr(self, 'survey_enabled', False):
+            self._survey_pointer = [e.position().x(), e.position().y()]
+            gesture = getattr(self, '_survey_gesture', None)
+            edits = gesture.move(self._survey_pointer) if gesture else None
+            if edits:
+                self.surveyEditPoints.emit([(i, *self.to_world(*point)) for i, point in edits])
+            self.update()
+            if gesture and gesture.editing is not None:
+                return
         if self._drag is not None and self.center is not None:
             p0, c0 = self._drag
             d = e.position() - p0
@@ -671,9 +678,22 @@ class OrthoView(QWidget):
         self._update_coords(e.position())
 
     def mouseReleaseEvent(self, e):
-        if getattr(self, '_survey_drag', None) is not None:
-            self._survey_drag = None
-            return
+        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton:
+            gesture = getattr(self, '_survey_gesture', None)
+            if gesture and gesture.press is not None:
+                editing = gesture.editing is not None
+                edits = gesture.move([e.position().x(), e.position().y()])
+                if edits:
+                    self.surveyEditPoints.emit([(i, *self.to_world(*point)) for i, point in edits])
+                click = gesture.finish([e.position().x(), e.position().y()])
+                self._drag = None; self._press = None
+                if click:
+                    point = self.to_world(e.position().x(), e.position().y())
+                    self.surveyPoint.emit(*point)
+                    if getattr(self, 'survey_line', None) is None and getattr(self, '_survey_anchor', None) is None:
+                        self.set_survey_anchor(point)
+                if editing or click:
+                    return
         self._drag = None
         p0 = getattr(self, "_press", None)
         self._press = None

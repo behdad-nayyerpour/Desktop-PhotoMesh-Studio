@@ -65,6 +65,20 @@ run links and hashes. One BAT delivered from artifact commit8710ba0b66b63bab74b4
 757822-byte delta against the verified current progress baseline. Await the user's
 candidate test before a full Setup; real surveyed checks remain outstanding.
 
+## Survey interaction revision (2026-11-13)
+
+User requests closable bottom panels for both tools, native model navigation
+during drawing, measurement/section clicks in 3D, co-registered orthophotos and
+aligned photos, and a mouse-following draft line with calculation only after the
+second click. Manual coordinates remain. Keep photo rays in the calibrated model
+frame and refuse missing depth/alignment or stale source identities. Preview is
+visual only, not a fabricated depth measurement. Separate cohesive survey UI/
+controller work from terrain/classification. Review event propagation, dock/
+worker lifecycle, projection/scaled photo coordinates, stale results and marker
+editing interactions. Test click versus drag, both tools in all views, live
+preview versus committed results, closure/reopen, manual inputs and known
+geometry. Deliver one hash-bound BAT; retain PDF and defer Setup as instructed.
+
 Existing code map: reference_ui.py mixin for GPS/markers/optimization;
 georef.CRS and run_task for adjustments, workflow.processing_crs/source_unit;
 calibration.py has model-specific fit indices, colmap_io models0..6;
