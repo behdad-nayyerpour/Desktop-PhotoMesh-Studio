@@ -1,0 +1,43 @@
+{
+  "candidate": "5072cbe293bc37238dbdc69e142a9fd9b65e9b9b",
+  "archive": "Lens2Mesh_TestPatch_5072cbe293bc.zip",
+  "sha256": "cd5ce3b5b7a520496c14881d3d8945f3a19e7aeceb0f1ed4f55111f171fc14b5",
+  "bytes": 98683,
+  "files": [
+    {
+      "path": "app/photomesh/mainwindow.py",
+      "sha256": "73b9a31140658e9c262f7529ba480292da64fb4e9fcb46822292e8cac9e8eaf6"
+    },
+    {
+      "path": "app/photomesh/markers_ui.py",
+      "sha256": "8c67363332fe8373644092167891063e5e8f1a54ca3eb452f3b4a85ce5bba52e"
+    },
+    {
+      "path": "app/photomesh/menus.py",
+      "sha256": "f3cff8b484b298366fb7389d26f63a811f76087310dbc1730888f8b32eb3ef18"
+    },
+    {
+      "path": "app/photomesh/orthoview.py",
+      "sha256": "d160d9eb5bebbdee6add93360a91d98f182c0b44159f0eeb3e7096252d3e08fd"
+    },
+    {
+      "path": "app/photomesh/survey_tools.py",
+      "sha256": "7623720552cac2fd79e81af01548cb6584e247a09d44f3fad8ddf536e8bc1d79"
+    },
+    {
+      "path": "app/photomesh/survey_widgets.py",
+      "sha256": "f09b42f9ee761fb9e00686b83eb8dfcb66cdde228cfa871b3f17df7cabe2f3ed"
+    },
+    {
+      "path": "app/photomesh/views.py",
+      "sha256": "ab28dd0d0bdbd09f33baf741339c5cf0cafe629830f75b5c63941001085e281c"
+    },
+    {
+      "path": "app/release_manifest.txt",
+      "sha256": "ecc3320b12f8e456ebd0c8b978eea2ad0d7920cf278150cae2a950831b3472ca"
+    }
+  ],
+  "unchanged_python_and_engines": true,
+  "removed_dependency": false,
+  "setup_built": false
+}
