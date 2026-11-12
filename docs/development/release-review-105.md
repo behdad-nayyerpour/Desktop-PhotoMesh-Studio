@@ -183,3 +183,16 @@ unchanged. Reviewed generator, child entry point and acceptance callers; no PDF
 or application/numerical changes are needed for this bootstrap-only fix.
 
 Actual BAT run [43269518547](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43269518547) passed registry-discovered apply, installed offline PLY checks, rollback, explicit trailing-backslash reapply and second rollback. Verified BAT artifact 13966643906 matches local generator bytes; BAT SHA256 `3ad0a82d96b30bebb7e6e91603bfc9039f559298e760304ff1912cc12ce3a7f1`.
+
+
+### Splash artwork quality iteration (2026-11-12)
+
+The approved 1280-pixel artwork is retained. Painter-only minification aliased
+terrain/mesh detail; appicon.draw now smooth-resamples at the painter device
+resolution before drawing. Reviewed splash, About/window icon and ICO callers;
+logical size, alpha, settings, project formats and processing remain unchanged.
+Splash subtitle is exactly Desktop Photogrammetry App. Rendered and visually
+checked at 100/125/150/200 percent; six existing startup/splash tests pass.
+No user manual text/screenshots are edited, per the user's explicit instruction.
+This small delta targets the already-applied first 1.0.5 candidate, with backups
+and rollback; it is not acceptance/completion of the broader next-version scope.

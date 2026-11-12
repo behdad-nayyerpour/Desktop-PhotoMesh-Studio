@@ -34,7 +34,7 @@ def _pixmap(dpr=1.0):
     f.setPointSizeF(10); f.setBold(False); p.setFont(f)
     p.setPen(QColor(160, 168, 180))
     p.drawText(QRectF(140, 78, W - 150, 22), Qt.AlignLeft | Qt.AlignVCenter, f"Version {APP_VERSION}")
-    p.drawText(QRectF(140, 100, W - 150, 22), Qt.AlignLeft | Qt.AlignVCenter, "Offline photogrammetry")
+    p.drawText(QRectF(140, 100, W - 150, 22), Qt.AlignLeft | Qt.AlignVCenter, "Desktop Photogrammetry App")
     p.end()
     return pm
 

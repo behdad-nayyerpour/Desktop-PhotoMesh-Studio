@@ -2,6 +2,7 @@
 The internal ICO filename remains stable for existing shortcuts."""
 from __future__ import annotations
 
+from math import ceil, hypot
 import os
 import struct
 import sys
@@ -13,13 +14,20 @@ ICO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources",
 
 def draw(p, n):
     """Draw the approved artwork, shared by splash, window and ICO output."""
-    from PySide6.QtCore import QRectF
+    from PySide6.QtCore import Qt, QRectF
     from PySide6.QtGui import QImage, QPainter
     artwork = QImage(os.path.join(os.path.dirname(ICO_PATH), "lens2mesh.png"))
     if artwork.isNull():
         raise RuntimeError("Lens2Mesh icon resource is missing or unreadable")
     p.save()
     try:
+        # Pre-filter large reductions at the actual device resolution. Painter's
+        # image transform alone aliases fine terrain/mesh lines on the splash.
+        transform = p.deviceTransform()
+        pixels = max(1, ceil(n * max(hypot(transform.m11(), transform.m12()),
+                                     hypot(transform.m21(), transform.m22()))))
+        artwork = artwork.scaled(pixels, pixels, Qt.KeepAspectRatio,
+                                 Qt.SmoothTransformation)
         p.setRenderHint(QPainter.SmoothPixmapTransform)
         p.drawImage(QRectF(0, 0, n, n), artwork)
     finally:
