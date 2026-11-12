@@ -12,6 +12,7 @@ def create(url, sha256, output):
         raise ValueError("Invalid archive checksum")
     code = r'''
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
 try {
   $root=$env:LM_PATCH_ROOT
   if (-not $root) {
@@ -28,9 +29,14 @@ try {
   Write-Host 'Downloading only the changed components. Close the application before continuing.'
   [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
   Invoke-WebRequest -Uri '__URL__' -OutFile $zip -UseBasicParsing
-  if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '__SHA__') { throw 'Download checksum mismatch; no application files changed' }
+  $hasher=[Security.Cryptography.SHA256]::Create()
+  $stream=[IO.File]::OpenRead($zip)
+  try { $actual=([BitConverter]::ToString($hasher.ComputeHash($stream))).Replace('-','').ToLowerInvariant() }
+  finally { $stream.Dispose(); $hasher.Dispose() }
+  if ($actual -ne '__SHA__') { throw 'Download checksum mismatch; no application files changed' }
   $payload=Join-Path $temp 'payload'
-  Expand-Archive -LiteralPath $zip -DestinationPath $payload
+  [void][Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
+  [IO.Compression.ZipFile]::ExtractToDirectory($zip,$payload)
   & $py (Join-Path $payload 'apply_patch.py') --root $root --payload $payload
   if ($LASTEXITCODE) { throw 'Update failed; review the message above' }
   exit 0
