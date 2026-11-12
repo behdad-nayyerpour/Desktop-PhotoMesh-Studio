@@ -1861,13 +1861,13 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
             if s.get("gps_frame"):
                 with open(os.path.join(wd,"alignment_georef.json"),encoding="utf-8") as handle:
                     result=json.load(handle)
-                ch.georef = {key:result.get(key) for key in ("offset","similarity","crs","crs_kind","zone","rows","control_rmse","check_rmse","coordinate_frame","height_reference","camera_height_reference","marker_height_reference","reference_heights_verified")}
+                ch.georef = {key:result.get(key) for key in ("offset","similarity","crs","crs_kind","zone","rows","control_rmse","check_rmse","coordinate_frame","height_reference","camera_height_reference","marker_height_reference","reference_heights_verified","marker_image_errors")}
                 ch.crs = result["crs"]
                 self.log("Camera GPS applied: model scale/orientation/location are metric. GPS accuracy still limits survey accuracy.")
             if wd != original_wd:
                 self._invalidate_camera_products(ch)
                 if ch.georef:
-                    ch.georef.update(rows=[], control_rmse=None, check_rmse=None)
+                    ch.georef.update(rows=[], control_rmse=None, check_rmse=None, marker_image_errors={})
             from .photonames import assign_names
             assign_names(ch, mapping)              # exact camera <-> model link, saved in the project
             for c in ch.cameras:

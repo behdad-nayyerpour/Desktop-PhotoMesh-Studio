@@ -103,6 +103,7 @@ class ReferenceMixin:
         if not georef:
             return
         georef.update(rows=[], control_rmse=None, check_rmse=None)
+        georef['marker_image_errors'] = {}
         model = self._sparse_model()
         if model is None:
             return
@@ -112,7 +113,7 @@ class ReferenceMixin:
         try:
             from .photonames import photo_dimensions
             g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
-            estimates, _pixels, _counts, rows = g.marker_diagnostics(
+            estimates, pixels, counts, rows = g.marker_diagnostics(
                 model, markers, g.CRS.parse(georef.get("crs") or self.dataset.crs),
                 georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1], frame=georef.get("coordinate_frame"),
                 compare_heights=georef.get('reference_heights_verified', True))
@@ -120,6 +121,7 @@ class ReferenceMixin:
             self.log(f"Marker residuals unavailable after edit: {error}")
             return
         georef.update(rows=rows, control_rmse=g.rmse(rows, "control"), check_rmse=g.rmse(rows, "check"))
+        georef['marker_image_errors'] = {label: {'pix': pixel, 'n': counts.get(label, 0)} for label, pixel in pixels.items()}
         for marker in markers:
             marker.est = estimates[marker.label].tolist() if marker.label in estimates else None
 
@@ -416,7 +418,7 @@ class ReferenceMixin:
             if not res.get("local_only"):
                 ch.georef = {k: res.get(k) for k in ("offset", "similarity", "crs", "crs_kind", "zone", "rows",
                                                      "control_rmse", "check_rmse", "coordinate_frame", "height_reference",
-                                                     "camera_height_reference", "marker_height_reference", "reference_heights_verified")}
+                                                     "camera_height_reference", "marker_height_reference", "reference_heights_verified", "marker_image_errors")}
                 ch.crs = res.get("crs") or ch.crs
                 for r in ch.georef.get("rows") or []:
                     r["pix"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("pix")
@@ -424,7 +426,7 @@ class ReferenceMixin:
             else:
                 # Existing CRS/offset still describe the same frame, but old errors no longer apply.
                 if ch.georef:
-                    ch.georef.update(rows=[], control_rmse=None, check_rmse=None)
+                    ch.georef.update(rows=[], control_rmse=None, check_rmse=None, marker_image_errors={})
                 for d in (ch.orthomosaic, ch.dem, ch.dtm, ch.tiled_model):
                     if d and d.get("format") != "imported":
                         d["stale"] = "built before camera optimization"

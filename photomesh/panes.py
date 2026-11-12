@@ -520,6 +520,10 @@ class MarkersPane(QTableWidget):
     def _fill(self, dataset):
         ms = getattr(dataset, "markers", None) or []
         rows = {r.get("label"): r for r in (getattr(dataset, "georef", {}) or {}).get("rows", [])}
+        # Image-space diagnostics remain meaningful when height datums prevent
+        # a coordinate residual. Keep them separate from XYZ RMSE rows.
+        for label, image in ((getattr(dataset, 'georef', {}) or {}).get('marker_image_errors') or {}).items():
+            rows[label] = dict(rows.get(label, {}), **image)
         selected = set(self.selected_labels())
         self.clearContents()
         self.data_row_count = len(ms)

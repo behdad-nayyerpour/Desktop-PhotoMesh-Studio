@@ -1360,6 +1360,7 @@ def run_task(cfg, log=print):
            "coordinate_frame": frame, "height_reference": model_heights,
            "camera_height_reference": camera_heights, "marker_height_reference": marker_heights,
            "reference_heights_verified": compare_heights,
+           "marker_image_errors": {label: {"pix": pixel, "n": cnt.get(label, 0)} for label, pixel in pix.items()},
            "zone": (crs.zone, crs.south) if crs.kind == 'utm' else zone_hint,
            "markers": {m.label: {"est": est[m.label].tolist() if m.label in est else None,
                                  "pix": pix.get(m.label), "n": cnt.get(m.label, 0)} for m in markers},
