@@ -110,6 +110,9 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
         self.ortho_view.surveyEditPoints.connect(self._survey_edit_plan)
         self.photo_view.surveyPoint.connect(self._survey_pick_photo)
         self.photo_view.surveyEditPixels.connect(self._survey_edit_photo)
+        for view in (self.model_view, self.ortho_view, self.photo_view):
+            view.surveyDragStarted.connect(self._survey_drag_started)
+            view.surveyDragFinished.connect(self._survey_drag_finished)
         self.model_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "model"))
         self._thumb_job = None
         apply_dialog_setting()
@@ -363,7 +366,6 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
             "Remove Selected Photos": self._ws_remove_selected,
             "Refresh Photo GPS Metadata...": self.refresh_photo_gps_metadata,
             "Point Cloud Classification...": self.classify_point_cloud,
-            "Measure Distance...": self.show_measurement,
             "Cross Section...": self.show_cross_section,
             "Point Cloud - Classification": lambda: self.show_point_classes(None, True),
             "Show All Point Classes": lambda: self.show_point_classes(None),
@@ -437,6 +439,7 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
     def _update_menu_actions(self):
         """Photo-only commands need their input; they are not placeholder tools."""
         opened = bool(self.photo_view.path)
+        self.actions['Add Marker'].setEnabled(not getattr(self.photo_view, 'survey_enabled', False))
         for name in ("Rotate Right", "Rotate Left"):
             self.actions[name].setEnabled(opened)
         for name in ("Open Next Photo", "Open Previous Photo"):

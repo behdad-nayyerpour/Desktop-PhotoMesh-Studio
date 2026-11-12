@@ -332,6 +332,8 @@ class MarkerEditMixin:
 
     # ------------------------------------------------------------ add / pin
     def _valid_photo_measurement(self, k, u, v):
+        if getattr(getattr(self, 'photo_view', None), 'survey_enabled', False):
+            return False
         camera = self.dataset.cameras[k]
         valid = np.isfinite([u, v]).all()
         if camera.width and camera.height:

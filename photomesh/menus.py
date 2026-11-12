@@ -57,10 +57,10 @@ MENUS = [
         ("Panels and Toolbars", [
             "Project*", "Markers*", "Cameras*", "Photos*", "Console*", "Jobs*", "-", "Toolbar*",
         ]),
-        "Cross Section...", "Capture View",
+        "Capture View",
     ]),
     ("&Survey", [
-        "Measure Distance...", "Refresh Photo GPS Metadata...", "Add Marker", "Refine Markers", "-",
+        "Cross Section...", "Refresh Photo GPS Metadata...", "Add Marker", "Refine Markers", "-",
         "Shape Settings...", "Remove Shapes", "-", "Transparent View*",
     ]),
     ("E&xport", [

@@ -98,6 +98,8 @@ class RasterLayer:
 class OrthoView(QWidget):
     surveyPoint = Signal(float, float)
     surveyEditPoints = Signal(object)
+    surveyDragStarted = Signal()
+    surveyDragFinished = Signal()
     tileReady = Signal(int, object, object)        # generation, key, QImage
     heightReady = Signal(int, object)
     coordinatesChanged = Signal(str)
@@ -649,12 +651,13 @@ class OrthoView(QWidget):
         return X, Y, self.z_at(X, Y)
 
     def mousePressEvent(self, e):
-        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton and e.modifiers() == Qt.NoModifier:
+        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton:
             from .survey_gestures import LineGesture
             self._survey_gesture = LineGesture()
             line = getattr(self, 'survey_line', None)
-            pixels = None if line is None or self.center is None else [self.to_screen(*point) for point in line]
+            pixels = None if line is None or self.center is None or getattr(self, 'survey_busy', False) else [self.to_screen(*point) for point in line]
             if self._survey_gesture.start([e.position().x(), e.position().y()], pixels):
+                self.surveyDragStarted.emit()
                 return
         if e.button() in (Qt.LeftButton, Qt.MiddleButton):
             self._drag = (e.position(), self.center)
@@ -662,7 +665,8 @@ class OrthoView(QWidget):
 
     def mouseMoveEvent(self, e):
         if getattr(self, 'survey_enabled', False):
-            self._survey_pointer = [e.position().x(), e.position().y()]
+            if not getattr(self, 'survey_busy', False) or (getattr(self, '_survey_gesture', None) and self._survey_gesture.editing is not None):
+                self._survey_pointer = [e.position().x(), e.position().y()]
             gesture = getattr(self, '_survey_gesture', None)
             edits = gesture.move(self._survey_pointer) if gesture else None
             if edits:
@@ -687,11 +691,11 @@ class OrthoView(QWidget):
                     self.surveyEditPoints.emit([(i, *self.to_world(*point)) for i, point in edits])
                 click = gesture.finish([e.position().x(), e.position().y()])
                 self._drag = None; self._press = None
-                if click:
+                if click and not getattr(self, 'survey_busy', False):
                     point = self.to_world(e.position().x(), e.position().y())
                     self.surveyPoint.emit(*point)
-                    if getattr(self, 'survey_line', None) is None and getattr(self, '_survey_anchor', None) is None:
-                        self.set_survey_anchor(point)
+                if editing:
+                    self.surveyDragFinished.emit()
                 if editing or click:
                     return
         self._drag = None
@@ -712,6 +716,8 @@ class OrthoView(QWidget):
                     self.shapeClicked.emit(-1 if hit is None else int(hit))
 
     def mouseDoubleClickEvent(self, e):
+        if getattr(self, 'survey_enabled', False):
+            self.mousePressEvent(e); e.accept(); return
         self.fit()
 
     def wheelEvent(self, e):
@@ -725,6 +731,8 @@ class OrthoView(QWidget):
         self.coordinatesChanged.emit("")
 
     def contextMenuEvent(self, e):
+        if getattr(self, 'survey_enabled', False):
+            e.accept(); return
         m = QMenu(self)
         hit = self.marker_at(e.pos().x(), e.pos().y())
         if hit:

@@ -14,7 +14,8 @@ class SurveyToolsMixin:
         return dict(distance_components(a, b), units=source_unit(self.dataset.georef))
 
     def show_measurement(self):
-        self._open_survey(False)
+        # Retain the script entry point; the UI has one combined section tool.
+        self.show_cross_section()
 
     def show_cross_section(self):
         if not self.dataset.model_ply or not os.path.isfile(self.dataset.model_ply):
@@ -32,27 +33,34 @@ class SurveyToolsMixin:
         self._survey_frame_kind = None
         self._survey_request = 0
         self._survey_pending = None
+        self._survey_busy = False
+        self._survey_dragging = False
+        self._survey_drag_changed = False
+        self._survey_error = None
+        self._survey_busy_note = ''
         self._survey_pick_queue = []
         self._survey_mesh_cache = self._survey_pick_cache = None
         self._survey_profile = None
         self._survey_selected = []
         self._survey_endpoints_model = [None, None]
-        panel = SurveyPanel(self, section, source_unit(self.dataset.georef))
+        panel = SurveyPanel(self, True, source_unit(self.dataset.georef))
         self._survey_dialog = panel
-        if section:
-            vertical = 'Up from ENU tangent origin' if self.dataset.georef.get('coordinate_frame') else 'Elevation' if self.dataset.georef else 'Model Z'
-            panel.plot.setLabel('left', vertical, units=panel.unit)
+        vertical = 'Up from ENU tangent origin' if self.dataset.georef.get('coordinate_frame') else 'Elevation' if self.dataset.georef else 'Model Z'
+        panel.plot.setLabel('left', vertical, units=panel.unit)
         panel.closed.connect(self._survey_closed)
         self.addDockWidget(Qt.BottomDockWidgetArea, panel)
-        panel.show(); self.resizeDocks([panel], [280], Qt.Vertical)
+        panel.show(); self.resizeDocks([panel], [320], Qt.Vertical)
         for view in (self.model_view, self.ortho_view, self.photo_view):
             view.survey_enabled = True
+            view.survey_busy = False
         self.photo_view.cancel_marker_move()
+        self._update_menu_actions()
 
     def _survey_closed(self):
         from .survey_gestures import LineGesture
         for view in (self.model_view, self.ortho_view, self.photo_view):
             view.survey_enabled = False
+            view.survey_busy = False
             view.set_survey_line(None); view.set_survey_anchor(None)
             view._survey_drag = None
             view._survey_gesture = LineGesture()
@@ -65,6 +73,67 @@ class SurveyToolsMixin:
             job = getattr(self, name, None)
             if job is not None:
                 job.cancel()
+        self._update_menu_actions()
+
+    def _survey_refresh_busy(self):
+        if not self._survey_current():
+            return
+        busy = bool(self._survey_pending is not None or self._survey_pick_queue or
+                    getattr(self, '_survey_pick_job', None) is not None or getattr(self, '_survey_job', None) is not None)
+        changed = busy != self._survey_busy
+        self._survey_busy = busy
+        self._survey_dialog.set_busy(busy)
+        for view in (self.model_view, self.ortho_view, self.photo_view):
+            view.survey_busy = busy
+        if busy:
+            text = self._survey_busy_note or 'Calculating section... Navigation and Close remain available.'
+        elif self._survey_error:
+            text = self._survey_error
+        elif self._survey_dragging:
+            text = 'Moving line. Release the handle to calculate the section.'
+        elif all(point is not None for point in self._survey_dialog.points):
+            text = 'Section ready. Drag either end or the centre handle; click two profile points for slope.'
+        elif any(point is not None for point in self._survey_dialog.points):
+            text = 'Move the mouse, then click the end point.'
+        else:
+            text = 'Click the start point.'
+        self._survey_dialog.status.setText(text)
+        if changed:
+            self._survey_sync_views()
+
+    def _survey_fail(self, message):
+        self._survey_error = str(message)
+        self._survey_sync_views()
+        self._survey_refresh_busy()
+
+    def _survey_cancel(self):
+        if not self._survey_current():
+            return
+        self._survey_generation += 1; self._survey_request += 1
+        self._survey_pick_queue = []; self._survey_pending = None
+        self._survey_dragging = False
+        self._survey_busy_note = 'Cancelling calculation...'
+        self._survey_error = 'Calculation cancelled. Choose a point or move a handle to continue.'
+        for name in ('_survey_pick_job', '_survey_job'):
+            job = getattr(self, name, None)
+            if job is not None:
+                job.cancel()
+        self._survey_refresh_busy()
+
+    def _survey_drag_started(self):
+        if not self._survey_current() or self._survey_busy:
+            return
+        self._survey_dragging = True
+        self._survey_drag_changed = False
+        self._survey_error = None
+
+    def _survey_drag_finished(self):
+        if not self._survey_current():
+            return
+        self._survey_dragging = False
+        if self._survey_drag_changed and getattr(self, '_survey_pick_job', None) is None and not self._survey_pick_queue:
+            self._survey_update()
+        self._survey_refresh_busy()
 
     def _survey_files(self):
         def stamp(path):
@@ -90,6 +159,8 @@ class SurveyToolsMixin:
         if not self._survey_current():
             return
         self._survey_generation += 1
+        self._survey_error = None
+        self._survey_dragging = False
         self._survey_request += 1
         self._survey_pending = None
         self._survey_pick_queue = []
@@ -107,6 +178,7 @@ class SurveyToolsMixin:
         panel.result.setText('Choose the start and end points.')
         self._survey_clear_profile()
         self._survey_sync_views()
+        self._survey_refresh_busy()
 
     def _survey_clear_profile(self):
         self._survey_profile = None
@@ -115,26 +187,14 @@ class SurveyToolsMixin:
             self._survey_dialog.curve.setData([], [])
             self._survey_dialog.selection.setData([], [])
 
-    def _survey_begin_pick(self, index):
-        if not self._survey_current():
-            return
-        self._survey_generation += 1
-        self._survey_pick_queue = []
-        self._survey_request += 1; self._survey_pending = None
-        self._survey_dialog.points[index] = None
-        self._survey_endpoints_model[index] = None
-        self._survey_dialog.next_pick = index
-        self._survey_clear_profile()
-        self._survey_dialog.result.setText('Move the mouse and click the replacement endpoint.')
-        self._survey_sync_views()
-
     def _survey_coordinates_changed(self, index):
         if not self._survey_current():
             return
         self._survey_generation += 1; self._survey_pick_queue = []
+        self._survey_error = None
         panel = self._survey_dialog
         panel.points[index] = np.array([box.value() for box in panel.coordinates[index]])
-        self._survey_endpoints_model[index] = None if panel.section else panel.points[index] - self._survey_offset()
+        self._survey_endpoints_model[index] = None
         self._survey_update()
 
     def _survey_offset(self):
@@ -147,7 +207,7 @@ class SurveyToolsMixin:
                 not self.ortho_view.has_raster('ortho') or info.get('stale') or
                 not info.get('format', '').startswith('photomesh-ortho') or
                 info.get('source_mesh_stamp') != file_stamp(mesh)):
-            raise ValueError('Show an orthophoto built from this current mesh. Rebuild older/stale orthophotos once to establish their mesh link.')
+            raise ValueError('This orthophoto is missing a current mesh link or is out of date. Use Process > Build Orthomosaic to rebuild it from the current mesh before drawing a section.')
         rotation = np.asarray(info.get('rotation'), float)
         if rotation.shape != (3, 3) or not np.isfinite(rotation).all() or not np.allclose(rotation @ rotation.T, np.eye(3), atol=1e-8) or np.linalg.det(rotation) < 0:
             raise ValueError('Orthophoto projection frame is invalid')
@@ -168,7 +228,7 @@ class SurveyToolsMixin:
         try:
             rotation = self._survey_ortho_rotation()
         except ValueError as error:
-            self._survey_dialog.result.setText(str(error)); return
+            self._survey_fail(error); return
         self._survey_queue_pick([(i, np.array([x, y]), None) for i, x, y in points],
                                 'ortho', rotation, editing)
 
@@ -181,7 +241,8 @@ class SurveyToolsMixin:
         try:
             if not (0 <= self.current_photo < len(self.dataset.cameras)) or not self.dataset.cameras[self.current_photo].aligned:
                 raise ValueError('Align this photo before measuring on it; a single unaligned photo has no 3D depth.')
-            if self.dataset.meta.get('model', {}).get('stale') or self.dataset.meta.get('point_cloud', {}).get('stale'):
+            source_kind = 'model' if self.dataset.model_ply else 'point_cloud'
+            if self.dataset.meta.get(source_kind, {}).get('stale'):
                 raise ValueError('Rebuild the surface after camera changes before measuring on a photo.')
             rays = []
             for index, u, v in points:
@@ -192,29 +253,32 @@ class SurveyToolsMixin:
                     raise ValueError('This photo has no calibrated pose in the current model')
                 rays.append((index, *ray))
         except (ValueError, OSError) as error:
-            self._survey_dialog.result.setText(str(error)); return
+            self._survey_fail(error); return
         self._survey_queue_pick(rays, 'photo', editing=editing)
 
     def _survey_queue_pick(self, rays, kind, rotation=None, editing=False):
         if not self._survey_current():
             return
+        if self._survey_busy and not (editing and self._survey_dragging):
+            return
         if not editing and all(point is not None for point in self._survey_dialog.points):
             self._survey_clear()
         ch = self.dataset
-        mesh = ch.model_ply if kind != 'model' or self._survey_dialog.section or self.layer_action('mesh').isChecked() else None
-        cloud = ch.point_cloud_ply or ch.tie_points_ply
-        if kind == 'model' and not mesh:
-            cloud = ch.point_cloud_ply if self.layer_action('cloud').isChecked() else ch.tie_points_ply if self.layer_action('tie').isChecked() else None
-        source = mesh or cloud
-        if not source or not os.path.isfile(source) or (kind == 'ortho' and not mesh):
-            self._survey_dialog.result.setText('Show or build a usable mesh / point cloud first.'); return
+        source = ch.model_ply
+        if not source or not os.path.isfile(source):
+            self._survey_fail('Build a usable mesh first.'); return
         rotation = np.eye(3) if rotation is None else rotation.copy()
-        request = (self._survey_generation, rays, kind, rotation, source, bool(mesh))
+        request = (self._survey_generation, rays, kind, rotation, source)
         if editing:
+            if not self._survey_drag_changed:
+                self._survey_clear_profile()
+            self._survey_drag_changed = True
             # A drag keeps only the latest pending position; a pair is atomic.
             self._survey_pick_queue = [request]
         else:
             self._survey_pick_queue.append(request)
+        self._survey_error = None
+        self._survey_refresh_busy()
         self._survey_start_pick()
 
     def _survey_start_pick(self):
@@ -223,20 +287,16 @@ class SurveyToolsMixin:
             return
         if not self._survey_current() or not self._survey_pick_queue:
             return
-        generation, rays, kind, rotation, source, mesh = self._survey_pick_queue.pop(0)
+        generation, rays, kind, rotation, source = self._survey_pick_queue.pop(0)
         stamp = file_stamp(source)
         key = source, stamp, rotation.tobytes()
         cache = self._survey_pick_cache
         panel = self._survey_dialog
         offset = self._survey_offset()
-        state = self.dataset.meta.get('class_display') or {}
-        classes = state.get('visible') if state.get('source') == source else None
-        panel.result.setText('Finding the actual surface... Navigation remains available.')
+        self._survey_busy_note = 'Preparing the mesh / locating the endpoint... Wait before drawing; navigation remains available.'
         def work(_report, stop):
-            surface = None
-            if mesh:
-                from .survey_geometry import load_surface
-                surface = cache[1] if cache and cache[0] == key else load_surface(source, rotation, stop)
+            from .survey_geometry import load_surface
+            surface = cache[1] if cache and cache[0] == key else load_surface(source, rotation, stop)
             points = []
             for index, origin, direction in rays:
                 if stop():
@@ -246,23 +306,20 @@ class SurveyToolsMixin:
                     top = surface.high[2] + max(1., surface.high[2] - surface.low[2])
                     point = surface.pick([*xy, top], [0, 0, -1])
                     point = None if point is None else point @ rotation
-                elif mesh:
-                    point = surface.pick(origin, direction)
                 else:
-                    from .survey_geometry import pick_cloud
-                    point = pick_cloud(source, origin, direction, classes=classes, cancel=stop)
+                    point = surface.pick(origin, direction)
                 if point is None:
                     raise ValueError('No model surface at this location; the previous line is retained.')
                 points.append((index, point))
             return surface, points
         job = BackgroundJob(work, name='Survey surface pick', parent=self)
         self._survey_pick_job = job
+        self._survey_refresh_busy()
         def done(result, error):
             job.wait()
             if self._survey_current() and self._survey_dialog is panel and generation == self._survey_generation and file_stamp(source) == stamp:
                 if error:
-                    panel.result.setText(str(error))
-                    self._survey_sync_views()
+                    self._survey_fail(error)
                 elif result is not None:
                     surface, points = result
                     if surface is not None:
@@ -275,14 +332,15 @@ class SurveyToolsMixin:
                     for index, point in points:
                         index = panel.next_pick if index is None else index
                         self._survey_endpoints_model[index] = point
-                        world = point @ self._survey_rotation.T + offset if panel.section else point + offset
-                        panel.set_point(index, world[:2] if panel.section else world)
+                        world = point @ self._survey_rotation.T + offset
+                        panel.set_point(index, world[:2])
                     self._survey_update()
             job.result = None; job.fn = None
             if self._survey_pick_job is job:
                 self._survey_pick_job = None
             job.deleteLater()
             self._survey_start_pick()
+            self._survey_refresh_busy()
         job.done.connect(done, Qt.QueuedConnection); job.start()
 
     def _survey_set_point(self, point, frame_kind='model', rotation=None):
@@ -292,7 +350,7 @@ class SurveyToolsMixin:
         self._survey_frame_kind = frame_kind
         if rotation is not None:
             self._survey_rotation = rotation
-        self._survey_dialog.set_point(self._survey_dialog.next_pick, point)
+        self._survey_dialog.set_point(self._survey_dialog.next_pick, np.asarray(point)[:2])
         self._survey_update()
 
     def _survey_sync_views(self):
@@ -336,9 +394,8 @@ class SurveyToolsMixin:
             panel.result.setText('Move the mouse, then click the end point. Calculations start after the second point.')
             return
         a, b = panel.points
-        if not panel.section:
-            result = self.measure_points(a, b); delta = result['delta']
-            panel.result.setText(f"3D distance: {result['distance']:.6g} {panel.unit}\nHorizontal: {result['horizontal']:.6g}; ΔX {delta[0]:.6g}, ΔY {delta[1]:.6g}, ΔZ {delta[2]:.6g} {panel.unit}")
+        panel.result.setText(self._survey_metrics())
+        if self._survey_dragging:
             return
         self._survey_clear_profile()
         self._survey_request += 1
@@ -350,12 +407,24 @@ class SurveyToolsMixin:
             self._survey_timer = QTimer(self); self._survey_timer.setSingleShot(True)
             self._survey_timer.timeout.connect(self._survey_start_profile)
         self._survey_timer.start(150)
+        self._survey_busy_note = 'Calculating section... Wait before editing or drawing another line. Navigation remains available.'
+        self._survey_refresh_busy()
+
+    def _survey_metrics(self):
+        panel = self._survey_dialog
+        points = self._survey_endpoints_model
+        if all(point is not None for point in points):
+            values = np.asarray(points) @ self._survey_rotation.T + self._survey_offset()
+            result = self.measure_points(*values)
+            return f"Horizontal: {result['horizontal']:.6g} {panel.unit}; 3D distance: {result['distance']:.6g} {panel.unit}; ΔZ: {result['height']:.6g} {panel.unit}"
+        a, b = panel.points
+        return f'Horizontal: {np.linalg.norm(b-a):.6g} {panel.unit}. 3D distance requires valid surface endpoints.'
 
     def _survey_start_profile(self):
         if not self._survey_current() or self._survey_pending is None:
             return
         previous = getattr(self, '_survey_job', None)
-        if previous is not None and not previous.finished:
+        if previous is not None:
             return
         request, a, b, rotation = self._survey_pending; self._survey_pending = None
         source = self.dataset.model_ply; stamp = file_stamp(source)
@@ -363,41 +432,42 @@ class SurveyToolsMixin:
         key = source, stamp, rotation.tobytes()
         cache = self._survey_mesh_cache or self._survey_pick_cache
         panel = self._survey_dialog
-        panel.result.setText('Calculating the mesh section...')
         def work(_report, stop):
             from .survey_geometry import load_surface
             surface = cache[1] if cache and cache[0] == key else load_surface(source, rotation, stop)
             along, z = surface.section(a - offset[:2], b - offset[:2], cancel=stop)
             return surface, along, z + offset[2]
         job = BackgroundJob(work, name='Mesh cross section', parent=self); self._survey_job = job
+        self._survey_refresh_busy()
         def done(result, error):
             job.wait()
             if self._survey_current() and self._survey_dialog is panel and file_stamp(source) == stamp and request == self._survey_request:
                 if error:
-                    panel.result.setText(str(error))
+                    self._survey_fail(error)
                 elif result is not None:
                     surface, along, z = result
                     self._survey_mesh_cache = key, surface
                     self._survey_profile = along, z; self._survey_selected = []
                     panel.curve.setData(along, z, connect='finite'); panel.selection.setData([], [])
-                    panel.result.setText(f'Length: {along[-1]:.6g} {panel.unit}. Click two profile points for slope.')
                     ends = np.column_stack([np.array([a, b]) - offset[:2], np.array([z[0], z[-1]]) - offset[2]]) @ rotation
                     for i in range(2):
                         if self._survey_endpoints_model[i] is None and np.isfinite(ends[i]).all():
                             self._survey_endpoints_model[i] = ends[i]
                     self._survey_sync_views()
+                    panel.result.setText(self._survey_metrics())
             job.result = None; job.fn = None
             if self._survey_job is job:
                 self._survey_job = None
             job.deleteLater()
             if self._survey_pending is not None:
                 self._survey_start_profile()
+            self._survey_refresh_busy()
         job.done.connect(done, Qt.QueuedConnection); job.start()
 
     def _survey_profile_clicked(self, event):
         if event.button() != Qt.LeftButton:
             return
-        if not self._survey_current() or self._survey_profile is None:
+        if not self._survey_current() or self._survey_profile is None or self._survey_busy:
             return
         dialog = self._survey_dialog
         along, z = self._survey_profile
@@ -417,4 +487,4 @@ class SurveyToolsMixin:
             result = distance_components([along[i], 0, z[i]], [along[j], 0, z[j]])
             if result['slope_percent'] is None:
                 dialog.result.setText('Choose two profile points with different horizontal positions.'); return
-            dialog.result.setText(f"Slope: {result['slope_percent']:.4g}% ({result['slope_degrees']:.4g}°); horizontal {result['horizontal']:.6g} {dialog.unit}, height difference {result['height']:.6g} {dialog.unit}")
+            dialog.result.setText(self._survey_metrics() + f"\nSlope: {result['slope_percent']:.4g}% ({result['slope_degrees']:.4g}°); horizontal {result['horizontal']:.6g} {dialog.unit}, height difference {result['height']:.6g} {dialog.unit}")

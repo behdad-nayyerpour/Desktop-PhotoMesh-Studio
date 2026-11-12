@@ -177,6 +177,8 @@ def _with_alpha(colors, a):
 class ModelView(QWidget):
     surveyRay = Signal(object, object)
     surveyEditRays = Signal(object)
+    surveyDragStarted = Signal()
+    surveyDragFinished = Signal()
     """3D viewport with display/select-only marker interaction."""
     markerAction = Signal(str, str)
     moveMarkerRay = Signal(str, object, object)
@@ -187,7 +189,7 @@ class ModelView(QWidget):
         self._moving_marker = None
         from .survey_gestures import LineGesture
         self._survey_gesture = LineGesture()
-        self._survey_anchor = self._survey_pointer = self._survey_pending_anchor = None
+        self._survey_anchor = self._survey_pointer = None
         self.marker_states = {}
         self.flip = FLIP.copy()
         lay = QVBoxLayout(self); lay.setContentsMargins(0, 0, 0, 0)
@@ -305,11 +307,15 @@ class ModelView(QWidget):
         t = ev.type()
         if getattr(self, 'survey_enabled', False):
             gesture = self._survey_gesture
-            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
-                return gesture.start([ev.position().x(), ev.position().y()], self._survey_line_screen())
+            if t in (QEvent.MouseButtonPress, QEvent.MouseButtonDblClick) and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
+                handle = gesture.start([ev.position().x(), ev.position().y()], None if getattr(self, 'survey_busy', False) else self._survey_line_screen())
+                if handle:
+                    self.surveyDragStarted.emit()
+                return handle
             if t == QEvent.MouseMove:
-                self._survey_pointer = [ev.position().x(), ev.position().y()]
-                edits = gesture.move(self._survey_pointer)
+                if not getattr(self, 'survey_busy', False) or gesture.editing is not None:
+                    self._survey_pointer = [ev.position().x(), ev.position().y()]
+                edits = gesture.move([ev.position().x(), ev.position().y()])
                 if edits:
                     rays = [(i, self.ray_at(*point)) for i, point in edits]
                     if all(ray is not None for _i, ray in rays):
@@ -324,13 +330,12 @@ class ModelView(QWidget):
                     rays = [(i, self.ray_at(*point)) for i, point in edits]
                     if all(ray is not None for _i, ray in rays):
                         self.surveyEditRays.emit([(i, *ray) for i, ray in rays])
-                if gesture.finish([ev.position().x(), ev.position().y()]):
+                if gesture.finish([ev.position().x(), ev.position().y()]) and not getattr(self, 'survey_busy', False):
                     ray = self.ray_at(ev.position().x(), ev.position().y())
                     if ray is not None:
                         self.surveyRay.emit(*ray)
-                        if getattr(self, '_survey_line', None) is None and self._survey_anchor is None:
-                            self._survey_pending_anchor = [ev.position().x(), ev.position().y()]
-                            self._overlay_changed()
+                if editing:
+                    self.surveyDragFinished.emit()
                 return editing
             if t == QEvent.Leave:
                 self._survey_pointer = None; self._overlay_changed()
@@ -359,7 +364,6 @@ class ModelView(QWidget):
         return self._survey_project(getattr(self, '_survey_line', None))
 
     def set_survey_anchor(self, point):
-        self._survey_pending_anchor = None
         self._survey_anchor = None if point is None else np.asarray(point, float)
         self._overlay_changed()
 
@@ -699,7 +703,7 @@ class ModelView(QWidget):
             if getattr(self, 'survey_enabled', False):
                 from .survey_gestures import paint_survey_line
                 anchor = self._survey_project(None if self._survey_anchor is None else self._survey_anchor[None])
-                paint_survey_line(p, self._survey_line_screen(), self._survey_pending_anchor if anchor is None else anchor[0], self._survey_pointer)
+                paint_survey_line(p, self._survey_line_screen(), None if anchor is None else anchor[0], self._survey_pointer)
         finally:
             p.end()
 
@@ -1033,6 +1037,8 @@ class PhotoView(QWidget):
     pinMarker = Signal(str, float, float)   # pin an existing marker here
     surveyPoint = Signal(float, float)
     surveyEditPixels = Signal(object)
+    surveyDragStarted = Signal()
+    surveyDragFinished = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -1073,15 +1079,18 @@ class PhotoView(QWidget):
         if getattr(self, 'survey_enabled', False) and obj is self.view.viewport() and self.path is not None:
             gesture = self._survey_gesture
             t = ev.type()
-            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
-                pixels = None if self._survey_line is None else [self.view.viewportTransform().map(QPointF(*p)) for p in self._survey_line]
-                return gesture.start([ev.position().x(), ev.position().y()],
+            if t in (QEvent.MouseButtonPress, QEvent.MouseButtonDblClick) and ev.button() == Qt.LeftButton:
+                pixels = None if self._survey_line is None or getattr(self, 'survey_busy', False) else [self.view.viewportTransform().map(QPointF(*p)) for p in self._survey_line]
+                handle = gesture.start([ev.position().x(), ev.position().y()],
                     None if pixels is None else [[p.x(), p.y()] for p in pixels])
+                if handle:
+                    self.surveyDragStarted.emit()
+                return handle
             if t == QEvent.MouseMove:
                 edits = gesture.move([ev.position().x(), ev.position().y()])
                 if edits:
                     self.surveyEditPixels.emit([(i, *self._survey_scene_point(p)) for i, p in edits])
-                if self._survey_anchor is not None and self._survey_preview_item is not None:
+                if not getattr(self, 'survey_busy', False) and self._survey_anchor is not None and self._survey_preview_item is not None:
                     u, v = self._survey_scene_point([ev.position().x(), ev.position().y()])
                     self._survey_preview_item.setLine(*self._survey_anchor, u, v)
                 if gesture.editing is not None:
@@ -1091,12 +1100,14 @@ class PhotoView(QWidget):
                 edits = gesture.move([ev.position().x(), ev.position().y()])
                 if edits:
                     self.surveyEditPixels.emit([(i, *self._survey_scene_point(p)) for i, p in edits])
-                if gesture.finish([ev.position().x(), ev.position().y()]):
+                if gesture.finish([ev.position().x(), ev.position().y()]) and not getattr(self, 'survey_busy', False):
                     point = self._survey_scene_point([ev.position().x(), ev.position().y()])
                     self.surveyPoint.emit(*point)
-                    if self._survey_line is None and self._survey_anchor is None:
-                        self.set_survey_anchor(point)
+                if editing:
+                    self.surveyDragFinished.emit()
                 return editing
+            if t == QEvent.ContextMenu:
+                return True
         if ev.type() == QEvent.KeyPress and ev.key() == Qt.Key_Escape and self._moving_marker:
             self.cancel_marker_move(); return True
         if (self._moving_marker and ev.type() == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton
@@ -1166,6 +1177,8 @@ class PhotoView(QWidget):
         self.view.viewport().unsetCursor()
 
     def ctrl_click(self, x, y):
+        if getattr(self, 'survey_enabled', False):
+            return
         if self.active_marker:
             self.pinMarker.emit(self.active_marker, float(x), float(y))
         else:
@@ -1344,7 +1357,7 @@ class PhotoView(QWidget):
 
     def _context(self, pos):
         from PySide6.QtWidgets import QMenu
-        if self.path is None:
+        if self.path is None or getattr(self, 'survey_enabled', False):
             return
         p = self.view.mapToScene(pos)
         menu = QMenu(self)

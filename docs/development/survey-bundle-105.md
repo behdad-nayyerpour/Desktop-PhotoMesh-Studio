@@ -86,6 +86,21 @@ installed tests with rollback/reapply. The single panel BAT downloads90178 bytes
 and updates8 app components against the verified current survey build; public
 artifact commit302a8a77787311366590115b844091f64c815cd8. Acceptance pending.
 
+## Unified Survey cross section corrections (2026-11-13)
+
+User requests moving Cross Section from Display to Survey, removing standalone
+Measure Distance and Pick Start/End buttons, retaining distance information in
+the section panel, fixing final clicks and all handles on photos/orthophotos,
+blocking context/control-point edits while the panel is open, and preventing new
+drawing during slow surface/profile work. Reproduce complete mouse event paths
+instead of testing only controller calls. Review press/release propagation,
+viewport dimensions/transforms, camera/raster identity, explicit draft/busy/ready
+states, worker ownership/cancellation and close-time restoration. Keep native
+navigation, manual XY input, three handles, numerical geometry and project data.
+Run actual photo/ortho click/move/click and endpoint/midpoint drags with calibrated
+fixtures, delayed workers and blocked/restored marker gestures. Assess maintainability,
+compatibility and UI responsiveness; one exact-baseline BAT, no Setup/PDF change.
+
 Existing code map: reference_ui.py mixin for GPS/markers/optimization;
 georef.CRS and run_task for adjustments, workflow.processing_crs/source_unit;
 calibration.py has model-specific fit indices, colmap_io models0..6;

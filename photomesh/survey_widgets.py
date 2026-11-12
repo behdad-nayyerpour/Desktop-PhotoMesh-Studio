@@ -2,14 +2,14 @@
 import numpy as np
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
-    QFormLayout, QLabel, QPushButton, QDoubleSpinBox)
+    QFormLayout, QLabel, QPushButton, QDoubleSpinBox, QProgressBar)
 
 
 class SurveyPanel(QDockWidget):
     closed = Signal()
 
     def __init__(self, parent, section, unit):
-        super().__init__('Cross Section' if section else 'Measure Distance', parent)
+        super().__init__('Cross Section', parent)
         self.setObjectName('survey-tools')
         self.setAllowedAreas(Qt.BottomDockWidgetArea)
         self.setFeatures(QDockWidget.DockWidgetClosable)
@@ -19,37 +19,46 @@ class SurveyPanel(QDockWidget):
         close = QPushButton('Close'); close.setObjectName('surveyClose')
         close.setMaximumWidth(70); close.clicked.connect(self.close)
         title_layout.addWidget(close); self.setTitleBarWidget(title)
-        self.section, self.unit = section, unit
+        self.section, self.unit = True, unit
         self.points, self.next_pick = [None, None], 0
         body = QWidget(); self.setWidget(body)
         layout = QHBoxLayout(body)
         controls = QWidget(); left = QVBoxLayout(controls)
         left.setContentsMargins(0, 0, 0, 0)
-        self.hint = QLabel('Click start, move the mouse, then click end. Drag an end circle to resize or the centre square to move the whole line. Drag elsewhere to rotate / pan; wheel to zoom.')
-        self.hint.setWordWrap(True); left.addWidget(self.hint)
+        self.hint = QLabel('Click start, then end. Drag an end circle or the centre square to edit. Drag elsewhere to rotate / pan; wheel to zoom.')
+        self.hint.setWordWrap(True)
+        self.hint.setMinimumHeight(self.fontMetrics().lineSpacing() * 3)
+        left.addWidget(self.hint)
+        self.status = QLabel('Click the start point.'); self.status.setWordWrap(True)
+        self.status.setStyleSheet('font-weight: bold;')
+        self.status.setMinimumHeight(self.fontMetrics().lineSpacing() * 2)
+        left.addWidget(self.status)
+        busy_row = QHBoxLayout()
+        self.progress = QProgressBar(); self.progress.setRange(0, 0); self.progress.hide()
+        self.cancel = QPushButton('Cancel calculation'); self.cancel.hide()
+        self.cancel.clicked.connect(parent._survey_cancel)
+        busy_row.addWidget(self.progress, 1); busy_row.addWidget(self.cancel)
+        left.addLayout(busy_row)
         form = QFormLayout(); self.coordinates = []
         for index, label in enumerate(('Start', 'End')):
             row = QHBoxLayout(); spins = []
-            for _ in range(2 if section else 3):
+            for _ in range(2):
                 box = QDoubleSpinBox(); box.setRange(-1e12, 1e12); box.setDecimals(6)
                 box.valueChanged.connect(lambda _value, i=index: parent._survey_coordinates_changed(i))
                 row.addWidget(box); spins.append(box)
-            button = QPushButton('Pick ' + label)
-            button.clicked.connect(lambda _checked=False, i=index: parent._survey_begin_pick(i))
-            row.addWidget(button)
-            form.addRow(f'{label} {"X / Y" if section else "X / Y / Z"} ({unit}):', row)
+            form.addRow(f'{label} X / Y ({unit}):', row)
             self.coordinates.append(spins)
         left.addLayout(form)
         self.result = QLabel('Choose the start and end points.'); self.result.setWordWrap(True)
         self.result.setMinimumHeight(self.fontMetrics().lineSpacing() * 3)
         left.addWidget(self.result)
-        if section:
+        if self.section:
             note = QLabel('Profile: sampled highest mesh intersection in the vertical section plane; mesh gaps stay empty.')
             note.setWordWrap(True); left.addWidget(note)
-        reset = QPushButton('New line / clear'); reset.clicked.connect(parent._survey_clear)
-        left.addWidget(reset); left.addStretch()
+        self.reset = QPushButton('New line / clear'); self.reset.clicked.connect(parent._survey_clear)
+        left.addWidget(self.reset); left.addStretch()
         layout.addWidget(controls, 1)
-        if section:
+        if self.section:
             import pyqtgraph as pg
             self.plot = pg.PlotWidget(); self.plot.setMinimumWidth(280)
             self.plot.setBackground(self.palette().base().color())
@@ -62,7 +71,14 @@ class SurveyPanel(QDockWidget):
             self.selection = self.plot.plot(pen=None, symbol='o', symbolBrush='#ffb33b', symbolSize=9)
             self.plot.scene().sigMouseClicked.connect(parent._survey_profile_clicked)
             layout.addWidget(self.plot, 2)
-        self.setMinimumHeight(230)
+        self.setMinimumHeight(320)
+
+    def set_busy(self, busy):
+        self.progress.setVisible(busy); self.cancel.setVisible(busy)
+        self.reset.setEnabled(not busy)
+        for row in self.coordinates:
+            for control in row:
+                control.setEnabled(not busy)
 
     def set_point(self, index, point):
         self.points[index] = np.asarray(point, float)

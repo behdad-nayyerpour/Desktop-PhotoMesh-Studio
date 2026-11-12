@@ -462,3 +462,40 @@ Full validation artifact13985344101 SHA256
 `c048086f6b5734011572b13260bbf156804a606499fafce3e0433cd7e5657613`.
 Await user target-display testing/acceptance. Full Setup, PDF changes and public
 installer publication remain deferred under the existing instructions.
+
+## Unified section interaction corrections (2026-11-13)
+
+Scope: menus and action dispatch, section controller/panel, native 3D/photo/ortho
+mouse event paths, marker-entry guards, worker ownership and cancellation. The
+requested single command is Survey > Cross Section, with horizontal/3D distance
+and height difference in its bottom panel. Standalone Measure Distance and the
+Pick Start/End buttons are removed; manual XY entry and three editing handles
+remain. The scripted show_measurement entry remains a compatibility alias.
+
+Findings: views could invent a draft after a rejected controller pick, giving
+the impression that the first endpoint was accepted. Native double-click handling
+could swallow a final click or fit the ortho view. Busy work did not prevent new
+clicks during surface loading/profile debounce. These paths now share explicit
+busy/ready/error states, indeterminate progress and cancellation. Owned handle
+drags coalesce pending updates; profile work starts after release. Navigation
+continues while new drawing/handle grabs are locked during calculation. Context
+menus, Ctrl-marker actions and Add Marker are blocked until the panel closes.
+
+Maintainability: reviewed callers/signals and searched all measurement/section
+entry points. Removed the unused pick-button controller and fake 3D draft field;
+removed the now-unreachable cloud-picking branch from the mesh-section controller.
+Kept the independently used cloud geometry helper and script compatibility entry.
+No changes to alignment, GPS, calibration, classification, DTM or project formats.
+The strict current-mesh/projection check for orthophotos remains intentional:
+an older project inspected read-only had an explicitly stale raster and no mesh
+stamp. Its section must report the reason and request rebuilding the orthomosaic;
+silently assuming a coordinate frame would be unsafe.
+
+Tests exercise actual clicks, double-click endpoints and all three handles in
+calibrated photo and real native GeoTIFF views, plus slow/cancelled workers and
+blocked/restored marker/context gestures. Local affected regression: 94 passed,
+2 skipped before the final context test; final counts and fresh Windows/Linux,
+Mesa and installed-BAT evidence are recorded below when complete. Dark/Light
+synthetic previews inspected. These checks do not establish target-data survey
+accuracy or absence of unrelated bugs. Manual sections are affected, but the
+user explicitly deferred PDF changes; retain the approved PDF unchanged.

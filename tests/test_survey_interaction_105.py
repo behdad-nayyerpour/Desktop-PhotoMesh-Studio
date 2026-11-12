@@ -8,7 +8,7 @@ from test_survey_ui_105 import mesh_project
 
 
 def wait_picks(window, qtbot):
-    qtbot.waitUntil(lambda: getattr(window, '_survey_pick_job', None) is None and not window._survey_pick_queue, timeout=10000)
+    qtbot.waitUntil(lambda: getattr(window, '_survey_pick_job', None) is None and not window._survey_pick_queue and not window._survey_busy, timeout=10000)
 
 
 def photo_project(window, tmp_path):
@@ -67,8 +67,8 @@ def test_photo_picks_use_actual_calibration_and_mesh_and_keep_overlay_on_rotated
     points = np.array([[1, 1, 3], [4, 5, 14]], float)
     pixels, _ = project(camera, image.R(), image.tvec, points)
     window.show_measurement()
-    window._survey_pick_photo(*pixels[0]); window._survey_pick_photo(*pixels[1]); wait_picks(window, qtbot)
-    np.testing.assert_allclose(window._survey_dialog.points, points, atol=1e-7)
+    window._survey_pick_photo(*pixels[0]); wait_picks(window, qtbot); window._survey_pick_photo(*pixels[1]); wait_picks(window, qtbot)
+    np.testing.assert_allclose(window._survey_endpoints_model, points, atol=1e-7)
     np.testing.assert_allclose(window.photo_view._survey_line, pixels, atol=1e-7)
     window.rotate_photo(90)
     for pixel in pixels:
@@ -87,7 +87,7 @@ def test_photo_section_endpoint_drag_and_middle_pair_recalculate(window, tmp_pat
     def pixels(points):
         return project(camera, image.R(), image.tvec, np.asarray(points))[0]
     uv = pixels([[1, 1, 3], [4, 1, 6]])
-    window._survey_pick_photo(*uv[0]); window._survey_pick_photo(*uv[1]); wait_picks(window, qtbot)
+    window._survey_pick_photo(*uv[0]); wait_picks(window, qtbot); window._survey_pick_photo(*uv[1]); wait_picks(window, qtbot)
     moved = np.array([[2, 2, 6], [5, 2, 9]], float)
     uv2 = pixels(moved)
     window._survey_edit_photo([(0, *uv2[0]), (1, *uv2[1])]); wait_picks(window, qtbot)
@@ -101,10 +101,10 @@ def test_ortho_supports_both_tools_and_atomic_middle_translation(window, tmp_pat
     mesh_project(window, tmp_path)
     window._open_survey(section)
     monkeypatch.setattr(window, '_survey_ortho_rotation', lambda: np.eye(3))
-    window._survey_pick_plan(1, 1); window._survey_pick_plan(4, 1); wait_picks(window, qtbot)
+    window._survey_pick_plan(1, 1); wait_picks(window, qtbot); window._survey_pick_plan(4, 1); wait_picks(window, qtbot)
     window._survey_edit_plan([(0, 2, 2), (1, 5, 2)]); wait_picks(window, qtbot)
     expected = np.array([[2, 2, 6], [5, 2, 9]], float)
-    np.testing.assert_allclose(window._survey_dialog.points, expected[:, :2] if section else expected, atol=1e-7)
+    np.testing.assert_allclose(window._survey_dialog.points, expected[:, :2], atol=1e-7)
     if section:
         qtbot.waitUntil(lambda: window._survey_profile is not None, timeout=10000)
 
@@ -163,7 +163,9 @@ def test_manual_coordinates_and_close_reopen_do_not_accept_old_worker(window, tm
     for row, values in enumerate(([1, 2, 3], [4, 6, 15])):
         for box, value in zip(window._survey_dialog.coordinates[row], values):
             box.setValue(value)
-    assert '3D distance: 13' in window._survey_dialog.result.text()
+    wait_picks(window, qtbot)
+    assert 'Horizontal: 5' in window._survey_dialog.result.text()
+    assert '3D distance: 12.083' in window._survey_dialog.result.text()
 
 
 def test_photo_middle_handle_drag_moves_both_endpoints_without_panning(window, tmp_path, qtbot):
@@ -171,11 +173,11 @@ def test_photo_middle_handle_drag_moves_both_endpoints_without_panning(window, t
     camera, image = photo_project(window, tmp_path)
     window.show_measurement()
     uv, _ = project(camera, image.R(), image.tvec, np.array([[1, 1, 3], [7, 1, 9]], float))
-    window._survey_pick_photo(*uv[0]); window._survey_pick_photo(*uv[1]); wait_picks(window, qtbot)
+    window._survey_pick_photo(*uv[0]); wait_picks(window, qtbot); window._survey_pick_photo(*uv[1]); wait_picks(window, qtbot)
     photo = window.photo_view
     pixels = [photo.view.viewportTransform().map(QPointF(*p)) for p in photo._survey_line]
     mid = (pixels[0] + pixels[1]) / 2
-    before = np.array(window._survey_dialog.points)
+    before = np.array(window._survey_endpoints_model)
     transform = photo.view.viewportTransform()
     qtbot.mousePress(photo.view.viewport(), Qt.LeftButton, pos=mid.toPoint())
     assert photo._survey_gesture.editing == 2
@@ -183,7 +185,7 @@ def test_photo_middle_handle_drag_moves_both_endpoints_without_panning(window, t
     qtbot.mouseRelease(photo.view.viewport(), Qt.LeftButton, pos=(mid + QPointF(8, -5)).toPoint())
     wait_picks(window, qtbot)
     assert photo.view.viewportTransform() == transform
-    after = np.array(window._survey_dialog.points)
+    after = np.array(window._survey_endpoints_model)
     assert np.linalg.norm(after[0] - before[0]) > .01 and np.linalg.norm(after[1] - before[1]) > .01
     # Both new hits still lie on the independently known plane z=x+2*y.
     np.testing.assert_allclose(after[:, 2], after[:, 0] + 2*after[:, 1], atol=1e-7)
@@ -195,7 +197,7 @@ def test_ortho_real_mouse_drag_selects_midpoint_and_keeps_line_parallel(window, 
     view = window.ortho_view
     view.center, view.scale = (5, 5), 20
     window.show_view(view)
-    window._survey_pick_plan(1, 1); window._survey_pick_plan(5, 1); wait_picks(window, qtbot)
+    window._survey_pick_plan(1, 1); wait_picks(window, qtbot); window._survey_pick_plan(5, 1); wait_picks(window, qtbot)
     before = view.survey_line.copy(); mid = np.mean([view.to_screen(*p) for p in before], axis=0)
     start = QPoint(round(mid[0]), round(mid[1])); end = start + QPoint(10, -10)
     qtbot.mousePress(view, Qt.LeftButton, pos=start)
@@ -217,9 +219,9 @@ def test_rotated_ortho_and_world_offset_roundtrip_keep_actual_model_endpoints(wi
     actual = np.array([[1., 1., 3.], [4., 2., 8.]])
     projected = actual @ rotation.T + offset
     for point in projected:
-        window._survey_pick_plan(*point[:2])
+        window._survey_pick_plan(*point[:2]); wait_picks(window, qtbot)
     wait_picks(window, qtbot)
-    np.testing.assert_allclose(window._survey_dialog.points, actual + offset, atol=1e-7)
+    np.testing.assert_allclose(window._survey_dialog.points, projected[:, :2], atol=1e-7)
     np.testing.assert_allclose(window.model_view._survey_line, actual, atol=1e-7)
 
 
@@ -233,8 +235,8 @@ def test_photo_resolution_scaling_and_unaligned_guard(window, tmp_path, qtbot):
     model = window._sparse_model(); model.cameras[1] = camera
     cio.write_model(window._model_dir(), model)
     window.show_measurement(); window._survey_pick_photo(*pixels[0]); wait_picks(window, qtbot)
-    np.testing.assert_allclose(window._survey_dialog.points[0], point[0], atol=1e-7)
+    np.testing.assert_allclose(window._survey_endpoints_model[0], point[0], atol=1e-7)
     window._survey_clear(); window.dataset.cameras[0].aligned = False
     window._survey_pick_photo(*pixels[0])
     assert window._survey_dialog.points == [None, None]
-    assert 'Align this photo' in window._survey_dialog.result.text()
+    assert 'Align this photo' in window._survey_dialog.status.text()
