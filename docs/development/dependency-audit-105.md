@@ -35,6 +35,16 @@ Recovery backups are intentionally excluded from the distributed-file inventory.
 
 ## Release gates still open
 
+The exact inventory also includes `PySide6/Qt6Charts.dll`, `Qt6Graphs.dll`,
+`Qt6Quick3D.dll` and `Qt6VirtualKeyboard.dll`. The official Qt 6.12 documentation
+lists commercial or GPLv3 terms for [Qt Charts](https://doc.qt.io/qt-6/qtcharts-index.html)
+and [Qt Graphs](https://doc.qt.io/qt-6/qtgraphs-index.html). Therefore the package's
+top-level alternative-license metadata must not be treated as evidence that
+every bundled Qt addon is LGPL. Review actual module dependencies, plugins/QML
+and runtime usage before removing unnecessary modules; a text-search absence
+alone is not a dependency review. This finding remains open and is not a claim
+of legal clearance or a decision to change the application's own license.
+
 - Review exact native/Qt/model licensing evidence and collect required notices
   and version-matched source/replacement information. Do not claim the complete
   bundle is cleared because the direct GPL Python dependency was replaced.

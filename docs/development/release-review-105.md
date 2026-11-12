@@ -68,7 +68,36 @@ work are in [dependency-audit-105.md](dependency-audit-105.md).
   running processes, a failed second replacement, power-loss temporary files,
   deliberate dependency removal and preservation of later user edits on rollback.
 
-Remaining: final corrected installed/downloaded-BAT validation, full licensing
+## Verified initial incremental candidate
+
+Source `0fcdf3c9fb4b4dd6b3d77b884004048364b2b063` passed the Linux and Windows
+[Tests workflow](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43235599291).
+The [candidate workflow](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43235599102)
+also passed: 806 tests passed and 8 hardware/data-dependent tests were skipped.
+Installed module-origin, new icon, dependency removal and rollback identity
+checks passed using the exact corrected public 1.0.4 baseline in a path with
+spaces and Persian letters. The independent runtime comparison verified all
+26,190 candidate files against the baseline plus the explicit patch manifest;
+no unlisted Python or engine file changed.
+
+The one-million-vertex remote comparison preserved every tested attribute;
+median write times were 0.01270 s for the separate development reference and
+0.01218 s for the independent writer (three repetitions, warm-cache fixture).
+
+Candidate ZIP: `Lens2Mesh_TestPatch_0fcdf3c9fb4b.zip`, 1,693,777 bytes, SHA256
+`5cfafb3ec8a2530e2003189696390b18ebd2f6e6bd60eb3bdab1147e143ad110`.
+The enclosing evidence artifact is `13952263599`, SHA256
+`a43b362489c92d13bdd63b0bfc7fd0adb1f9d786ad25cf73fff24d3f59cb5cbf`.
+The ZIP is preserved on the artifact-only branch at commit
+`dddd2d6c11da6dbefd345fba4edbdb6c895fba9e`; the downloader binds to that exact
+commit rather than a moving branch.
+
+The actual standalone download/apply/recovery-BAT test is tracked separately in
+[run 43251700970](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43251700970).
+Do not deliver the BAT until that test succeeds. No full Setup or final release
+has been built or published, and no user acceptance has been recorded.
+
+Remaining: actual downloaded-BAT validation, full licensing
 review, complete rename/documentation/shortcut migration, and the remaining
 approved next-version scope. Real CUDA reconstruction and surveyed target-data
 checks have not been run for this candidate.
