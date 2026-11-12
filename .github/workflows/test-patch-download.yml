@@ -40,7 +40,10 @@ jobs:
           $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_Test_1.0.5.bat'
           python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
           if ($LASTEXITCODE) { throw 'Launcher generation failed' }
-          $cmd='call "'+$bat+'" "'+$env:PATCH_TEST_ROOT+'" <NUL'
+          # Reproduce registry discovery with a trailing backslash.
+          $key='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
+          Set-ItemProperty -LiteralPath $key -Name InstallLocation -Value ($env:PATCH_TEST_ROOT+'\')
+          $cmd='call "'+$bat+'" <NUL'
           & $env:ComSpec /d /c $cmd
           if ($LASTEXITCODE) { throw 'Actual BAT download/apply failed' }
           $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
@@ -56,7 +59,8 @@ jobs:
           & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME=='PhotoMesh Studio' and APP_VERSION=='1.0.4'"
           if ($LASTEXITCODE) { throw 'Rollback identity failed' }
           # Retrying after rollback must preserve the first recovery journal.
-          & $env:ComSpec /d /c $cmd
+          $cmdTrailing='call "'+$bat+'" "'+$env:PATCH_TEST_ROOT+'\" <NUL'
+          & $env:ComSpec /d /c $cmdTrailing
           if ($LASTEXITCODE) { throw 'BAT reapplication after rollback failed' }
           & $python tools/validate_installed_ply_105.py
           if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }

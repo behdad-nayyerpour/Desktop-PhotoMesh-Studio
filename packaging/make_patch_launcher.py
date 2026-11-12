@@ -5,6 +5,9 @@ import re
 from pathlib import Path
 
 
+# Keep filesystem paths out of Windows PowerShell native argument quoting.
+NATIVE_HANDOFF = '$env:LM_PATCH_INSTALL_ROOT=$root\n  $env:LM_PATCH_PAYLOAD=$payload\n  & $py -c "import os,runpy,sys; p=os.environ[\'LM_PATCH_PAYLOAD\']; s=os.path.join(p,\'apply_patch.py\'); sys.argv=[s,\'--root\',os.environ[\'LM_PATCH_INSTALL_ROOT\'],\'--payload\',p]; runpy.run_path(s,run_name=\'__main__\')"'
+
 def create(url, sha256, output):
     if not re.fullmatch(r"https://raw\.githubusercontent\.com/[\w-]+/[\w.-]+/[0-9a-f]{40}/[\w./-]+\.zip", url):
         raise ValueError("Use a raw GitHub URL bound to an exact artifact commit")
@@ -37,11 +40,11 @@ try {
   $payload=Join-Path $temp 'payload'
   [void][Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
   [IO.Compression.ZipFile]::ExtractToDirectory($zip,$payload)
-  & $py (Join-Path $payload 'apply_patch.py') --root $root --payload $payload
+  __HANDOFF__
   if ($LASTEXITCODE) { throw 'Update failed; review the message above' }
   exit 0
 } catch { Write-Host $_ -ForegroundColor Red; exit 1 }
-'''.replace("__URL__", url).replace("__SHA__", sha256)
+'''.replace('__HANDOFF__', NATIVE_HANDOFF).replace("__URL__", url).replace("__SHA__", sha256)
     encoded = base64.b64encode(code.encode("utf-16le")).decode("ascii")
     command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand " + encoded
     if len(command) >= 8000:
