@@ -62,7 +62,8 @@ def photo_metadata(image):
         position = coordinates(exif.get_ifd(0x8825) if exif else {})
     except (ValueError, TypeError, OSError, KeyError):
         position = (None, None, None)
-    raw = image.info.get('xmp') or image.info.get('XML:com.adobe.xmp') or b''
+    info = getattr(image, 'info', {})
+    raw = info.get('xmp') or info.get('XML:com.adobe.xmp') or b''
     if isinstance(raw, str):
         raw = raw.encode('utf-8')
     fields = {}

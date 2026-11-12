@@ -99,7 +99,7 @@ def test_invalid_dem_sidecar_closes_raster_reader(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("reference, expected", [(0, 25.0), (1, -25.0),
-                                                (bytes([0]), 25.0), (bytes([1]), -25.0), (b"", 25.0)])
+                                                (bytes([0]), 25.0), (bytes([1]), -25.0), (b"", None)])
 def test_exif_altitude_agrees_between_photo_import_paths(monkeypatch, reference, expected):
     from PIL import Image
     from photomesh import fastpipe, project

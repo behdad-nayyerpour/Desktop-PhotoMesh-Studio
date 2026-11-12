@@ -344,3 +344,13 @@ Primary semantics checked against [COLMAP camera models](https://colmap.github.i
 [official calibration parameter orders](https://github.com/colmap/colmap/blob/main/doc/faq.rst),
 [DJI P1 XMP documentation, page 22](https://dl.djicdn.com/downloads/Zenmuse_P1/20210510/Zenmuse_P1%20_User%20Manual_EN_v1.2_2.pdf)
 and [laspy streaming examples](https://laspy.readthedocs.io/en/latest/examples.html).
+
+The first Linux full-suite run (269d482) found an incomplete legacy photo mock
+without an info dictionary and a measurement fixture depending on persistent
+visibility from earlier tests. Metadata now treats absent optional XMP info as
+empty while preserving valid EXIF; the fixture explicitly shows its pickable
+mesh. The old empty-byte altitude-reference case is deliberately unavailable
+instead of being silently interpreted as above sea level. All valid 0/1 integer
+and byte reference cases remain tested. Focused reproduction: 22 passed. A later
+review also kept independent pixel diagnostics visible in the marker table when
+XYZ height references are unconfirmed, with stale-image-error invalidation.
