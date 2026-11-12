@@ -1,0 +1,94 @@
+name: Verify splash-only BAT update
+on:
+  push:
+    branches: ["candidate-artifacts/lens2mesh-105"]
+    paths: ["candidates/105-splash/**", ".github/workflows/test-splash-delta.yml", "packaging/make_patch_launcher.py", "tools/validate_installed_ply_105.py"]
+permissions:
+  contents: read
+jobs:
+  download-apply-rollback:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact disposable baseline
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Could not fetch verified baseline' }
+          $setup=Join-Path $PWD 'released/PhotoMeshStudio_Setup_1.0.4.exe'
+          if ((Get-FileHash -LiteralPath $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline checksum mismatch' }
+          $root=Join-Path $env:RUNNER_TEMP 'BAT test فارسی'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Baseline install failed' }
+          "PATCH_TEST_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Restore exact previously accepted candidate baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105/Lens2Mesh_TestPatch_0f112b74f09d_r2.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f') { throw 'Prior candidate checksum mismatch' }
+          Expand-Archive -LiteralPath $zip.FullName -DestinationPath prior-payload
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python prior-payload/apply_patch.py --root $env:PATCH_TEST_ROOT --payload prior-payload
+          if ($LASTEXITCODE) { throw 'Prior candidate fixture failed' }
+          $before=@{}
+          foreach ($name in @('appicon.py','splash.py')) { $before[$name]=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+      - name: Generate, download and run the actual single-file BAT
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force verified-download | Out-Null
+          $zip=Get-ChildItem candidates/105-splash/*.zip | Select-Object -First 1
+          $sha=(Get-FileHash -LiteralPath $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-splash/'+$zip.Name
+          $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_Splash_1.0.5.bat'
+          python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
+          if ($LASTEXITCODE) { throw 'Launcher generation failed' }
+          # Reproduce registry discovery with a trailing backslash.
+          $key='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
+          Set-ItemProperty -LiteralPath $key -Name InstallLocation -Value ($env:PATCH_TEST_ROOT+'\')
+          $cmd='call "'+$bat+'" <NUL'
+          & $env:ComSpec /d /c $cmd
+          if ($LASTEXITCODE) { throw 'Actual BAT download/apply failed' }
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME; assert APP_NAME=='Lens2Mesh'"
+          if ($LASTEXITCODE) { throw 'Installed download candidate identity failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Installed offline PLY processing failed' }
+          & $python tools/validate_splash_105.py
+          if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
+          $before=Get-Content splash-before.json -Raw | ConvertFrom-Json
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '3bc3b5bd6106*' | Select-Object -First 1
+          $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
+          & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME=='Lens2Mesh' and APP_VERSION=='1.0.5'"
+          if ($LASTEXITCODE) { throw 'Rollback identity failed' }
+          foreach ($name in @('appicon.py','splash.py')) { if ((Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash -ne $before.$name) { throw 'Rollback bytes differ' } }
+          # Retrying after rollback must preserve the first recovery journal.
+          $cmdTrailing='call "'+$bat+'" "'+$env:PATCH_TEST_ROOT+'\" <NUL'
+          & $env:ComSpec /d /c $cmdTrailing
+          if ($LASTEXITCODE) { throw 'BAT reapplication after rollback failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }
+          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '3bc3b5bd6106*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
+          if (-not $active -or $active.FullName -eq $receipt.FullName) { throw 'Recovery history was not preserved' }
+          & $env:ComSpec /d /c ('call "'+(Join-Path $active.FullName 'ROLLBACK.bat')+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Second actual BAT rollback failed' }
+          & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME=='Lens2Mesh' and APP_VERSION=='1.0.5'"
+          if ($LASTEXITCODE) { throw 'Second rollback identity failed' }
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: Verified-splash-BAT
+          path: verified-download/
+          retention-days: 30
