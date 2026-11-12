@@ -85,6 +85,7 @@ jobs:
           & $python -m pytest test_build_display.py -q -p no:cacheprovider --basetemp (Join-Path $env:RUNNER_TEMP 'display-test-temp')
           $result=$LASTEXITCODE
           Pop-Location
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
           if ($result) { throw 'Actual installed UI tests failed' }
           & $python tools/validate_splash_105.py
           if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
