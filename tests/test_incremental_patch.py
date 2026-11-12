@@ -137,3 +137,16 @@ def test_runtime_replacement_is_not_allowed(fixture):
     manifest["files"].append({"path": relative, "sha256": updater.digest(target)})
     with pytest.raises(ValueError, match="cannot replace"):
         updater.apply(root, payload, manifest)
+
+
+def test_same_candidate_can_be_applied_after_rollback_without_losing_history(fixture):
+    root, payload, manifest = fixture
+    first = updater.apply(root, payload, manifest)
+    updater.rollback(root, first)
+    second = updater.apply(root, payload, manifest)
+    assert first != second and first.exists()
+    assert json.loads((first / "state.json").read_text())["status"] == "rolled_back"
+    assert (first / "backup/app/main.py").read_bytes() == b"previous"
+    assert (root / "app/main.py").read_bytes() == b"candidate"
+    updater.rollback(root, second)
+    assert (root / "app/main.py").read_bytes() == b"previous"

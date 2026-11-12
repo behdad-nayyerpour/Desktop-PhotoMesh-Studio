@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import sys
+import uuid
 
 
 def digest(path):
@@ -166,9 +167,15 @@ def apply(root, payload, manifest):
     if parent.is_symlink() or parent.is_junction():
         raise ValueError("Patch backup directory must not be a link")
     parent.mkdir(exist_ok=True)
-    # Do not overwrite a completed or interrupted candidate's recovery evidence.
+    # Preserve every recovery attempt. A verified baseline may be updated again
+    # after rollback without deleting or overwriting the previous backup journal.
     state_dir = parent / manifest["candidate"]
-    state_dir.mkdir()
+    while True:
+        try:
+            state_dir.mkdir()
+            break
+        except FileExistsError:
+            state_dir = parent / (manifest["candidate"] + "-" + uuid.uuid4().hex[:12])
     entries = []
     for entry in manifest["files"]:
         target = managed(root, entry["path"])
