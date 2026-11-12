@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   download-apply-rollback:
-    runs-on: windows-latest
+    runs-on: windows-2022
     timeout-minutes: 30
     env:
       QT_QPA_PLATFORM: offscreen
@@ -47,6 +47,8 @@ jobs:
           $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
           & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); from photomesh import APP_NAME; assert APP_NAME=='Lens2Mesh'"
           if ($LASTEXITCODE) { throw 'Installed download candidate identity failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Installed offline PLY processing failed' }
           $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Select-Object -First 1
           $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
           & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
