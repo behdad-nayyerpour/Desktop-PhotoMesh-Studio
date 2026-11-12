@@ -2,7 +2,7 @@ name: Verify unified section fixes BAT update
 on:
   push:
     branches: ["candidate-artifacts/lens2mesh-105"]
-    paths: ["candidates/105-section-fixes/**", "validation/section-fixes/**", ".github/workflows/test-section-fixes-delta.yml", "packaging/make_patch_launcher.py", "tools/validate_installed_ply_105.py"]
+    paths: ["candidates/105-section-fixes-final/**", "validation/section-fixes/**", ".github/workflows/test-section-fixes-delta.yml", "packaging/make_patch_launcher.py", "tools/validate_installed_ply_105.py"]
 permissions:
   contents: read
 jobs:
@@ -110,9 +110,9 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force verified-download | Out-Null
-          $zip=Get-ChildItem candidates/105-section-fixes/*.zip | Select-Object -First 1
+          $zip=Get-ChildItem candidates/105-section-fixes-final/*.zip | Select-Object -First 1
           $sha=(Get-FileHash -LiteralPath $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-          $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-section-fixes/'+$zip.Name
+          $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-section-fixes-final/'+$zip.Name
           $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_SectionFixes_1.0.5.bat'
           python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
           if ($LASTEXITCODE) { throw 'Launcher generation failed' }
@@ -141,7 +141,7 @@ jobs:
           & $python tools/validate_splash_105.py
           if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
           $before=Get-Content survey-before.json -Raw | ConvertFrom-Json -AsHashtable
-          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '5072cbe*' | Select-Object -First 1
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '02c42b5*' | Select-Object -First 1
           $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
           & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
           if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
@@ -160,7 +160,7 @@ jobs:
           if ($LASTEXITCODE) { throw 'BAT reapplication after rollback failed' }
           & $python tools/validate_installed_ply_105.py
           if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }
-          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '5072cbe*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
+          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '02c42b5*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
           if (-not $active -or $active.FullName -eq $receipt.FullName) { throw 'Recovery history was not preserved' }
           & $env:ComSpec /d /c ('call "'+(Join-Path $active.FullName 'ROLLBACK.bat')+'" <NUL')
           if ($LASTEXITCODE) { throw 'Second actual BAT rollback failed' }
