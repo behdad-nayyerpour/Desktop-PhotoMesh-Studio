@@ -239,3 +239,25 @@ an appended test-dependency PYTHONPATH; the workflow now restores app-only path.
 Application payload bytes did not change for that test-harness correction.
 
 Full Windows candidate [run43276695466](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43276695466) passed: 821 tests, 8 skipped, static/compile checks, PLY workload benchmark and exact installed candidate inventory/rollback. Verified 26,190 installed files with unchanged Python/engines preserved. This resolves the incomplete local-development-environment run above; actual CUDA/native engine accuracy tests remain outside this UI-only change. Display BAT published at artifact commit a3aadcfd5124e980b9b768feb258887f33b2a182; user acceptance pending.
+
+
+### Progress presentation / conservative stage ETA iteration (2026-11-12)
+
+User accepted the display BAT. Single-counter modal/import/view work now shows
+one bar; pipelines show a separately labelled weighted overall estimate only when
+multiple real steps exist, including dynamically expanded steps. Current-stage
+measurements reset at stage boundaries and unknown work remains indeterminate.
+Normalized 0..1000 UI units are not presented as real completed-item counts.
+ETA uses recent observed sample intervals, three samples over at least 5 seconds,
+and is suppressed for stale/unstable throughput or changed workloads. Native
+meters share this rate rule; duplicate embedded ETA text is removed in dialogs.
+No future-stage or whole-operation ETA is claimed. 100% result publication is
+explicitly gated on successful callback completion; worker completion alone shows
+Finalizing results. Failures/cancel do not publish a completed-result indicator.
+Reviewed runner progress/detail ordering, modal background work, pane progress,
+retry/dynamic steps, all build completion callers and existing meter tests. The
+pipeline weighted overall estimate remains approximate, explicitly labelled; no
+numerical algorithms or native progress protocols changed. No actual GPU/small-vs-
+large target workload ETA benchmark yet: retain that checklist validation open.
+Local focused progress/fusion/lifecycle/display suite: 65 passed before final
+label cleanup. PDF retained unchanged per user's instruction. Full Setup deferred.

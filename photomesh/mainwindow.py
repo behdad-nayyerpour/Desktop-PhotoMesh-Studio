@@ -1626,7 +1626,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         stage_t = []                                   # [(label, start)]
 
         def on_progress(_pct, label):
+            dlg.set_operation_steps(sum(1 for name, _, _ in self.runner.steps if name not in ("log", "gate"))
+                                    if hasattr(self.runner, "steps") else len(steps))
             if label and (not stage_t or stage_t[-1][0] != label) and label != "Finished":
+                dlg.begin_stage()
                 stage_t.append((label, time.perf_counter()))
         self.runner.progress.connect(on_progress)
         job = f"{title} - {os.path.splitext(os.path.basename(self.project.path))[0] or 'Untitled'}"
@@ -1670,6 +1673,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             dlg.cancel_btn.setText("Close")
             dlg.cancel_btn.clicked.disconnect(); dlg.cancel_btn.clicked.connect(dlg.accept)
             if ok:
+                dlg.finish_success()
                 dlg.accept()
                 self.statusBar().showMessage(f"{title} finished in {dt:.1f} s", 8000)
             self.log(f"{title}: {'finished' if ok else msg} ({dt:.1f} s)")

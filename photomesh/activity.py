@@ -29,7 +29,7 @@ class ActivityStatusBar(QStatusBar):
 
 
 class ProgressPanel(QWidget):
-    """Exactly two bars; unknown work never acquires a made-up percentage."""
+    """One measured counter; inner-file progress is not separately reported."""
     cancelled = Signal()
 
     def __init__(self, parent=None):
@@ -39,6 +39,7 @@ class ProgressPanel(QWidget):
         self.detail = QLabel(); self.detail.setWordWrap(True)
         self.overall = QProgressBar(); self.overall.setFormat("Overall: %p%")
         self.subtask = QProgressBar(); self.subtask.setFormat("Current task: %p%")
+        self.subtask.hide()
         self.timing = QLabel()
         self.meter = WorkProgress()
         self.timer = QTimer(self); self.timer.setInterval(1000)

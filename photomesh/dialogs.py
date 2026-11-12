@@ -482,6 +482,7 @@ class ProgressDialog(QDialog):
         self._stage_text = ""
         self.stage_bar = QProgressBar(); self.stage_bar.setRange(0, 0)
         self.stage_bar.setFormat("Current task: %p%")
+        self.bar.hide()  # Single tasks have no separate overall work counter.
         self.timing = QLabel("Estimating remaining time..."); self.timing.setWordWrap(True)
         self._timer = QTimer(self); self._timer.setInterval(1000)
         self._timer.timeout.connect(self._refresh_timing)
@@ -501,7 +502,26 @@ class ProgressDialog(QDialog):
         self._label, self._detail, self._pct = "", "", 0.0
 
     def _refresh_timing(self):
-        self.timing.setText(self._stage_text + "\n" + self._meter.text())
+        detail = self._stage_text if self._stage_text not in (self._label, self._detail) else ""
+        self.timing.setText((detail + "\n" if detail else "") +
+                            "Current task: " + self._meter.text(show_counts=False))
+
+    def set_operation_steps(self, count):
+        self.bar.setVisible(count > 1)
+
+    def begin_stage(self):
+        self._meter.reset()
+        self._unknown_stage = True
+        self.stage_bar.setRange(0, 0)
+        self._stage_text = ""
+
+    def finish_success(self):
+        """Called only after the result has been published successfully."""
+        self._pct = 100.0
+        self.bar.setValue(1000)
+        self.stage_bar.setRange(0, 1000)
+        self.stage_bar.setValue(1000)
+        self.stage.setText("Finished")
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -536,12 +556,14 @@ class ProgressDialog(QDialog):
         step adds weight to the total)."""
         if label != self._label:
             self._label, self._detail = label, ""
-        self._pct = max(self._pct, float(pct)) if pct < 100 else 100.0
+        self._pct = max(self._pct, min(99.9, float(pct)))
+        if pct >= 100:
+            self._label = "Finalizing results..."
         self.bar.setValue(int(round(self._pct * 10)))
         self._show()
 
     def set_stage_progress(self, fraction, text):
-        self._stage_text = text
+        self._stage_text = text.split(" - about ", 1)[0]
         if fraction < 0:
             if not getattr(self, "_unknown_stage", False):
                 self._meter.reset()
@@ -551,13 +573,13 @@ class ProgressDialog(QDialog):
             self._unknown_stage = False
             self._meter.update(fraction * 1000, 1000)
             self.stage_bar.setRange(0, 1000)
-            self.stage_bar.setValue(min(1000, int(fraction * 1000)))
-        self.timing.setText(text + "\n" + self._meter.text())
+            self.stage_bar.setValue(min(999, int(fraction * 1000)))
+        self._refresh_timing()
 
     def set_detail(self, pct, text):
         """Fine progress inside a step: e.g. depth-map pass, view and ETA."""
-        self._pct = max(self._pct, float(pct))
-        self._detail = text
+        self._pct = max(self._pct, min(99.9, float(pct)))
+        self._detail = text.split(" - about ", 1)[0]
         self.bar.setValue(int(round(self._pct * 10)))
         self._show()
 

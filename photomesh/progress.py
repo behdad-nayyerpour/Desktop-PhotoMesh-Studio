@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import re
 import time
+import math
+from statistics import median
 
 _VIEW = re.compile(r"Processing view\s+(\d+)\s*/\s*(\d+)")
 _FUSE = re.compile(r"Fusing image \[(\d+)/(\d+)\]")
@@ -20,7 +22,7 @@ _POINTS = re.compile(r"\((\d+) points\)")
 
 
 def fmt_eta(seconds):
-    if seconds is None or seconds != seconds or seconds < 0:
+    if seconds is None or not math.isfinite(seconds) or seconds < 0:
         return ""
     s = int(round(seconds))
     if s < 60:
@@ -34,19 +36,12 @@ def fmt_eta(seconds):
 class _Meter:
     def __init__(self, clock=time.monotonic):
         self.clock = clock
-        self.t0 = None          # time of the first counted item
-        self.n0 = 0
+        self.work = WorkProgress(clock)
 
     def _eta(self, done, total):
         """Remaining time from the rate since the first counted item."""
-        now = self.clock()
-        if self.t0 is None:
-            self.t0, self.n0 = now, done
-            return None
-        k = done - self.n0
-        if k <= 0 or now <= self.t0:
-            return None
-        return (now - self.t0) / k * max(0, total - done)
+        self.work.update(done, total)
+        return self.work.remaining()
 
 
 class PatchMatchMeter(_Meter):
@@ -114,26 +109,42 @@ class WorkProgress:
         self.samples = []
 
     def update(self, done, total):
+        if not math.isfinite(float(done)) or not math.isfinite(float(total)):
+            return
         done, total = max(0, float(done)), max(0, float(total))
         if total != self.total or done < self.done:
             self.reset()
         now = self.clock()
+        done = min(done, total) if total else done
         if done > self.done:
             self.samples.append((now, done))
             self.samples = self.samples[-30:]
         self.done, self.total = min(done, total) if total else done, total
 
-    def text(self):
+    def remaining(self):
+        """Recent observed throughput only; suppress short, stale or unstable rates."""
+        if not self.total or len(self.samples) < 3:
+            return None
+        t0, d0 = self.samples[0]
+        t1, d1 = self.samples[-1]
+        intervals = [b[0] - a[0] for a, b in zip(self.samples, self.samples[1:])]
+        if t1 - t0 < 5 or d1 <= d0 or any(dt <= 0 for dt in intervals):
+            return None
+        rates = [(b[1] - a[1]) / (b[0] - a[0])
+                 for a, b in zip(self.samples, self.samples[1:])]
+        if max(rates) > min(rates) * 3:
+            return None
+        if self.clock() - t1 > max(10, 3 * median(intervals)):
+            return None
+        return (t1 - t0) / (d1 - d0) * max(0, self.total - d1)
+
+    def text(self, show_counts=True):
         now = self.clock()
         elapsed = fmt_eta(now - self.start)
         if not self.total:
             return f"Elapsed {elapsed} - working; remaining time unavailable"
         fraction = min(1., self.done / self.total)
-        eta = None
-        if len(self.samples) >= 2:
-            t0, d0 = self.samples[0]
-            t1, d1 = self.samples[-1]
-            if d1 > d0 and t1 - t0 >= 2:
-                eta = (now - t0) / (d1 - d0) * max(0, self.total - d1)
+        eta = self.remaining()
         left = f"about {fmt_eta(eta)} left" if eta is not None else "estimating remaining time"
-        return f"{fraction:.1%} ({self.done:g}/{self.total:g}) - elapsed {elapsed} - {left}"
+        counts = f" ({self.done:g}/{self.total:g})" if show_counts else ""
+        return f"{fraction:.1%}{counts} - elapsed {elapsed} - {left}"

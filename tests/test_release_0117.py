@@ -20,9 +20,12 @@ def test_observed_progress_has_no_invented_percentage_and_eta():
     assert "estimating" in meter.text()
     now[0] = 14
     meter.update(3, 10)
-    assert "30.0%" in meter.text() and "14 s left" in meter.text()
+    assert "30.0%" in meter.text() and "estimating" in meter.text()
+    now[0] = 18
+    meter.update(5, 10)
+    assert "10 s left" in meter.text()
     now[0] = 20
-    assert "30.0%" in meter.text()  # idle time cannot invent completed work
+    assert "50.0%" in meter.text()  # idle time cannot invent completed work
     meter.update(0, 0)
     assert "unavailable" in meter.text()
 
