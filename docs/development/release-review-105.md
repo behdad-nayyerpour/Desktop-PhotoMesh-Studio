@@ -261,3 +261,21 @@ numerical algorithms or native progress protocols changed. No actual GPU/small-v
 large target workload ETA benchmark yet: retain that checklist validation open.
 Local focused progress/fusion/lifecycle/display suite: 65 passed before final
 label cleanup. PDF retained unchanged per user's instruction. Full Setup deferred.
+
+
+Final progress source is eb5d544da880b3c14a38cae7595c58cc9ec594da: additionally
+resets native/dialog ETA at the photometric/geometric depth-map pass boundary.
+Final focused progress/fusion subset: 22 passed; earlier 65-test check covered
+shared lifecycle and pipeline paths. Actual [BAT run43281167576](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43281167576)
+passed apply, 12 installed UI/progress tests with installed-origin checks, PLY,
+splash, exact four-file rollback, reapply and second rollback. Artifact13973735660
+ZIP SHA256 `3920b477248930dc843d9bd64364142d9c26629818b25a97cbf7261453cbe1ce`.
+Reproduced BAT is byte-identical, SHA256
+`e4051be34a993fb556a79b3196675bb946d7d1b19cd3c26cfaf897e8f58244d7`.
+Final delta63744 bytes SHA256
+`2273624944cbf7428ac3cc286ab96a9e0a856c942647a02e52814fe2ae421cf4`.
+Target baseline is the user-accepted display patch; only four app files differ.
+Single/multiple-stage previews inspected locally at progress-preview-1.png and
+progress-preview-4.png. Full fresh-environment regression run43281101863 pending.
+
+Final Windows [run43281101863](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43281101863) SUCCESS: 826 passed,8 skipped; compile/static checks, PLY workload benchmark, exact installed inventory26190 and rollback identity passed. This is UI/progress validation, not target GPU ETA benchmarking. Final BAT published at b04fda257c8daf59c86dc7787df01b45337f269c; user testing pending. Broader numerical/classification/measurement/manual/installer work remains open.
