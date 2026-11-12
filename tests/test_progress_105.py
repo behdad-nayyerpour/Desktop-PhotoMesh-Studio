@@ -66,3 +66,18 @@ def test_completed_work_is_not_published_result(qtbot):
     dialog.finish_success()
     assert dialog.bar.value() == dialog.stage_bar.value() == 1000
     dialog.running = False
+
+
+def test_depth_pass_change_discards_previous_rate(qtbot):
+    from photomesh.dialogs import ProgressDialog
+    dialog = ProgressDialog("Cloud")
+    qtbot.addWidget(dialog)
+    now = [0.0]
+    dialog._meter = WorkProgress(clock=lambda: now[0])
+    for when, fraction in ((0, .1), (5, .2), (10, .3)):
+        now[0] = when
+        dialog.set_stage_progress(fraction, "Depth maps: photometric pass 4/10")
+    assert dialog._meter.remaining() is not None
+    dialog.set_stage_progress(.5, "Depth maps: geometric pass 1/10")
+    assert dialog._meter.remaining() is None
+    dialog.running = False

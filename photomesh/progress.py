@@ -61,6 +61,8 @@ class PatchMatchMeter(_Meter):
         if not m:
             return None
         self.count += 1
+        if self.todo_p and self.count == self.todo_p + 1:
+            self.work.reset()  # Geometric and photometric passes have different costs.
         if self.views is None:
             self.views = int(m.group(2))
         # Only previous views are known complete; a just-started view is not half finished.

@@ -480,6 +480,7 @@ class ProgressDialog(QDialog):
         from PySide6.QtCore import QTimer
         self._meter = WorkProgress()
         self._stage_text = ""
+        self._meter_phase = None
         self.stage_bar = QProgressBar(); self.stage_bar.setRange(0, 0)
         self.stage_bar.setFormat("Current task: %p%")
         self.bar.hide()  # Single tasks have no separate overall work counter.
@@ -511,6 +512,7 @@ class ProgressDialog(QDialog):
 
     def begin_stage(self):
         self._meter.reset()
+        self._meter_phase = None
         self._unknown_stage = True
         self.stage_bar.setRange(0, 0)
         self._stage_text = ""
@@ -563,6 +565,11 @@ class ProgressDialog(QDialog):
         self._show()
 
     def set_stage_progress(self, fraction, text):
+        if text.startswith("Depth maps: ") and " pass " in text:
+            phase = text.split(" pass ", 1)[0]
+            if self._meter_phase is not None and phase != self._meter_phase:
+                self._meter.reset()
+            self._meter_phase = phase
         self._stage_text = text.split(" - about ", 1)[0]
         if fraction < 0:
             if not getattr(self, "_unknown_stage", False):
