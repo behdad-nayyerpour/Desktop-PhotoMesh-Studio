@@ -37,6 +37,14 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             return a
         P = F = surface = None
         source = c.get("source","Point cloud")
+        if c.get("ground_only") and source == "Mesh":
+            raise ValueError("DTM requires a classified point cloud, not a mesh")
+        def selected_records(records):
+            if not c.get("ground_only"):
+                return records
+            if 'classification' not in records.dtype.names:
+                raise ValueError("Classify the point cloud before building a DTM")
+            return records[records['classification'] == 2]
         if source == "Mesh":
             from .texture import read_mesh
             from .plyio import ply_counts
@@ -63,7 +71,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             if npoints*80 < require_available_bytes()*.4:
                 data = read_fast(c["cloud"])
                 if data is not None:
-                    v=data["vertex"]; P=np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
+                    v=selected_records(data["vertex"]); P=np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
                     del data,v
                     require_points(P)
             lo,hi=np.full(3,np.inf),np.full(3,-np.inf)
@@ -73,11 +81,19 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                 if P is not None:
                     yield P; return
                 for v in vertex_blocks(c["cloud"]):
+                    v = selected_records(v)
+                    if not len(v):
+                        continue
                     yield np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
+            selected_count = 0
             for xyz in blocks():
                 require_points(xyz)
+                selected_count += len(xyz)
                 lo,hi=np.minimum(lo,xyz.min(0)),np.maximum(hi,xyz.max(0))
                 if P is None: sample.append(xyz[::sample_stride].copy())
+            if not selected_count:
+                raise ValueError("No ground points available for DTM")
+            npoints = selected_count
             # Occupied-area estimate from a bounded sample; exact small-cloud path retained.
             samples = P if P is not None else np.concatenate(sample)
             g=max(float(np.ptp(hi[:2]-lo[:2])),float(np.max(hi[:2]-lo[:2])))/512 or 1.
@@ -216,11 +232,13 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             writer.close(); maskwriter.close()
         except BaseException:
             writer.abort(); maskwriter.abort(); raise
-        info={"format":"photomesh-dem/1","surface_type":"DSM","dir":out,"path":path,"coverage_path":mask_path,
+        info={"format":"photomesh-dem/1","dir":out,"path":path,"coverage_path":mask_path,
               "width":W,"height":H,"pixel_size":px,"origin":[x0+off[0],y1+off[1]],
               "bounds":[x0+off[0],y1-H*px+off[1],x0+W*px+off[0],y1+off[1]],
               "offset":off.tolist(),"rotation":R.tolist(),"georef":bool(georef),"crs":crs,"source":source,
               "interpolation":interpolation,"aggregation":c.get("aggregation","mean"),
+              "surface_type": "DTM" if c.get("ground_only") else "DSM", "ground_only": bool(c.get("ground_only")),
+              "coordinate_frame": georef.get('coordinate_frame'), "height_reference": georef.get('height_reference', 'unknown'),
               "z_range":[zmin,zmax],"filled_cells":int(fillmask.sum()),"measured_cells":int(measured.sum()),
               "valid_cells":int(np.isfinite(dem).sum()),"bytes":os.path.getsize(path),"nodata":o.NODATA_DEM,
               "seconds":round(time.perf_counter()-started,2),"stages":stages,"settings":cfg}

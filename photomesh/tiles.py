@@ -224,6 +224,29 @@ def _box(bmin, bmax):
 
 def _root_transform(georef, center_model):
     """ENU -> ECEF matrix (column-major) for UTM / WGS84-georeferenced datasets."""
+    if georef and georef.get('coordinate_frame'):
+        from .coordinates import frame_basis, enu_to_geographic
+        origin, basis = frame_basis(georef['coordinate_frame'])
+        offset = np.asarray(georef.get('offset') or [0, 0, 0], float)
+        matrix = np.eye(4)
+        matrix[:3, :3] = basis.T
+        matrix[:3, 3] = origin + basis.T @ offset
+        lon, lat, height = enu_to_geographic(np.atleast_2d(center_model) + offset, georef['coordinate_frame'])[0]
+        return matrix.T.ravel().tolist(), (float(lat), float(lon), float(height))
+    if georef and georef.get('crs_kind') == 'proj':
+        from pyproj import Transformer
+        from .georef import ecef_to_geodetic
+        world = np.asarray(center_model) + np.asarray(georef.get('offset') or [0, 0, 0])
+        transform = Transformer.from_crs(georef['crs'], 4978, always_xy=True)
+        earth = lambda xyz: np.asarray(transform.transform(*xyz), float)
+        origin = earth(world)
+        matrix = np.eye(4)
+        for axis in range(3):
+            delta = np.eye(3)[axis]
+            matrix[:3, axis] = (earth(world + delta) - earth(world - delta)) / 2
+        matrix[:3, 3] = origin - matrix[:3, :3] @ np.asarray(center_model)
+        lat, lon, height = ecef_to_geodetic(origin)
+        return matrix.T.ravel().tolist(), (float(lat[0]), float(lon[0]), float(height[0]))
     if not georef or georef.get("crs_kind") not in ("utm", "wgs84"):
         return None
     from .georef import utm_inverse, geodetic_to_ecef, enu_basis

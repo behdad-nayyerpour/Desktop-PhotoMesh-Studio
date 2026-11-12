@@ -3,9 +3,20 @@ import numpy as np
 from . import colmap_io as cio
 
 
+def camera_model_arguments(settings):
+    name = settings.get("camera_model", "")
+    if not name:
+        return []
+    if name not in cio.MODEL_ID:
+        raise ValueError(f"Unsupported camera model: {name}")
+    return ["--ImageReader.camera_model", name]
+
+
 def intrinsic_indices(model, preset):
     if preset == "none":
         return []
+    if preset == 'all':
+        return list(range(cio.CAMERA_MODELS[model][1]))
     if preset not in ("f", "f,cx,cy,k1", "f,cx,cy,k1-k3", "f,cx,cy,k1-k3,p1,p2"):
         raise ValueError(f"Unsupported intrinsic fit preset: {preset}")
     simple = model in (0, 2, 3)
@@ -21,10 +32,6 @@ def intrinsic_indices(model, preset):
     if preset == "f,cx,cy,k1-k3,p1,p2":
         if model in (4,6):
             result += [6,7]
-        if model == 5:
-            result += [7]
-        if model == 6:
-            result += [9,10,11]
     return result
 
 

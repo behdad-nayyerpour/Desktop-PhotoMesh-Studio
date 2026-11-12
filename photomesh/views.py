@@ -80,6 +80,7 @@ LAYERS = [
     ("tiled", "Tiled Model", True),
     ("ortho", "Orthomosaic", True),
     ("dem", "DEM", True),
+    ("dtm", "DTM", False),
     ("cameras", "Cameras", True),
     ("camera_labels", "Camera Labels", False),
     ("markers", "Markers", True),
@@ -174,6 +175,8 @@ def _with_alpha(colors, a):
 
 
 class ModelView(QWidget):
+    surveyRay = Signal(object, object)
+    surveyEndpointMoved = Signal(int, object)
     """3D viewport with display/select-only marker interaction."""
     markerAction = Signal(str, str)
     moveMarkerRay = Signal(str, object, object)
@@ -296,6 +299,31 @@ class ModelView(QWidget):
 
     def eventFilter(self, obj, ev):
         t = ev.type()
+        if getattr(self, 'survey_enabled', False):
+            if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton and not (ev.modifiers() & Qt.ShiftModifier):
+                point = ev.position()
+                endpoint = self._survey_endpoint_at(point.x(), point.y()) if getattr(self, 'survey_drag_enabled', False) else None
+                if endpoint is not None:
+                    self._survey_drag = endpoint
+                else:
+                    ray = self.ray_at(point.x(), point.y())
+                    if ray is not None:
+                        self.surveyRay.emit(*ray)
+                return True
+            if t == QEvent.MouseMove and getattr(self, '_survey_drag', None) is not None:
+                ray = self.ray_at(ev.position().x(), ev.position().y())
+                if ray is not None:
+                    normal = np.asarray(getattr(self, 'survey_plane_normal', [0, 0, 1]), float)
+                    origin, direction = ray
+                    denominator = float(normal @ direction)
+                    if abs(denominator) > 1e-10:
+                        distance = float(normal @ (self._survey_line[self._survey_drag] - origin)) / denominator
+                        if distance >= 0:
+                            self.surveyEndpointMoved.emit(self._survey_drag, origin + distance * direction)
+                return True
+            if t == QEvent.MouseButtonRelease and getattr(self, '_survey_drag', None) is not None:
+                self._survey_drag = None
+                return True
         if t == QEvent.MouseButtonPress and ev.button() == Qt.LeftButton:
             label = self.marker_at(ev.position().x(), ev.position().y())
             if label:
@@ -306,6 +334,28 @@ class ModelView(QWidget):
         elif t in (QEvent.MouseMove, QEvent.Wheel, QEvent.MouseButtonRelease, QEvent.KeyPress):
             self._sync_gizmo()
         return False
+
+    def _survey_endpoint_at(self, x, y):
+        points = getattr(self, '_survey_line', None)
+        matrix = self.view_mvp()
+        if points is None or matrix is None or self.gl is None:
+            return None
+        q = np.column_stack([points * self.flip, np.ones(len(points))]) @ matrix.T
+        valid = q[:, 3] > 0
+        xy = q[:, :2] / np.where(valid, q[:, 3], 1)[:, None]
+        xy = np.column_stack([(xy[:, 0] + 1) * self.gl.width() / 2, (1 - xy[:, 1]) * self.gl.height() / 2])
+        distances = np.linalg.norm(xy - [x, y], axis=1)
+        distances[~valid] = np.inf
+        return int(np.argmin(distances)) if distances.min() <= 12 else None
+
+    def set_survey_line(self, points):
+        self._remove('survey_line')
+        self._survey_line = None if points is None else np.asarray(points, float)
+        if points is not None and self.gl is not None:
+            item = gl.GLLinePlotItem(pos=(self._survey_line * self.flip).astype(np.float32),
+                                    color=(1., .65, .1, 1.), width=3, antialias=True)
+            self.gl.addItem(item)
+            self.layers['survey_line'] = item
 
     # ---- data
     def _remove(self, key):
@@ -772,6 +822,8 @@ class ModelView(QWidget):
         self._add("trackball", rings)
 
     def clear(self):
+        self._survey_line = None
+        self._survey_drag = None
         self.set_markers(None)
         self._remove_tiled()
         for k in list(self.layers):

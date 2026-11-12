@@ -24,7 +24,8 @@ def inventory(root, output):
     packages = []
     evidence = []
     site = root / "python/Lib/site-packages"
-    for dist in metadata.distributions(path=[str(site)]):
+    vendor = root / 'app/photomesh/_vendor'
+    for dist in metadata.distributions(path=[str(site), str(vendor)]):
         meta = dist.metadata
         packages.append({
             "name": meta.get("Name"), "version": dist.version,

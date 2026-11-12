@@ -379,7 +379,7 @@ class MarkerEditMixin:
         """(R, off) with ortho/DEM world XYZ = R @ local + off (ortho.py: R is the
         top-view rotation of a local project, identity when georeferenced)."""
         ch = ch or self.dataset
-        for d in (ch.orthomosaic, ch.dem):
+        for d in (ch.orthomosaic, ch.dem, ch.dtm):
             if d and d.get("rotation") is not None:
                 return np.asarray(d["rotation"], float), np.asarray(d.get("offset") or [0, 0, 0], float)
         off = self._world_offset() if hasattr(self, "_world_offset") else None

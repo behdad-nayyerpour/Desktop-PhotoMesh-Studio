@@ -197,6 +197,9 @@ class WorkspacePane(QTreeWidget):
                 if getattr(ch, "dem", None):
                     self._item(it, f"DEM ({pm.summary(ch, 'dem')})" + _outdated(ch.dem), ("dem", ci), "dem", layer=lay("dem"),
                                tip="Digital elevation model - double-click to show it in the Ortho view")
+                if getattr(ch, 'dtm', None):
+                    self._item(it, f"DTM ({ch.dtm.get('width', '?')} x {ch.dtm.get('height', '?')})" + _outdated(ch.dtm),
+                               ('dtm', ci), 'dem', layer=lay('dtm'), tip='Ground-only terrain model; double-click to display')
                 if getattr(ch, "orthomosaic", None):
                     o = ch.orthomosaic
                     tip = (f"Created {o.get('created', '?')}; surface {o.get('surface')}, blending {o.get('blending')}"
@@ -392,7 +395,7 @@ class ReferencePane(QTableWidget):
         import math
         import numpy as np
         from .georef import CRS
-        from .photo_gps import use_photo_gps
+        from .photo_gps import use_photo_gps, reported_accuracy
         gps_enabled = use_photo_gps(dataset)
         selected = {self.item(r, 0).data(ROLE) for r in {i.row() for i in self.selectedIndexes()}
                     if self.item(r, 0)}
@@ -416,22 +419,39 @@ class ReferencePane(QTableWidget):
                     has_gps = all(v is not None and math.isfinite(v) for v in ref)
                     if geo.get("offset") is not None and est[0] is not None:
                         est = (np.asarray(est) + np.asarray(geo["offset"])).tolist()
-                        if has_gps and crs.kind in ("utm", "wgs84"):
+                        if has_gps and crs.kind in ("utm", "wgs84", "proj"):
                             try:
-                                gps = CRS.parse("EPSG:4326").to_metric(np.asarray([ref]), (crs.zone, crs.south) if crs.kind == "utm" else geo.get("zone"))[0]
-                                if crs.kind == "utm":
+                                if crs.kind == 'proj':
+                                    from pyproj import Transformer
+                                    gps = np.asarray(Transformer.from_crs(4326, crs.name, always_xy=True).transform(*ref))
+                                else:
+                                    gps = CRS.parse("EPSG:4326").to_metric(np.asarray([ref]), (crs.zone, crs.south) if crs.kind == "utm" else geo.get("zone"), geo.get("coordinate_frame"))[0]
+                                if crs.kind in ("utm", "proj"):
                                     ref = gps.tolist()
                                 err = float(np.linalg.norm(np.asarray(est) - gps))
                             except (ValueError, TypeError):
                                 pass
+                    height_verified = ('camera_height_reference' not in geo or
+                                       (geo.get('camera_height_reference') == geo.get('height_reference') and
+                                        geo.get('height_reference') not in (None, 'unknown')))
+                    if not height_verified:
+                        err = None
                     if err is not None and gps_enabled and camera.enabled:
                         errors.append(err)
+                    accuracy = reported_accuracy(camera)
                     values = [camera.label, _fmt(ref[0]), _fmt(ref[1]), _fmt(ref[2], 3),
                               _fmt((dataset.reference_settings or {}).get("camera_accuracy", 10.0), 3) if has_gps else "",
                               _fmt(err, 3), *[_fmt(v, 3) for v in est]]
                     for col, value in enumerate(values):
                         item = QTableWidgetItem(value)
                         item.setData(ROLE, row)
+                        if col == 5 and not height_verified:
+                            item.setToolTip('3D GPS residual unavailable until camera and model height references are confirmed compatible.')
+                        if col == 4 and accuracy is not None:
+                            item.setToolTip('Reported E/N/height deviations: ' + ' / '.join(f'{value:.6g}' for value in accuracy) +
+                                            ' m. Used only when reported photo accuracy is explicitly enabled; transformed to adjustment-frame axes before fitting.')
+                            if dataset.reference_settings.get('reported_gps_accuracy', False):
+                                item.setText(' / '.join(f'{value:.4g}' for value in accuracy))
                         if col == 0:
                             from .icons import icon
                             item.setIcon(icon("photo"))

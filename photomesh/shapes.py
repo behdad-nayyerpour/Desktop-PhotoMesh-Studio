@@ -109,10 +109,11 @@ class Frame:
     """The project's world frame: kind local | utm (WGS 84 projects use the
     UTM zone of the georeferencing) and the offset (world = local + offset)."""
 
-    def __init__(self, kind="local", zone=0, south=False, offset=None, crs_text="", georeferenced=False):
+    def __init__(self, kind="local", zone=0, south=False, offset=None, crs_text="", georeferenced=False, frame=None):
         self.kind, self.zone, self.south = kind, int(zone or 0), bool(south)
         self.offset = np.asarray(offset if offset is not None else [0.0, 0.0, 0.0], float)
         self.crs_text, self.georeferenced = crs_text, georeferenced
+        self.frame = frame
 
     @classmethod
     def from_dataset(cls, ch):
@@ -132,9 +133,13 @@ class Frame:
                 zone, south = (int(z[0]), bool(z[1])) if isinstance(z, (list, tuple)) else (int(z), False)
             kind = "utm"
         off = gr.get("offset")
+        if gr.get('coordinate_frame'):
+            return cls('enu', offset=off, georeferenced=True, frame=gr['coordinate_frame'])
         return cls(kind or "local", zone, south, off if off is not None else [0, 0, 0], crs_text, bool(gr))
 
     def describe(self):
+        if self.kind == 'enu':
+            return 'WGS84 local East / North / Up'
         if self.kind == "utm":
             return f"WGS 84 / UTM zone {self.zone}{'S' if self.south else 'N'}"
         return self.crs_text or "Local Coordinates (m)"
@@ -176,6 +181,12 @@ class Frame:
             lat, lon = utm_inverse(P[:, 0], P[:, 1], src.zone, src.south)
         else:
             lon, lat = _pyproj_to_wgs84(P, src)
+        if self.kind == 'proj':
+            from pyproj import Transformer
+            return np.column_stack(Transformer.from_crs(4326, self.crs_text, always_xy=True).transform(lon, lat, P[:, 2]))
+        if self.kind == 'enu':
+            from .coordinates import geographic_to_enu
+            return geographic_to_enu(np.column_stack([lon, lat, P[:, 2]]), self.frame)
         E, N = utm_forward(lat, lon, self.zone, self.south)
         return np.column_stack([E, N, P[:, 2]])
 
@@ -189,7 +200,19 @@ class Frame:
         if dst.kind == "utm" and (dst.zone, dst.south) == (self.zone, self.south):
             return P
         from .georef import utm_forward, utm_inverse
-        lat, lon = utm_inverse(P[:, 0], P[:, 1], self.zone, self.south)
+        if self.kind == 'proj':
+            from pyproj import Transformer
+            lon, lat, height = Transformer.from_crs(self.crs_text, 4326, always_xy=True).transform(*P.T)
+            P = np.column_stack([lon, lat, height])
+        elif self.kind == 'enu':
+            from .coordinates import enu_to_geographic
+            P = enu_to_geographic(P, self.frame)
+            lon, lat = P[:, 0], P[:, 1]
+        else:
+            lat, lon = utm_inverse(P[:, 0], P[:, 1], self.zone, self.south)
+        if dst.kind == 'proj':
+            from pyproj import Transformer
+            return np.column_stack(Transformer.from_crs(4326, dst.wkt or dst.name, always_xy=True).transform(lon, lat, P[:, 2]))
         if dst.kind == "wgs84":
             return np.column_stack([lon, lat, P[:, 2]])
         if dst.kind == "utm":
@@ -199,9 +222,15 @@ class Frame:
 
     def prj(self):
         """WKT for .prj files (None for local systems)."""
+        if self.kind == 'enu':
+            from .coordinates import enu_wkt
+            return enu_wkt(self.frame)
         if self.kind == "utm" and self.zone:
             return utm_wkt(self.zone, self.south)
         s = (self.crs_text or "").strip()
+        if self.kind == 'proj':
+            from pyproj import CRS
+            return CRS.from_user_input(s).to_wkt(version='WKT1_GDAL')
         return s if s.upper().startswith(("PROJCS", "GEOGCS")) else None
 
 

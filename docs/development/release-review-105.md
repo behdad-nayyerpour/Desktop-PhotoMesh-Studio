@@ -279,3 +279,68 @@ Single/multiple-stage previews inspected locally at progress-preview-1.png and
 progress-preview-4.png. Full fresh-environment regression run43281101863 pending.
 
 Final Windows [run43281101863](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43281101863) SUCCESS: 826 passed,8 skipped; compile/static checks, PLY workload benchmark, exact installed inventory26190 and rollback identity passed. This is UI/progress validation, not target GPU ETA benchmarking. Final BAT published at b04fda257c8daf59c86dc7787df01b45337f269c; user testing pending. Broader numerical/classification/measurement/manual/installer work remains open.
+
+### Combined GPS / coordinates / terrain / survey tools candidate (2026-11-13)
+
+The user explicitly requested one combined incremental BAT for GPS/calibration,
+coordinates, classification, LAS/LAZ, DTM, measurement and cross section.
+Reviewed extraction routes, model-specific coefficient indices, global photo-GPS
+policy, reference UI/task boundaries, GPS/marker height provenance, residual
+recomputation, shapes/tiles/raster transforms, product replacement/staleness,
+save/reopen/relocation and menu/layer synchronization. Shared metadata decoding
+now lives in exif.py; ENU and receiver-axis uncertainty propagation are in
+coordinates.py; terrain/LAS/survey work is in cohesive modules rather than
+additional processing loops in MainWindow. Kept independent CPU/native routes,
+legacy project fields and photo-only marker editing. Ruff unused/undefined-name
+checks pass; this targeted sweep is not a claim of a whole-repository audit.
+
+Malformed rationals/GPS no longer become plausible zero coordinates. DJI XMP is
+namespace-whitelisted and bounded, valid EXIF takes precedence, failed receiver
+positions are excluded and reported standard deviations are explicit opt-in with
+fallback. RTK flags alone do not imply survey accuracy. Initial alignment still
+does not silently add markers; optional camera position priors use existing BA.
+The named full intrinsic preset fits only its named model-supported coefficients;
+an explicit all-coefficients choice is separate. No automatic geoid conversion:
+mixed GPS/controls require confirmed compatible height references in the UI,
+ENU requires confirmed WGS84 ellipsoidal heights. Incompatible marker/model
+heights suppress XYZ RMSE while retaining independent image residuals. Local
+units remain labelled as model units until a metric scale is established.
+
+Ground classification creates a separate scalar PLY and preserves original
+XYZ/attributes. Its progressive lower-envelope estimate has bounded grid/RAM,
+explicit slope/height/up settings and cancellation; it is not surveyed truth.
+DTM uses class 2 only, preserves measured/interpolated coverage and is stored
+independently of DSM. Class colors/filter state survives project relocation.
+LAS 1.4/LAZ export streams source records with quantization/int32 extent checks,
+world offset, CRS/provenance, classes/RGB/extras and atomic output publication.
+New vendored wheel files retain upstream licenses, RECORD and exact provenance:
+laspy 2.6.1 BSD and lazrs 0.7.0 MIT, Windows CPython3.13; other environments use
+declared dependencies. No user runtime pip invocation or engine download.
+
+Measurements pick actual double-precision mesh intersections/source points,
+respect visible classes and use correct world offsets. Cross sections show the
+highest mesh intersection in a vertical plane; disconnected coverage adds NaN
+even for holes narrower than sample spacing. Multiple floors/overhangs are
+explicitly an upper envelope, not a complete multi-surface section. Mesh indexing
+and profiles run in cancellable workers with bounded RAM, debouncing and source,
+project/dataset/dialog/request guards against stale completion. A Plan View pick
+requires a matching non-stale mesh-bound orthophoto; imported/old rasters without
+this provenance can use 3D picks or be rebuilt. Reviewed thread ownership and
+closed-dialog/source-switch paths. Native OpenGL interaction still needs the
+user's target-machine test; offscreen rendering is not that validation.
+
+Numerical fixtures check pyproj-independent ECEF/ENU, poles/dateline, known
+slopes/distances/millimetre coordinates at large origins, narrow holes, unchanged
+attributes, LAS/LAZ round trips and class-only DTM coverage. Actual DTM backend
+completion activates DTM while preserving DSM. Earlier focused integration:
+157 passed, plus subsequent 5 survey UI tests. Fresh Windows suite and actual
+installed BAT acceptance evidence will be appended after completion. Representative
+surveyed terrain/checkpoints and CUDA camera-prior accuracy tests remain open;
+synthetic checks do not establish their accuracy/performance. The complete PDF
+would need new menu/settings sections, but remains untouched per user instruction.
+No Setup or public release is authorized by this candidate request.
+
+Primary semantics checked against [COLMAP camera models](https://colmap.github.io/cameras.html),
+[official calibration parameter orders](https://github.com/colmap/colmap/blob/main/doc/faq.rst),
+[DJI P1 XMP documentation, page 22](https://dl.djicdn.com/downloads/Zenmuse_P1/20210510/Zenmuse_P1%20_User%20Manual_EN_v1.2_2.pdf)
+and [laspy streaming examples](https://laspy.readthedocs.io/en/latest/examples.html).

@@ -61,7 +61,7 @@ def products_after_georef(ch, M, log=print):
             except (OSError, ValueError) as e:
                 log(f"Optimize Cameras: could not update {p}: {e}")
     notes = []
-    for name, d in (("orthomosaic", ch.orthomosaic), ("DEM", ch.dem), ("tiled model", ch.tiled_model)):
+    for name, d in (("orthomosaic", ch.orthomosaic), ("DEM", ch.dem), ("DTM", ch.dtm), ("tiled model", ch.tiled_model)):
         if d and d.get("format") != "imported" and not d.get("stale"):
             d["stale"] = GEOREF_STALE; notes.append(name)
     if notes:
@@ -114,7 +114,8 @@ class ReferenceMixin:
             g.validate_projection_dimensions(model, photo_dimensions(self.dataset))
             estimates, _pixels, _counts, rows = g.marker_diagnostics(
                 model, markers, g.CRS.parse(georef.get("crs") or self.dataset.crs),
-                georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1])
+                georef.get("offset"), georef.get("zone"), cache=self._marker_residual_cache[1], frame=georef.get("coordinate_frame"),
+                compare_heights=georef.get('reference_heights_verified', True))
         except (ValueError, np.linalg.LinAlgError) as error:
             self.log(f"Marker residuals unavailable after edit: {error}")
             return
@@ -153,7 +154,7 @@ class ReferenceMixin:
         if gr.get("offset") is not None and m.ref is not None:
             try:
                 crs = g.CRS.parse(gr.get("crs") or self.dataset.crs)
-                X = crs.to_metric(np.atleast_2d(np.asarray(m.ref, float)), gr.get("zone"))[0]
+                X = crs.to_metric(np.atleast_2d(np.asarray(m.ref, float)), gr.get("zone"), gr.get("coordinate_frame"))[0]
                 return X - np.asarray(gr["offset"], float)
             except Exception:
                 pass
@@ -173,6 +174,7 @@ class ReferenceMixin:
             return None
         key0 = (self._model_cache[0], _json.dumps(self.dataset.georef.get("offset") if self.dataset.georef else None),
                 self.dataset.crs, _json.dumps((self.dataset.georef or {}).get("zone")),
+                _json.dumps((self.dataset.georef or {}).get("coordinate_frame")),
                 tuple((c.colmap_name, c.path, c.width, c.height) for c in self.dataset.cameras))
         cache = getattr(self, "_marker_xyz_cache", None)
         if cache is None or cache[0] != key0:
@@ -344,18 +346,33 @@ class ReferenceMixin:
         requested_cameras = s["use_cameras"] if gps_on else ch.reference_settings.get("use_cameras", True)
         s["use_cameras"] = gps_on and s["use_cameras"]
         ch.reference_settings.update(s["accuracies"], use_cameras=requested_cameras,
-                                     use_photo_gps=gps_on, use_markers=s["use_markers"])
+                                     use_photo_gps=gps_on, use_markers=s["use_markers"],
+                                     camera_height_reference=s.get("camera_height_reference", "unknown"),
+                                     marker_height_reference=s.get("marker_height_reference", "unknown"),
+                                     reported_gps_accuracy=s.get("reported_gps_accuracy", False),
+                                     intrinsics=s.get("intrinsics", "f,cx,cy,k1-k3,p1,p2"))
+        from .photo_gps import camera_accuracies
         wd = self.project.default_workdir(ch)
         cfg = {"model": self._model_dir(), "photo_sizes": photo_dimensions(ch),
                "markers": ch.markers or [], "crs": ch.crs or "",
                "use_markers": s["use_markers"], "use_cameras": s["use_cameras"],
                "camera_gps": camera_gps(ch) if s["use_cameras"] else {},
+               "camera_accuracies": camera_accuracies(ch) if s["use_cameras"] else {},
+               "strict_heights": True,
                "accuracies": s["accuracies"], "bundle": s["bundle"], "tie_points": s["tie_points"],
                "fit_intrinsics": s["fit_intrinsics"], "offset": (ch.georef or {}).get("offset"),
+               "intrinsics": s.get('intrinsics', 'f,cx,cy,k1-k3,p1,p2'),
+               "adjustment_frame": s.get('adjustment_frame', 'projected'),
+               "coordinate_frame": (ch.georef or {}).get('coordinate_frame'),
+               "camera_height_reference": s.get('camera_height_reference', 'unknown'),
+               "marker_height_reference": s.get('marker_height_reference', 'unknown'),
                "report": os.path.join(wd, "georef_report.txt"),
                "result": os.path.join(wd, "georef.json"),
                "transform_files": [p for p in (ch.point_cloud_ply, ch.model_ply,
                                               os.path.join(wd, "dense", "fused.ply")) if p]}
+        if bool(cfg['coordinate_frame']) != (cfg['adjustment_frame'] == 'enu'):
+            cfg['offset'] = None
+            cfg['coordinate_frame'] = None
         if not ch.georef and cfg["camera_gps"] and (ch.crs or "") == "" and s["use_cameras"]:
             cfg["crs"] = "EPSG:4326"
         try:
@@ -398,7 +415,8 @@ class ReferenceMixin:
             self._invalidate_camera_products(ch)
             if not res.get("local_only"):
                 ch.georef = {k: res.get(k) for k in ("offset", "similarity", "crs", "crs_kind", "zone", "rows",
-                                                     "control_rmse", "check_rmse")}
+                                                     "control_rmse", "check_rmse", "coordinate_frame", "height_reference",
+                                                     "camera_height_reference", "marker_height_reference", "reference_heights_verified")}
                 ch.crs = res.get("crs") or ch.crs
                 for r in ch.georef.get("rows") or []:
                     r["pix"] = ((res.get("markers") or {}).get(r["label"]) or {}).get("pix")
@@ -407,7 +425,7 @@ class ReferenceMixin:
                 # Existing CRS/offset still describe the same frame, but old errors no longer apply.
                 if ch.georef:
                     ch.georef.update(rows=[], control_rmse=None, check_rmse=None)
-                for d in (ch.orthomosaic, ch.dem, ch.tiled_model):
+                for d in (ch.orthomosaic, ch.dem, ch.dtm, ch.tiled_model):
                     if d and d.get("format") != "imported":
                         d["stale"] = "built before camera optimization"
                 self.log("Cameras optimized without georeferencing. Rebuild dense products to use the new cameras.")
@@ -444,7 +462,7 @@ class ReferenceMixin:
                 ch.meta[key]["stale"] = reason
         if ch.model_ply:
             ch.meta.setdefault("model", {})["stale"] = reason
-        for d in (ch.texture, ch.tiled_model, ch.orthomosaic, ch.dem):
+        for d in (ch.texture, ch.tiled_model, ch.orthomosaic, ch.dem, ch.dtm):
             if d and d.get("format") != "imported":
                 d["stale"] = reason
         if hasattr(self, "_update_stale_banners"):

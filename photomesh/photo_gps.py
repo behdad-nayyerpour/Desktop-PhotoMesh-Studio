@@ -30,3 +30,30 @@ def camera_gps(dataset, names=None):
         if xyz is not None and name:
             result[name] = xyz.tolist()
     return result
+
+
+def camera_accuracies(dataset, names=None):
+    """Explicit opt-in reported E/N/up sigmas; never infer accuracy from RTK flag alone."""
+    if not use_photo_gps(dataset) or not dataset.reference_settings.get('reported_gps_accuracy', False):
+        return {}
+    if names is None:
+        from .photonames import photo_map
+        mapping, _ambiguous = photo_map(dataset)
+        names = {path: name for name, path in mapping.items()}
+    result = {}
+    for camera in dataset.cameras:
+        values = reported_accuracy(camera)
+        if not camera.enabled or not names.get(camera.path) or values is None:
+            continue
+        result[names[camera.path]] = values
+    return result
+
+
+def reported_accuracy(camera):
+    import math
+    values = camera.gps_accuracy
+    if not isinstance(values, (list, tuple)) or len(values) != 3:
+        return None
+    if all(isinstance(value, (int, float)) and math.isfinite(value) and .0001 <= value <= 10000 for value in values):
+        return list(values)
+    return None

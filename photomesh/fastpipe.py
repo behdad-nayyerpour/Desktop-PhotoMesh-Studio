@@ -20,7 +20,7 @@ Original code. Ideas follow well-known published techniques, no proprietary code
 """
 from __future__ import annotations
 
-from .exif import rational as _rat, altitude as _gps_altitude
+from .exif import coordinates as gps_coordinates, photo_metadata
 
 import hashlib
 import os
@@ -47,16 +47,7 @@ def _gps(exif):
         gps = exif.get_ifd(0x8825)
     except Exception:
         return None, None, None
-    if not gps or 2 not in gps or 4 not in gps:
-        return None, None, None
-
-    def dms(vals, ref):
-        d = _rat(vals[0]) + _rat(vals[1]) / 60 + _rat(vals[2]) / 3600
-        return -d if ref in ("S", "W") else d
-    lat = dms(gps[2], gps.get(1, "N"))
-    lon = dms(gps[4], gps.get(3, "E"))
-    alt = _gps_altitude(gps)
-    return lon, lat, alt
+    return gps_coordinates(gps or {})
 
 
 def global_descriptor(gray: np.ndarray) -> np.ndarray:
@@ -97,7 +88,8 @@ def analyze_image(path: str, cache_dir: str, thumb_size: int = 192) -> dict:
     desc_p = os.path.join(cache_dir, key + ".npy")
     with Image.open(path) as im:
         w, h = im.size
-        lon, lat, alt = _gps(im.getexif())
+        metadata = photo_metadata(im)
+        lon, lat, alt = metadata['lon'], metadata['lat'], metadata['alt']
         if not (os.path.exists(thumb) and os.path.exists(desc_p)):
             im.draft("RGB", (thumb_size * 2, thumb_size * 2))  # fast JPEG DCT downscale
             im = ImageOps.exif_transpose(im).convert("RGB")
@@ -106,7 +98,8 @@ def analyze_image(path: str, cache_dir: str, thumb_size: int = 192) -> dict:
             gray = np.asarray(im.convert("L").resize((128, 96)))
             np.save(desc_p, global_descriptor(gray))
     return {"path": path, "width": w, "height": h, "lon": lon, "lat": lat,
-            "alt": alt, "thumb": thumb, "desc": desc_p}
+            "alt": alt, "thumb": thumb, "desc": desc_p,
+            "gps_accuracy": metadata['gps_accuracy'], "gps_metadata": metadata['gps_metadata']}
 
 
 def read_header(path: str) -> dict:
@@ -115,12 +108,8 @@ def read_header(path: str) -> dict:
     from PIL import Image
     with Image.open(path) as im:
         w, h = im.size
-        try:
-            exif = im.getexif()
-        except Exception:
-            exif = None
-        lon, lat, alt = _gps(exif) if exif else (None, None, None)
-    return {"path": path, "width": w, "height": h, "lon": lon, "lat": lat, "alt": alt}
+        metadata = photo_metadata(im)
+    return dict(path=path, width=w, height=h, **metadata)
 
 
 def _pool_batch(fn, batch):
@@ -868,6 +857,8 @@ def fast_align_steps(exe, wd, names, infos, s):
         # merged afterwards (merge_identical_cameras) so mixed-camera sets work
         a = ["feature_extractor", "--database_path", db, "--image_path", src or img_dir,
              "--image_list_path", ilist, "--ImageReader.single_camera", "0"]
+        from .calibration import camera_model_arguments
+        a += camera_model_arguments(s)
         a += opt(exe, "feature_extractor", ["FeatureExtraction.max_image_size", "SiftExtraction.max_image_size"], size)
         if kp > 0:
             a += opt(exe, "feature_extractor", ["SiftExtraction.max_num_features"], kp)

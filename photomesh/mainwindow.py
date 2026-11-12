@@ -36,7 +36,7 @@ _log = logging.getLogger("photomesh")
 
 # Layer key -> stable command ID, independent of menu placement.
 LAYER_ACTIONS = {"tie": "Show Tie Points", "cloud": "Show Point Cloud", "mesh": "Show Model",
-                 "tiled": "Show Tiled Model", "ortho": "Show Orthomosaic", "dem": "Show DEM",
+                 "tiled": "Show Tiled Model", "ortho": "Show Orthomosaic", "dem": "Show DEM", "dtm": "Show DTM",
                  "cameras": "Show Cameras", "camera_labels": "Show Camera Labels",
                  "markers": "Show Markers", "marker_labels": "Show Marker Labels", "shapes": "Show Shapes",
                  "grid": "Show Grid", "region": "Show Region", "trackball": "Show Trackball"}
@@ -70,9 +70,10 @@ def migrate_ui_settings():
 
 from .workflow import processing_crs
 from .registration_ui import RegistrationMixin
+from .survey_ui import SurveyMixin
 
 
-class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
+class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin, QMainWindow):
     _viewData = Signal(int, object)          # generation, loaded arrays (from the loader thread)
     _texData = Signal(int, object)           # generation, textured model display data (or the error)
     _viewProgress = Signal(int, str)
@@ -103,6 +104,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         self._viewProgress.connect(self._show_view_progress)
         self.photo_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "photo"))
         self.ortho_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "ortho"))
+        self.model_view.surveyRay.connect(self._survey_pick_ray)
+        self.model_view.surveyEndpointMoved.connect(self._survey_move_model)
+        self.ortho_view.surveyPoint.connect(self._survey_pick_plan)
+        self.ortho_view.surveyEndpointMoved.connect(self._survey_move_plan)
         self.model_view.markerAction.connect(lambda action, label: self.marker_view_action(action, label, "model"))
         self._thumb_job = None
         apply_dialog_setting()
@@ -145,7 +150,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             if view is self.photo_view:
                 # Photo and raster tools share Plan View; a raster click must
                 # become an on transition again after every photo selection.
-                for key in ("ortho", "dem"):
+                for key in ("ortho", "dem", "dtm"):
                     self.set_layer_visible(key, False)
             self.plan_view.setCurrentWidget(view)
             self.tabs.setCurrentWidget(self.plan_view)
@@ -280,7 +285,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             self.show_model_mode(self.model_view.mesh_mode)
         elif kind == "tiled":
             self.show_tiled_mode(self.model_view.tiled_mode)
-        elif kind in ("ortho", "dem"):
+        elif kind in ("ortho", "dem", "dtm"):
             self.show_ortho(kind)
         elif kind in ("markers", "cameras"):
             self.set_layer_visible(kind, True)
@@ -331,6 +336,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             "Build Orthomosaic...": self.build_orthomosaic, "Build DEM...": self.build_dem,
             "Export Orthomosaic...": lambda: self.export_raster("ortho"),
             "Export DEM...": lambda: self.export_raster("dem"),
+            "Export DTM...": lambda: self.export_raster("dtm"),
+            "Build DTM...": lambda: self.build_dem(True),
+            "DTM - Elevation": lambda: self.show_ortho("dtm"),
             "Import Orthomosaic...": lambda: self.import_raster("ortho"),
             "Import DEM...": lambda: self.import_raster("dem"),
             "Orthomosaic": lambda: self.show_ortho("ortho"),
@@ -351,6 +359,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             "Undo": self.undo_markers, "Redo": self.redo_markers,
             "Enable/Disable Selected Photos": self._ws_toggle_selected,
             "Remove Selected Photos": self._ws_remove_selected,
+            "Refresh Photo GPS Metadata...": self.refresh_photo_gps_metadata,
+            "Point Cloud Classification...": self.classify_point_cloud,
+            "Measure Distance...": self.show_measurement,
+            "Cross Section...": self.show_cross_section,
+            "Point Cloud - Classification": lambda: self.show_point_classes(None, True),
+            "Show All Point Classes": lambda: self.show_point_classes(None),
+            "Show Ground Points": lambda: self.show_point_classes([2], True),
+            "Show Non-ground Points": lambda: self.show_point_classes([1], True),
             "Filter Point Cloud...": lambda: self.filter_point_cloud(False),
             "Filter by Confidence...": lambda: self.filter_point_cloud(True),
             "Gradual Selection...": self.gradual_selection,
@@ -367,7 +383,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             "Model - Textured": lambda: self.show_model_mode("textured"),
             "Model - Wireframe": lambda: self.show_model_mode("wireframe"),
             "Tie Points - Colors": lambda: self.show_layer("tie"),
-            "Point Cloud - Colors": lambda: self.show_layer("cloud"),
+            "Point Cloud - Colors": self.show_cloud_rgb,
             "Point Cloud - Solid": lambda: self.show_layer("cloud", solid=True),
             "Open Next Photo": lambda: self.step_photo(1),
             "Open Previous Photo": lambda: self.step_photo(-1),
@@ -599,6 +615,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         window stays responsive while a 28M-point project opens."""
         self.model_view.clear()
         ch = self.dataset
+        if getattr(self, '_survey_dialog', None) is not None and (self._survey_owner[0] is not self.project or self._survey_owner[1] is not ch or self._survey_owner_files != self._survey_files()):
+            self._survey_dialog.close()
+        class_display = dict(ch.meta.get('class_display') or {})
         self.model_view.set_z_up(bool(ch.georef))
         cams = [(c.est, c.rot) for c in ch.cameras if c.aligned and c.est and c.rot]
         if cams and self.model_view.gl is not None:
@@ -645,6 +664,16 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                                               "mesh": "Loading model..."}[key])
                 try:
                     d = load_ply(path)
+                    if key == 'cloud' and d.get('classification') is not None and class_display.get('source') == path:
+                        labels = d['classification']
+                        if class_display.get('colors'):
+                            from .ground import class_colors
+                            d['colors'] = class_colors(labels)
+                        if class_display.get('visible') is not None:
+                            keep = np.isin(labels, class_display['visible'])
+                            for field in ('points', 'colors', 'classification'):
+                                if d.get(field) is not None:
+                                    d[field] = d[field][keep]
                     if key == "mesh" and d["faces"] is not None:
                         d["normals"] = vertex_normals(d["points"], d["faces"])
                     out[key] = d
@@ -749,7 +778,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
     def _layer_toggled(self, key, on):
         """Single sink for every way of toggling a layer (menu, toolbar, Workspace checkbox)."""
         on = bool(on)
-        if key in ("ortho", "dem", "markers", "marker_labels", "shapes"):
+        if key in ("ortho", "dem", "dtm", "markers", "marker_labels", "shapes"):
             self.ortho_view.set_visible(key, on)
         if key in ("markers", "marker_labels") and getattr(self, "photo_view", None) is not None:
             self.photo_view.set_visible(key, on)
@@ -758,9 +787,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 self._update_photo_shapes()
             except Exception as e:  # noqa: BLE001
                 self.log(f"Shapes overlay on the photo: {e}")
-        if key not in ("ortho", "dem"):
+        if key not in ("ortho", "dem", "dtm"):
             self.model_view.set_visible(key, on)
-        if key in ("ortho", "dem") and on and self.ortho_view.has_raster(key):
+        if key in ("ortho", "dem", "dtm") and on and self.ortho_view.has_raster(key):
             self.show_view(self.ortho_view)
         QSettings().setValue(f"view/show_{key}", on)
         self.workspace.set_layer_states({key: on})
@@ -783,8 +812,8 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         ch = self.dataset
         path = {"tie": ch.tie_points_ply, "cloud": ch.point_cloud_ply, "mesh": ch.model_ply,
                 "tiled": (ch.tiled_model or {}).get("index"), "ortho": (ch.orthomosaic or {}).get("path"),
-                "dem": (ch.dem or {}).get("path"), "shapes": (ch.shapes or {}).get("path")}[key]
-        if key in ("ortho", "dem"):
+                "dem": (ch.dem or {}).get("path"), "dtm": (ch.dtm or {}).get("path"), "shapes": (ch.shapes or {}).get("path")}[key]
+        if key in ("ortho", "dem", "dtm"):
             return bool(path and os.path.exists(path))
         return bool(path and os.path.exists(path)) or self.model_view.has_layer(key)
 
@@ -824,6 +853,15 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if kind == "project":
             rows = [("Project", self.project.path or "Untitled"), ("Images", len(ch.cameras)),
                     ("Markers", len(ch.markers)), ("CRS", ch.crs or "Local"), ("Version", APP_VERSION)]
+            if ch.georef:
+                rows += [('Model coordinate frame', processing_crs(ch.georef)),
+                         ('Reference height datum', ch.georef.get('height_reference', 'unknown'))]
+                if ch.georef.get('coordinate_frame'):
+                    rows.append(('ENU origin (longitude, latitude, height)', ch.georef['coordinate_frame']['origin']))
+        elif kind == 'dtm':
+            rows = [('Surface type', 'Ground-only DTM'), ('File', ch.dtm.get('path')),
+                    ('Pixel size', ch.dtm.get('pixel_size')), ('Measured cells', ch.dtm.get('measured_cells')),
+                    ('Interpolated cells', ch.dtm.get('filled_cells')), ('Coordinate system', ch.dtm.get('crs'))]
         elif kind == "camera":
             c = ch.cameras[info["index"]]
             rows = [("Label", c.label), ("Path", c.path), ("Size", f"{c.width} x {c.height}"),
@@ -1283,14 +1321,27 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if what != "cloud":
             return self.export_model()
         dst, f = QFileDialog.getSaveFileName(self, "Export Point Cloud", os.path.splitext(os.path.basename(src))[0],
-                                             "Stanford PLY (*.ply);;AutoCAD DXF (*.dxf)")
+                                             "Stanford PLY (*.ply);;AutoCAD DXF (*.dxf);;LAS (*.las);;Compressed LAZ (*.laz)")
         if dst:
-            self.export_cloud_to(dst, "dxf" if "DXF" in f or dst.lower().endswith(".dxf") else "ply")
+            kind = 'laz' if 'LAZ' in f or dst.lower().endswith('.laz') else 'las' if 'LAS' in f or dst.lower().endswith('.las') else 'dxf' if 'DXF' in f or dst.lower().endswith('.dxf') else 'ply'
+            precision = .001
+            if kind in ('las', 'laz'):
+                from PySide6.QtWidgets import QInputDialog
+                from .workflow import source_unit
+                precision, ok = QInputDialog.getDouble(self, 'LAS / LAZ Precision',
+                    'Coordinate quantization (' + source_unit(self.dataset.georef) + '):', .001, .000001, 1000, 6)
+                if not ok:
+                    return
+            self.export_cloud_to(dst, kind, precision=precision)
 
-    def export_cloud_to(self, dst, kind="ply", src=None):
+    def export_cloud_to(self, dst, kind="ply", src=None, precision=.001):
         """Point cloud (dense, else tie points) in world coordinates (local + georef offset)."""
         from . import export as ex
         src = src or self.dataset.point_cloud_ply or self.dataset.tie_points_ply
+        if kind in ('las', 'laz'):
+            if not dst.lower().endswith('.' + kind):
+                dst += '.' + kind
+            return self.export_las_to(dst, src, precision)
         off = self._world_offset()
         ext = ".dxf" if kind == "dxf" else ".ply"
         if not dst.lower().endswith(ext):
@@ -1761,7 +1812,10 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         s["calibration_groups"] = {mapping[path]: group for path,group in s.get("calibration_groups",{}).items()
                                    if path in mapping}
         from .photo_gps import camera_gps
+        ch.reference_settings['reported_gps_accuracy'] = s.get('reported_gps_accuracy', False)
+        from .photo_gps import camera_accuracies
         alignment_gps = camera_gps(ch, mapping) if s.get("gps_frame") else {}
+        alignment_accuracies = camera_accuracies(ch, mapping) if s.get('gps_priors') else {}
         previous_poses = {mapping[c.path]: {"center":c.est,"rotation":c.rot}
                           for c in enabled if c.aligned and c.est is not None and c.rot is not None}
         def prepare_alignment():
@@ -1778,10 +1832,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 planned.insert(index,("Preserving project frame",[cm.PYTHON,"preserve_frame",path],2))
             if s.get("gps_frame"):
                 gps_path = os.path.join(wd, "alignment_gps.json")
+                from .georef import DEFAULTS
                 gps_cfg = {"model": os.path.join(wd,"sparse","0"), "markers": [],
                            "crs": ch.crs or "EPSG:4326", "use_markers": False, "use_cameras": True,
-                           "camera_gps": alignment_gps,
-                           "bundle": False, "transform_files": [], "result": os.path.join(wd,"alignment_georef.json"),
+                           "camera_gps": alignment_gps, "camera_accuracies": alignment_accuracies,
+                           "accuracies": {key: ch.reference_settings.get(key, value) for key, value in DEFAULTS.items()},
+                           "camera_height_reference": ch.reference_settings.get('camera_height_reference', 'unknown'),
+                           "fit_intrinsics": False,
+                           "bundle": bool(s.get('gps_priors')), "transform_files": [], "result": os.path.join(wd,"alignment_georef.json"),
                            "report": os.path.join(wd,"alignment_georef.txt")}
                 with open(gps_path,"w",encoding="utf-8") as handle:
                     json.dump(gps_cfg,handle)
@@ -1803,7 +1861,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             if s.get("gps_frame"):
                 with open(os.path.join(wd,"alignment_georef.json"),encoding="utf-8") as handle:
                     result=json.load(handle)
-                ch.georef = {key:result.get(key) for key in ("offset","similarity","crs","crs_kind","zone","rows","control_rmse","check_rmse")}
+                ch.georef = {key:result.get(key) for key in ("offset","similarity","crs","crs_kind","zone","rows","control_rmse","check_rmse","coordinate_frame","height_reference","camera_height_reference","marker_height_reference","reference_heights_verified")}
                 ch.crs = result["crs"]
                 self.log("Camera GPS applied: model scale/orientation/location are metric. GPS accuracy still limits survey accuracy.")
             if wd != original_wd:
@@ -2425,7 +2483,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                 geo, crs = True, crs or d.get("crs") or ""
         self.ortho_view.set_frame(self._world_offset(), geographic=geo and is_geographic(crs),
                                   unit="m" if geo else "")
-        for kind, d in (("dem", ch.dem), ("ortho", ch.orthomosaic)):
+        for kind, d in (("dem", ch.dem), ("dtm", ch.dtm), ("ortho", ch.orthomosaic)):
             ok = bool(d and d.get("path") and os.path.exists(d["path"]))
             try:
                 cur = self.ortho_view.layers.get(kind)
@@ -2437,7 +2495,7 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
                     self.ortho_view.set_raster(kind, d, prepared=prepared)
             except Exception as e:  # noqa: BLE001
                 self.log(f"Cannot show {'DEM' if kind == 'dem' else 'orthomosaic'}: {e}")
-        for k in ("ortho", "dem", "markers", "marker_labels"):
+        for k in ("ortho", "dem", "dtm", "markers", "marker_labels"):
             self.ortho_view.set_visible(k, self.layer_action(k).isChecked())
         self._update_ortho_markers()
 
@@ -2470,11 +2528,14 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         if not self._has_layer(kind):
             self.statusBar().showMessage(("No orthomosaic" if kind == "ortho" else "No DEM") + " - build it first", 4000)
             return
+        for other in ('ortho', 'dem', 'dtm'):
+            if other != kind:
+                self.set_layer_visible(other, False)
         self.set_layer_visible(kind, True)
         self.load_ortho_view()
         self.show_view(self.ortho_view)
 
-    def build_dem(self):
+    def build_dem(self, ground_only=False):
         if not self._require_saved("Build DEM"):
             return None
         ch = self.dataset
@@ -2482,7 +2543,9 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         have_mesh = bool(ch.model_ply and os.path.exists(ch.model_ply))
         if not (have_cloud or have_mesh):
             QMessageBox.information(self, "Build DEM", "Build the point cloud (or the model) first."); return
-        sources = (["Point cloud"] if have_cloud else []) + (["Mesh"] if have_mesh else [])
+        sources = (["Point cloud"] if have_cloud else []) + (["Mesh"] if have_mesh and not ground_only else [])
+        if ground_only and not have_cloud:
+            QMessageBox.information(self, 'Build DTM', 'Build and classify a point cloud first.'); return
         from .workflow_ui import prepare_source_plans
         self._workflow_source_plans = prepare_source_plans(self,
             {name: (ch.model_ply if name == "Mesh" else ch.point_cloud_ply) for name in sources})
@@ -2490,34 +2553,38 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             return
         dlg = BuildDEMDialog(self, sources, crs=processing_crs(ch.georef), unit="m" if ch.georef else "model units",
                              bounds=self._workflow_source_plans[sources[0]]["bounds"])
+        if ground_only:
+            dlg.setWindowTitle('Build DTM — classified ground only')
         if not dlg.exec():
             return
         s = dlg.settings()
         if hasattr(dlg, "workflow_status"):
             s.update(dlg.workflow_status())
+        kind = 'dtm' if ground_only else 'dem'
         wd = self.project.default_workdir(ch)
         os.makedirs(wd, exist_ok=True)
-        cfg = dict(s, cloud=ch.point_cloud_ply, mesh=ch.model_ply, model=self._model_dir(ch),
+        cfg = dict(s, ground_only=ground_only, cloud=ch.point_cloud_ply, mesh=ch.model_ply, model=self._model_dir(ch),
                    photos=self._photo_map(ch) if not ch.georef else None, georef=ch.georef or {},
-                   crs=self._crs_text(ch), out_dir=os.path.join(wd, "dem"), result=os.path.join(wd, "dem_result.json"))
-        cfg_path = os.path.join(wd, "build_dem.json")
+                   crs=self._crs_text(ch), out_dir=os.path.join(wd, kind), result=os.path.join(wd, kind + "_result.json"))
+        cfg_path = os.path.join(wd, "build_" + kind + ".json")
         with open(cfg_path, "w", encoding="utf-8") as f:
             json.dump(cfg, f, indent=1)
-        self.ortho_view.set_raster("dem", None)           # release the file that is about to be replaced
+        self.ortho_view.set_raster(kind, None)           # release the file that is about to be replaced
         steps = [("Building DEM", [cm.PYTHON, "build_dem", cfg_path], 1)]
         res = {}
 
         def loaded():
             with open(cfg["result"], encoding="utf-8") as f:
                 res.update(json.load(f))
-            ch.dem = res
+            setattr(ch, kind, res)
             self.set_modified()
-            self.show_ortho("dem")
+            self.set_layer_visible('dem' if ground_only else 'dtm', False)
+            self.show_ortho(kind)
 
         def meta(dt, stages):
-            procmeta.record(ch, "dem", params=dict(s), seconds=dt, stages=res.get("stages") or stages,
+            procmeta.record(ch, kind, params=dict(s), seconds=dt, stages=res.get("stages") or stages,
                             width=res.get("width"), height=res.get("height"), pixel_size=res.get("pixel_size"))
-        self._run("Build DEM", steps, loaded, meta, params=s, on_fail=self.load_ortho_view)
+        self._run("Build DTM" if ground_only else "Build DEM", steps, loaded, meta, params=s, on_fail=self.load_ortho_view)
 
     def build_orthomosaic(self):
         if not self._require_saved("Build Orthomosaic"):
@@ -2574,11 +2641,16 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
             json.dump(cfg, f, indent=1)
         self.ortho_view.set_raster("ortho", None)
         steps = [("Building orthomosaic", [cm.PYTHON, "build_ortho", cfg_path], 1)]
+        from .workflow import file_stamp
+        source_mesh_stamp = file_stamp(ch.model_ply) if have_mesh else None
         res = {}
 
         def loaded():
             with open(cfg["result"], encoding="utf-8") as f:
                 res.update(json.load(f))
+            res['source_mesh_stamp'] = source_mesh_stamp
+            if source_mesh_stamp is not None and file_stamp(ch.model_ply) != source_mesh_stamp:
+                res['stale'] = 'mesh changed during orthophoto build'
             ch.orthomosaic = res
             self.set_modified()
             self.show_ortho("ortho")
@@ -2671,12 +2743,12 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
 
     def export_raster(self, kind):
         ch = self.dataset
-        info = ch.orthomosaic if kind == "ortho" else ch.dem
-        title = "Export Orthomosaic" if kind == "ortho" else "Export DEM"
+        info = ch.orthomosaic if kind == "ortho" else (ch.dtm if kind == "dtm" else ch.dem)
+        title = "Export Orthomosaic" if kind == "ortho" else ("Export DTM" if kind == "dtm" else "Export DEM")
         if not (info and info.get("path") and os.path.exists(info["path"])):
             QMessageBox.information(self, title, "Build the " + ("orthomosaic" if kind == "ortho" else "DEM") + " first.")
             return
-        dlg = ExportRasterDialog(self, kind, info)
+        dlg = ExportRasterDialog(self, "dem" if kind == "dtm" else kind, info)
         if not dlg.exec():
             return
         s = dlg.settings()
@@ -2692,15 +2764,15 @@ class MainWindow(RegistrationMixin, ReferenceMixin, MarkerEditMixin, ShapesMixin
         """Export the orthomosaic / DEM (background thread, progress + Cancel)."""
         from .ortho import export_raster, Cancelled
         ch = self.dataset
-        info = dict(ch.orthomosaic if kind == "ortho" else ch.dem)
+        info = dict(ch.orthomosaic if kind == "ortho" else (ch.dtm if kind == "dtm" else ch.dem))
         ext = opts.get("fmt") or os.path.splitext(dst)[1].lstrip(".").lower() or "tif"
         if not os.path.splitext(dst)[1]:
             dst += "." + ext
-        title = "Export Orthomosaic" if kind == "ortho" else "Export DEM"
+        title = "Export Orthomosaic" if kind == "ortho" else ("Export DTM" if kind == "dtm" else "Export DEM")
         t0 = time.perf_counter()
 
         def fn(report, cancelled):
-            return export_raster(info, dst, kind=kind, log=lambda m: None,
+            return export_raster(info, dst, kind="dem" if kind == "dtm" else kind, log=lambda m: None,
                                  progress=lambda i, n: report(i, n, ""), cancel=cancelled, **opts)
         files, cancelled, err = run_modal(self, title, "Exporting...", fn, 100)
         if cancelled or isinstance(err, Cancelled):

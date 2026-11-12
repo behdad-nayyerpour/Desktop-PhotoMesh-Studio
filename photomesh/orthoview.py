@@ -71,7 +71,7 @@ class RasterLayer:
 
     def tile_image(self, lev, ti, tj):
         a = self.reader.read_tile(lev, ti, tj)
-        if self.kind == "dem" or a.dtype != np.uint8:
+        if self.kind in ("dem", "dtm") or a.dtype != np.uint8:
             z = a[..., 0].astype(np.float32)
             valid = np.isfinite(z) & ((z != self.nodata) if self.nodata is not None else True)
             rgba = dem_colors(z, valid, self.zmin, self.zmax, self.level_px(lev))
@@ -96,6 +96,8 @@ class RasterLayer:
 
 
 class OrthoView(QWidget):
+    surveyPoint = Signal(float, float)
+    surveyEndpointMoved = Signal(int, float, float)
     tileReady = Signal(int, object, object)        # generation, key, QImage
     heightReady = Signal(int, object)
     coordinatesChanged = Signal(str)
@@ -116,7 +118,7 @@ class OrthoView(QWidget):
         self.marker_states = {}
         self.active_marker = None
         self.layers = {}                  # kind -> RasterLayer
-        self.vis = {"ortho": True, "dem": True, "markers": True, "marker_labels": True, "shapes": True}
+        self.vis = {"ortho": True, "dem": True, "dtm": False, "markers": True, "marker_labels": True, "shapes": True}
         self.shapes = []                  # dicts: index, type, color, width, label, parts [(n,2) world XY], holes
         self.selected_shape = None
         self.transparent = False          # transparent view: rasters drawn with surface_opacity
@@ -207,6 +209,10 @@ class OrthoView(QWidget):
         self.active_marker = label
         self.update()
 
+    def set_survey_line(self, points):
+        self.survey_line = None if points is None else np.asarray(points, float)
+        self.update()
+
     def set_markers(self, markers):
         self.markers = list(markers or []); self.update()
 
@@ -272,15 +278,20 @@ class OrthoView(QWidget):
         return bool(self.layers) if kind is None else kind in self.layers
 
     def set_visible(self, kind, on):
+        changed = self.vis.get(kind) != bool(on)
         self.vis[kind] = bool(on)
         if kind in self.layers:
             self.layers[kind].visible = bool(on)
+            if changed and kind in ('dem', 'dtm'):
+                self._load_height()
         self.update()
 
     def _load_height(self):
         """Z read-out source: the DEM if present, else the orthomosaic's height grid."""
         src = None
-        if "dem" in self.layers:
+        if "dtm" in self.layers and self.layers['dtm'].visible:
+            src = self.layers['dtm'].info.get('path')
+        elif "dem" in self.layers:
             src = self.layers["dem"].info.get("path")
         elif "ortho" in self.layers:
             src = self.layers["ortho"].info.get("height_path")
@@ -478,7 +489,7 @@ class OrthoView(QWidget):
             p.drawText(10, 20, "Ortho view - build an orthomosaic or DEM (Workflow menu)")
             return
         drew = False
-        for kind in ("dem", "ortho"):
+        for kind in ("dem", "dtm", "ortho"):
             lay = self.layers.get(kind)
             if lay is not None and lay.visible:
                 self._draw_layer(p, kind, lay); drew = True
@@ -492,6 +503,13 @@ class OrthoView(QWidget):
                    if not self.layers else "Orthomosaic / DEM hidden (toolbar layer toggles)")
             p.drawText(10, 20, msg)
         p.setRenderHint(QPainter.Antialiasing)
+        line = getattr(self, 'survey_line', None)
+        if line is not None:
+            p.setPen(QColor(255, 165, 25))
+            a, b = [QPointF(*self.to_screen(*point)) for point in line]
+            p.drawLine(a, b)
+            for point in (a, b):
+                p.drawEllipse(point, 6, 6)
         p.setPen(QColor(80, 160, 255)); p.setBrush(QColor(80, 160, 255))
         if self.vis.get("shapes", True) and self.shapes:
             self._draw_shapes(p)
@@ -628,11 +646,23 @@ class OrthoView(QWidget):
         return X, Y, self.z_at(X, Y)
 
     def mousePressEvent(self, e):
+        if getattr(self, 'survey_enabled', False) and e.button() == Qt.LeftButton:
+            line = getattr(self, 'survey_line', None)
+            if line is not None:
+                pixels = np.array([self.to_screen(*point) for point in line])
+                distances = np.linalg.norm(pixels - [e.position().x(), e.position().y()], axis=1)
+                if distances.min() <= 12:
+                    self._survey_drag = int(np.argmin(distances))
+                    return
         if e.button() in (Qt.LeftButton, Qt.MiddleButton):
             self._drag = (e.position(), self.center)
         self._press = e.position() if e.button() == Qt.LeftButton else None
 
     def mouseMoveEvent(self, e):
+        if getattr(self, '_survey_drag', None) is not None:
+            x, y = self.to_world(e.position().x(), e.position().y())
+            self.surveyEndpointMoved.emit(self._survey_drag, x, y)
+            return
         if self._drag is not None and self.center is not None:
             p0, c0 = self._drag
             d = e.position() - p0
@@ -641,12 +671,18 @@ class OrthoView(QWidget):
         self._update_coords(e.position())
 
     def mouseReleaseEvent(self, e):
+        if getattr(self, '_survey_drag', None) is not None:
+            self._survey_drag = None
+            return
         self._drag = None
         p0 = getattr(self, "_press", None)
         self._press = None
         if p0 is not None and e.button() == Qt.LeftButton:
             d = e.position() - p0
             if abs(d.x()) + abs(d.y()) <= 4:
+                if getattr(self, 'survey_enabled', False):
+                    self.surveyPoint.emit(*self.to_world(e.position().x(), e.position().y()))
+                    return
                 marker = self.marker_at(e.position().x(), e.position().y())
                 if marker:
                     self.markerAction.emit("select", marker)

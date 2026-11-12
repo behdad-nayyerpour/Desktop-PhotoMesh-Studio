@@ -1,0 +1,2 @@
+# Bundled third-party wheel contents retain upstream source and licensing.
+extend-exclude = ["photomesh/_vendor"]

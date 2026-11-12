@@ -53,10 +53,13 @@ def ecef_to_geodetic(X):
     X = np.atleast_2d(X); x, y, z = X[:, 0], X[:, 1], X[:, 2]
     lon = np.arctan2(y, x); p = np.hypot(x, y)
     lat = np.arctan2(z, p * (1 - WGS84_E2))
-    for _ in range(6):
+    for _ in range(10):
         N = WGS84_A / np.sqrt(1 - WGS84_E2 * np.sin(lat) ** 2)
-        h = p / np.cos(lat) - N
-        lat = np.arctan2(z, p * (1 - WGS84_E2 * N / (N + h)))
+        lat = np.arctan2(z + WGS84_E2 * N * np.sin(lat), p)
+    N = WGS84_A / np.sqrt(1 - WGS84_E2 * np.sin(lat) ** 2)
+    cos, sin = np.cos(lat), np.sin(lat)
+    h = np.where(abs(cos) > .5, p / np.where(abs(cos) > .5, cos, 1) - N,
+                 z / np.where(abs(sin) > .5, sin, 1) - N * (1 - WGS84_E2))
     return np.degrees(lat), np.degrees(lon), h
 
 
@@ -126,7 +129,7 @@ def utm_inverse(E, N, zone, south=False):
 
 @dataclass
 class CRS:
-    kind: str = "local"        # local | wgs84 | utm
+    kind: str = "local"        # local | wgs84 | utm | proj (2D metre-based)
     zone: int = 0
     south: bool = False
     name: str = "Local Coordinates (m)"
@@ -143,8 +146,18 @@ class CRS:
     def parse(cls, text):
         t = (text or "").strip()
         u = t.upper()
+        if u.startswith(('COMPD_CS[', 'COMPOUNDCRS[', 'VERT_CS[', 'VERTCRS[')):
+            raise ValueError('Compound and vertical CRS conversions are not supported; specify the horizontal CRS and confirm the height datum separately')
         m = re.search(r"EPSG[:\s\"',]*(\d{4,5})", u)
         code = int(m.group(1)) if m else None
+        if u.startswith(('PROJCS[', 'PROJCRS[')):
+            from pyproj import CRS as Projection
+            projected = Projection.from_user_input(t)
+            if not projected.is_projected or len(projected.axis_info) != 2 or projected.is_compound or any(abs(axis.unit_conversion_factor - 1) > 1e-12 for axis in projected.axis_info[:2]):
+                raise ValueError('Projected reference coordinates must use metres; convert foot-based coordinates before import')
+            code = projected.to_epsg()
+            if code is None or not (32601 <= code <= 32660 or 32701 <= code <= 32760):
+                return cls('proj', name=projected.to_string())
         if "LOCAL_CS" in u or u in ("", "XYZ", "LOCAL") or "LOCAL COORD" in u:
             return cls("local", name=_wkt_name(t) or "Local Coordinates (m)")
         m2 = re.search(r"UTM ZONE\s*(\d{1,2})\s*([NS])", u)
@@ -158,15 +171,31 @@ class CRS:
         if code in (4326, 4979) or "WGS 84" in u or "WGS84" in u:
             return cls("wgs84", name="WGS 84 (EPSG::4326)")
         if u.startswith("PROJCS") or u.startswith("GEOGCS") or code:
-            raise ValueError(f"Unsupported coordinate system: {t[:120]}")
+            from pyproj import CRS as Projection
+            try:
+                projected = Projection.from_user_input(t)
+            except Exception as error:
+                raise ValueError(f'Unsupported coordinate system: {t[:120]}') from error
+            if projected.is_projected and len(projected.axis_info) == 2 and not projected.is_compound and all(abs(axis.unit_conversion_factor - 1) <= 1e-12 for axis in projected.axis_info[:2]):
+                return cls('proj', name=projected.to_string())
+            raise ValueError('Unsupported CRS or non-metre axes; use WGS84 geographic, a metre-based projected CRS or explicit local coordinates')
         return cls("local")
 
-    def to_metric(self, xyz, zone_hint=None):
+    def to_metric(self, xyz, zone_hint=None, frame=None):
         """Marker/camera coordinates -> metric frame used for fitting:
         local/UTM: unchanged; WGS84 (lon, lat, alt) -> UTM of the zone_hint."""
         xyz = np.asarray(xyz, float)
         if not np.isfinite(xyz).all():
             raise ValueError("Reference coordinates must be finite")
+        if frame:
+            from .coordinates import geographic_to_enu
+            geographic = xyz.copy()
+            if self.kind == 'utm':
+                lat, lon = utm_inverse(xyz[:, 0], xyz[:, 1], self.zone, self.south)
+                geographic = np.column_stack([lon, lat, xyz[:, 2]])
+            elif self.kind != 'wgs84':
+                raise ValueError('ENU adjustment requires WGS84 geographic or UTM references')
+            return geographic_to_enu(geographic, frame)
         if self.kind == "utm" and not 1 <= self.zone <= 60:
             raise ValueError("UTM zone must be between 1 and 60")
         if self.kind != "wgs84":
@@ -606,7 +635,7 @@ def marker_observation_diagnostic(model, marker, names=None):
     return X, float(np.sqrt(np.mean(residuals))) if residuals else None, len(observations)
 
 
-def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=None):
+def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=None, frame=None, compare_heights=True):
     """Current residuals without editing reference XYZ; caller owns cache model identity."""
     offset = np.asarray(offset if offset is not None else [0,0,0], float)
     names = name_index(model)
@@ -627,8 +656,8 @@ def marker_diagnostics(model, markers, crs, offset=None, zone_hint=None, cache=N
             continue
         estimates[marker.label] = X + offset
         pixels[marker.label], counts[marker.label] = pixel, count
-    metric = lambda value: crs.to_metric(np.atleast_2d(value), zone_hint)[0]
-    rows = marker_errors([marker for marker in markers if not marker.disabled], metric, estimates)
+    metric = lambda value: crs.to_metric(np.atleast_2d(value), zone_hint, frame)[0]
+    rows = marker_errors([marker for marker in markers if not marker.disabled], metric, estimates) if compare_heights else []
     for row in rows:
         row["pix"] = pixels.get(row["label"])
         row["n"] = counts.get(row["label"], 0)
@@ -999,7 +1028,7 @@ def geographic_zone(xyz):
     return utm_zone(math.degrees(center),latitude),latitude<0
 
 
-def camera_gps_metric(model, gps, crs, zone_hint=None):
+def camera_gps_metric(model, gps, crs, zone_hint=None, frame=None):
     """EXIF GPS is lon/lat/alt, including when the project CRS is UTM."""
     if crs.kind == "local":
         return {}
@@ -1019,9 +1048,18 @@ def camera_gps_metric(model, gps, crs, zone_hint=None):
         if values is None:
             continue
         lon,lat,alt=values
-        if crs.kind == "utm":
+        if frame:
+            from .coordinates import geographic_to_enu
+            out[iid] = geographic_to_enu([[lon, lat, alt]], frame)[0]
+        elif crs.kind == "utm":
             E, N = utm_forward(lat, lon, crs.zone, crs.south)
             out[iid] = np.array([E, N, alt], float)
+        elif crs.kind == 'proj':
+            from pyproj import Transformer
+            converted = Transformer.from_crs(4326, crs.name, always_xy=True).transform(lon, lat, alt)
+            if not np.isfinite(converted).all():
+                raise ValueError('Camera GPS cannot be transformed into the project CRS')
+            out[iid] = np.asarray(converted, float)
         else:
             out[iid] = crs.to_metric(np.array([[lon, lat, alt]]), zone_hint)[0]
     return out
@@ -1093,6 +1131,7 @@ def run_local_task(cfg, log=print):
         "tie_points": cfg.get("tie_points", 40000), "tie_accuracy": acc["tie_accuracy"],
         "projection_accuracy": acc["projection_accuracy"],
         "fit_intrinsics": cfg.get("fit_intrinsics", True),
+        "intrinsics": cfg.get("intrinsics", "f,cx,cy,k1-k3,p1,p2"),
         "max_iterations": cfg.get("max_iterations", 30)}, log=log)
     Cn = model.images[first].center()
     length = float(np.linalg.norm(model.images[other].center() - Cn))
@@ -1184,8 +1223,30 @@ def run_task(cfg, log=print):
     if crs.kind=="wgs84":
         references=[m.ref for m in control] if cfg.get("use_markers",True) and len(control)>=3 else list(gps.values())
         if references: zone_hint=geographic_zone(references)
-    metric = lambda xyz: crs.to_metric(np.atleast_2d(xyz),zone_hint)[0]
-    cam_gps = camera_gps_metric(model, gps, crs, zone_hint) if cfg.get("use_cameras") else {}
+    frame = None
+    camera_heights = cfg.get('camera_height_reference', 'unknown')
+    marker_heights = cfg.get('marker_height_reference', 'unknown')
+    if cfg.get('use_cameras') and gps and crs.kind != 'local' and control and cfg.get('use_markers', True):
+        if cfg.get('strict_heights') and 'unknown' in (camera_heights, marker_heights):
+            raise ValueError('Confirm the camera and control height references before combining GPS with control markers; no vertical-datum conversion is automatic')
+        if camera_heights != 'unknown' and marker_heights != 'unknown' and camera_heights != marker_heights:
+            raise ValueError('Camera and control heights use different references; convert them before combining GPS and markers')
+    if cfg.get('adjustment_frame') == 'enu':
+        if crs.kind not in ('wgs84', 'utm'):
+            raise ValueError('ENU adjustment requires WGS84 geographic or UTM reference coordinates')
+        if ((cfg.get('use_cameras') and camera_heights != 'ellipsoidal') or
+                (control and cfg.get('use_markers', True) and marker_heights != 'ellipsoidal')):
+            raise ValueError('ENU adjustment requires explicitly confirmed WGS84 ellipsoidal reference heights; no geoid conversion is automatic')
+        frame = cfg.get('coordinate_frame')
+        if not frame:
+            from .coordinates import make_enu_frame
+            reference = np.asarray([m.ref for m in control] if len(control) >= 3 else list(gps.values()), float)
+            if crs.kind == 'utm' and len(control) >= 3:
+                lat, lon = utm_inverse(reference[:, 0], reference[:, 1], crs.zone, crs.south)
+                reference = np.column_stack([lon, lat, reference[:, 2]])
+            frame = make_enu_frame(reference)
+    metric = lambda xyz: crs.to_metric(np.atleast_2d(xyz), zone_hint, frame)[0]
+    cam_gps = camera_gps_metric(model, gps, crs, zone_hint, frame) if cfg.get("use_cameras") else {}
     use_markers = cfg.get("use_markers", True)
     if use_markers and len(control) >= 3:
         src = np.array([tri[m.label] for m in control]); dst = np.array([metric(m.ref) for m in control])
@@ -1234,6 +1295,13 @@ def run_task(cfg, log=print):
         if cam_gps and cfg.get("use_cameras"):
             pri = {i: (c - offset, [acc["camera_accuracy"]] * 2 + [acc["camera_accuracy_z"]])
                    for i, c in cam_gps.items()}
+            from .coordinates import gps_accuracy_in_frame
+            for iid, (position, _sigma) in list(pri.items()):
+                name = model.images[iid].name
+                reported = (cfg.get('camera_accuracies') or {}).get(name)
+                geographic = gps.get(name)
+                if reported is not None and geographic is not None:
+                    pri[iid] = position, gps_accuracy_in_frame(geographic, reported, crs, zone_hint, frame)
         stats = gcp_bundle_adjust(model, obs, ctrl, {"tie_points": cfg.get("tie_points", 40000),
                                                      "tie_accuracy": acc["tie_accuracy"],
                                                      "projection_accuracy": acc["projection_accuracy"],
@@ -1245,7 +1313,14 @@ def run_task(cfg, log=print):
     log(f"Reference use: marker image observations={len(obs) if cfg.get('bundle', True) else 0}, "
         f"marker XYZ controls={len(control) if use_markers else 0}, camera GPS={len(cam_gps)}.")
     # ---- final marker estimates: re-triangulate with optimised cameras
-    est, pix, cnt, rows = marker_diagnostics(model, markers, crs, offset, zone_hint)
+    model_heights = marker_heights if control else camera_heights
+    compare_heights = not (frame and marker_heights != 'ellipsoidal')
+    if cfg.get('strict_heights') and not control and markers:
+        compare_heights = marker_heights == model_heights and marker_heights != 'unknown'
+    est, pix, cnt, rows = marker_diagnostics(model, markers, crs, offset, zone_hint, frame=frame,
+                                          compare_heights=compare_heights)
+    if not compare_heights and markers:
+        log('Marker XYZ residuals unavailable: marker and model height references are not confirmed compatible. Image residuals remain independent.')
     # ---- commit transactionally: build every output in temporary files first,
     # so a failure leaves the model AND the point cloud / mesh in the old frame
     M = sim_matrix(s, R, t)
@@ -1282,7 +1357,10 @@ def run_task(cfg, log=print):
     if cfg.get("report"):
         write_report(cfg["report"], rows, crs, pix, cnt)
     out = {"offset": offset.tolist(), "similarity": M.tolist(), "crs": crs.name, "crs_kind": crs.kind,
-           "zone": zone_hint,
+           "coordinate_frame": frame, "height_reference": model_heights,
+           "camera_height_reference": camera_heights, "marker_height_reference": marker_heights,
+           "reference_heights_verified": compare_heights,
+           "zone": (crs.zone, crs.south) if crs.kind == 'utm' else zone_hint,
            "markers": {m.label: {"est": est[m.label].tolist() if m.label in est else None,
                                  "pix": pix.get(m.label), "n": cnt.get(m.label, 0)} for m in markers},
            "rows": rows, "control_rmse": rmse(rows, "control"), "check_rmse": rmse(rows, "check"),

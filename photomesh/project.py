@@ -1,7 +1,7 @@
 """Project data model, saved as JSON (*.pmsx)."""
 from __future__ import annotations
 
-from .exif import rational as _rat, altitude as _gps_altitude
+from .exif import photo_metadata
 
 import json
 import os
@@ -13,7 +13,7 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp", ".webp"}
 # path fields of a dataset (stored relative to the .pmsx when below its folder)
 DATA_PATHS = ("workdir", "tie_points_ply", "point_cloud_ply", "model_ply")
 PRODUCT_PATHS = (("texture", ("dir", "obj", "glb", "uv_npz")), ("tiled_model", ("dir", "tileset", "index", "zip")),
-                 ("orthomosaic", ("dir", "path", "height_path")), ("dem", ("dir", "path", "coverage_path")), ("shapes", ("path",)))
+                 ("orthomosaic", ("dir", "path", "height_path")), ("dem", ("dir", "path", "coverage_path")), ("dtm", ("dir", "path", "coverage_path")), ("shapes", ("path",)))
 CAMERA_PATHS = ("path", "thumb", "desc")
 
 
@@ -56,6 +56,8 @@ class Camera:
     lon: Optional[float] = None
     lat: Optional[float] = None
     alt: Optional[float] = None
+    gps_accuracy: Optional[list] = None  # Reported E/N/height sigma; use only by explicit opt-in.
+    gps_metadata: dict = field(default_factory=dict)
     # estimated camera centre in the reconstruction frame
     est: Optional[list] = None
     # rotation matrix rows (world->camera), for drawing frusta
@@ -100,6 +102,7 @@ class ProjectData:
     tiled_model: dict = field(default_factory=dict)   # Build Tiled Model result (tiles.py: dir, levels, pixel size)
     orthomosaic: dict = field(default_factory=dict)   # Build Orthomosaic result (ortho.py info: path, pixel size, bounds...)
     dem: dict = field(default_factory=dict)           # Build DEM result (ortho.py info: path, pixel size, bounds...)
+    dtm: dict = field(default_factory=dict)  # Ground-only DTM, independent of the DSM
     shapes: dict = field(default_factory=dict)        # imported shapes: path (shapes.json), count, sources, hidden layers
 
     def add_photos(self, paths, infos=None):
@@ -116,6 +119,7 @@ class ProjectData:
             inf = infos.get(p)
             if inf and "error" not in inf:
                 cam.lon, cam.lat, cam.alt = inf.get("lon"), inf.get("lat"), inf.get("alt")
+                cam.gps_accuracy, cam.gps_metadata = inf.get('gps_accuracy'), inf.get('gps_metadata') or {}
                 cam.thumb, cam.desc = inf.get("thumb", ""), inf.get("desc", "")
                 cam.width, cam.height = inf.get("width", 0), inf.get("height", 0)
             elif not header_given:
@@ -157,6 +161,11 @@ class Project:
                     for k in keys:
                         if isinstance(d.get(k), str):
                             d[k] = to_relative(d[k], base)
+                for group, keys in (('class_display', ('source',)), ('classification', ('source', 'path'))):
+                    metadata = cd.get('meta', {}).get(group, {})
+                    for key in keys:
+                        if isinstance(metadata.get(key), str):
+                            metadata[key] = to_relative(metadata[key], base)
                 for c in cd.get("cameras", []):
                     for k in CAMERA_PATHS:
                         c[k] = to_relative(c.get(k), base)
@@ -207,6 +216,11 @@ class Project:
                     if isinstance(c.get(k), str):
                         c[k] = _resolve(c[k], base)
                 cams.append(Camera(**{k: v for k, v in c.items() if k in cam_known}))
+            for group, keys in (('class_display', ('source',)), ('classification', ('source', 'path'))):
+                metadata = cd.get('meta', {}).get(group, {})
+                for key in keys:
+                    if isinstance(metadata.get(key), str):
+                        metadata[key] = _resolve(metadata[key], base)
             cd = {k: v for k, v in cd.items() if k in known}
             # paths saved relative (0.1.7+, benchmark.py) are relative to the project file
             for k in DATA_PATHS:
@@ -280,17 +294,8 @@ def read_exif_gps(cam: Camera):
     try:
         from PIL import Image
         with Image.open(cam.path) as im:
-            exif = im.getexif()
-            gps = exif.get_ifd(0x8825) if exif else None
-        if not gps:
-            return
-        def dms(vals, ref):
-            d = _rat(vals[0]) + _rat(vals[1]) / 60 + _rat(vals[2]) / 3600
-            return -d if ref in ("S", "W") else d
-        if 2 in gps and 4 in gps:
-            cam.lat = dms(gps[2], gps.get(1, "N"))
-            cam.lon = dms(gps[4], gps.get(3, "E"))
-        if 6 in gps:
-            cam.alt = _gps_altitude(gps)
+            metadata = photo_metadata(im)
+        cam.lon, cam.lat, cam.alt = metadata['lon'], metadata['lat'], metadata['alt']
+        cam.gps_accuracy, cam.gps_metadata = metadata['gps_accuracy'], metadata['gps_metadata']
     except Exception:
         pass

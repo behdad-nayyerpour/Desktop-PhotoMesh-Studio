@@ -258,6 +258,8 @@ def align_steps(exe, dataset, wd, s, names=None, infos=None):
     fe = ["feature_extractor", "--database_path", db, "--image_path", img_dir,
           "--image_list_path", image_list(wd),
           "--ImageReader.single_camera", "0"]   # identical cameras merged below
+    from .calibration import camera_model_arguments
+    fe += camera_model_arguments(s)
     fe += opt(exe, "feature_extractor", ["FeatureExtraction.max_image_size",
                                           "SiftExtraction.max_image_size"], max_size)
     if s["key_point_limit"] > 0:

@@ -60,6 +60,17 @@ def build(source, installed, output, revision):
             files.append({"path": target, "sha256": hashlib.sha256(data).hexdigest()})
     if not files:
         raise ValueError("Candidate has no changed installed components")
+    # Keep candidate provenance current for app-only iterations too. Native
+    # runtime identity stays stable when only application resources are changed.
+    runtime_id = (generated.get('app/runtime.id') or
+                  (installed / 'app/runtime.id').read_bytes()).decode('ascii').strip()
+    generated['app/release_manifest.txt'] = (
+        f'Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n'
+        'Application components bound to the incremental patch manifest.\n'
+        'Python and engine bundles preserved; no runtime pip operations.\n').encode('utf-8')
+    target = 'app/release_manifest.txt'
+    files = [entry for entry in files if entry['path'] != target]
+    files.append({'path': target, 'sha256': hashlib.sha256(generated[target]).hexdigest()})
     manifest = {"schema": 1, "candidate": revision,
                 "baseline_installer_sha256": "059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f",
                 "runtime_id": (installed / "app/runtime.id").read_text().strip(),

@@ -147,7 +147,8 @@ def load_ply(path, max_points=2_000_000):
         cols[:, 0], cols[:, 1], cols[:, 2] = v["red"], v["green"], v["blue"]
         cols[:, :3] /= 255.0
         cols[:, 3] = 1.0
-    return {"points": pts, "colors": cols, "faces": faces, "total": total}
+    return {"points": pts, "colors": cols, "faces": faces, "total": total,
+            "classification": v['classification'].copy() if 'classification' in names else None}
 
 
 def save_ply(path, points, colors=None, faces=None):

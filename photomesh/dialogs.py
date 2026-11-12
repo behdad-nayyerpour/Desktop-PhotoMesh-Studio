@@ -112,6 +112,11 @@ class AlignPhotosDialog(_SettingsDialog):
         self.gps_frame.setEnabled(ready and self.photo_gps_on)
         self.gps_frame.setToolTip(reason if self.photo_gps_on else "Photo GPS is disabled in Settings.")
         self.gform.addRow(self.gps_frame)
+        self.gps_priors = QCheckBox('Constrain aligned cameras with photo GPS (bundle adjustment)')
+        self.gps_priors.setToolTip('Optional position constraints after image-based reconstruction. Uses the selected GPS accuracy; control markers are not silently added to initial alignment.')
+        self.gps_priors.setEnabled(self.gps_frame.isChecked())
+        self.gps_frame.toggled.connect(self.gps_priors.setEnabled)
+        self.gform.addRow(self.gps_priors)
         self.gform.addRow(self.c2f)
         self.gform.addRow("Image resolution:", self.accuracy)
         self.gform.addRow(self.generic)
@@ -125,6 +130,19 @@ class AlignPhotosDialog(_SettingsDialog):
         self.guided = QCheckBox("Guided image matching")
         self.single_camera = QCheckBox("Share calibration between compatible photos")
         self.single_camera.setChecked(True)
+        from .colmap_io import MODEL_ID
+        self.camera_model = QComboBox()
+        self.camera_model.addItem("Engine default (preserve existing behavior)", "")
+        for name in MODEL_ID:
+            self.camera_model.addItem(name, name)
+        stored_model = QSettings().value('align/camera_model', '', str)
+        self.camera_model.setCurrentIndex(max(0, self.camera_model.findData(stored_model)))
+        self.camera_model.setToolTip("Choose a model supported by the lens. Fisheye models are for fisheye lenses; more coefficients need stronger image geometry.")
+        self.aform.addRow("Camera model:", self.camera_model)
+        self.reported_accuracy = QCheckBox('Use reported photo GPS deviations (confirm units are metres)')
+        self.reported_accuracy.setChecked(bool(getattr(parent, 'dataset', None) and parent.dataset.reference_settings.get('reported_gps_accuracy', False)))
+        self.reported_accuracy.setToolTip('Opt-in DJI XMP receiver deviations. Missing/invalid values use the project accuracy; RTK status alone is never an accuracy guarantee.')
+        self.aform.addRow(self.reported_accuracy)
         self.aform.addRow("Key point limit:", self.key_limit)
         for w in (self.guided, self.single_camera):
             self.aform.addRow(w)
@@ -145,12 +163,15 @@ class AlignPhotosDialog(_SettingsDialog):
         alignment_context(self, parent)
 
     def settings(self):
+        QSettings().setValue('align/camera_model', self.camera_model.currentData())
         return {"accuracy": self.accuracy.currentData() or self.accuracy.currentText(),
                 "generic": self.generic.isChecked(),
                 "mode": self.mode.currentText(),
                 "mapper": self.mapper.currentText(),
                 "feature_method": self.feature_method.currentText(),
                 "gps_frame": self.gps_frame.isChecked(),
+                "gps_priors": self.gps_priors.isChecked() and self.gps_frame.isChecked() and self.photo_gps_on,
+                "reported_gps_accuracy": self.reported_accuracy.isChecked(),
                 "coarse_to_fine": self.c2f.isChecked(),
                 "reference": self.reference.isChecked(),
                 "sequential": self.mode.currentText() == "Sequential",
@@ -158,6 +179,7 @@ class AlignPhotosDialog(_SettingsDialog):
                 "key_point_limit": self.key_limit.value(),
                 "guided_matching": self.guided.isChecked(),
                 "single_camera": self.single_camera.isChecked(),
+                "camera_model": self.camera_model.currentData(),
                 "calibration_groups": getattr(self, "calibration_groups", {}),
                 "use_gpu": QSettings().value("gpu/use_gpu", True, bool) and _gpu_ok()}
 
@@ -333,6 +355,7 @@ class OptimizeCamerasDialog(_SettingsDialog):
     run the GCP-constrained bundle adjustment."""
     def __init__(self, parent=None, settings=None):
         super().__init__("Optimize Cameras", parent)
+        self.setMinimumWidth(760)
         from PySide6.QtWidgets import QDoubleSpinBox
         from .georef import DEFAULTS
         s = dict(DEFAULTS); s.update(settings or {})
@@ -342,7 +365,7 @@ class OptimizeCamerasDialog(_SettingsDialog):
                                     "Marker estimates/errors can still be displayed for checking. Predictions alone are display hints; pin or refine placements on photos before adjustment. "
                                     "At least 3 non-collinear controls are needed to georeference. "
                                    "Without sufficient reference data, local bundle adjustment is offered.")
-        self.use_cameras = QCheckBox("Use camera GPS (geographic/UTM coordinate systems)")
+        self.use_cameras = QCheckBox("Use camera GPS (geographic or supported metre-based CRS)")
         from .photo_gps import use_photo_gps
         dataset = getattr(parent, "dataset", None)
         gps_on = use_photo_gps(dataset) if dataset is not None else True
@@ -360,16 +383,49 @@ class OptimizeCamerasDialog(_SettingsDialog):
         self.mk_acc = dspin(s["marker_accuracy"], 4); self.mk_acc_z = dspin(s["marker_accuracy_z"], 4)
         self.proj_acc = dspin(s["projection_accuracy"], 2, 50); self.tie_acc = dspin(s["tie_accuracy"], 2, 50)
         self.ties = QSpinBox(); self.ties.setRange(1000, 1_000_000); self.ties.setValue(40000); self.ties.setSingleStep(10000)
-        self.aform.addRow("Camera accuracy XY / Z (m):", _pair(self.cam_acc, self.cam_acc_z))
+        self.reported_accuracy = QCheckBox('Use reported photo GPS deviations (confirm units are metres)')
+        self.reported_accuracy.setChecked(bool(s.get('reported_gps_accuracy', False)))
+        self.reported_accuracy.setEnabled(gps_on)
+        self.reported_accuracy.setToolTip('Valid per-photo E/N/height deviations override the fallback accuracy below. Unknown or inconsistent metadata uses the fallback. No vertical datum conversion is automatic.')
+        self.aform.addRow(self.reported_accuracy)
+        self.aform.addRow("Fallback camera accuracy XY / Z (m):", _pair(self.cam_acc, self.cam_acc_z))
         self.aform.addRow("Marker accuracy XY / Z (m):", _pair(self.mk_acc, self.mk_acc_z))
         self.aform.addRow("Marker projection accuracy (px):", self.proj_acc)
         self.aform.addRow("Tie point accuracy (px):", self.tie_acc)
         self.aform.addRow("Tie points used in adjustment:", self.ties)
+        preset = s.get('intrinsics', 'f,cx,cy,k1-k3,p1,p2')
+        self.intrinsic_preset = _combo(['f', 'f,cx,cy,k1', 'f,cx,cy,k1-k3', 'f,cx,cy,k1-k3,p1,p2', 'All supported coefficients'],
+                                      'All supported coefficients' if preset == 'all' else preset)
+        self.intrinsic_preset.setToolTip('Only named coefficients supported by each existing camera model are fitted. Other coefficients are held fixed.')
+        self.intr.toggled.connect(self.intrinsic_preset.setEnabled)
+        self.aform.addRow('Fit calibration parameters:', self.intrinsic_preset)
+        self.adjustment_frame = QComboBox()
+        self.adjustment_frame.addItem('Projected / existing Cartesian frame', 'projected')
+        self.adjustment_frame.addItem('WGS84 local ENU (ellipsoidal heights required)', 'enu')
+        self.adjustment_frame.setCurrentIndex(1 if (getattr(dataset, 'georef', {}) or {}).get('coordinate_frame') else 0)
+        self.aform.addRow('Adjustment frame:', self.adjustment_frame)
+        self.height_references = {}
+        for key, label in [('camera', 'Photo GPS height reference:'), ('marker', 'Control height reference:')]:
+            box = QComboBox()
+            for text, value in [('Unknown / not confirmed', 'unknown'), ('WGS84 ellipsoidal', 'ellipsoidal'),
+                                ('Orthometric / geoid-based', 'orthometric'), ('Local height datum', 'local')]:
+                box.addItem(text, value)
+            box.setCurrentIndex(max(0, box.findData(s.get(key + '_height_reference', 'unknown'))))
+            self.height_references[key] = box
+            self.aform.addRow(label, box)
+        note = QLabel('No geoid or vertical-datum conversion is applied automatically. ENU Up is relative to its tangent origin, not absolute elevation.')
+        note.setWordWrap(True)
+        self.aform.addRow(note)
 
     def settings(self):
         return {"use_markers": self.use_markers.isChecked(), "use_cameras": self.use_cameras.isChecked(),
                 "bundle": self.bundle.isChecked(), "fit_intrinsics": self.intr.isChecked(),
                 "tie_points": self.ties.value(),
+                "adjustment_frame": self.adjustment_frame.currentData(),
+                "intrinsics": 'all' if self.intrinsic_preset.currentText() == 'All supported coefficients' else self.intrinsic_preset.currentText(),
+                "reported_gps_accuracy": self.reported_accuracy.isChecked() and self.use_cameras.isChecked(),
+                "camera_height_reference": self.height_references['camera'].currentData(),
+                "marker_height_reference": self.height_references['marker'].currentData(),
                 "accuracies": {"camera_accuracy": self.cam_acc.value(), "camera_accuracy_z": self.cam_acc_z.value(),
                                "marker_accuracy": self.mk_acc.value(), "marker_accuracy_z": self.mk_acc_z.value(),
                                "projection_accuracy": self.proj_acc.value(), "tie_accuracy": self.tie_acc.value()}}

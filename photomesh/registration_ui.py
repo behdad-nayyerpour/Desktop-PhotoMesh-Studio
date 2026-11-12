@@ -31,7 +31,7 @@ class RegistrationMixin:
                 continue
             if marker.ref is not None and ch.georef:
                 positions[marker.label] = (g.CRS.parse(ch.georef.get("crs") or ch.crs).to_metric(
-                    np.atleast_2d(marker.ref),ch.georef.get("zone"))[0] -
+                    np.atleast_2d(marker.ref),ch.georef.get("zone"), ch.georef.get("coordinate_frame"))[0] -
                     np.asarray(ch.georef.get("offset") or [0,0,0],float))
             else:
                 point,_n=g.triangulate_marker(model,marker.projections,measured_only=True)

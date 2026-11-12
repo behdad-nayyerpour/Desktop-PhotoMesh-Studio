@@ -153,13 +153,13 @@ def vertex_blocks(path, block=500_000):
             return
     # ASCII PLY can be streamed without loading the whole cloud.
     import itertools
-    from .plyio import read_header
+    from .plyio import read_header, is_list_property
     with open(path,"rb") as fh:
         header=read_header(fh)
         if header is None or header[1] is not None or not header[2] or header[2][0][0]!="vertex":
             raise ValueError("Large-cloud streaming requires binary or scalar ASCII PLY vertices first")
         _,count,properties=header[2][0]
-        if any(p is None or p[0]=="list" for p in properties):
+        if any(p is None or is_list_property(p) for p in properties):
             raise ValueError("Unsupported PLY vertex layout")
         dtype=np.dtype(properties)
         step=min(block,65536)
@@ -199,11 +199,18 @@ def require_mesh(vertices,faces):
 
 
 def processing_crs(georef):
-    """The reconstruction stores geographic references in a metric UTM frame."""
+    """Return the actual Cartesian model CRS, including explicit local ENU."""
     if not georef: return ""
+    if georef.get('coordinate_frame'):
+        from .coordinates import enu_wkt
+        return enu_wkt(georef['coordinate_frame'])
     reference=georef.get("crs") or ""
     from .georef import CRS
-    try: geographic=CRS.parse(reference).kind=="wgs84"
+    try:
+        parsed = CRS.parse(reference)
+        if parsed.kind == 'utm':
+            return f'EPSG:{parsed.epsg}'
+        geographic=parsed.kind=="wgs84"
     except ValueError: geographic=georef.get("crs_kind")=="wgs84"
     if not geographic: return reference
     zone=georef.get("zone")

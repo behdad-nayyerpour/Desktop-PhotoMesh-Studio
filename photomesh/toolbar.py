@@ -65,6 +65,7 @@ def build_toolbar(window):
         ("Tie Points - Colors", "tie", "Colors")])
     window.cloud_mode_button = mode("cloud", "Cloud", [
         ("Point Cloud - Colors", "cloud_colors", "Colors"),
+        ("Point Cloud - Classification", "cloud_colors", "Classification"),
         ("Point Cloud - Solid", "cloud_solid", "Solid")])
     window.model_mode_button = mode("mesh", "Mesh", [
         ("Model - Shaded", "mode_shaded", "Shaded"),

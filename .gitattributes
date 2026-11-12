@@ -15,3 +15,6 @@
 *.shp  binary
 *.shx  binary
 *.dbf  binary
+
+# Preserve exact upstream wheel bytes and RECORD hashes.
+photomesh/_vendor/** -text

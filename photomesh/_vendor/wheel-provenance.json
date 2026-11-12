@@ -1,0 +1,10 @@
+[
+  {
+    "wheel": "laspy-2.6.1-py3-none-any.whl",
+    "sha256": "44c4d3c38fcef81cdb9201a0b98e5e4f09831c98d2ec1335b9ee59da16a37349"
+  },
+  {
+    "wheel": "lazrs-0.7.0-cp313-cp313-win_amd64.whl",
+    "sha256": "d2cacb2521a3043698193e40d10289c51063dda11c4c585f81015764369f9a97"
+  }
+]
