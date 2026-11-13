@@ -71,7 +71,7 @@ ownership and collisions; source/license evidence versus legal conclusions;
 coordinate units, independent checkpoints and real-data reference quality.
 No unrelated processing math or defaults changed in this finalization iteration.
 
-Final candidate delivery is be95c3a06b734dade16830f206c1d1f4024696cb; only
+The first finalization test candidate was be95c3a06b734dade16830f206c1d1f4024696cb; only
 the two visually verified screenshot PNGs differ from the fully tested app tree
 at a93c60855ae15c9da3c6b25b0100a5556642a199. Full Windows917/9skip and
 Linux913/13skip plus Mesa checks pass. Disposable exact1.0.4→candidate inventory
@@ -98,6 +98,15 @@ application reconstruction calculation or threading default was changed to
 force that comparison. This is a Low-resolution four-photo GPU/reuse smoke,
 not independent surveyed dense-surface accuracy or modern-CUDA13 driver proof.
 The retained engineering/source-packaging gates above still apply before Setup.
+
+Packaged screenshot attribution was subsequently separated from the numerical
+survey fixture: final distributed PNGs use PDAL/data's CC-BY-4.0 Autzen terrain,
+showing the actual automatic ground/non-ground colours. Original application
+interface/logo rights and the application license are retained. The GPL survey
+photos remain numerical test data. Only README, image attribution and the two
+PNG captures change from that first tested delivery; processing code, PDF and
+runtime remain the same. The exact final delivery revision and hashes are in
+the final patch summary, with actual BAT rollback checks repeated for its bytes.
 
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 

@@ -1,10 +1,10 @@
-Lens2Mesh1.0.5 screenshot attribution
+Lens2Mesh 1.0.5 screenshot attribution
 
 screenshot.png and screenshot-light.png are actual application captures of
 PDAL/data's Autzen LiDAR, revision ce0024257c573526389c4db9ab26e82739b8aaa9.
-LiDAR provided by Aaron Reyna / Watershed Sciences in2010; manual reference
-classification by Max Sampson / Hobu in2021. Public dataset content retains
-Creative Commons Attribution4.0 International (CC-BY-4.0).
+LiDAR provided by Aaron Reyna / Watershed Sciences in 2010; manual reference
+classification by Max Sampson / Hobu in 2021. Public dataset content retains
+Creative Commons Attribution 4.0 International (CC-BY-4.0).
 Coordinates were converted to local metres, and Lens2Mesh's automatic
 ground/non-ground classes are displayed with its bounded viewer preview.
 The original application interface, logo and code keep their existing license;
