@@ -18,6 +18,8 @@ def digest(path):
 def build(source, installed, output, revision, with_neural_runtime=False, with_engine_utf8=False, engine_only=False):
     output.mkdir(parents=True, exist_ok=True)
     baseline = {}
+    if engine_only:
+        baseline['app/runtime.id'] = digest(installed/'app/runtime.id')
     for path in ([] if engine_only else (installed / "app").rglob("*")):
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
             baseline[path.relative_to(installed).as_posix()] = digest(path)
@@ -140,8 +142,8 @@ def build(source, installed, output, revision, with_neural_runtime=False, with_e
     (output / "patch-summary.json").write_text(json.dumps({
         "candidate": revision, "archive": filename, "sha256": sha,
         "bytes": archive_path.stat().st_size, "files": files,
-        "unchanged_python_and_engines": not bool(qt), "removed_dependency": bool(removed),
-        "python_engine_replacement": False, "removed_qt_files": len(qt), "setup_built": False,
+        "unchanged_python_and_engines": not bool(qt or native), "removed_dependency": bool(removed),
+        "python_engine_replacement": bool(native), "removed_qt_files": len(qt), "setup_built": False,
         "added_neural_runtime": bool(external), "neural_runtime_path": RESOURCE if external else None,
     }, indent=2), encoding="utf-8")
     return archive_path
