@@ -1,8 +1,8 @@
 {
-  "candidate": "be95c3a06b734dade16830f206c1d1f4024696cb",
-  "archive": "Lens2Mesh_TestPatch_be95c3a06b73.zip",
-  "sha256": "e7a119f4c8dd0f21ab69c5e4c7698b3d4e12b4416fc1fe3c2fa1ed90773f164c",
-  "bytes": 2454185,
+  "candidate": "63b70e534597e17a54e91a31696ed5d423e1b396",
+  "archive": "Lens2Mesh_TestPatch_63b70e534597.zip",
+  "sha256": "dd3421f8d5c45c9c130a6d301c4f2707e29d14f37e03ba6d63c69960985af169",
+  "bytes": 1649602,
   "files": [
     {
       "path": "app/CHANGES.md",
@@ -10,11 +10,11 @@
     },
     {
       "path": "app/README.md",
-      "sha256": "80ff3f19a51e91f606f3f2afb5e1c5d79d03322446011614d7bb94dab4a0e2cb"
+      "sha256": "cfa95600a65e702002212ebaa1cf2220dc93a48cdfab7c84083f165ed0e13b22"
     },
     {
       "path": "app/SCREENSHOT-LICENSE.txt",
-      "sha256": "63e6aad933fe3b79d2666e95e40b0b46b5f5c35af22e18205bfed03fcbe47f46"
+      "sha256": "c10c2d7e132ca1a2f6973c0ae1af60c760fc4eb7da6a938ede8071da878627da"
     },
     {
       "path": "app/UPDATING.md",
@@ -114,15 +114,15 @@
     },
     {
       "path": "app/screenshot-light.png",
-      "sha256": "5a0e0b10caafec0cf4f1df88e7a4b6556dfb14bbd317ab3bea48b34f5e7eead0"
+      "sha256": "47a40ba524c54f5f88adeb971b4a107f21b2d864e37c2a9c2ed619558fda0e6e"
     },
     {
       "path": "app/screenshot.png",
-      "sha256": "fb3aafc2466900ceabbc77366f286d230eee8fc55c2a619613e6f5f4fcefe624"
+      "sha256": "f9f3195b5add153a769478d40ab84c7c35bbbc32e680057315b1a926ba3c05cf"
     },
     {
       "path": "app/release_manifest.txt",
-      "sha256": "ea07f4e2c7dda1fe7ee0913b0a6ea945ffe7949eb5786334bcd9f199d10eb5df"
+      "sha256": "c5ff32368aa08740763063c851700067d42f6efd4504c1f0c45f01c6048fb8e6"
     }
   ],
   "unchanged_python_and_engines": true,

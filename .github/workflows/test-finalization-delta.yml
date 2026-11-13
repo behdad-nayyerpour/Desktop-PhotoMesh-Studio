@@ -141,7 +141,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force verified-download | Out-Null
-          $zip=Get-ChildItem candidates/105-finalization/*.zip | Select-Object -First 1
+          $zip=Get-Item candidates/105-finalization/Lens2Mesh_TestPatch_63b70e534597.zip
           $sha=(Get-FileHash -LiteralPath $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-finalization/'+$zip.Name
           $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_Finalization_1.0.5.bat'
@@ -176,7 +176,7 @@ jobs:
           & $python tools/validate_splash_105.py
           if ($LASTEXITCODE) { throw 'Installed splash rendering failed' }
           $before=Get-Content survey-before.json -Raw | ConvertFrom-Json -AsHashtable
-          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like 'be95c3a*' | Select-Object -First 1
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '63b70e5*' | Select-Object -First 1
           $rollback=Join-Path $receipt.FullName 'ROLLBACK.bat'
           & $env:ComSpec /d /c ('call "'+$rollback+'" <NUL')
           if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
@@ -203,7 +203,7 @@ jobs:
           if ($LASTEXITCODE) { throw 'Reapplied installed PLY processing failed' }
           & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
           if ($LASTEXITCODE) { throw 'Reapplied cleanup/native/manual validation failed' }
-          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like 'be95c3a*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
+          $active=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object { $_.Name -like '63b70e5*' -and (Get-Content -LiteralPath (Join-Path $_.FullName 'state.json') -Raw | ConvertFrom-Json).status -eq 'applied' } | Select-Object -First 1
           if (-not $active -or $active.FullName -eq $receipt.FullName) { throw 'Recovery history was not preserved' }
           & $env:ComSpec /d /c ('call "'+(Join-Path $active.FullName 'ROLLBACK.bat')+'" <NUL')
           if ($LASTEXITCODE) { throw 'Second actual BAT rollback failed' }
