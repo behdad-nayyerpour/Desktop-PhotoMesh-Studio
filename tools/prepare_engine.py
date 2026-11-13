@@ -79,6 +79,7 @@ def prepare(output, cache, cpu_only=False, offline=False):
         for name,source in weights.items():
             shutil.copyfile(source,models/name)
         manifest={"version":assets["version"],"cuda":key=="cuda","ceres_cuda":False,
+                  "windows_utf8_manifest":proof,
                   "minimum_driver":13020 if key=="cuda" else 0,
                   "minimum_cc":75 if key=="cuda" else 0,
                   "models":{item["name"]:item["sha256"] for item in assets["models"]}}

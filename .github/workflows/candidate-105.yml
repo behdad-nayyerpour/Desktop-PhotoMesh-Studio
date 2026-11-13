@@ -57,7 +57,7 @@ jobs:
       - name: Exact survey capacity and peak memory comparison
         run: python tools/benchmark_capacity_105.py --output evidence/capacity-performance.json
       - name: Build only changed application components
-        run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}" --with-neural-runtime
+        run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}" --with-neural-runtime --with-engine-utf8
       - name: Apply and roll back on installed Python with unchanged runtime
         shell: pwsh
         run: |

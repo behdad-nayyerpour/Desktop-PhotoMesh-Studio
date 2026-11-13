@@ -566,3 +566,31 @@ limitation in final1.0.5. Preserve the release gate along with the independent
 native corresponding-source/notice gate. No system locale or installed engine
 was changed. Legacy behavior and the approved PDF remain unchanged.
 
+### Persian installation path fix (targeted follow-up)
+
+Resolved in the targeted candidate6404d436dbe2391179fc38decf5a67669501e9d2.
+Only the two modern BSD COLMAP executables' Windows RT_MANIFEST resources gain
+Microsoft's per-process activeCodePage UTF-8 setting. The original unsigned
+inputs and deterministic outputs are pinned in reviewed-engine-patches.json;
+every non-resource PE section remains byte-identical. No system locale, legacy
+engine, model weights, CUDA DLL or numerical source is changed. Modern Windows
+1903+ supports this process setting. Full engine preparation uses the same helper.
+
+The updater permits only those two exact before/after pairs, rejects other
+native changes/removals and preserves its review plan with rollback.28 focused
+updater/launcher tests passed, including rejected altered inputs/outputs/removals.
+Actual CLI application in an installation path containing spaces and Persian
+characters passed both learned methods on real GPU and CPU, registering all4
+public cameras each (GPU165/209 points; CPU167/339). DLLs remained in the private
+Persian app directory, not the executable directory. Actual CLI rollback restored
+both engines and runtime/provenance metadata byte-exactly. No user installation
+was changed during validation. The approved PDF is unchanged.
+
+The4-file targeted patch is24,387,005 bytes, SHA256
+f5f299733995fab53a9cc4ba34b0b4606b5672e8afe8dd6e6f9681e06fdfffbb.
+It targets the user's authenticated installed neural-runtime candidate and
+downloads no Python, engine bundle or NVIDIA archives. Full unrelated suites
+were not repeated for this acceptance; numerical code is byte-identical and
+the native path behavior and recovery were tested directly. The separate native
+corresponding-source/notice gate remains open before final release.
+
