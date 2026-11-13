@@ -538,3 +538,31 @@ regression and installed-candidate validation now enforce this.63 focused tests
 pass with the final four-component specification. Other native source/notice
 findings remain separately open; this review grants no blanket clearance.
 
+Final13-DLL acceptance: source31636bcc8b874aa4826d65b8bd9f2959dddd2fc0,
+general43466969065 passed926 Windows /922 Linux tests (9/13 skipped), plus2 Mesa
+checks. Full43466969080 passed and independently retained inventory shows25,280
+candidate files, all13 exact new DLLs/original license hashes, and26,196 original
+files restored exactly. Artifact14058919638 SHA256
+`4dacfa86439b2151c2b9448160fdb7a2567767b19d84d7aa2197521e5827dc04`.
+Actual final BAT43467111035 passed87 installed tests, native terrain/PLY/manual,
+all13 DLL/notice checks and137 Qt file rollback. Artifact14057988851 SHA256
+`f234d162d4780260662ca2065af71e87f8c8354961f18baa6471e8d658db08cb`.
+Delivered BAT SHA256`57820debe410138674b540321a47d5d23b1f3c8d06d5b19bb4b8c0061d323242`,
+independently reproduced and read back from publication. It pins artifact
+e289f71dfa4dc24f970b7ba5ff98b149cbcb72bb, ZIP3,416,234bytes SHA256
+`74583407ec709d597ae17610f6f261a10dc89b1c5bb8958a925f118f8fd2dfe8`.
+
+**Open Unicode-install issue; not approved for final Setup:** additional real
+GPU testing showed that ONNX1.30's dynamic cuDNN loader uses ANSI PATH functions,
+so an installation path containing Persian characters fails neural GPU loading.
+The upstream executable also loses non-ANSI model paths. The delivered test BAT
+works on the user's current ASCII installation; do not claim full Unicode neural
+support. A disposable BSD-executable RT_MANIFEST/activeCodePage UTF-8 prototype
+passed GPU model loading, with all non-resource PE sections unchanged. It is
+retained as evidence, not included in the delivered candidate, updater or Setup.
+Finishing that fix requires explicit hash-bound native-executable patch packaging
+and its installed/rollback tests. The user has not approved releasing this
+limitation in final1.0.5. Preserve the release gate along with the independent
+native corresponding-source/notice gate. No system locale or installed engine
+was changed. Legacy behavior and the approved PDF remain unchanged.
+
