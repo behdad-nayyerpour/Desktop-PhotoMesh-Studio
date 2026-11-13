@@ -1,26 +1,16 @@
 # Installing a newer version
 
-## Lens2Mesh 1.0.5 candidate
+## Lens2Mesh 1.0.5
 
-PhotoMesh Studio is becoming Lens2Mesh. The public release remains 1.0.4 until
-the test candidate is accepted and a complete installer is separately published.
-For candidate testing, close the application and run the exact BAT supplied for
-your installed baseline. It downloads only changed components, checks hashes
-and creates a recovery receipt in `.lens2mesh-patches` inside the installation.
-Follow the printed rollback command if you need to restore that baseline.
-Do not manually mix files from different candidates or run the patch over
-locally modified application files. Projects and user settings are not patched.
-
-The old installation folder and `.pmsx` project extension remain valid. The
-candidate can rename this install's per-user legacy shortcuts to Lens2Mesh and
-retains their original bytes next to the shortcut as `.lens2mesh-backup`.
-It does not overwrite an existing Lens2Mesh shortcut. The current PDF is the
-unchanged approved 1.0.4 manual; see [candidate additions](docs/candidate-105.md).
+The tested 1.0.5 candidate is accepted. Use the complete offline Setup below
+for new installations and upgrades. Existing installation folders, projects and
+settings remain supported. The complete English manual is bundled and available
+offline from Help > User Manual (PDF).
 
 ## Published complete installers
 
-1. Download `PhotoMeshStudio_Setup_<version>.exe` from the
-   [latest release](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
+1. Download `Lens2Mesh_Setup_<version>.exe` from the
+   [latest release](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/latest).
 2. Save your project and close the application.
 3. Run Setup. For an existing EXE installation, use the same installation
    folder if prompted.

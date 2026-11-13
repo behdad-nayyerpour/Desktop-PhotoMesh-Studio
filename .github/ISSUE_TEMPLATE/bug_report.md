@@ -1,25 +1,25 @@
 ---
 name: Bug report
-about: Report a crash or a failed step (PhotoMesh Studio fills this in for you)
+about: Report a crash or a failed step (Lens2Mesh fills this in for you)
 title: "[0.x.y] <step> failed: <error>"
 labels: bug
 assignees: ''
 ---
 
 <!--
-Easiest way: in PhotoMesh Studio use the error dialog's "Report to GitHub" button,
+Easiest way: in Lens2Mesh use the error dialog's "Report to GitHub" button,
 or Help > Report a Problem... - the app fills in everything below.
 Reports are saved in %LOCALAPPDATA%\PhotoMeshStudio\reports (report_YYYYMMDD_HHMMSS.md + .zip);
 please drag the .zip into this issue. No photos, no coordinates, no personal paths are included.
 -->
 
-# PhotoMesh Studio error report
+# Lens2Mesh error report
 
 | | |
 |---|---|
 | Report | report_YYYYMMDD_HHMMSS |
 | Time | |
-| App | PhotoMesh Studio 0.x.y (commit ...) |
+| App | Lens2Mesh 0.x.y (commit ...) |
 | Kind | error / exception / thread / manual |
 | Step | e.g. Build Point Cloud > Depth maps |
 | Error | message shown in the error dialog |

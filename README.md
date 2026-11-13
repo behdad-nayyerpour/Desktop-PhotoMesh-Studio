@@ -1,6 +1,6 @@
 # Lens2Mesh
 
-**Version 1.0.5 — test candidate.** New Lens2Mesh branding, reference/calibration controls, ground classification, LAS/LAZ, DTM and an interactive cross-section panel.
+**Version 1.0.5.** New Lens2Mesh branding, reference/calibration controls, ground classification, LAS/LAZ, DTM and an interactive cross-section panel.
 
 Lens2Mesh is a desktop photogrammetry application for processing aerial and terrestrial
 imagery locally, without a cloud service. It is available at no charge for
@@ -10,15 +10,15 @@ Built with Python and PySide6, it uses COLMAP for photo alignment and dense
 reconstruction, alongside application code for project management, visualization,
 and surveying workflows.
 
-**[Latest published Windows release: PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4)** ·
+**[Windows release: Lens2Mesh 1.0.5](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.5)** ·
 [User guide](docs/user-guide.md) · [Installation](docs/installation.md) ·
 [Changelog](CHANGES.md) · [License](LICENSE) ·
-[Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
+[Report a problem](https://github.com/behdad-nayyerpour/Lens2Mesh/issues/new?template=bug_report.md)
 
 ## License
 
 Personal projects, learning, non-commercial teaching and academic research are
-permitted under the [PhotoMesh Studio license](LICENSE). Commercial use requires
+permitted under the [Lens2Mesh license](LICENSE). Commercial use requires
 prior written permission, including company evaluations, business workflows,
 client projects and paid services. Contact the project owner through
 [GitHub](https://github.com/behdad-nayyerpour) for separate permission.
@@ -42,15 +42,12 @@ These are actual application captures with Mesa OpenGL. See [image attribution a
 
 ## Install
 
-The currently published installer is `PhotoMeshStudio_Setup_1.0.4.exe` from
-[Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)
-and run it. The offline installer includes Python, its required packages, COLMAP,
-and optional legacy GLOMAP; a separate Python or Git installation is not needed.
-
-The 1.0.5 candidate is tested using an exact-baseline BAT that downloads only
-changed components, checks their hashes and retains rollback backups. Close the
-application before using the supplied candidate updater. A complete
-`Lens2Mesh_Setup_1.0.5.exe` will be built only after candidate acceptance.
+Download `Lens2Mesh_Setup_1.0.5.exe` and its SHA-256 checksum from
+[Releases](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/latest).
+The offline installer includes Python, required packages, COLMAP and the
+compatible legacy GLOMAP engine. A separate Python or Git installation is not
+needed. Close the application before installing. Setup supports fresh installs
+and upgrades and offers destination selection.
 Keep projects, processing results, and original photos outside the installation folder.
 See [installation and requirements](docs/installation.md) and [updating](UPDATING.md).
 

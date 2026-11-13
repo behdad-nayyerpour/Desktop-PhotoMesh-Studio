@@ -1,5 +1,5 @@
 @echo off
-REM PhotoMesh Studio - one-click setup for Windows
+REM Lens2Mesh - one-click setup for Windows
 cd /d "%~dp0"
 where py >nul 2>nul && (set PY=py -3) || (set PY=python)
 %PY% --version >nul 2>nul || (echo Python 3.10+ is required: https://www.python.org/downloads/ ^(tick "Add python.exe to PATH"^) & pause & exit /b 1)

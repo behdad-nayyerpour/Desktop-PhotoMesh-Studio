@@ -42,7 +42,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern "PhotoMeshStudio_Setup_1.0.4.exe" --dir released
+          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern "PhotoMeshStudio_Setup_1.0.4.exe" --dir released
           $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.4.exe"
           $expected = "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3"
           if ((Get-FileHash -LiteralPath $setupPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw "Released runtime checksum mismatch" }

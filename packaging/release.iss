@@ -36,6 +36,8 @@ Source: "{#StageDir}\app\*"; DestDir: "{app}\app"; Flags: recursesubdirs createa
 Source: "{#StageDir}\python\*"; DestDir: "{app}\python"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "{#StageDir}\tools\*"; DestDir: "{app}\tools"; Flags: recursesubdirs createallsubdirs ignoreversion
 [InstallDelete]
+Type: files; Name: "{autoprograms}\PhotoMesh Studio.lnk"; Check: not PortableCheck
+Type: files; Name: "{autodesktop}\PhotoMesh Studio.lnk"; Check: not PortableCheck
 Type: filesandordirs; Name: "{app}\app\photomesh"
 Type: filesandordirs; Name: "{app}\python"
 Type: filesandordirs; Name: "{app}\tools"

@@ -218,7 +218,7 @@ def _decode(url):
 def test_issue_url_short_report_is_complete(tmp_path):
     r = _failed(tmp_path, n_log=5)
     url = rp.issue_url(r)
-    assert url.startswith("https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?")
+    assert url.startswith("https://github.com/behdad-nayyerpour/Lens2Mesh/issues/new?")
     assert len(url) <= rp.MAX_URL and all(ord(c) < 128 for c in url) and " " not in url
     q = _decode(url)
     assert q["labels"] == "bug" and q["title"] == rp.issue_title(r)

@@ -4,17 +4,15 @@
 
 ## Windows installer
 
-The published release below is PhotoMesh Studio1.0.4. Lens2Mesh1.0.5 is a
-test candidate delivered as an exact-baseline BAT; its full Setup is pending
-acceptance. Existing installation folders remain supported. The next Setup
-uses the Lens2Mesh name and offers destination selection on fresh installs
-and upgrades; final Setup validation follows candidate acceptance.
+Lens2Mesh 1.0.5 is distributed as one complete offline Setup. Existing
+installation folders remain supported. Setup offers destination selection on
+fresh installs and upgrades.
 
-1. Open [Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
-2. Download `PhotoMeshStudio_Setup_<version>.exe`.
+1. Open [Releases](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/latest).
+2. Download `Lens2Mesh_Setup_<version>.exe`.
 3. Run Setup and choose an installation folder. The default is
-   `%LOCALAPPDATA%\Programs\PhotoMesh Studio`.
-4. Start PhotoMesh Studio from its Start menu or desktop shortcut.
+   `%LOCALAPPDATA%\Programs\Lens2Mesh`.
+4. Start Lens2Mesh from its Start menu or desktop shortcut.
 
 The installer includes Python, its packages and COLMAP; compatible legacy
 GLOMAP is optional.
@@ -26,7 +24,7 @@ See [Updating](../UPDATING.md).
 
 ## Usage license
 
-PhotoMesh Studio's own materials are provided for personal and educational
+Lens2Mesh's own materials are provided for personal and educational
 non-commercial use under the [project license](../LICENSE). Commercial use,
 including company evaluation and client projects, requires prior written
 permission. Third-party components keep their own licenses.
@@ -75,7 +73,7 @@ Download the matching `.exe.sha256` file. In PowerShell, replace the example
 path with your downloaded Setup path:
 
 ```powershell
-Get-FileHash -LiteralPath 'C:\path\to\PhotoMeshStudio_Setup_<version>.exe' -Algorithm SHA256
+Get-FileHash -LiteralPath 'C:\path\to\Lens2Mesh_Setup_<version>.exe' -Algorithm SHA256
 ```
 
 Compare the hash with the value in the checksum file. They should match,

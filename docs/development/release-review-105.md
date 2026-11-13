@@ -71,8 +71,8 @@ work are in [dependency-audit-105.md](dependency-audit-105.md).
 ## Verified initial incremental candidate
 
 Source `0fcdf3c9fb4b4dd6b3d77b884004048364b2b063` passed the Linux and Windows
-[Tests workflow](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43235599291).
-The [candidate workflow](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43235599102)
+[Tests workflow](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43235599291).
+The [candidate workflow](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43235599102)
 also passed: 806 tests passed and 8 hardware/data-dependent tests were skipped.
 Installed module-origin, new icon, dependency removal and rollback identity
 checks passed using the exact corrected public 1.0.4 baseline in a path with
@@ -102,7 +102,7 @@ group passed 127 tests. The `0fcdf3c` archive is superseded and must not be deli
 the corrected source requires new candidate validation and a new immutable ZIP.
 
 The earlier standalone download/apply/recovery-BAT test is tracked separately in
-[run 43251700970](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43251700970).
+[run 43251700970](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43251700970).
 Do not deliver the BAT until that test succeeds. No full Setup or final release
 has been built or published, and no user acceptance has been recorded.
 
@@ -131,7 +131,7 @@ release; do not describe this test correction as fixing that application behavio
 ## Initial milestone ready for user testing
 
 Application source `0f112b74f09dbeb99673a473cc7b6bb8918389f2` passed
-[candidate run 43256088287](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43256088287):
+[candidate run 43256088287](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43256088287):
 809 passed / 8 skipped, exact installed icon/identity/dependency checks,
 whole-runtime hash comparison and rollback. The PLY benchmark retained exact
 tested attributes; warm-cache medians were 0.01193 s (reference) and 0.01343 s
@@ -151,7 +151,7 @@ manifest field was compared byte-for-byte unchanged. R2 is 1,694,003 bytes,
 SHA256 `f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f`.
 Artifact commit: `6da996b744a655247d9655db579de17da89214b0`.
 
-[Actual BAT run 43265345704](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43265345704)
+[Actual BAT run 43265345704](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43265345704)
 passed download/apply, offline installed PLY mesh/RGB/faces/coordinate-transform
 and world-export checks, actual ROLLBACK.bat, reapplication of the same candidate,
 preservation of the first journal, and a second actual rollback to 1.0.4. Both
@@ -182,7 +182,7 @@ explicit trailing-backslash root on reapplication. Application/payload bytes are
 unchanged. Reviewed generator, child entry point and acceptance callers; no PDF
 or application/numerical changes are needed for this bootstrap-only fix.
 
-Actual BAT run [43269518547](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43269518547) passed registry-discovered apply, installed offline PLY checks, rollback, explicit trailing-backslash reapply and second rollback. Verified BAT artifact 13966643906 matches local generator bytes; BAT SHA256 `3ad0a82d96b30bebb7e6e91603bfc9039f559298e760304ff1912cc12ce3a7f1`.
+Actual BAT run [43269518547](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43269518547) passed registry-discovered apply, installed offline PLY checks, rollback, explicit trailing-backslash reapply and second rollback. Verified BAT artifact 13966643906 matches local generator bytes; BAT SHA256 `3ad0a82d96b30bebb7e6e91603bfc9039f559298e760304ff1912cc12ce3a7f1`.
 
 
 ### Splash artwork quality iteration (2026-11-12)
@@ -204,7 +204,7 @@ from the baseline, not weakened or removed from the installation. The first
 remote delta attempt rejected an extra baseline file before replacement; the
 corrected archive is 12,794 bytes and still changes only appicon.py/splash.py.
 
-[Actual splash BAT run 43274835496](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43274835496) passed on exact104+R2: registry-discovered delta apply, installed splash renders at four scales, all window/ICO sizes, offline PLY pipeline, exact two-file rollback hashes, explicit trailing-slash reapply, second rollback. Artifact 13970755466 includes runner previews and the byte-identical reproduced BAT. No Setup built; broader checklist remains open.
+[Actual splash BAT run 43274835496](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43274835496) passed on exact104+R2: registry-discovered delta apply, installed splash renders at four scales, all window/ICO sizes, offline PLY pipeline, exact two-file rollback hashes, explicit trailing-slash reapply, second rollback. Artifact 13970755466 includes runner previews and the byte-identical reproduced BAT. No Setup built; broader checklist remains open.
 
 
 ### Build display activation iteration (2026-11-12)
@@ -224,7 +224,7 @@ No numerical processing or manual/PDF content is changed. Candidate Setup remain
 gated on user testing; this iteration is one pending checklist item only.
 
 
-Actual display BAT [run 43277499726](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43277499726)
+Actual display BAT [run 43277499726](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43277499726)
 passed on installed 1.0.4 + accepted R2 + splash: apply, 7 UI tests with installed
 module-origin assertions, offline PLY, splash at four scales, byte-exact rollback,
 reapply and second rollback. Artifact13970867636 outer ZIP SHA256
@@ -238,7 +238,7 @@ The first installed test run passed UI tests but its later splash verifier rejec
 an appended test-dependency PYTHONPATH; the workflow now restores app-only path.
 Application payload bytes did not change for that test-harness correction.
 
-Full Windows candidate [run43276695466](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43276695466) passed: 821 tests, 8 skipped, static/compile checks, PLY workload benchmark and exact installed candidate inventory/rollback. Verified 26,190 installed files with unchanged Python/engines preserved. This resolves the incomplete local-development-environment run above; actual CUDA/native engine accuracy tests remain outside this UI-only change. Display BAT published at artifact commit a3aadcfd5124e980b9b768feb258887f33b2a182; user acceptance pending.
+Full Windows candidate [run43276695466](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43276695466) passed: 821 tests, 8 skipped, static/compile checks, PLY workload benchmark and exact installed candidate inventory/rollback. Verified 26,190 installed files with unchanged Python/engines preserved. This resolves the incomplete local-development-environment run above; actual CUDA/native engine accuracy tests remain outside this UI-only change. Display BAT published at artifact commit a3aadcfd5124e980b9b768feb258887f33b2a182; user acceptance pending.
 
 
 ### Progress presentation / conservative stage ETA iteration (2026-11-12)
@@ -266,7 +266,7 @@ label cleanup. PDF retained unchanged per user's instruction. Full Setup deferre
 Final progress source is eb5d544da880b3c14a38cae7595c58cc9ec594da: additionally
 resets native/dialog ETA at the photometric/geometric depth-map pass boundary.
 Final focused progress/fusion subset: 22 passed; earlier 65-test check covered
-shared lifecycle and pipeline paths. Actual [BAT run43281167576](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43281167576)
+shared lifecycle and pipeline paths. Actual [BAT run43281167576](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43281167576)
 passed apply, 12 installed UI/progress tests with installed-origin checks, PLY,
 splash, exact four-file rollback, reapply and second rollback. Artifact13973735660
 ZIP SHA256 `3920b477248930dc843d9bd64364142d9c26629818b25a97cbf7261453cbe1ce`.
@@ -278,7 +278,7 @@ Target baseline is the user-accepted display patch; only four app files differ.
 Single/multiple-stage previews inspected locally at progress-preview-1.png and
 progress-preview-4.png. Full fresh-environment regression run43281101863 pending.
 
-Final Windows [run43281101863](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43281101863) SUCCESS: 826 passed,8 skipped; compile/static checks, PLY workload benchmark, exact installed inventory26190 and rollback identity passed. This is UI/progress validation, not target GPU ETA benchmarking. Final BAT published at b04fda257c8daf59c86dc7787df01b45337f269c; user testing pending. Broader numerical/classification/measurement/manual/installer work remains open.
+Final Windows [run43281101863](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43281101863) SUCCESS: 826 passed,8 skipped; compile/static checks, PLY workload benchmark, exact installed inventory26190 and rollback identity passed. This is UI/progress validation, not target GPU ETA benchmarking. Final BAT published at b04fda257c8daf59c86dc7787df01b45337f269c; user testing pending. Broader numerical/classification/measurement/manual/installer work remains open.
 
 ### Combined GPS / coordinates / terrain / survey tools candidate (2026-11-13)
 
@@ -368,16 +368,16 @@ is included. Local classification took 0.776 s; mesh indexing 0.389 s and profil
 workloads, not a promise for real terrain or multi-million-face interactive speed.
 
 Final application revision: `52f18f45a505d6bb5fdb33310bf1a11867ed75ae`.
-[Windows installed inventory/regression run43298006020](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298006020)
+[Windows installed inventory/regression run43298006020](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43298006020)
 passed compilation/static checks, **861 passed / 8 skipped**, PLY equal-workload
 benchmark, installed apply, exact inventory of **26,249 files** and rollback.
 Python and engine bytes were preserved; new app/vendor files were intentional.
-[General Linux/Windows run43298006009](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298006009)
+[General Linux/Windows run43298006009](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43298006009)
 passed: Linux857/12 skipped, Windows861/8 skipped, and the separate Mesa OpenGL
 overlay test passed. Skipped real datasets/CUDA and target hardware are still
 outside this evidence. The reused local runtime's final focused suite passed147.
 
-[Actual single-BAT run43298054143](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43298054143)
+[Actual single-BAT run43298054143](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43298054143)
 passed download and registry discovery with a trailing backslash and a Unicode
 custom install path, **35 installed new-feature tests** with module-origin and
 offline network guards, PLY processing, splash at four scales, byte-exact full-app
@@ -431,17 +431,17 @@ the user's existing instruction. Target-display/GPU testing remains separate
 from offscreen Qt and Mesa checks. Final run links/hashes follow after validation.
 
 Final app revision `de38ba9e9b3759596061d59fd26b737ea7b1a884` passed
-[candidate run43310387898](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310387898):
+[candidate run43310387898](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43310387898):
 compile/static, **876 passed / 9 skipped**, PLY equal-workload benchmark, installed
 apply, exact inventory of **26,252 files** with Python/engines preserved, rollback.
-[General run43310387996](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310387996)
+[General run43310387996](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43310387996)
 passed Linux872/13 skipped, Windows876/9 skipped and two separate Mesa OpenGL
 tests, including native rotation while the survey tool is active and actual
 midpoint-handle ray events. Focused local survey/view/reference tests:90/2 skipped;
 15 new interaction tests and later40-test survey/1.0.4 subset passed. Dark/Light
 1500x900 previews inspected; explicit Close, all measurement text and plot fit.
 
-[Actual BAT run43310676928](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43310676928)
+[Actual BAT run43310676928](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43310676928)
 passed **50 installed tests**, including calibrated/distorted/scaled photo picks,
 photo rotation, ortho frame/world-offset round trips, real mouse endpoint/centre
 gestures, closable bottom docks, manual input and stale-worker closure/reopening.
@@ -508,10 +508,10 @@ of locking the field while a number is still being typed. Its additional keyboar
 test passes (10 new section workflow cases). Local final affected suite before
 that isolated addition:95 passed/2 skipped; final Ruff clean.
 
-[General checks](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319457112)
+[General checks](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43319457112)
 pass: Linux882 passed/13 skipped, Windows886 passed/9 skipped, plus2 separate
 Mesa OpenGL checks for rotation, rubber preview and midpoint dragging.
-[Installed BAT validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319513095)
+[Installed BAT validation](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43319513095)
 passes60 tests from isolated installed modules with outgoing sockets/DNS blocked,
 offline PLY processing and splash rendering. Actual BAT discovery in a Unicode
 custom path with a trailing backslash, two byte-exact full-app rollbacks and
@@ -526,7 +526,7 @@ was downloaded and checked. Its6166-byte BAT matches local reproduction,
 SHA256 `47a641168f294f1f3b1e30c16a5ddb6c85214792f6845955dd99bc06d9df3af8`.
 The payload URL pins artifact commit`a7b884b3ab59bd06a3e22aa4bc96f82bb879734e`.
 
-[Full candidate validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43319457096)
+[Full candidate validation](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43319457096)
 passes886 tests/9 skipped, installed apply/rollback and the exact26252-file runtime
 inventory comparison. Full validation artifact13989169066 retained locally with
 verified outer SHA256
@@ -594,9 +594,9 @@ the latter remains a final-release gate, explicitly visible in the review record
 No full Setup, repository rename or public installer release is requested here.
 
 Final app/source revision`281db7dc7f6b434b4d2ccb5f652f5e01c773b67b`:
-[general checks43386006340](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386006340)
+[general checks43386006340](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43386006340)
 pass Windows908/9 skipped, Linux904/13 skipped, plus2 Mesa OpenGL checks.
-[Full installed/inventory run43386006350](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386006350)
+[Full installed/inventory run43386006350](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43386006350)
 passes908/9 skipped, the equivalent-workload benchmark and offline native mesh
 DEM/manual/Qt cleanup check. Complete candidate inventory25384 files matches
 the original plus explicit manifest changes. After rollback all26196 original
@@ -605,7 +605,7 @@ Full validation artifact14018559509 outer SHA256
 `640d8b775b12461cc693d15d1522ee6d53085ced3c83059c9dbf9b197299a7ca`
 retained locally, including original/candidate/rollback inventories and notices.
 
-[Actual BAT run43386197970](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386197970)
+[Actual BAT run43386197970](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43386197970)
 passes80 installed tests with module-origin/network guards; native mesh DEM,
 unchanged PDF identity, notices, PLY and splash checks. Registry discovery and
 trailing-backslash custom Unicode paths pass. Both actual rollbacks restore every

@@ -31,7 +31,7 @@ Large orthomosaic, texture, optimization and view modules remain maintenance can
 ## Acceptance evidence
 
 The following checks passed for candidate commit `127c682c6d05d61093843f5a1ed8a23f833005d8` in
-[Actions run 42310283579](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579):
+[Actions run 42310283579](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42310283579):
 - compilation and static checks; full Linux and Windows regression suites;
 - real native toolbar captures and caption/body/arrow tests;
 - old/new project and XML round trips, failure/cancellation, file preservation and linked-path tests;
@@ -64,10 +64,10 @@ Synthetic checks do not replace installation and a small real project on the tar
   resources and all 68 application source names/hashes matched. Obsolete managed
   source was removed and an external metadata fixture was unchanged.
 
-[Candidate Setup and validation records](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547844488)
+[Candidate Setup and validation records](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42310283579/artifacts/13547844488)
 are an artifact ZIP containing `PhotoMeshStudio_Setup_1.0.3.exe`, its checksum,
 native/installed validation JSON and screenshots. The artifact is retained for
-14 days. [Machine-readable review inventory](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42310283579/artifacts/13547653087)
+14 days. [Machine-readable review inventory](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42310283579/artifacts/13547653087)
 is separate. The user approved the installed application and supplied current Light/Dark project screenshots on 2026-11-07. Public publication was authorized. That appearance review does not establish full real-data GPU reconstruction.
 
 ## Consolidated preview findings
@@ -109,7 +109,7 @@ checksum, without rebuilding application code after the installed review.
 The publication workflow checks that application/runtime/build inputs match
 validated commit `127c682c6d05d61093843f5a1ed8a23f833005d8`, verifies the
 successful originating run/artifact and checks the Setup checksum before upload.
-The [v1.0.3 release record](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.3) contains the archived notes. The installer was removed after 1.0.4 shipped. The 1.0.3 tag preserves the Light and Dark screenshots used for that release. Test artifacts have limited retention.
+The [v1.0.3 release record](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.3) contains the archived notes. The installer was removed after 1.0.4 shipped. The 1.0.3 tag preserves the Light and Dark screenshots used for that release. Test artifacts have limited retention.
 
 ## Post-release repository maintenance
 

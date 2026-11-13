@@ -1,7 +1,7 @@
 # Packaging tools
 
-Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/build_release.ps1)**
-and **[release.iss](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/release.iss)**
+Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Lens2Mesh/blob/main/packaging/build_release.ps1)**
+and **[release.iss](https://github.com/behdad-nayyerpour/Lens2Mesh/blob/main/packaging/release.iss)**
 to produce one complete `Lens2Mesh_Setup_<version>.exe` and its SHA256, after candidate acceptance.
 Follow the [release guide](RELEASE.md). The same Setup installs a new copy or
 replaces an existing EXE installation. No separate Update EXE is produced.

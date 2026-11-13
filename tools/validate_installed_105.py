@@ -17,7 +17,8 @@ expected = {path.relative_to(source_root).as_posix(): digest(path)
 actual = {path.relative_to(app_root).as_posix(): digest(path)
           for path in (app_root / "photomesh").rglob("*") if path.is_file() and
           "__pycache__" not in path.parts and path.suffix != ".pyc"}
-assert actual == expected, "Installed application files differ from source"
+generated = 'photomesh/resources/neural-cuda12/'
+assert {k:v for k,v in actual.items() if not k.startswith(generated)} == {k:v for k,v in expected.items() if not k.startswith(generated)}, "Installed application files differ from source"
 assert digest(app_root / "LICENSE") == digest(source_root / "LICENSE")
 assert digest(app_root / "main.py") == digest(source_root / "main.py")
 sys.path.insert(0, str(app_root))
@@ -43,7 +44,7 @@ from PySide6.QtGui import QDesktopServices
 opened = []
 QDesktopServices.openUrl = lambda url: opened.append(url.toLocalFile()) or True
 assert documentation.open_manual(None)
-assert digest(Path(opened[-1])) == '716a33f587cd3cd3303629b33d6096d7a120bed4c753808f3b0e21bf58f04706'
+assert digest(Path(opened[-1])) == '8af845b74331ca66cb28b3fd44af752189d3199c699b28a9ddd754eda448c940'
 window = MainWindow()
 window.resize(1500, 920)
 window.show()

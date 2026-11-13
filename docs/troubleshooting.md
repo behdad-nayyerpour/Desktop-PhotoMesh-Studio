@@ -64,4 +64,4 @@ Include the action that failed, expected behavior, version, settings, and the
 generated report ZIP when possible. Review attachments before sharing them.
 An automated non-GPU test pass does not verify a full reconstruction on your GPU.
 
-[Open an issue](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md).
+[Open an issue](https://github.com/behdad-nayyerpour/Lens2Mesh/issues/new?template=bug_report.md).

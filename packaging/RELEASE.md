@@ -89,9 +89,9 @@ must additionally be checked on target hardware before distributing a release.
 
 ## Verified 1.0.4 distribution
 
-[PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4) includes the full offline Windows Setup and its checksum. The corrected 1.0.4 Setup is 861,743,162 bytes. Its SHA-256 digest is `059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
+[PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.4) includes the full offline Windows Setup and its checksum. The corrected 1.0.4 Setup is 861,743,162 bytes. Its SHA-256 digest is `059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
 
-The original [installer run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383859) tested upgrading 1.0.3. The corrected [installer run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42411192019) tested replacing the installed 1.0.4. The [publication workflow](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/.github/workflows/replace-104-setup.yml) verifies the public executable byte-for-byte against the corrected candidate. The [release review](../docs/development/release-review-104.md) records the validated source and numerical results.
+The original [installer run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42383383859) tested upgrading 1.0.3. The corrected [installer run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42411192019) tested replacing the installed 1.0.4. The [publication workflow](https://github.com/behdad-nayyerpour/Lens2Mesh/blob/main/.github/workflows/replace-104-setup.yml) verifies the public executable byte-for-byte against the corrected candidate. The [release review](../docs/development/release-review-104.md) records the validated source and numerical results.
 
 The 1.0.3 installer used in the original upgrade test has since been removed from its public release. For a new build with the same runtime layout, install the current release in a staging environment and supply its installation directory as `-RuntimeSource`. Reproducing the historical upgrade test requires a retained copy of the original 1.0.3 Setup.
 

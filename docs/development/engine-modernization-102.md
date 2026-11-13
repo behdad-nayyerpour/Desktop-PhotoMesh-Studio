@@ -57,7 +57,7 @@ calibration-free cases; actual survey work still requires independent controls.
 ## Validation evidence
 
 Validated code: `427ed36cd2fbe3e9a644cfa1cc509afb752783ef`.
-[GitHub Actions run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41515504654)
+[GitHub Actions run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/41515504654)
 completed successfully on Linux and Windows: **581 passed, 8 skipped** on each.
 The skipped tests require local survey/GPU fixtures or a real display; the
 separate Mesa OpenGL overlay test passed. Compilation, undefined-name checks
@@ -87,7 +87,7 @@ agreed with camera centres and tie points to 1e-7. SIFT + LightGlue passed its
 separate offline extraction/matching probe. A 30,000-point filtering/Poisson
 check produced 1,999 faces with median distance 0.00334 m from the known
 synthetic surface. Its timings and the reconstruction measurements are in the
-[benchmark artifact](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41515504654/artifacts/13174934324).
+[benchmark artifact](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/41515504654/artifacts/13174934324).
 
 On the same Linux runner, rasterization time was 0.975x and synthetic texturing
 1.019x the 1.0.0 baseline; both passed the existing 1.08x regression limit.

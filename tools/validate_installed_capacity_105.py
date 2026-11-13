@@ -28,7 +28,7 @@ from photomesh import documentation, survey_capacity  # noqa: E402
 for module in (documentation, survey_capacity):
     assert Path(module.__file__).resolve().is_relative_to(app_root)
 manual = documentation.RESOURCES/'manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf'
-assert hashlib.sha256(manual.read_bytes()).hexdigest() == '716a33f587cd3cd3303629b33d6096d7a120bed4c753808f3b0e21bf58f04706'
+assert hashlib.sha256(manual.read_bytes()).hexdigest() == '8af845b74331ca66cb28b3fd44af752189d3199c699b28a9ddd754eda448c940'
 assert (documentation.RESOURCES/'third-party/index.html').is_file()
 
 import numpy as np  # noqa: E402

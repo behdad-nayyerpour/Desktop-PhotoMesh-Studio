@@ -272,7 +272,7 @@ the final patch summary, with actual BAT rollback checks repeated for its bytes.
 The delivered app candidate is63b70e534597e17a54e91a31696ed5d423e1b396.
 Its30-file app-only archive is1,649,602 bytes, SHA256
 dd3421f8d5c45c9c130a6d301c4f2707e29d14f37e03ba6d63c69960985af169.
-[Final actual BAT validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43415141556)
+[Final actual BAT validation](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43415141556)
 passes87 installed regressions, offline native/document checks, complete app
 rollback, reapplication and second rollback. The verified BAT is6,146 bytes,
 SHA25676f24ce716afc75c9c7abe80a3447804722b4c72a2cd503e194c3d0bc938e1c3,
@@ -652,3 +652,41 @@ acceptance remains the user's test; offscreen rendering does not establish it.
 Only five changed application modules go into the test updater. The approved
 PDF is retained: user requests updating only its section material after accepting
 this test. No Setup or public release is authorized by this candidate delivery.
+
+### Candidate acceptance and focused manual update (2026-11-13)
+
+The user explicitly confirmed successful section/Fit 1:1 testing in PhotoMesh
+Studio-4 and approved the previously deferred manual update. Updated only the
+Cross Section chapter (pages 116-117): exact multi-layer intersections, coplanar
+boundaries/gaps, surface-bound centre handle and 3D line, equal-axis Fit 1:1 and
+component-aware slope picks. Replaced its screenshot with the actual tested
+panel PNG, embedded losslessly. The manual remains 119 pages; every unaffected
+page has identical extracted text and decoded page content to the accepted PDF.
+Contents pagination and 72 bookmarks remain unchanged. Both affected pages were
+rendered and visually inspected. No application code or installer was changed.
+
+Editable source and original screenshots remain in
+`F:/CodexProjects/photomesh-guide-105`; baseline, rendered QA and verification
+evidence are retained in
+`F:/CodexProjects/Lens2Mesh-validation-evidence/section-manual-update`.
+
+### Final release authorization and branding (2026-11-13)
+
+The user explicitly requests building and publishing the final 1.0.5 installer
+and removing obsolete public branding. The repository is renamed to Lens2Mesh;
+canonical links, current installation/update pages, root README, issue template
+and the project's own licence heading/scope name are updated. Licence conditions
+and third-party licence texts are unchanged. Setup removes obsolete per-user
+shortcut names and retains its existing upgrade AppId. Internal project/settings
+identities and historical evidence remain for compatibility/provenance.
+
+Maintainability review: inspected build/staging and installation workflows, manual
+hash checks, generated neural runtime validation, current public download links,
+licence copy and shortcut consumers. Updated outdated manual validation pins and
+excluded only separately authenticated generated neural runtime files from the
+source-file identity comparison; installed DLL/notice checks remain required.
+44 targeted branding/documentation/report tests and diff whitespace checks passed.
+The final workflow requires successful exact-source general and installed
+candidate checks, fresh/custom Unicode installation, upgrade, native processing,
+offline Help, shortcut/uninstall and external-data preservation before publishing.
+Native build-provenance and point deletion remain deferred as previously agreed.

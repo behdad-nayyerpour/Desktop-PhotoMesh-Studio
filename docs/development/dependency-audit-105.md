@@ -4,7 +4,7 @@
 
 The user requested completion of the engineering review and one combined BAT.
 Fresh static PE inspection of the exact published installer ran on a disposable
-Windows runner in [run43382179244](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43382179244).
+Windows runner in [run43382179244](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43382179244).
 It read1378 PE files. Artifact14016927512 SHA256
 `38de00358b370f8da5ea10d44b4f22eaf155b3f0f64c36a1857282ba34f25a2f`
 is retained locally. Application/pyqtgraph imports, native consumers and QML
@@ -71,7 +71,7 @@ The corrected public 1.0.4 Setup (861,743,162 bytes; SHA256
 was installed on a disposable GitHub Windows runner. No user installation,
 photo or project was used for this audit.
 
-The [initial audit run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43230465128)
+The [initial audit run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43230465128)
 retains per-file hashes for **26,196 files**, metadata for **75 Python
 distributions**, and collected license/NOTICE/metadata evidence. Its artifact
 ID is `13951355419`; ZIP SHA256 is

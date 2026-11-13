@@ -129,7 +129,7 @@ amount of work. Timing evidence below covers equivalent synthetic workloads only
 ## Validation
 
 Validated processing commit: `122f3918c2c4e25c126db0a154009ddc8f6efaeb`.
-[GitHub Actions run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/41331848677):
+[GitHub Actions run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/41331848677):
 
 - Linux: **534 passed, 8 skipped**; new workflow regressions **29 passed**.
 - Windows: **534 passed, 8 skipped**.

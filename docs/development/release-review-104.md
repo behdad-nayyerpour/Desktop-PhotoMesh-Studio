@@ -5,7 +5,7 @@
 The user reviewed the test installer, explicitly requested the remaining fixes
 and final public release, then expanded the review to numerical alignment and
 marker error calculations. On 2026-11-07 the user also approved display/select-only
-markers in the 3D and orthophoto views. [Version 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4) was published on 2026-11-07. The [publication run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42399927092) verified the public download against the installer that passed the upgrade test.
+markers in the 3D and orthophoto views. [Version 1.0.4](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.4) was published on 2026-11-07. The [publication run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42399927092) verified the public download against the installer that passed the upgrade test.
 
 This review covers the changed modules and their callers/workflows. It is not a
 claim that every repository path is bug-free or that synthetic accuracy establishes
@@ -102,7 +102,7 @@ replacement workflow. Existing CPU/GPU/legacy engine variants remain.
 
 ## Validation
 
-Validated application commit `910d42f25c2d37b9a15da032f875b1f31c021e53`. [Linux and Windows tests](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383754) and the [Windows installer and upgrade](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42383383859) succeeded on this commit.
+Validated application commit `910d42f25c2d37b9a15da032f875b1f31c021e53`. [Linux and Windows tests](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42383383754) and the [Windows installer and upgrade](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42383383859) succeeded on this commit.
 
 - On each OS the full suite had 775 passes and eight skips. The dedicated numerical suite had 72 passes. Mesa overlay, theme/scale layout checks and static gates passed. The inventory covered 137 Python files and 73 application modules, with zero static leads and zero exact nontrivial body duplicates.
 - The equivalent reference adjustment on Linux measured 0.35751507235 px RMS for both versions. Median elapsed time rose from 49.33 to 57.21 ms on that fixture, within the performance gate.
@@ -135,7 +135,7 @@ frame. Dense products must be rebuilt after camera optimization.
 
 ## Corrected 1.0.4 installer (2026-11-08)
 
-[Issue #9](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/9)
+[Issue #9](https://github.com/behdad-nayyerpour/Lens2Mesh/issues/9)
 showed that invalid geographic control coordinates could pass the initial usable
 count and fail later in the worker with no marker name. The four marker XYZ values
 were redacted in the report, so the data's CRS/order cannot be determined from it.
@@ -152,10 +152,10 @@ Changed callers and state were reviewed in `PhotoView`,
 `ReferenceMixin.optimize_cameras`, `georef.reference_status`, the worker,
 project marker refresh and installed packaging. The two regressions cover
 preflight error identity and placement from a photo without prior selection.
-The [test run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42411191960)
+The [test run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42411191960)
 passed 777 tests with eight skips on each of Linux and Windows. Static checks,
 Mesa/layout and equivalent reference-performance gates passed. The
-[installer run](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/42411192019)
+[installer run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42411192019)
 passed the same Windows suite, native CPU geometry and an installed 1.0.4-to-1.0.4
 upgrade. Candidate application source is `3ef0a11fed93afc0a547f10966099708e8bde8c9`.
 The Setup is 861,743,162 bytes with SHA-256

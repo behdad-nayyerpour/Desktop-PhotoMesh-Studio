@@ -1,4 +1,4 @@
-name: Build and verify 1.0.5 Setup candidate
+name: Build, verify and publish Lens2Mesh 1.0.5
 on:
   push:
     branches: ["release/lens2mesh-1.0.5-candidate"]
@@ -26,7 +26,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
           if ($LASTEXITCODE) { throw 'Baseline acquisition failed' }
           $baseline=(Get-Item released/PhotoMeshStudio_Setup_1.0.4.exe).FullName
           if ((Get-FileHash -LiteralPath $baseline).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline identity differs' }
@@ -45,7 +45,7 @@ jobs:
           }
           & packaging/build_release.ps1 -RuntimeSource $env:SETUP_BASELINE -ISCC $compiler -StageDir (Join-Path $env:RUNNER_TEMP 'Lens2Mesh105Stage') -OutputDir (Join-Path $PWD 'preview') -EngineCache (Join-Path $env:RUNNER_TEMP 'engine-cache')
           if ($LASTEXITCODE) { throw 'Production Setup build failed' }
-          @('REVIEW CANDIDATE ONLY. Not a public release or redistribution clearance.', 'Source: ${{ github.sha }}', 'Publication remains conditional on final source/licensing and installer review.') | Set-Content preview/TEST-BUILD.txt
+          @('Lens2Mesh 1.0.5', 'Source: ${{ github.sha }}', 'Native source/build-provenance follow-up is deferred to 1.0.6 by the user; this is not blanket redistribution clearance.') | Set-Content preview/BUILD.txt
       - name: Validate upgrade and a fresh custom Unicode destination
         shell: pwsh
         run: |
@@ -77,6 +77,8 @@ jobs:
             if ($LASTEXITCODE) { throw 'Installed native terrain/manual validation failed' }
             & $python tools/validate_installed_ply_105.py
             if ($LASTEXITCODE) { throw 'Installed native PLY validation failed' }
+            & $python tools/validate_installed_neural_105.py
+            if ($LASTEXITCODE) { throw 'Installed neural runtime validation failed' }
             if ((Get-FileHash -LiteralPath $project).Hash -ne $beforeProject -or (Get-FileHash -LiteralPath $photo).Hash -ne $beforePhoto) { throw 'External project/photo changed' }
           }
           $shell=New-Object -ComObject WScript.Shell
@@ -110,3 +112,58 @@ jobs:
           name: Lens2Mesh-1.0.5-Setup-Candidate
           path: preview/
           retention-days: 30
+  publish:
+    needs: setup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require exact-source regression and installed-candidate checks
+        run: |
+          python - <<'PY'
+          import json, os, time, urllib.request
+          url='https://api.github.com/repos/'+os.environ['GH_REPO']+'/actions/runs?head_sha=${{ github.sha }}&per_page=100'
+          for _ in range(120):
+              req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req) as response: runs=json.load(response)['workflow_runs']
+              required=['Tests','Lens2Mesh incremental candidate and runtime inventory']
+              selected=[next((r for r in runs if r['name']==name),None) for name in required]
+              if all(r and r['status']=='completed' for r in selected):
+                  assert all(r['conclusion']=='success' for r in selected), [(r['name'],r['conclusion']) for r in selected]
+                  print('Exact-source checks passed:',[(r['name'],r['id']) for r in selected]); break
+              time.sleep(15)
+          else: raise RuntimeError('Exact-source validation did not complete')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-1.0.5-Setup-Candidate
+          path: candidate
+      - name: Verify and publish the validated installer
+        run: |
+          test -f candidate/installer-validation.txt
+          (cd candidate && sha256sum -c Lens2Mesh_Setup_1.0.5.exe.sha256)
+          cp photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf candidate/
+          gh release create v1.0.5 --draft --title 'Lens2Mesh 1.0.5' --target '${{ github.sha }}' --notes-file docs/releases/1.0.5.md
+          gh release upload v1.0.5 candidate/Lens2Mesh_Setup_1.0.5.exe candidate/Lens2Mesh_Setup_1.0.5.exe.sha256 candidate/Lens2Mesh_1.0.5_Complete_User_Manual.pdf
+          gh release download v1.0.5 --pattern 'Lens2Mesh_Setup_1.0.5.exe*' --dir verified
+          (cd verified && sha256sum -c Lens2Mesh_Setup_1.0.5.exe.sha256)
+          cmp candidate/Lens2Mesh_Setup_1.0.5.exe verified/Lens2Mesh_Setup_1.0.5.exe
+          git push origin HEAD:main
+          gh release edit v1.0.5 --draft=false --latest
+          gh release view v1.0.5 --json url,assets,publishedAt > candidate/publication.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-1.0.5-Publication-Evidence
+          path: |
+            candidate/publication.json
+            candidate/installer-validation.txt
+            candidate/*.sha256
