@@ -44,6 +44,67 @@ def _o3d():
     return o3d
 
 
+def _unicode_ply(path):
+    # Open3D's Windows file API converts through the legacy ANSI code page.
+    return os.name == 'nt' and not os.fspath(path).isascii()
+
+
+def _read_ply_geometry(path, triangles=False):
+    """Use existing Python PLY I/O without reducing coordinate precision."""
+    from .plyio import read_fast
+    from .plycodec import PlyDocument
+    data = read_fast(path)
+    if data is None:
+        document = PlyDocument.read(path)
+        vertex = document['vertex'].data
+        faces = None
+        if triangles:
+            records = document['face'].data
+            key = 'vertex_indices' if 'vertex_indices' in records.dtype.names else records.dtype.names[0]
+            if any(len(row) != 3 for row in records[key]):
+                raise ValueError('Meshing input must contain triangular faces')
+            faces = np.asarray(list(records[key]), dtype=np.int32).reshape(-1, 3)
+    else:
+        vertex, faces = data['vertex'], data['face']
+    o3d = _o3d()
+    xyz = np.column_stack([vertex[name] for name in ('x','y','z')]).astype(np.float64)
+    if triangles:
+        if faces is None:
+            raise ValueError('Meshing input has no triangular faces')
+        result = o3d.geometry.TriangleMesh(o3d.utility.Vector3dVector(xyz), o3d.utility.Vector3iVector(faces))
+    else:
+        result = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(xyz))
+    for fields, attribute, scale in ((('nx','ny','nz'), 'vertex_normals' if triangles else 'normals', 1.),
+                                     (('red','green','blue'), 'vertex_colors' if triangles else 'colors', 255.)):
+        if all(name in vertex.dtype.names for name in fields):
+            values = np.column_stack([vertex[name] for name in fields]).astype(np.float64) / scale
+            setattr(result, attribute, o3d.utility.Vector3dVector(values))
+    return result
+
+
+def _write_ply_mesh(path, mesh):
+    from .plycodec import PlyDocument, PlyElement
+    fields = [('x','f8'),('y','f8'),('z','f8')]
+    if mesh.has_vertex_normals():
+        fields += [('nx','f8'),('ny','f8'),('nz','f8')]
+    if mesh.has_vertex_colors():
+        fields += [('red','u1'),('green','u1'),('blue','u1')]
+    vertex = np.empty(len(mesh.vertices), dtype=fields)
+    for names, values in ((('x','y','z'), np.asarray(mesh.vertices)),
+                           (('nx','ny','nz'), np.asarray(mesh.vertex_normals))):
+        if all(name in vertex.dtype.names for name in names):
+            for index, name in enumerate(names):
+                vertex[name] = values[:, index]
+    if mesh.has_vertex_colors():
+        colors = np.floor(np.clip(np.asarray(mesh.vertex_colors), 0., 1.) * 255. + .5).astype(np.uint8)
+        for index, name in enumerate(('red','green','blue')):
+            vertex[name] = colors[:, index]
+    faces = np.empty(len(mesh.triangles), dtype=[('vertex_indices','i4',(3,))])
+    faces['vertex_indices'] = np.asarray(mesh.triangles)
+    PlyDocument([PlyElement.describe(vertex,'vertex'), PlyElement.describe(faces,'face')], text=False).write(path)
+    return True
+
+
 def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
     o3d = _o3d()
     from .workflow import point_count, vertex_blocks, bounds_from_ply, require_points
@@ -54,7 +115,7 @@ def load_point_cloud(path, max_points=12_000_000, voxel=None, log=print):
     max_points = max(1000, int(max_points))
     # Normal-sized clouds retain the optimized native loader.
     if n <= max_points and n * 100 < require_available_bytes() * .6:
-        pcd = o3d.io.read_point_cloud(path)
+        pcd = _read_ply_geometry(path) if _unicode_ply(path) else o3d.io.read_point_cloud(path)
         if voxel:
             pcd = pcd.voxel_down_sample(float(voxel))
     else:
@@ -226,7 +287,8 @@ def build_mesh(cfg, log=print):
             n = crop_to_cloud(mesh, pcd, 8 * float(np.median(sp)))
             log(f"Removed {n:,} faces farther than 8x point spacing from the cloud (gaps)")
     else:
-        mesh = o3d.io.read_triangle_mesh(cfg["delaunay_ply"])
+        mesh = (_read_ply_geometry(cfg['delaunay_ply'], triangles=True) if _unicode_ply(cfg['delaunay_ply'])
+                else o3d.io.read_triangle_mesh(cfg["delaunay_ply"]))
         n_in = cfg.get("n_points") or len(mesh.vertices) * 2
     mesh = clean(mesh, log, cfg.get("long_edge_factor", 8.0), cfg.get("min_component", 0.01), cfg.get("min_component_faces", 200))
     tgt = target_faces(n_in, cfg.get("face_count", "Medium"), cfg.get("custom_faces"))
@@ -238,8 +300,10 @@ def build_mesh(cfg, log=print):
     if not len(mesh.triangles):
         raise RuntimeError("Meshing produced no faces - the previous model was kept")
     tmp = cfg.get("tmp") or cfg["out"]
-    if not o3d.io.write_triangle_mesh(tmp, mesh, write_ascii=False, compressed=False,
-                                      write_vertex_normals=True, write_vertex_colors=mesh.has_vertex_colors()):
+    written = (_write_ply_mesh(tmp, mesh) if _unicode_ply(tmp) else
+               o3d.io.write_triangle_mesh(tmp, mesh, write_ascii=False, compressed=False,
+                                         write_vertex_normals=True, write_vertex_colors=mesh.has_vertex_colors()))
+    if not written:
         raise RuntimeError(f"Could not write {tmp}")
     if tmp != cfg["out"]:
         commit_mesh(tmp, cfg["out"])

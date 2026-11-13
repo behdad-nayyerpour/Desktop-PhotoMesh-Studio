@@ -115,6 +115,8 @@ def task_env():
     env = dict(os.environ)
     env["PYTHONPATH"] = root + os.pathsep + env.get("PYTHONPATH", "")
     env["PYTHONUNBUFFERED"] = "1"
+    # PipelineRunner decodes task output as UTF-8, including project filenames.
+    env['PYTHONIOENCODING'] = 'utf-8'
     return env
 
 

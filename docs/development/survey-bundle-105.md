@@ -594,3 +594,29 @@ were not repeated for this acceptance; numerical code is byte-identical and
 the native path behavior and recovery were tested directly. The separate native
 corresponding-source/notice gate remains open before final release.
 
+# User steering after Persian-path delivery (2026-11-13)
+
+The user defers remaining item2 (native dependency source/build documentation,
+including GLOMAP) to version1.0.6 and explicitly asks to wait for their test result.
+Do not perform further changes, tests, Setup builds or publication while waiting.
+This scope deferral is not a statement that previously unknown redistribution
+conditions have been verified. Retain existing evidence and original license texts;
+do not relabel unresolved provenance as cleared. Resume from the user's feedback.
+
+# Reported Unicode Poisson input/output correction (2026-11-13)
+
+User report20261113_215528 fails inside Open3D read_point_cloud before Poisson.
+For Windows non-ASCII PLY paths, mesh.py now uses the existing independent PLY
+codec to populate Open3D geometry, preserving float64 coordinates/normals and
+RGB, and writes mesh output through the same codec. ASCII native I/O, sampling,
+Poisson parameters, cleanup, decimation and publication remain unchanged.
+The Delaunay-input reader uses the same path-safe conversion. task_env explicitly
+sets UTF-8 stdout/stderr to match PipelineRunner decoding and prevent a filename
+log from failing after successful publication.
+
+Targeted actual Windows tests: exact point/normal/RGB equivalence to native ASCII
+reader, exact vertex/normal/colour output versus native mesh writer, triangle
+roundtrip, real2000-point Poisson with Persian input/tmp/output producing1000
+faces, simulated failed write preserving previous model, and actual
+photomesh.tasks subprocess with Persian config/output/logs all passed. No input
+photos, project data, numerical settings, or engine binaries are modified.
