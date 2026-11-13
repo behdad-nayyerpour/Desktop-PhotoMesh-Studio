@@ -1,5 +1,22 @@
 # Combined survey/terrain tools candidate (2026-11-12)
 
+## Finalization items4/5/6/7 (2026-11-13)
+
+User accepts the capacity/manual test iteration and requests closing dependency
+provenance, script/error handling and locked dependencies, branding/docs/shortcut
+completion and final real-data validation. User has no surveyed personal fixture
+and explicitly authorizes a reputable public reference dataset. Preserve the
+approved PDF bytes, project/settings compatibility and previous survey tools;
+direct point selection/deletion remains deferred. Maintainability review covers
+changed callers, reusable build/verification contracts, true numerical residuals,
+offline operation, cancellation and upgrade/rollback. Validate exact upstream
+wheel and native source/build provenance instead of changing a review status
+without evidence. Test public data against held-out independent references;
+separate GPS/height assumptions, classification and progress/ETA measurements.
+No claim of target-GPU validation without that hardware. Deliver one combined
+incremental BAT against the accepted capacity baseline; no Setup, repository
+rename, announcement or public installer release is authorized by this request.
+
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 
 User defers direct point selection/deletion to the following version and requests
