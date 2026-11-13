@@ -68,6 +68,13 @@ def prepare(output, cache, cpu_only=False, offline=False):
         if folder.exists():
             raise ValueError("Engine destination already exists; choose a fresh build stage: "+str(folder))
         safe_extract(acquire(assets["windows"][key],cache,offline),folder)
+        sys.path.insert(0, str(ROOT/'packaging'))
+        from utf8_engine import patch
+        review=json.loads((ROOT/'packaging/reviewed-engine-patches.json').read_text())
+        entry=next(item for item in review['files'] if item['path']==f'tools/{folder.name}/bin/colmap.exe')
+        proof=patch(folder/'bin/colmap.exe',entry['before'])
+        if proof['after']!=entry['after']:
+            raise ValueError('UTF-8 engine manifest output differs from reviewed bytes')
         models=folder/"models"; models.mkdir()
         for name,source in weights.items():
             shutil.copyfile(source,models/name)

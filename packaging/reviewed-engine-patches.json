@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "change": "Windows RT_MANIFEST activeCodePage UTF-8 only; all code/data sections unchanged",
+  "files": [
+    {
+      "path": "tools/colmap/bin/colmap.exe",
+      "before": "9418a14c93d4a5eec5eb33ebf48a917403b5faa7ab5d2232f23e50c206d9e427",
+      "after": "4ae0304db518910ad41f649d2bfe60164069dd183bd80ec70a5542f901970540",
+      "non_resource_sections_unchanged": true
+    },
+    {
+      "path": "tools/colmap-cpu/bin/colmap.exe",
+      "before": "cca7acf7618703b5766e456f1b27940bd4a63ee904960bba78c8ea92a35121dd",
+      "after": "d74f8cf13ef23f3b5633181d92c71dc48aeed615d9c971a1658ff523fe965c71",
+      "non_resource_sections_unchanged": true
+    }
+  ]
+}

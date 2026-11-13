@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import shutil
 import zipfile
 
 from runtime_dependencies import plyfile_files, reviewed_qt_files
@@ -14,10 +15,10 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build(source, installed, output, revision, with_neural_runtime=False):
+def build(source, installed, output, revision, with_neural_runtime=False, with_engine_utf8=False, engine_only=False):
     output.mkdir(parents=True, exist_ok=True)
     baseline = {}
-    for path in (installed / "app").rglob("*"):
+    for path in ([] if engine_only else (installed / "app").rglob("*")):
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
             baseline[path.relative_to(installed).as_posix()] = digest(path)
     # Application sources and reviewed resources only. Never include arbitrary
@@ -27,14 +28,14 @@ def build(source, installed, output, revision, with_neural_runtime=False):
     # Never blindly delete a copied environment's packages. Only this exact
     # distribution's installed RECORD files are considered, and declared
     # transitive requirements block removal for manual review.
-    ply = plyfile_files(installed)
-    qt = reviewed_qt_files(installed)
+    ply = [] if engine_only else plyfile_files(installed)
+    qt = [] if engine_only else reviewed_qt_files(installed)
     removed = ply + qt
     for path in removed:
         target = path.relative_to(installed.resolve()).as_posix()
         baseline[target] = digest(path)
         files.append({"path": target, "sha256": None, "remove": True})
-    for relative in tracked:
+    for relative in ([] if engine_only else tracked):
         path = source / relative
         allowed = (relative.startswith("photomesh/")
                    or relative in ("main.py", "requirements.txt", "packaging/fix_shortcut_icon.ps1",
@@ -63,8 +64,25 @@ def build(source, installed, output, revision, with_neural_runtime=False):
             continue
         external.append(entry)
         files.append(entry)
+    native = {}
+    if with_engine_utf8:
+        from utf8_engine import patch
+        for entry in json.loads((source/'packaging/reviewed-engine-patches.json').read_text())['files']:
+            original = installed/entry['path']
+            if digest(original) == entry['after']:
+                continue
+            if digest(original) != entry['before']:
+                raise ValueError('Unreviewed native engine; not replacing it')
+            target = output/entry['path']; target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(original, target)
+            proof = patch(target, entry['before'])
+            if proof['after'] != entry['after']:
+                raise ValueError('Engine manifest output differs from reviewed bytes')
+            baseline[entry['path']] = entry['before']
+            files.append(dict(path=entry['path'], sha256=entry['after']))
+            native[entry['path']] = target
     generated = {}
-    if removed or external:
+    if removed or external or native:
         # Keep the runtime identity honest after dependency removal, while
         # downloading no unchanged Python or native engine components.
         old_id = (installed / "app/runtime.id").read_text().strip()
@@ -86,8 +104,10 @@ def build(source, installed, output, revision, with_neural_runtime=False):
     generated['app/release_manifest.txt'] = (
         f'Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n'
         'Application components bound to the incremental patch manifest.\n'
-        'Python/engine replacement is not used; reviewed removals are explicit in the manifest.\n').encode('utf-8')
+        'Native UTF-8 resource-only changes and dependency changes are explicit in the manifest.\n').encode('utf-8')
     target = 'app/release_manifest.txt'
+    if engine_only:
+        baseline[target] = digest(installed/target)
     files = [entry for entry in files if entry['path'] != target]
     files.append({'path': target, 'sha256': hashlib.sha256(generated[target]).hexdigest()})
     manifest = {"schema": 1, "candidate": revision,
@@ -100,6 +120,7 @@ def build(source, installed, output, revision, with_neural_runtime=False):
         archive.writestr("manifest.json", json.dumps(manifest, indent=2))
         archive.write(source / "packaging/apply_patch.py", "apply_patch.py")
         archive.write(source / 'packaging/reviewed-qt-removals.json', 'reviewed-qt-removals.json')
+        archive.write(source / 'packaging/reviewed-engine-patches.json', 'reviewed-engine-patches.json')
         if external:
             for helper in ('packaging/neural_runtime.py', 'packaging/neural-runtime-assets.json', 'tools/prepare_engine.py'):
                 archive.write(source / helper, helper)
@@ -108,7 +129,9 @@ def build(source, installed, output, revision, with_neural_runtime=False):
                 continue
             if entry in external:
                 continue  # Official pinned archives are fetched by the update bootstrap.
-            if entry["path"] in generated:
+            if entry['path'] in native:
+                archive.write(native[entry['path']], entry['path'])
+            elif entry["path"] in generated:
                 archive.writestr(entry["path"], generated[entry["path"]])
             else:
                 archive.write(source / entry["path"][4:], entry["path"])
@@ -131,10 +154,12 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--revision", required=True)
     parser.add_argument("--with-neural-runtime", action='store_true')
+    parser.add_argument("--with-engine-utf8", action='store_true')
+    parser.add_argument("--engine-only", action='store_true')
     args = parser.parse_args()
     actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=args.source).decode().strip()
     if args.revision != actual:
         raise ValueError("Candidate revision differs from checkout")
     if subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=args.source):
         raise ValueError("Candidate must use committed sources")
-    print(build(args.source, args.baseline, args.output, args.revision, args.with_neural_runtime))
+    print(build(args.source, args.baseline, args.output, args.revision, args.with_neural_runtime, args.with_engine_utf8, args.engine_only))

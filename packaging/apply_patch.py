@@ -19,6 +19,10 @@ import uuid
 _QT_PLAN = Path(__file__).with_name('reviewed-qt-removals.json')
 _QT_REMOVALS = ({entry['path'] for entry in json.loads(_QT_PLAN.read_text(encoding='utf-8'))['files']}
                 if _QT_PLAN.is_file() else set())
+_ENGINE_PLAN = Path(__file__).with_name('reviewed-engine-patches.json')
+_ENGINE_PATCHES = ({entry['path']: entry for entry in json.loads(_ENGINE_PLAN.read_text(encoding='utf-8'))['files']
+                   if entry['path'] in ('tools/colmap/bin/colmap.exe', 'tools/colmap-cpu/bin/colmap.exe')}
+                  if _ENGINE_PLAN.is_file() else {})
 
 
 def digest(path):
@@ -42,7 +46,7 @@ def managed(root, relative):
         r"python/Lib/site-packages/(?:plyfile\.py|plyfile/[^:]+|"
         r"plyfile-[0-9][^/]*\.dist-info/[^:]+|__pycache__/plyfile\.[^/]+\.pyc)", relative)
     qt_dependency = relative in _QT_REMOVALS and relative.startswith('python/Lib/site-packages/PySide6/')
-    if p.parts[0] != "app" and not dependency and not qt_dependency:
+    if p.parts[0] != "app" and not dependency and not qt_dependency and relative not in _ENGINE_PATCHES:
         raise ValueError(f"Not an allowed runtime dependency path: {relative!r}")
     target = root.joinpath(*p.parts)
     for part in (target, *target.parents):
@@ -121,6 +125,11 @@ def validate_manifest(manifest, root, payload):
             raise ValueError("Duplicate patch target")
         seen.add(relative.casefold())
         target = managed(root, relative)
+        if relative in _ENGINE_PATCHES:
+            review = _ENGINE_PATCHES[relative]
+            if (entry.get('remove') or entry['sha256'] != review['after']
+                    or manifest['baseline'].get(relative) != review['before']):
+                raise ValueError('Engine replacement is not the exact reviewed UTF-8 manifest change')
         if relative not in manifest["baseline"] and target.exists():
             raise ValueError(f"New target already exists: {relative}")
         if entry.get("remove"):
@@ -196,6 +205,8 @@ def apply(root, payload, manifest):
     shutil.copy2(__file__, state_dir / "apply_patch.py")
     if _QT_PLAN.is_file():
         shutil.copy2(_QT_PLAN, state_dir / _QT_PLAN.name)
+    if _ENGINE_PLAN.is_file():
+        shutil.copy2(_ENGINE_PLAN, state_dir / _ENGINE_PLAN.name)
     write_json(state_dir / "state.json", state)
     # ASCII-only batch source with Unicode paths obtained from cmd's %~dp0.
     # Embedding UTF-8 path literals breaks under legacy console code pages.

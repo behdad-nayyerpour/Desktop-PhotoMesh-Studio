@@ -11,6 +11,28 @@ updater = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(updater)
 
 
+@pytest.mark.parametrize('tamper',[None,'before','after','remove'])
+def test_reviewed_engine_manifest_patch_and_exact_rollback(fixture,monkeypatch,tamper):
+    root,payload,manifest=fixture
+    relative='tools/colmap/bin/colmap.exe'
+    for base,data in ((root,b'original engine'),(payload,b'UTF8 manifest engine')):
+        file=base/relative;file.parent.mkdir(parents=True);file.write_bytes(data)
+    review=dict(before=updater.digest(root/relative),after=updater.digest(payload/relative))
+    monkeypatch.setattr(updater,'_ENGINE_PATCHES',{relative:review})
+    manifest['baseline'][relative]=review['before']
+    entry=dict(path=relative,sha256=review['after']);manifest['files'].append(entry)
+    if tamper=='before':manifest['baseline'][relative]='0'*64
+    if tamper=='after':entry['sha256']='0'*64
+    if tamper=='remove':entry['remove']=True
+    if tamper:
+        with pytest.raises(ValueError):updater.apply(root,payload,manifest)
+        assert (root/relative).read_bytes()==b'original engine'
+    else:
+        state=updater.apply(root,payload,manifest)
+        updater.rollback(root,state)
+        assert (root/relative).read_bytes()==b'original engine'
+
+
 @pytest.fixture
 def fixture(tmp_path):
     root, payload = tmp_path / "install فارسی", tmp_path / "payload"
