@@ -37,6 +37,7 @@ jobs:
             if ($entry) { $entry.Dispose() }; $hive.Dispose()
           }
           $records | ConvertTo-Json | Set-Content diagnostic/registry.json
+          & (Join-Path $root 'python/python.exe') tools/diagnose_addon_processes.py $root | Set-Content diagnostic/process-info.json
           foreach ($mode in @('explicit','automatic')) {
             $log=Join-Path $PWD ('diagnostic/addon-'+$mode+'.log')
             $parameters=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/LOG="'+$log+'"'))
