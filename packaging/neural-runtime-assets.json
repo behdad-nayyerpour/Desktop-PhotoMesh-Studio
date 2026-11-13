@@ -89,6 +89,27 @@
         }
       ],
       "license_sha256": "7936e1f9f2a6d9deea237aee6aa7f1abd032d34bcc1c35de1e6516b223d09487"
+    },
+    {
+      "component": "cuda_nvrtc",
+      "version": "12.8.93",
+      "name": "cuda_nvrtc-windows-x86_64-12.8.93-archive.zip",
+      "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_nvrtc/windows-x86_64/cuda_nvrtc-windows-x86_64-12.8.93-archive.zip",
+      "bytes": 305588898,
+      "sha256": "a63302a077f0248a743a1a7caa7dbd80d0fac56c6cfa9c41fa05fac9b7e5eda5",
+      "license_sha256": "e2c71babfd18a8e69542dd7e9ca018f9caa438094001a58e6bc4d8c999bf0d07",
+      "files": [
+        {
+          "name": "nvrtc64_120_0.dll",
+          "bytes": 86728192,
+          "sha256": "02d2d7ef4690bf1a55dda1d3ac94c86ce8d16920071c87bcd3e70e94ef346e93"
+        },
+        {
+          "name": "nvrtc-builtins64_128.dll",
+          "bytes": 6356480,
+          "sha256": "a7afa2a40cbd3f922a33d8bf71c13cb26ca707c7016a9bc5fcde36759ba668f5"
+        }
+      ]
     }
   ],
   "sources": [

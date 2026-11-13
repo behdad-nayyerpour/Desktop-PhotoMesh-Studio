@@ -507,3 +507,34 @@ ignored probe DLLs cannot bypass verified preparation. PowerShell parsing and
 targeted static checks passed. This safeguard changes build staging, not the
 tested app or delta payload.
 
+### Dynamic dependency closure and final runtime
+
+The first 11-DLL iteration above was extended after review of NVIDIA's cuDNN
+runtime-loading documentation: runtime-compiled engines require NVRTC and its
+version-matched builtins through dynamic loading; a direct PE import scan alone
+cannot establish their absence. The final set therefore contains13 DLLs,
+including NVRTC12.8.93 (`nvrtc64_120_0.dll`, `nvrtc-builtins64_128.dll`). Both are
+expressly listed in CUDA Attachment A and carry the same original archive
+license as the other CUDA12.8 components. Headers, static libraries and alternate
+NVRTC compiler DLLs are not staged. Official archive SHA256 is
+`a63302a077f0248a743a1a7caa7dbd80d0fac56c6cfa9c41fa05fac9b7e5eda5`.
+The final initial download is1.55GB /1.89GB installed DLLs. All archive/DLL/notice
+hashes remain explicit in the preparation specification.
+
+A real kernel compiled to compute_86 PTX with the private NVRTC and builtins.
+The first standalone harness attempt set AddDllDirectory alone; NVRTC's internal
+loader also needs PATH, which production child_env already supplies. Repeating
+with the actual child PATH contract passed, without app or system changes.
+Both learned methods additionally passed at the application's2048-pixel ALIKED
+limit and4096 features: all four public cameras registered;1122 ALIKED points,
+991 SIFT/LightGlue points. Full commands, loaded modules and photos are retained
+in `neural-runtime-105/final-public-gpu`; compiler proof is `nvrtc-result.json`.
+
+Independent inventory review also caught line-ending normalization of the cuDNN
+LICENSE in the first Git blob. The already-tested BAT carried the correct raw
+archive bytes; source checkout preservation was corrected with forced
+renormalization under the existing `-text` attribute. A real-file license-hash
+regression and installed-candidate validation now enforce this.63 focused tests
+pass with the final four-component specification. Other native source/notice
+findings remain separately open; this review grants no blanket clearance.
+

@@ -30,4 +30,4 @@ assert str(runtime) not in engine.child_env(str(legacy))['PATH'].split(os.pathse
 assert os.environ['PATH']==original
 html=(app/'photomesh/resources/third-party/index.html').read_text(encoding='utf-8')
 assert 'neural-cuda12/NVIDIA-cuDNN-9.8.0-LICENSE.txt' in html
-print('Installed private neural runtime: exact 11 DLLs, original licenses and child environment verified')
+print(f'Installed private neural runtime: exact {len(expected)-1} DLLs, original licenses and child environment verified')

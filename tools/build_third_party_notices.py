@@ -42,7 +42,7 @@ def neural_notices(output):
     links = ''.join(f'<li><a href="neural-cuda12/{escape(path.name)}">{escape(path.name)}</a></li>'
                     for path in sorted(destination.iterdir()) if path.is_file())
     return ('<h2>Private ONNX CUDA 12 runtime</h2><p>CUDA Runtime 12.8.90, '
-            'cuBLAS 12.8.4.1 and cuDNN 9.8.0.87. Only reviewed, unmodified runtime DLLs '
+            'cuBLAS 12.8.4.1, NVRTC 12.8.93 and cuDNN 9.8.0.87. Only reviewed, unmodified runtime DLLs '
             'are prepared from official hash-pinned archives. NVIDIA and third-party '
             'licenses apply separately from the application license. This review '
             'does not close other native source/notice findings.</p><ul>'+links+'</ul>')

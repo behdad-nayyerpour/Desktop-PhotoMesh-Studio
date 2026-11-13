@@ -22,6 +22,8 @@ def main():
     parser.add_argument('--photos', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--cpu', action='store_true')
+    parser.add_argument('--max-image-size', type=int, default=1024)
+    parser.add_argument('--features', type=int, default=1024)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     photos = [p for p in args.photos.iterdir() if p.suffix.lower() in ('.jpg', '.png', '.jpeg')]
@@ -31,15 +33,15 @@ def main():
     for method in ('ALIKED + LightGlue', 'SIFT + LightGlue'):
         work = args.output/method.split(' ')[0]; work.mkdir()
         settings = engine.execution_settings(args.exe, dict(feature_method=method, use_gpu=not args.cpu,
-                                                            key_point_limit=1024), str(work))
+                                                            key_point_limit=args.features), str(work))
         assert settings['use_gpu'] is (not args.cpu), settings
         database = str(work/'database.db')
         pairs = work/'pairs.txt'
         pairs.write_text(''.join(f'{a.name} {b.name}\n' for i,a in enumerate(photos) for b in photos[i+1:]))
         extract = ['feature_extractor', '--database_path', database, '--image_path', str(args.photos.resolve())]
         extract += engine.matching_arguments(args.exe, extract[0], settings, True)
-        extract += opt(args.exe, extract[0], ['FeatureExtraction.max_image_size','SiftExtraction.max_image_size'], 1024)
-        extract += opt(args.exe, extract[0], ['SiftExtraction.max_num_features'], 1024)
+        extract += opt(args.exe, extract[0], ['FeatureExtraction.max_image_size','SiftExtraction.max_image_size'], args.max_image_size)
+        extract += opt(args.exe, extract[0], ['SiftExtraction.max_num_features'], args.features)
         match = ['matches_importer','--database_path',database,'--match_list_path',str(pairs),'--match_type','pairs']
         match += engine.matching_arguments(args.exe, match[0], settings)
         model = work/'sparse'; model.mkdir()
@@ -61,7 +63,7 @@ def main():
                         process.kill(); process.wait(); raise TimeoutError(command[0])
                     time.sleep(.05)
             stages.append(dict(command=command, code=process.returncode, seconds=time.perf_counter()-start,
-                               runtime_modules=sorted(p for p in modules if any(s in Path(p).name.lower() for s in ('cublas','cudart','cudnn')))))
+                               runtime_modules=sorted(p for p in modules if any(s in Path(p).name.lower() for s in ('cublas','cudart','cudnn','nvrtc')))))
             assert process.returncode == 0, log.read_text(encoding='utf-8',errors='replace')[-4000:]
         with sqlite3.connect(database) as connection:
             features = connection.execute('SELECT SUM(rows) FROM keypoints').fetchone()[0]
