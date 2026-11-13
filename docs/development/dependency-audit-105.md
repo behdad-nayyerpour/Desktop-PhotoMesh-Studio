@@ -54,6 +54,13 @@ the final public Setup. No engine is silently removed or replaced, and no claim
 of legal clearance follows from the BAT tests. Retained unresolved gates below
 are historical context and remain subject to these newer findings.
 
+Final validation at281db7d succeeded:908 Windows tests,904 Linux tests,
+80 actual installed tests, native mesh DEM offline, complete25384-file candidate
+inventory and full26196-file rollback comparison. The actual BAT independently
+restored all881 Qt targets twice. See release-review-105.md for immutable artifact
+hashes and run links. These checks close the cleanup/runtime compatibility gate,
+not the unresolved native-source/provenance redistribution gates above.
+
 This is an engineering inventory and an unfinished redistribution review, not
 legal clearance. The application's own license has not been changed.
 

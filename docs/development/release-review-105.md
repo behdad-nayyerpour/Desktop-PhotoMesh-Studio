@@ -590,3 +590,37 @@ source/replacement information. App license and engine bytes are unchanged.
 This is engineering remediation, not complete redistribution/legal clearance;
 the latter remains a final-release gate, explicitly visible in the review record.
 No full Setup, repository rename or public installer release is requested here.
+
+Final app/source revision`281db7dc7f6b434b4d2ccb5f652f5e01c773b67b`:
+[general checks43386006340](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386006340)
+pass Windows908/9 skipped, Linux904/13 skipped, plus2 Mesa OpenGL checks.
+[Full installed/inventory run43386006350](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386006350)
+passes908/9 skipped, the equivalent-workload benchmark and offline native mesh
+DEM/manual/Qt cleanup check. Complete candidate inventory25384 files matches
+the original plus explicit manifest changes. After rollback all26196 original
+distributed files match byte-for-byte; unlisted runtime/engine files are preserved.
+Full validation artifact14018559509 outer SHA256
+`640d8b775b12461cc693d15d1522ee6d53085ced3c83059c9dbf9b197299a7ca`
+retained locally, including original/candidate/rollback inventories and notices.
+
+[Actual BAT run43386197970](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43386197970)
+passes80 installed tests with module-origin/network guards; native mesh DEM,
+unchanged PDF identity, notices, PLY and splash checks. Registry discovery and
+trailing-backslash custom Unicode paths pass. Both actual rollbacks restore every
+prior app byte and all881 removed Qt files; retry preserves recovery history.
+The personal installation was read-only matched to168 authenticated app files
+and881 remotely inventoried targets before constructing the baseline.
+
+Final combined delta4255553 bytes:21 app updates/additions and881 reviewed Qt
+removals, no Python/engine replacements. ZIP SHA256
+`f17996475342121e67f384c0828e1cd04e427b371b630c9781183a2ac75eec84`.
+Verified BAT artifact14018926911 outer SHA256
+`84a5cc6f185720150e8e6d3277eaa14ca1dc192b4784a0c5351d38e2ae45e467`
+downloaded and verified. Its6150-byte BAT matches local reproduction and public
+raw readback, SHA256
+`c72e5c523ebee7dc22c7ce59155a9678c863be1df414faf3baf3f8f5cdd3551e`.
+Published for candidate testing at artifact commit
+`328534d8048fcc935e12ea1858ddada4a21b99ac`,
+`downloads/105/Lens2Mesh_Update_CapacityHelp_1.0.5.bat`.
+User acceptance, target surveyed-data checks and the explicitly recorded
+redistribution/source gates remain open. Point selection/deletion stays deferred.
