@@ -308,7 +308,7 @@ class ModelView(QWidget):
         if getattr(self, 'survey_enabled', False):
             gesture = self._survey_gesture
             if t in (QEvent.MouseButtonPress, QEvent.MouseButtonDblClick) and ev.button() == Qt.LeftButton and ev.modifiers() == Qt.NoModifier:
-                handle = gesture.start([ev.position().x(), ev.position().y()], None if getattr(self, 'survey_busy', False) else self._survey_line_screen())
+                handle = gesture.start([ev.position().x(), ev.position().y()], None if getattr(self, 'survey_busy', False) else self._survey_line_screen(), self._survey_center_screen())
                 if handle:
                     self.surveyDragStarted.emit()
                 return handle
@@ -368,13 +368,29 @@ class ModelView(QWidget):
         self._overlay_changed()
 
     def set_survey_line(self, points):
-        self._remove('survey_line')
+        if not np.array_equal(getattr(self,'_survey_line',None),points):
+            self.set_survey_surface(None)
         self._survey_line = None if points is None else np.asarray(points, float)
-        if points is not None and self.gl is not None:
-            item = gl.GLLinePlotItem(pos=(self._survey_line * self.flip).astype(np.float32),
+        self._overlay_changed()
+
+    def _survey_center_screen(self):
+        center=getattr(self,'_survey_surface_center',None)
+        projected=self._survey_project(None if center is None else np.asarray(center)[None])
+        return None if projected is None else projected[0]
+
+    def set_survey_surface(self, points, center=None):
+        self._remove('survey_line')
+        self._survey_surface_center=center
+        if points is not None and len(points) and self.gl is not None:
+            pairs=np.asarray(points).reshape(-1,3,3)[:,:2].reshape(-1,3)
+            item = gl.GLLinePlotItem(pos=(pairs * self.flip).astype(np.float32),mode='lines',
                                     color=(1., .65, .1, 1.), width=3, antialias=True)
+            if _DEPTH_TESTED_GL_OPTIONS is not None:
+                item.setGLOptions(_DEPTH_TESTED_GL_OPTIONS)
+            item.setDepthValue(10)
             self.gl.addItem(item)
             self.layers['survey_line'] = item
+        self._overlay_changed()
 
     # ---- data
     def _remove(self, key):
@@ -703,7 +719,8 @@ class ModelView(QWidget):
             if getattr(self, 'survey_enabled', False):
                 from .survey_gestures import paint_survey_line
                 anchor = self._survey_project(None if self._survey_anchor is None else self._survey_anchor[None])
-                paint_survey_line(p, self._survey_line_screen(), None if anchor is None else anchor[0], self._survey_pointer)
+                paint_survey_line(p, self._survey_line_screen(), None if anchor is None else anchor[0], self._survey_pointer,
+                                  draw_line=False, center=self._survey_center_screen())
         finally:
             p.end()
 

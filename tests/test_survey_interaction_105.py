@@ -223,6 +223,13 @@ def test_rotated_ortho_and_world_offset_roundtrip_keep_actual_model_endpoints(wi
     wait_picks(window, qtbot)
     np.testing.assert_allclose(window._survey_dialog.points, projected[:, :2], atol=1e-7)
     np.testing.assert_allclose(window.model_view._survey_line, actual, atol=1e-7)
+    # The complete section, not just its endpoint labels, uses the same frame.
+    along, elevations = window._survey_profile
+    direction = (projected[1, :2]-projected[0, :2])/np.linalg.norm(projected[1, :2]-projected[0, :2])
+    local = np.column_stack([projected[0, :2]-offset[:2]+along[:, None]*direction,
+                             elevations-offset[2]]) @ rotation
+    finite = np.isfinite(local).all(1)
+    np.testing.assert_allclose(local[finite, 2], local[finite, 0]+2*local[finite, 1], atol=1e-7)
 
 
 def test_photo_resolution_scaling_and_unaligned_guard(window, tmp_path, qtbot):

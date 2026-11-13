@@ -353,7 +353,8 @@ camera models/intrinsic presets, opt-in GPS priors/reported deviations, supporte
 metre-based projected CRS and explicit WGS84 ENU with height-reference gates;
 ground/non-ground classification with preserved original cloud/attributes;
 class colors/visibility, streaming LAS/LAZ, independent ground-only DTM;
-actual-surface distance picks and editable mesh upper-envelope cross sections.
+actual-surface distance picks and editable mesh cross sections (initially an
+upper envelope; replaced by exact mesh-plane intersections in the follow-up below).
 New processing is in focused survey/coordinate/terrain modules. Existing DSM,
 marker photo-only editing, old project defaults and runtime bundles remain intact.
 
@@ -620,3 +621,34 @@ roundtrip, real2000-point Poisson with Persian input/tmp/output producing1000
 faces, simulated failed write preserving previous model, and actual
 photomesh.tasks subprocess with Persian config/output/logs all passed. No input
 photos, project data, numerical settings, or engine binaries are modified.
+
+## Exact mesh sections and equal-scale fitting (2026-11-13)
+
+The section UI now uses all triangle/vertical-plane intersections clipped to
+the endpoint span, retaining floors, vertical faces and reverse overhangs.
+Coplanar faces show their clipped boundary, with shared interior edges removed.
+Independent segments never acquire artificial connecting lines. The legacy
+sampled `MeshSurface.section` method remains for compatibility; the UI uses
+`section_segments`. Profile slope picks use the nearest actual segment in
+screen space and reject different connected components.
+
+The 3D display uses the same exact intersection segments in model coordinates,
+with surface depth testing instead of a straight chord painted over the model.
+The middle grip sits on an actual section segment nearest its midpoint; endpoint
+and paired translation gestures, navigation, manual coordinates, photo/ortho
+picking and existing stale/cancel/session guards remain. `Fit 1:1` fits the full
+profile with equal horizontal and vertical units and retains that aspect lock.
+
+Review scope: geometry/BVH, worker results, coordinate transforms, plot picking,
+GL display, shared gestures and dock lifecycle; callers and old envelope references
+were searched. No alignment, GPS, marker, mesh-building or project-format code
+changes. Seven new behavioral cases plus the existing survey/workflow tests:
+44 passed offline. Ruff F/E9 and diff whitespace checks passed. On an analytic
+80,000-triangle sloped mesh, exact extraction took0.106s versus0.153s for the old
+512-sample profile; maximum height error7.11e-15 model units. This is a focused
+benchmark, not a capacity guarantee for every mesh. Native OpenGL visual/gesture
+acceptance remains the user's test; offscreen rendering does not establish it.
+
+Only five changed application modules go into the test updater. The approved
+PDF is retained: user requests updating only its section material after accepting
+this test. No Setup or public release is authorized by this candidate delivery.

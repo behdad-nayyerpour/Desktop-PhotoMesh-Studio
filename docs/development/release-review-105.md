@@ -318,10 +318,12 @@ laspy 2.6.1 BSD and lazrs 0.7.0 MIT, Windows CPython3.13; other environments use
 declared dependencies. No user runtime pip invocation or engine download.
 
 Measurements pick actual double-precision mesh intersections/source points,
-respect visible classes and use correct world offsets. Cross sections show the
+respect visible classes and use correct world offsets. Initially, cross sections showed the
 highest mesh intersection in a vertical plane; disconnected coverage adds NaN
 even for holes narrower than sample spacing. Multiple floors/overhangs are
-explicitly an upper envelope, not a complete multi-surface section. Mesh indexing
+explicitly an upper envelope, not a complete multi-surface section. This limitation
+is superseded by the exact mesh-section follow-up in survey-bundle-105.md.
+Mesh indexing
 and profiles run in cancellable workers with bounded RAM, debouncing and source,
 project/dataset/dialog/request guards against stale completion. A Plan View pick
 requires a matching non-stale mesh-bound orthophoto; imported/old rasters without

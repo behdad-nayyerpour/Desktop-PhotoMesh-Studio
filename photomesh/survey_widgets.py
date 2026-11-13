@@ -54,7 +54,7 @@ class SurveyPanel(QDockWidget):
         self.result.setMinimumHeight(self.fontMetrics().lineSpacing() * 3)
         left.addWidget(self.result)
         if self.section:
-            note = QLabel('Profile: sampled highest mesh intersection in the vertical section plane; mesh gaps stay empty.')
+            note = QLabel('Exact mesh / section-plane intersections: all layers and overhangs. Coplanar faces show their boundary; gaps stay empty.')
             note.setWordWrap(True); left.addWidget(note)
         self.reset = QPushButton('New line / clear'); self.reset.clicked.connect(parent._survey_clear)
         left.addWidget(self.reset); left.addStretch()
@@ -70,9 +70,17 @@ class SurveyPanel(QDockWidget):
             self.plot.setLabel('left', 'Elevation / model Z', units=unit)
             self.curve = self.plot.plot(pen=pg.mkPen('#31b6dd', width=2), connect='finite')
             self.selection = self.plot.plot(pen=None, symbol='o', symbolBrush='#ffb33b', symbolSize=9)
+            self.fit_equal = QPushButton('Fit 1:1')
+            self.fit_equal.setToolTip('Fit the entire section with equal horizontal and vertical scale.')
+            self.fit_equal.clicked.connect(self._fit_equal)
+            left.addWidget(self.fit_equal)
             self.plot.scene().sigMouseClicked.connect(parent._survey_profile_clicked)
             layout.addWidget(self.plot, 2)
         self.setMinimumHeight(320)
+
+    def _fit_equal(self):
+        self.plot.plotItem.vb.setAspectLocked(True, ratio=1)
+        self.plot.plotItem.vb.autoRange(padding=.05)
 
     def set_busy(self, busy):
         self.progress.setVisible(busy); self.cancel.setVisible(busy)

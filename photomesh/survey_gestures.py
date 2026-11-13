@@ -12,13 +12,13 @@ class LineGesture:
         self.moved = False
         self.last = None
 
-    def start(self, position, line=None):
+    def start(self, position, line=None, center=None):
         self.press = np.asarray(position, float)
         self.last = self.press.copy()
         self.line = None if line is None else np.asarray(line, float).copy()
         self.moved, self.editing = False, None
         if self.line is not None:
-            handles = np.vstack([self.line, self.line.mean(0)])
+            handles = np.vstack([self.line, self.line.mean(0) if center is None else center])
             distances = np.linalg.norm(handles - self.press, axis=1)
             index = int(np.argmin(distances))
             if distances[index] <= 10:
@@ -45,15 +45,16 @@ class LineGesture:
         return click
 
 
-def paint_survey_line(painter, line, anchor=None, pointer=None):
+def paint_survey_line(painter, line, anchor=None, pointer=None, draw_line=True, center=None):
     painter.setPen(QPen(QColor(255, 165, 25), 2))
     painter.setBrush(QColor(45, 45, 48))
     if line is not None:
         a, b = [QPointF(*point) for point in line]
-        painter.drawLine(a, b)
+        if draw_line:
+            painter.drawLine(a, b)
         for point in (a, b):
             painter.drawEllipse(point, 6, 6)
-        mid = (a + b) / 2
+        mid = (a + b) / 2 if center is None else QPointF(*center)
         painter.drawRect(QRectF(mid.x()-5, mid.y()-5, 10, 10))
     elif anchor is not None:
         a = QPointF(*anchor)

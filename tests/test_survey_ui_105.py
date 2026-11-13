@@ -39,7 +39,7 @@ def test_section_endpoint_updates_and_new_project_cannot_take_old_result(window,
     along, heights = window._survey_profile
     np.testing.assert_allclose(heights, along + 3, atol=1e-6)
     window._survey_dialog.coordinates[1][1].setValue(2)
-    qtbot.waitUntil(lambda: window._survey_profile is not None and abs(window._survey_profile[1][-1] - 8) < 1e-6, timeout=10000)
+    qtbot.waitUntil(lambda: window._survey_profile is not None and abs(np.nanmax(window._survey_profile[1]) - 8) < 1e-6, timeout=10000)
     old = window._survey_dialog
     window.project = Project()
     window.reload_view()

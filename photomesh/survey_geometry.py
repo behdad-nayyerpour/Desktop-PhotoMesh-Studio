@@ -1,9 +1,4 @@
-"""Double-precision surface picks and upper-envelope mesh sections.
-
-Profiles use the highest actual intersection with each vertical ray. Empty
-columns remain NaN; overhangs/multiple floors are explicitly upper-envelope,
-not a claim that every intersection is represented.
-"""
+"""Double-precision mesh picks, exact sections and legacy upper-envelope samples."""
 import heapq
 import math
 import numpy as np
@@ -34,6 +29,34 @@ def load_surface(path, rotation=None, cancel=None):
     if rotation is not None:
         points = points @ np.asarray(rotation).T
     return MeshSurface(points, triangles, cancel=cancel)
+
+
+def section_plot_data(segments):
+    """Disconnected line pairs plus connected-component IDs for slope picks."""
+    segments=np.asarray(segments,float).reshape(-1,2,2)
+    count=len(segments); parent=list(range(count)); nodes={}
+    eps=max(max(1.,float(np.ptp(segments,axis=(0,1)).max()))*1e-10,
+            float(np.spacing(max(1.,np.abs(segments).max())))*8) if count else 1e-10
+    origin=segments[0,0] if count else np.zeros(2)
+    def find(i):
+        while parent[i]!=i:parent[i]=parent[parent[i]];i=parent[i]
+        return i
+    for i,segment in enumerate(segments):
+        for point in segment:
+            key=tuple(int(np.floor(v/eps)) for v in point-origin)
+            matched=None
+            for dx in (-1,0,1):
+                for dy in (-1,0,1):
+                    for other,j in nodes.get((key[0]+dx,key[1]+dy),()):
+                        if np.max(abs(other-point))<=eps:
+                            matched=j;break
+                    if matched is not None:break
+                if matched is not None:break
+            if matched is not None:parent[find(i)]=find(matched)
+            nodes.setdefault(key,[]).append((point,i))
+    values=np.full((count,3,2),np.nan);values[:,:2]=segments
+    components=np.repeat([find(i) for i in range(count)],3)
+    return values[:,:,0].ravel(),values[:,:,1].ravel(),components
 
 
 def distance_components(a, b):
@@ -125,6 +148,78 @@ class MeshSurface:
             if np.any(valid):
                 closest = min(closest, float(t[valid].min()))
         return None if not np.isfinite(closest) else origin + closest * direction
+
+    def section_segments(self, start, end, cancel=None):
+        """Exact mesh/vertical-plane segments, clipped to the endpoint span.
+
+        Retain every elevation and vertical/overturned edge. Coplanar triangles
+        contribute their boundary, with shared interior edges removed.
+        """
+        start, end = np.asarray(start, float), np.asarray(end, float)
+        if start.shape != (2,) or end.shape != (2,) or not np.isfinite([start,end]).all():
+            raise ValueError('Section endpoints must have finite X and Y')
+        length = float(np.linalg.norm(end-start))
+        if length <= 1e-12:
+            raise ValueError('Section needs a positive horizontal length')
+        direction = (end-start)/length
+        normal = np.array([-direction[1],direction[0]])
+        eps = max(max(1.,length)*1e-10, float(np.spacing(max(1.,np.abs(self.low).max(),np.abs(self.high).max())))*8)
+        edges, coplanar = {}, {}
+        def add(a,b,flat=False):
+            a,b = np.asarray(a,float).copy(),np.asarray(b,float).copy()
+            delta=b-a
+            if abs(delta[0]) <= eps:
+                if a[0] < -eps or a[0] > length+eps:return
+            else:
+                t0,t1=sorted((-a[0]/delta[0],(length-a[0])/delta[0]))
+                t0,t1=max(0.,t0),min(1.,t1)
+                if t0 > t1+eps/length:return
+                a,b=a+t0*delta,a+t1*delta
+            key=tuple(sorted(tuple(int(round(v/eps)) for v in (p[0],p[1]-self.low[2])) for p in (a,b)))
+            if flat:
+                coplanar[key]=(coplanar.get(key,(0,None))[0]+1,np.array([a,b]))
+            else:edges[key]=np.array([a,b])
+        pending=[0]
+        while pending:
+            if cancel and cancel():raise InterruptedError('Section cancelled')
+            low,high,indices,children=self.nodes[pending.pop()]
+            nlo=np.minimum((low[:2]-start)*normal,(high[:2]-start)*normal).sum()
+            nhi=np.maximum((low[:2]-start)*normal,(high[:2]-start)*normal).sum()
+            ulo=np.minimum((low[:2]-start)*direction,(high[:2]-start)*direction).sum()
+            uhi=np.maximum((low[:2]-start)*direction,(high[:2]-start)*direction).sum()
+            if nlo>eps or nhi < -eps or uhi < -eps or ulo>length+eps:continue
+            if children is not None:
+                pending.extend(children);continue
+            for tri in self.triangles[indices]:
+                signed=(tri[:,:2]-start)@normal
+                points=np.column_stack([(tri[:,:2]-start)@direction,tri[:,2]])
+                if np.all(abs(signed)<=eps):
+                    # Clip the face itself so its boundary includes the two
+                    # section-end planes, not an open collection of cut edges.
+                    polygon=list(points)
+                    for bound,side in ((0.,1),(length,-1)):
+                        clipped=[]
+                        for i,p in enumerate(polygon):
+                            q=polygon[i-1]
+                            pin=side*(p[0]-bound)>=0
+                            qin=side*(q[0]-bound)>=0
+                            if pin!=qin:
+                                clipped.append(q+(bound-q[0])/(p[0]-q[0])*(p-q))
+                            if pin:clipped.append(p)
+                        polygon=clipped
+                    for i,p in enumerate(polygon):add(p,polygon[i-1],True)
+                    continue
+                hits=[points[i] for i in range(3) if abs(signed[i])<=eps]
+                for i,j in ((0,1),(1,2),(2,0)):
+                    if (signed[i] < -eps and signed[j]>eps) or (signed[j]<-eps and signed[i]>eps):
+                        t=signed[i]/(signed[i]-signed[j]);hits.append(points[i]+t*(points[j]-points[i]))
+                if hits:
+                    if len(hits)==1:add(hits[0],hits[0])
+                    else:
+                        distances=np.linalg.norm(np.asarray(hits)[:,None]-np.asarray(hits)[None,:],axis=2)
+                        i,j=np.unravel_index(np.argmax(distances),distances.shape);add(hits[i],hits[j])
+        edges.update({k:value for k,(count,value) in coplanar.items() if count==1 and k not in edges})
+        return np.array([edges[k] for k in sorted(edges)],float).reshape(-1,2,2)
 
     def section(self, start, end, samples=512, cancel=None):
         start, end = np.asarray(start, float), np.asarray(end, float)

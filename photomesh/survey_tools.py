@@ -182,6 +182,7 @@ class SurveyToolsMixin:
 
     def _survey_clear_profile(self):
         self._survey_profile = None
+        self.model_view.set_survey_surface(None)
         self._survey_selected = []
         if self._survey_dialog.section:
             self._survey_dialog.curve.setData([], [])
@@ -433,10 +434,26 @@ class SurveyToolsMixin:
         cache = self._survey_mesh_cache or self._survey_pick_cache
         panel = self._survey_dialog
         def work(_report, stop):
-            from .survey_geometry import load_surface
+            from .survey_geometry import load_surface, section_plot_data
             surface = cache[1] if cache and cache[0] == key else load_surface(source, rotation, stop)
-            along, z = surface.section(a - offset[:2], b - offset[:2], cancel=stop)
-            return surface, along, z + offset[2]
+            segments=surface.section_segments(a-offset[:2],b-offset[:2],cancel=stop)
+            along,z,components=section_plot_data(segments)
+            direction=(b-a)/np.linalg.norm(b-a)
+            xyz=np.column_stack([a-offset[:2]+along[:,None]*direction,z]) @ rotation
+            # The middle grip lies on the actual section, even beside a gap.
+            center=None
+            if len(segments):
+                delta=segments[:,1]-segments[:,0]
+                t=np.divide(np.linalg.norm(b-a)/2-segments[:,0,0],delta[:,0],out=np.zeros(len(delta)),where=abs(delta[:,0])>1e-12)
+                candidates=segments[:,0]+np.clip(t,0,1)[:,None]*delta
+                order=np.lexsort((-candidates[:,1],abs(candidates[:,0]-np.linalg.norm(b-a)/2)))
+                s,h=candidates[order[0]]
+                center=np.r_[a-offset[:2]+s*direction,h] @ rotation
+            ends=[]
+            for point in (a,b):
+                hit=surface.pick(np.r_[point-offset[:2],surface.high[2]+max(1.,surface.high[2]-surface.low[2])],[0,0,-1])
+                ends.append(None if hit is None else hit @ rotation)
+            return surface, along, z + offset[2], xyz, center, ends, components
         job = BackgroundJob(work, name='Mesh cross section', parent=self); self._survey_job = job
         self._survey_refresh_busy()
         def done(result, error):
@@ -445,15 +462,16 @@ class SurveyToolsMixin:
                 if error:
                     self._survey_fail(error)
                 elif result is not None:
-                    surface, along, z = result
+                    surface, along, z, xyz, center, ends, components = result
                     self._survey_mesh_cache = key, surface
                     self._survey_profile = along, z; self._survey_selected = []
+                    self._survey_profile_components=components
                     panel.curve.setData(along, z, connect='finite'); panel.selection.setData([], [])
-                    ends = np.column_stack([np.array([a, b]) - offset[:2], np.array([z[0], z[-1]]) - offset[2]]) @ rotation
                     for i in range(2):
-                        if self._survey_endpoints_model[i] is None and np.isfinite(ends[i]).all():
+                        if self._survey_endpoints_model[i] is None and ends[i] is not None:
                             self._survey_endpoints_model[i] = ends[i]
                     self._survey_sync_views()
+                    self.model_view.set_survey_surface(xyz, center)
                     panel.result.setText(self._survey_metrics())
             job.result = None; job.fn = None
             if self._survey_job is job:
@@ -472,19 +490,30 @@ class SurveyToolsMixin:
         dialog = self._survey_dialog
         along, z = self._survey_profile
         point = dialog.plot.plotItem.vb.mapSceneToView(event.scenePos())
-        index = int(np.argmin(abs(along - point.x())))
+        if not len(along):return
+        ranges=dialog.plot.plotItem.vb.viewRange()
+        view=dialog.plot.plotItem.vb
+        scale=np.array([max(r[1]-r[0],1e-12) for r in ranges])/np.maximum([view.width(),view.height()],1)
+        starts=np.column_stack([along[::3],z[::3]])
+        delta=np.column_stack([along[1::3],z[1::3]])-starts
+        vector=delta/scale
+        t=np.clip(np.einsum('ij,ij->i',(np.array([point.x(),point.y()])-starts)/scale,vector)/np.maximum(np.sum(vector*vector,axis=1),1e-30),0,1)
+        candidates=starts+t[:,None]*delta
+        row=int(np.argmin(np.linalg.norm((candidates-[point.x(),point.y()])/scale,axis=1)))
+        index=row*3
         if not np.isfinite(z[index]):
             dialog.result.setText('No measured mesh surface at that profile position.'); return
         if len(self._survey_selected) == 2:
             self._survey_selected = []
-        self._survey_selected.append(index)
+        self._survey_selected.append((candidates[row],self._survey_profile_components[index]))
         chosen = self._survey_selected
-        dialog.selection.setData(along[chosen], z[chosen])
+        selected=np.array([item[0] for item in chosen])
+        dialog.selection.setData(selected[:,0],selected[:,1])
         if len(chosen) == 2:
-            i, j = sorted(chosen)
-            if not np.isfinite(z[i:j + 1]).all():
+            if chosen[0][1] != chosen[1][1]:
                 dialog.result.setText('The selected interval crosses a mesh gap; slope is unavailable.'); return
-            result = distance_components([along[i], 0, z[i]], [along[j], 0, z[j]])
+            left,right=sorted(selected,key=lambda p:p[0])
+            result = distance_components([left[0],0,left[1]],[right[0],0,right[1]])
             if result['slope_percent'] is None:
                 dialog.result.setText('Choose two profile points with different horizontal positions.'); return
             dialog.result.setText(self._survey_metrics() + f"\nSlope: {result['slope_percent']:.4g}% ({result['slope_degrees']:.4g}°); horizontal {result['horizontal']:.6g} {dialog.unit}, height difference {result['height']:.6g} {dialog.unit}")
