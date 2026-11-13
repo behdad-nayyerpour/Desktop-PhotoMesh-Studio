@@ -2842,13 +2842,33 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
     def run_script(self):
         path = QFileDialog.getOpenFileName(self, "Run Script", "", "Python (*.py)")[0]
         if path:
-            with open(path, encoding="utf-8") as f:
-                code = f.read()
-            try:
-                exec(compile(code, path, "exec"), dict(self.console.ns))
-                self.log(f"Script {path} finished")
-            except Exception as e:
-                self.log(f"Script error: {e}")
+            self.execute_script(path)
+
+    def execute_script(self, path):
+        """Keep scripts on the GUI thread; report read/compile/run failures alike."""
+        import tokenize
+        import traceback
+        path = os.path.abspath(os.fspath(path))
+        try:
+            with tokenize.open(path) as file:
+                code = file.read()
+            namespace = dict(self.console.ns, __file__=path, __name__='__main__', __package__=None)
+            exec(compile(code, path, 'exec'), namespace)
+        except KeyboardInterrupt:
+            self.log(f'Script cancelled: {path}')
+            self.statusBar().showMessage('Script cancelled', 8000)
+            return False
+        except (Exception, SystemExit) as error:
+            if isinstance(error, SystemExit) and error.code in (None, 0):
+                self.log(f'Script {path} finished')
+                return True
+            details = traceback.format_exc()
+            self.log(f'Script failed: {path}\n{details}')
+            self.show_error('Script failed', f'{type(error).__name__}: {error}',
+                            step=os.path.basename(path), traceback_text=details, worker=False)
+            return False
+        self.log(f'Script {path} finished')
+        return True
 
     def preferences(self):
         if PreferencesDialog(self).exec():

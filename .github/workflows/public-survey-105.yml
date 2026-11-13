@@ -1,0 +1,46 @@
+name: Public surveyed RTK and held-out control validation
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: ["tools/benchmark_public_survey_105.py", ".github/workflows/public-survey-105.yml"]
+permissions:
+  contents: read
+jobs:
+  public-survey:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Prepare exact CPU engine and public data checks
+        run: pip install -q -r requirements-dev.txt
+      - name: Prepare pinned engine
+        run: python tools/prepare_engine.py --output engine-fixture --cache engine-downloads --cpu-only
+      - name: Reconstruct public RTK survey and evaluate held-out points
+        run: python tools/benchmark_public_survey_105.py --exe engine-fixture/colmap-cpu/bin/colmap.exe --data public-data --output public-survey
+      - name: Compare accepted numerical baseline on the same reconstruction
+        shell: pwsh
+        run: |
+          git archive --format=zip --output prior-survey.zip 281db7dc7f6b434b4d2ccb5f652f5e01c773b67b photomesh
+          if ($LASTEXITCODE) { throw 'Could not read accepted numerical baseline' }
+          Expand-Archive prior-survey.zip prior-survey
+          python tools/benchmark_public_survey_105.py --app-source prior-survey --model public-survey/starting-model --data public-data --output public-survey/baseline
+          if ($LASTEXITCODE) { throw 'Accepted baseline public-data comparison failed' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Public-survey-validation
+          path: |
+            public-survey/
+            public-data/dataset.json
+            public-data/gcp_list.txt
+            public-data/README.md
+            public-data/LICENSE
+          retention-days: 30
