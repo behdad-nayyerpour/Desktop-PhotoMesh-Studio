@@ -1,4 +1,5 @@
 @echo off
+REM Run the Lens2Mesh regression suite with optional local photo data.
 REM Usage: run_tests.bat [folder_with_photos]  (folder enables the real COLMAP end-to-end tests)
 cd /d "%~dp0"
 if not exist .venv\Scripts\activate.bat call setup.bat

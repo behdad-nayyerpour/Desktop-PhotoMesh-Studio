@@ -1,4 +1,5 @@
 @echo off
+REM Launch Lens2Mesh from its local development environment.
 cd /d "%~dp0"
 if not exist .venv\Scripts\pythonw.exe (
   echo Running first-time setup...

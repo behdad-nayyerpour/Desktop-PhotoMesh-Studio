@@ -1,4 +1,4 @@
-"""Benchmark Build Point Cloud (+ filtering) and Build Mesh on an aligned workdir.
+"""Benchmark Lens2Mesh point-cloud filtering and meshing on an aligned workdir.
 
     python dense_benchmark.py <workdir> [--quality Medium] [--filtering Mild]
                               [--max-sources 10] [--mesh Poisson|Delaunay|none]

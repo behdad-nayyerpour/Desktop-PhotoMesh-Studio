@@ -1,4 +1,4 @@
-"""Georeference an aligned model with GCPs and print per-marker errors.
+"""Georeference a Lens2Mesh aligned model with GCPs and print per-marker errors.
 
     python gcp_benchmark.py <model_dir> <markers file> [--check L1,L2] [--holdout N]
                             [--no-bundle] [--report out.txt] [--copy-to DIR]
