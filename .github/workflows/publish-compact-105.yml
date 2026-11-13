@@ -1,0 +1,88 @@
+name: Publish verified compact Lens2Mesh 1.0.5
+on:
+  push:
+    branches: ["packaging/compact-105"]
+    paths: [".github/workflows/publish-compact-105.yml"]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require the exact successful measurement
+        shell: pwsh
+        run: |
+          $run=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/43494082044" | ConvertFrom-Json
+          if ($LASTEXITCODE -or $run.conclusion -ne 'success' -or $run.head_sha -ne '581a4ce392a04a2596bad1fc5e19649f73c5f21f') { throw 'Exact compact candidate is not validated' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Compact-Setup-Measurement
+          run-id: 43494082044
+          github-token: ${{ github.token }}
+          path: candidate
+      - name: Authenticate candidate and retain the current public installer for rollback
+        shell: pwsh
+        run: |
+          $compact=(Get-FileHash candidate/Lens2Mesh_Setup_1.0.5.exe).Hash.ToLowerInvariant()
+          if ($compact -ne '4d50eaf5354713ff79aa88aec06237a861287753999e2cb0c1e36b5db8ad207d') { throw 'Candidate differs from measured Setup' }
+          if (-not (Test-Path candidate/validation.txt)) { throw 'Installed validation evidence missing' }
+          gh release download v1.0.5 --repo $env:GITHUB_REPOSITORY --pattern 'Lens2Mesh_Setup_1.0.5.exe*' --dir rollback
+          if ($LASTEXITCODE) { throw 'Pre-replacement backup download failed' }
+          if ((Get-FileHash rollback/Lens2Mesh_Setup_1.0.5.exe).Hash.ToLowerInvariant() -ne 'e4f2b42f33cfcf53b652d9e16228310b3e9b029091725d6985ff18cf5c57b990') { throw 'Public installer changed since comparison' }
+          gh release view v1.0.5 --repo $env:GITHUB_REPOSITORY --json body,assets,url | Set-Content rollback/public-release-before.json
+          if ($LASTEXITCODE) { throw 'Release metadata backup failed' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Lens2Mesh-105-PreCompact-Rollback
+          path: rollback/
+          retention-days: 90
+      - name: Verify readable installed UI before publication
+        shell: pwsh
+        run: |
+          $root=Join-Path $env:RUNNER_TEMP 'compact readable QA فارسی'
+          $setup=(Get-Item candidate/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/portable=1',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Readability QA install failed' }
+          $env:PYTHONPATH=Join-Path $root 'app'
+          & (Join-Path $root 'python/python.exe') tools/validate_installed_105.py "$env:PYTHONPATH" "$PWD" candidate/readable-ui
+          if ($LASTEXITCODE) { throw 'Readable installed UI/manual/licence verification failed' }
+      - name: Replace only the validated Setup and checksum, then verify public bytes
+        shell: pwsh
+        run: |
+          gh release upload v1.0.5 candidate/Lens2Mesh_Setup_1.0.5.exe candidate/Lens2Mesh_Setup_1.0.5.exe.sha256 --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE) { throw 'Compact publication failed; rollback artifact retained' }
+          gh release download v1.0.5 --repo $env:GITHUB_REPOSITORY --pattern 'Lens2Mesh_Setup_1.0.5.exe*' --dir public-check
+          if ($LASTEXITCODE) { throw 'Public verification download failed' }
+          $hash=(Get-FileHash public-check/Lens2Mesh_Setup_1.0.5.exe).Hash.ToLowerInvariant()
+          if ($hash -ne '4d50eaf5354713ff79aa88aec06237a861287753999e2cb0c1e36b5db8ad207d') { throw 'Public Setup hash differs' }
+          if ((Get-Content public-check/Lens2Mesh_Setup_1.0.5.exe.sha256 -Raw) -notmatch $hash) { throw 'Public checksum differs' }
+          $meta=gh release view v1.0.5 --repo $env:GITHUB_REPOSITORY --json body | ConvertFrom-Json
+          ($meta.body.Trim()+"`n`nCompact offline installer: 1.52 GB, 9.26% smaller. Application features are unchanged.`n") | Set-Content candidate/release-notes.txt
+          gh release edit v1.0.5 --repo $env:GITHUB_REPOSITORY --notes-file candidate/release-notes.txt
+          if ($LASTEXITCODE) { throw 'Release note update failed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Main fast-forward failed' }
+          gh release view v1.0.5 --repo $env:GITHUB_REPOSITORY --json url,assets,publishedAt | Set-Content candidate/compact-publication.json
+          if ($LASTEXITCODE) { throw 'Publication metadata readback failed' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-105-Compact-Publication-Evidence
+          path: |
+            candidate/compact-publication.json
+            candidate/size-comparison.json
+            candidate/installed-byte-verification.json
+            candidate/validation.txt
+            candidate/*.sha256
+            candidate/readable-ui/
+          retention-days: 90

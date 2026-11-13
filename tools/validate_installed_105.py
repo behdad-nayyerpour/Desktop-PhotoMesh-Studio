@@ -32,6 +32,15 @@ from PySide6.QtCore import QCoreApplication, QSettings, Qt
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 from PySide6.QtWidgets import QApplication, QDialog, QLabel, QPlainTextEdit, QPushButton
 app = QApplication([])
+if os.environ.get('QT_QPA_PLATFORM') == 'offscreen' and sys.platform == 'win32':
+    # Offscreen Qt may not discover Windows fonts. This affects QA captures only.
+    from PySide6.QtGui import QFont, QFontDatabase, QFontMetrics
+    font_file = Path(os.environ.get('WINDIR', 'C:/Windows')) / 'Fonts/segoeui.ttf'
+    font_id = QFontDatabase.addApplicationFont(str(font_file))
+    assert font_id >= 0, 'QA system font could not be loaded'
+    family = QFontDatabase.applicationFontFamilies(font_id)[0]
+    app.setFont(QFont(family, 10))
+    assert all(QFontMetrics(app.font()).inFontUcs4(ord(character)) for character in 'Lens2Mesh')
 app.setOrganizationName("Lens2Mesh105InstalledAcceptance")
 app.setApplicationName("Lens2Mesh105InstalledAcceptance")
 QSettings.setDefaultFormat(QSettings.IniFormat)

@@ -12,7 +12,7 @@ param(
     [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage"),
     [string]$EngineCache = (Join-Path $env:LOCALAPPDATA "PhotoMeshStudioBuild\engine-cache"),
     [switch]$OfflineBuild,
-    [switch]$CompactPayload
+    [switch]$CompactPayload = $true
 )
 $ErrorActionPreference = "Stop"
 $app = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))

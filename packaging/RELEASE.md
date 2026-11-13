@@ -97,13 +97,13 @@ The 1.0.3 installer used in the original upgrade test has since been removed fro
 
 Documentation and screenshot changes appear on GitHub immediately. The offline documentation in each Setup reflects its build date.
 
-## Optional compact-payload evaluation
+## Compact installer payload
 
-`build_release.ps1 -CompactPayload` generates exact `[Files]` entries with
+The builder defaults to `-CompactPayload` and generates exact `[Files]` entries with
 `installer_payload.py`. Files with identical SHA256, size and compared bytes use
 the same source path for Inno's duplicate-storage merging, while retaining their
 separate installed destinations. No DLL, engine, model, Python module, licence or
-application manual is removed. The optional omission list is pinned by path,
+application manual is removed. The non-runtime omission list is pinned by path,
 size and SHA256 in `reviewed-installer-omissions.json`: only Python HTML reference
 files and Qt plugin PDB debug symbols from the two modern COLMAP bundles.
 Unknown bytes fail closed; unknown files are retained. Source stages are read
@@ -115,6 +115,9 @@ deleted 1.0.4 release. It compiles a private comparison artifact, installs it in
 an isolated Unicode path, authenticates every retained byte, and runs installed
 offline/native/manual/private-GPU-runtime checks. It does not publish or replace
 the existing public Setup. Compare actual EXE sizes, not uncompressed file sums.
+Use `-CompactPayload:$false` only when explicitly reproducing the previous
+unoptimized storage layout. The exact-byte/size comparison and public replacement
+are recorded in the 1.0.5 release review.
 
 ## Application license
 

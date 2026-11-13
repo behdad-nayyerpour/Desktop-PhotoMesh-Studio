@@ -745,3 +745,30 @@ F/E9 pass. Manual assessment: no user workflow/control changes, so the approved
 119-page PDF is retained unchanged. A remote comparison builds from exact released
 1.0.5 and checks installed contents/native processing rather than repeating closed
 audits or unrelated reconstruction benchmarks. Public replacement is not automatic.
+
+#### Measured result and compact publication preparation (2026-11-14)
+
+[Comparison run43494082044](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43494082044)
+passed. The compiled complete offline Setup is 1,519,473,594 bytes versus
+1,674,504,611: 155,031,017 bytes saved (9.2583%). SHA256:
+`4d50eaf5354713ff79aa88aec06237a861287753999e2cb0c1e36b5db8ad207d`.
+Of 25,282 original files, all 24,653 retained installed files match byte-for-byte;
+629 reviewed documentation/symbol files are omitted. 2,147 duplicate destination
+copies share 238,932,076 uncompressed bytes in installer source storage; each
+destination remains a separate installed file. Package versions, native PLY/DEM,
+offline manual/UI structure and all 13 private GPU DLLs/notices passed.
+
+Initial offscreen QA captures showed missing font glyphs. The installed binaries
+and fonts are byte-identical; this is the known offscreen font-discovery issue,
+not a runtime-font change. The installed validation helper now explicitly loads
+Windows Segoe UI only in offscreen Windows QA, asserts Latin glyph coverage, and
+recaptures readable UI as a gate before public replacement. No application font
+or PDF content is changed. Compiler FileVersion reported 0.0.0.0, so no claim of
+a separately authenticated compiler-version match is made.
+
+The user had authorized final publication and approved this size-reduction work.
+After measurement/installed validation, compact storage becomes the build default
+with an explicit opt-out. The replacement workflow authenticates the exact tested
+EXE, retains the prior public EXE/checksum in a 90-day rollback artifact, checks
+readable installed UI, then replaces only the public Setup/checksum and verifies
+the downloaded bytes. It preserves the existing 1.0.5 tag and full manual.
