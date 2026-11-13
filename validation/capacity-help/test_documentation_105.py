@@ -1,0 +1,43 @@
+from pathlib import Path
+import hashlib
+from PySide6.QtGui import QDesktopServices
+from photomesh import documentation
+
+
+def test_manual_is_exact_approved_unmodified_pdf():
+    path = documentation.RESOURCES/'manual/PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf'
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == '632dde8b0392787d735610dcf805ade49f10068f6086d4e01137f5a5e31610a4'
+
+
+def test_help_manual_resolves_installed_resources_offline(window, monkeypatch):
+    opened = []
+    monkeypatch.setattr(QDesktopServices, 'openUrl', lambda url: opened.append(url.toLocalFile()) or True)
+    window.actions['User Manual (PDF)'].trigger()
+    assert Path(opened[0]).is_file() and opened[0].endswith('.pdf')
+    assert 'Contents' in window.actions  # Preserve the existing Documentation command.
+
+
+def test_missing_or_unopenable_manual_reports_actionable_error(window, monkeypatch, tmp_path):
+    errors = []
+    monkeypatch.setattr(documentation.QMessageBox, 'warning', lambda *args: errors.append(args[2]))
+    monkeypatch.setattr(QDesktopServices, 'openUrl', lambda *_: False)
+    assert not documentation.open_manual(window)
+    assert 'PDF viewer' in errors[-1]
+    monkeypatch.setattr(documentation, 'RESOURCES', tmp_path)
+    assert not documentation.open_manual(window)
+    assert 'Reapply' in errors[-1]
+
+
+def test_third_party_notice_index_opens_offline_with_local_license_texts(window, monkeypatch):
+    import json
+    opened = []
+    monkeypatch.setattr(QDesktopServices, 'openUrl', lambda url: opened.append(url.toLocalFile()) or True)
+    window.actions['Third-party Notices...'].trigger()
+    path = Path(opened[0]); text = path.read_text(encoding='utf-8')
+    assert path.is_file() and path.name == 'index.html'
+    assert 'LGPL' in text and 'LightGlue' in text and 'numpy' in text
+    assert '<script' not in text and '<iframe' not in text and '<img' not in text
+    record = json.loads((path.parent/'review.json').read_text(encoding='utf-8'))
+    assert record['redistribution_clearance'] is False and record['release_blockers']
+    for name in ('GPL-3.0.txt', 'LGPL-3.0.txt', 'COLMAP-4.2.1.txt', 'GCC-exception-3.1.txt'):
+        assert (path.parent/name).is_file()

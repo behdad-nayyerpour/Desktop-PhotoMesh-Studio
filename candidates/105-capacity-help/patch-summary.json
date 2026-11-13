@@ -1,0 +1,4502 @@
+{
+  "candidate": "281db7dc7f6b434b4d2ccb5f652f5e01c773b67b",
+  "archive": "Lens2Mesh_TestPatch_281db7dc7f6b.zip",
+  "sha256": "f17996475342121e67f384c0828e1cd04e427b371b630c9781183a2ac75eec84",
+  "bytes": 4255553,
+  "files": [
+    {
+      "path": "python/Lib/site-packages/PySide6/balsam.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/balsamui.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/assetimporters/assimp.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/qmltooling/qmldbg_quick3dprofiler.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/vectorimageformats/qlottievectorimage.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/ChartViewSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/AreaSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/BarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/BoxPlotSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalBarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalPercentBarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalStackedBarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/LineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PercentBarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PieSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarAreaSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarLineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarScatterSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarSplineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/ScatterSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/SplineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/StackedBarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-polar-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-polar-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/barseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/barseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/boxplotseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/boxplotseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalbarseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalbarseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalpercentbarseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalpercentbarseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalstackedbarseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalstackedbarseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-polar-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-polar-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/percentbarseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/percentbarseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/pieseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/pieseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-polar-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-polar-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-chart-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-chart-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-polar-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-polar-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/stackedbarseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/stackedbarseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/qtcharts.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/qtchartsqml2plugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/datavisualizationqmlplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Bars3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Bars3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Scatter3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Surface3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/bars3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/bars3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/scatter3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/scatter3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/surface3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/surface3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/qtdatavisualization.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Scatter3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Surface3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Bars3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/AreaSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Bars3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/BarSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/LineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/PieSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Scatter3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/ScatterSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/SplineSeries.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Surface3D.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsCameraSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsViewSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/areaseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/areaseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/bars3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/bars3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/barseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/barseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/lineseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/lineseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/pieseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/pieseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatter3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatter3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatterseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatterseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/splineseries-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/splineseries-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/surface3d-icon.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/surface3d-icon16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/qtgraphs.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/qtgraphs2d.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Scatter3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Surface3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/Graphs.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/graphsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/qtquicktimelineblendtreesplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/qtquicktimelineplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/AlternativeKeys.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/BackspaceKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/BaseKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ChangeLanguageKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/CharacterPreviewBubble.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/EnterKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FillerKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FlickKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FunctionPopupList.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/HandwritingModeKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/HideKeyboardKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/InputModeKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/Key.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/Keyboard.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardColumn.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardLayout.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardLayoutLoader.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardRow.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ModeKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/MultiSoundEffect.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/MultitapInputMethod.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/NumberKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/PopupList.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qtvkbcomponentsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qtvkbcomponentsplugin.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SelectionControl.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ShadowInputControl.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ShiftKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SpaceKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SymbolModeKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/TraceInputArea.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/TraceInputKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/WordCandidatePopupList.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/virtualkeyboardplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/EnterKey.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/HandwritingInputPanel.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/InputPanel.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qtvkblayoutsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qtvkblayoutsplugin.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/qtvkbhangulplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/qtvkbopenwnnplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/qtvkbpinyinplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qtvkbpluginsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qtvkbpluginsplugin.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/qtvkbtcimeplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/qtvkbthaiplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/qtvkbplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/qtvkbsettingsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/qtvkbbuiltinstylesplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyboardStyle.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyIcon.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyPanel.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/qtvkbstylesplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/SelectionListItem.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceCanvas.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceInputKeyPanel.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceUtils.js",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/VirtualKeyboardQml.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/assetutils.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/NodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/RuntimeLoaderSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/RuntimeLoaderSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/qtquick3dassetutilsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/AbstractLightSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferInputSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferInputSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CameraSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CascadesSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CubeMapTextureSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomCameraSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomMaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomMaterialSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DebugSettingsSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DebugSettingsSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DefaultMaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DefaultMaterialSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DirectionalLightSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DirectionalLightSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/EffectSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/EffectSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FileInstancingSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FileInstancingSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FogSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FogSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FrustumCameraSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FrustumCameraSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/model16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListEntrySection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListEntrySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstancingSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/JointSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/JointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/LightmapperSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/LightmapperSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Loader3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Loader3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ModelSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ModelSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MorphTargetSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MorphTargetSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/NodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/NodeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Object3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/OrthographicCameraSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/OrthographicCameraSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PassSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PassSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PerspectiveCameraSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PerspectiveCameraSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PointLightSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PointLightSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PrincipledMaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PrincipledMaterialSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/propertyGroups.json",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/quick3d.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ReflectionProbeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ReflectionProbeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Repeater3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Repeater3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ResourceLoaderSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ResourceLoaderSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SceneEnvironmentSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SceneEnvironmentSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SetUniformValueSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SetUniformValueSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShaderSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShaderSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShadowSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SkinSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SkinSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/custom_material_default_shader.frag",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/effect_default_shader.frag",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/effect_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/view3D_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpecularGlossyMaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpecularGlossyMaterialSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpotLightSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpotLightSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureInputSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureInputSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/View3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/View3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/AdditiveColorGradient.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Blur.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/BrushStrokes.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/ChromaticAberration.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/ColorMaster.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DepthOfFieldHQBlur.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Desaturate.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/AdditiveColorGradientSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/AdditiveColorGradientSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BlurSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BlurSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BrushStrokesSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BrushStrokesSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ChromaticAberrationSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ChromaticAberrationSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ColorMasterSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ColorMasterSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DepthOfFieldHQBlurSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DepthOfFieldHQBlurSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DesaturateSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DesaturateSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionRippleSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionRippleSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSphereSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSphereSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSpiralSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSpiralSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EdgeDetectSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EdgeDetectSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/effectlib.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EmbossSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EmbossSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FlipSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FlipSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FxaaSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FxaaSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/GaussianBlurSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/GaussianBlurSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/HDRBloomTonemapSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/HDRBloomTonemapSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/MotionBlurSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/MotionBlurSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ScatterSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ScatterSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/SCurveTonemapSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/SCurveTonemapSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/TiltShiftSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/TiltShiftSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/VignetteSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/VignetteSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionRipple.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionSphere.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionSpiral.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/EdgeDetect.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Emboss.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Flip.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Fxaa.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/GaussianBlur.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/HDRBloomTonemap.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/MotionBlur.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/qtquick3deffectplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Quick3DEffects.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Scatter.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/SCurveTonemap.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/TiltShift.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Vignette.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/AxisHelper.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/DebugView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/AxisHelperSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/AxisHelperSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/DebugViewSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/DebugViewSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ExtendedSceneEnvironmentSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ExtendedSceneEnvironmentSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/GridGeometrySection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/GridGeometrySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/HeightFieldGeometrySection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/HeightFieldGeometrySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/helpers.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InfiniteGridSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InfiniteGridSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceModelSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceModelSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceRepeaterSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceRepeaterSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LodManagerSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LodManagerSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LookAtNodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LookAtNodeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/NodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/OrbitCameraControllerSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/OrbitCameraControllerSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ProceduralSkyTextureDataSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ProceduralSkyTextureDataSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/Repeater3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/WasdControllerSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/WasdControllerSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/ExtendedSceneEnvironment.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/DepthOfFieldBlur.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/qtquick3dhelpersimplplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SceneEffect.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SsgiEffect.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SsrEffect.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/LodManager.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/meshes/axisGrid.mesh",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/OrbitCameraController.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/qtquick3dhelpersplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/WasdController.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/LightmapperOutputWindow.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/ArcballController.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/ImageViewer.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/LightmapViewer.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/lightmapviewer.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/MeshViewer.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/OriginGizmo.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/SceneMetadataView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/AboutDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/EditorView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/FrostedGlass.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/InstancingPropertiesPane.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/main.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/MaterialPropertiesPane.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/Preview.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/PreviewControls.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/SaveChangesDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/ShaderEditor.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/UniformManagerPane.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/color_table.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/color_table2.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/droplet.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/rain.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/ripple.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke2.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke_sprite.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke_sprite2.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/snowflake.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/sphere.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/splash7.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/particleeffects.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_clouds.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_dust.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_exhaust.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_fire.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_heavyrain.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_heavyrain_tirespray.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_lightrain.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_lightrain_tirespray.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_rainmist.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_snow.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_steam.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/qtquick3dparticleeffectsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/Quick3DParticleEffects.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Affector3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Affector3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Attractor3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Attractor3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/DynamicBurst3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/DynamicBurst3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/EmitBurst3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/EmitBurst3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Gravity3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Gravity3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-16px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-24px.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-24px@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/LineParticle3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/LineParticle3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelBlendParticle3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelBlendParticle3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelParticle3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelParticle3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/NodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/NodeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Particle3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Particle3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleCustomShape3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleCustomShape3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleEmitter3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleEmitter3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleModelShape3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleModelShape3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/particles3d.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleShape3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleShape3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleSystem3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleSystem3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/PointRotator3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/PointRotator3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Repeller3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Repeller3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ScaleAffector3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ScaleAffector3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_animatedsprite_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_attractor_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_burst_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_modelblend_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_modelshape_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_particletrail_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_sprite_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_wander_template.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteParticle3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteParticle3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteSequence3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteSequence3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TargetDirection3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TargetDirection3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TrailEmitter3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TrailEmitter3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/VectorDirection3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/VectorDirection3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Wander3DSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Wander3DSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/qtquick3dparticles3dplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/BoxShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/BoxShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CapsuleShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CapsuleShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CharacterControllerSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CharacterControllerSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CollisionShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/ConvexMeshShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/ConvexMeshShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DistanceJointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DynamicRigidBodySection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DynamicRigidBodySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/FixedJointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/HeightFieldShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/HeightFieldShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody16.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody@2x.png",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/JointSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/NodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/physics.metainfo",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsBodySection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsMaterialSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsMaterialSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsNodeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsWorldSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsWorldSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PlaneShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PrismaticJointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/RevoluteJointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphereShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphereShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphericalJointSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/StaticRigidBodySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriangleMeshShapeSection.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriangleMeshShapeSpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriggerBodySpecifics.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/qtquick3dphysicshelpersplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/qquick3dphysicsplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/qquick3dplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Quick3D.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/quick3dspatialaudioplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/quick3dxrplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/XrErrorDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlcachegen.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlformat.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlimportscanner.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmllint.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlls.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6CanvasPainter.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Charts.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6ChartsQml.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6DataVisualization.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6DataVisualizationQml.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Graphs.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Graphs2DImpl.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6GraphsWidgets.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6HttpServer.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Lottie.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6LottieVectorImageGenerator.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6LottieVectorImageHelpers.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6NetworkAuth.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QmlCompiler.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3D.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DAssetImport.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DAssetUtils.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DEffects.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DGlslParser.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DHelpers.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DHelpersImpl.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DIblBaker.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DParticleEffects.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DParticles.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DPhysics.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DPhysicsHelpers.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DRuntimeRender.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DSpatialAudio.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DUtils.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DXr.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QuickTimeline.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QuickTimelineBlendTrees.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboard.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboardQml.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboardSettings.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCanvasPainter.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCanvasPainter.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCharts.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCharts.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtDataVisualization.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtDataVisualization.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphs.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphs.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphsWidgets.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphsWidgets.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtHttpServer.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtHttpServer.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtNetworkAuth.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtNetworkAuth.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtQuick3D.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtQuick3D.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "app/photomesh/about_ui.py",
+      "sha256": "f14cd4cd8aebf3e89c20d8469fc87937e7ae125117b30297889b498fe2503426"
+    },
+    {
+      "path": "app/photomesh/dem_engine.py",
+      "sha256": "fc38ee96957b0acb85d5753624ebab8a25f883b8bd8f302e095e90aaeb6d4285"
+    },
+    {
+      "path": "app/photomesh/documentation.py",
+      "sha256": "ec06e70cd320bf42a0208e567246d07a6dc5906fcc8cecd8d14a7a8c3776cf4e"
+    },
+    {
+      "path": "app/photomesh/fastpipe.py",
+      "sha256": "36e7bd97c20cff606875b7553ebb2043b3c2e93f349ad7972fe05ab886f48d5f"
+    },
+    {
+      "path": "app/photomesh/georef.py",
+      "sha256": "1d98ec3e673f078bb15894d4f7027acc4b3c7cb80ce6b724e1e025d6ba7ba213"
+    },
+    {
+      "path": "app/photomesh/mainwindow.py",
+      "sha256": "73c94f29fd456cfbe13e8debcd28c12a39cd13f201ab3d796a39482e2e7c67fb"
+    },
+    {
+      "path": "app/photomesh/menus.py",
+      "sha256": "03b568d5f9538865933c51c8c38aeb40281571a22564e5a20658f03218bc507b"
+    },
+    {
+      "path": "app/photomesh/resources/manual/PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf",
+      "sha256": "632dde8b0392787d735610dcf805ade49f10068f6086d4e01137f5a5e31610a4"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/ALIKED-ONNX-LICENSE.txt",
+      "sha256": "c48ae933e262f77087a1956ae95f4675bfe20895b52fb328eed5b4e11d477bfb"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/COLMAP-4.2.1.txt",
+      "sha256": "ab30dabb4f0a6731f980108f57aa160cc8f5cebae6984e01a5d109df99669233"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/GCC-exception-3.1.txt",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/GLOMAP-LICENSE.txt",
+      "sha256": "358b9447b62440370a71eea5d3509a32a5f8fd9b3560c731b66efa6ab0b5f1d4"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/GPL-3.0.txt",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/LGPL-2.1.txt",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/LGPL-3.0.txt",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/LightGlue-ONNX-LICENSE.txt",
+      "sha256": "0e6031ed3e62dc91dc8b1c8f240abd200b1083f60773362e64e339fe01d1bf18"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/index.html",
+      "sha256": "2630d0662b906708013e5e9a6d2e5ca87c01b7fa7e8e7ae21dbd9c308aeae2df"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/review.json",
+      "sha256": "3edbaf3fba880126cdc94c739fc0b098fac481b095595e0e69e56be37bc3069e"
+    },
+    {
+      "path": "app/photomesh/survey_capacity.py",
+      "sha256": "2aaa7e703c5e6b9604d8c52732368644c1c6c383406f5541a6b1f09c265934c9"
+    },
+    {
+      "path": "app/runtime.id",
+      "sha256": "0624c9d04391eb6094ecd537960629bb053e8db954e84f3c6677a2910ba8b6db"
+    },
+    {
+      "path": "app/release_manifest.txt",
+      "sha256": "f276f15519750ae9ff18f14c8de3b47dd74a7eda8cd1c18f891ac03f32bf3ac5"
+    }
+  ],
+  "unchanged_python_and_engines": false,
+  "removed_dependency": true,
+  "python_engine_replacement": false,
+  "removed_qt_files": 881,
+  "setup_built": false
+}
