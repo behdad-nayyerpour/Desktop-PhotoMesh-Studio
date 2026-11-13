@@ -3,6 +3,7 @@ import argparse
 import hashlib
 from importlib import metadata
 import json
+import os
 from pathlib import Path
 import subprocess
 import urllib.request
@@ -98,8 +99,11 @@ def review(root, output):
             record['error'] = str(error)
         if path.name.lower() in ('colmap.exe', 'glomap.exe'):
             try:
-                result = subprocess.run([str(path), '-h'], capture_output=True, timeout=30)
+                environment = dict(os.environ)
+                environment['PATH'] = os.pathsep.join([str(path.parent), str(path.parent.parent/'lib'), environment.get('PATH', '')])
+                result = subprocess.run([str(path), '-h'], capture_output=True, timeout=30, env=environment)
                 record['help'] = (result.stdout+result.stderr).decode('utf-8', 'replace')[:6000]
+                record['help_exit_code'] = result.returncode
             except subprocess.TimeoutExpired:
                 record['help_error'] = 'timed out'
         native.append(record)
@@ -110,9 +114,59 @@ def review(root, output):
     print(json.dumps(summary, indent=2))
 
 
+def native_release_comparison(root, output):
+    """Record byte identity against primary native archives, not a version guess."""
+    output.mkdir(parents=True, exist_ok=True)
+    releases = [
+        ('colmap-legacy', 'https://github.com/colmap/colmap/releases/download/3.8/COLMAP-3.8-windows-cuda.zip'),
+        ('glomap', 'https://github.com/colmap/glomap/releases/download/1.2.0/glomap-x64-windows-nocuda.zip'),
+        ('colmap-cpu', 'https://github.com/colmap/colmap/releases/download/4.2.1/colmap-x64-windows-cpu.zip'),
+        ('colmap', 'https://github.com/colmap/colmap/releases/download/4.2.1/colmap-x64-windows-cuda.zip'),
+    ]
+    result = []
+    for group, url in releases:
+        # Modern assets have fixed primary hashes in engine-assets.json. Preserve
+        # the original URLs there; do not guess a release's asset spelling.
+        if group in ('colmap-cpu', 'colmap'):
+            print('Modern engine provenance is retained by the pinned engine manifest: '+group, flush=True)
+            continue
+        print('Comparing native primary archive: '+url, flush=True)
+        archive_path = output/(group+'-official.zip')
+        urllib.request.urlretrieve(url, archive_path)
+        digest = hashlib.file_digest(archive_path.open('rb'), 'sha256').hexdigest()
+        with zipfile.ZipFile(archive_path) as archive:
+            origins = {}
+            notices = []
+            for member in archive.infolist():
+                if member.is_dir():
+                    continue
+                if Path(member.filename).suffix.lower() in ('.dll', '.exe'):
+                    sha = hashlib.sha256(archive.read(member)).hexdigest()
+                    origins.setdefault(sha, []).append(member.filename)
+                elif any(name in Path(member.filename).name.lower() for name in ('license', 'copying', 'notice', 'copyright')):
+                    if member.file_size < 2_000_000:
+                        destination = output/'native-notices'/group/member.filename
+                        if not destination.resolve().is_relative_to((output/'native-notices'/group).resolve()):
+                            raise ValueError('Unsafe upstream notice path')
+                        destination.parent.mkdir(parents=True, exist_ok=True)
+                        destination.write_bytes(archive.read(member)); notices.append(member.filename)
+            rows = []
+            for path in sorted((root/'tools'/group).rglob('*')):
+                if not path.is_file() or path.suffix.lower() not in ('.dll', '.exe'):
+                    continue
+                sha = hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
+                rows.append(dict(path=path.relative_to(root).as_posix(), sha256=sha, official_members=origins.get(sha, [])))
+            result.append(dict(group=group, url=url, sha256=digest, bytes=archive_path.stat().st_size,
+                               files=rows, matched=sum(bool(r['official_members']) for r in rows), notices=notices))
+        archive_path.unlink()  # Disposable download; exact hash and member mapping retained.
+    (output/'native-official-byte-comparison.json').write_text(json.dumps(result, indent=2), encoding='utf-8')
+    print(json.dumps([{k:v for k,v in r.items() if k != 'files'} for r in result], indent=2))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     review(args.root.resolve(strict=True), args.output)
+    native_release_comparison(args.root.resolve(strict=True), args.output)
