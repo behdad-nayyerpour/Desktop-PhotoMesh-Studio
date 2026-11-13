@@ -69,9 +69,9 @@ jobs:
           if ($LASTEXITCODE) { throw 'Isolated test dependencies failed' }
           $suite=Join-Path $env:RUNNER_TEMP 'optional-web-installed-tests'
           New-Item -ItemType Directory -Force $suite | Out-Null
-          Copy-Item tests/conftest.py $suite
+          # Keep helper fixture modules imported by the selected integration tests.
+          Copy-Item tests/*.py $suite
           $names=@('test_survey_metadata_105.py','test_photo_accuracy_105.py','test_coordinate_frames_105.py','test_terrain_bundle_105.py','test_survey_geometry_105.py','test_survey_ui_105.py','test_survey_interaction_105.py','test_section_workflow_105.py','test_survey_capacity_105.py','test_documentation_105.py','test_script_execution_105.py')
-          foreach ($name in $names) { Copy-Item (Join-Path tests $name) $suite }
           $env:PYTHONPATH=(Join-Path $env:REVIEW_ROOT 'app')+';'+(Join-Path $PWD 'test-deps')
           $python=Join-Path $env:REVIEW_ROOT 'python/python.exe'
           Push-Location $suite
