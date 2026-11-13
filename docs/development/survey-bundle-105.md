@@ -107,6 +107,63 @@ source/trimmed-runtime regression and final installed package tests are pending.
 
 ## Finalization items4/5/6/7 (2026-11-13)
 
+### Verified Setup and retained release evidence
+
+The final engineering Setup run 43442904216 at source
+`6ec8619313e0a120fed8da9dd66bbed6bba04df2` succeeds. Both upgrade from the
+authenticated 1.0.4 baseline and a custom Persian destination pass exact app
+file comparison, offline About/licence/themes/manual, 76-package lock and native
+terrain/PLY checks. Explicit Unicode IShellLinkW confirms the desktop/Start Menu
+target, application argument and icon. Uninstall succeeds and preserves the
+external project/photo fixtures. Controlled local reproduction establishes that
+the earlier question marks were lossy Windows Script Host getters, not a reason
+to alter the installer or relax the target checks.
+
+The retained single EXE is 753,496,141 bytes, SHA256
+`b82858ffcfa45dce757bb065ec3481dcc4d61a5ad29c810b988fc88eedb7b1fa`.
+Original artifact 14046324235 has outer SHA256
+`3435e6a4befa7f372cdc6858b4d23976a41ffea70cfa6c7cc4ceb2d8eb4a142c`.
+The connector cannot download artifacts above 512 MiB, so transport run
+43449338471 splits the already verified EXE without modifying it. Both part ZIP
+digests, both payload digests and the reassembled EXE digest are checked locally.
+Evidence artifact 14050300131 retains install/uninstall results, Unicode/WSH
+comparison and screenshots. The EXE remains a review candidate, not a published
+or fully redistribution-cleared release.
+
+Full candidate run 43439670849 also succeeds. Retained artifact 14045538131 has
+SHA256 `cb7abf2e8b1db4cc4e7b250d481bcd3b142740d578047c5a79e74690db785cbb`.
+Its authenticated inventories have 25,261 candidate files; every one of the
+26,196 original files is restored byte-for-byte after rollback. All 1,018
+reviewed Qt targets are absent in the candidate. General checks at 6ec8619
+(run 43442904311) and c846a5b succeed. No numerical application code changed
+after the accepted candidate; the production-code diff is limited to the DTM
+dialog description/flag forwarding and the new manual path.
+
+Official Qt 6.12.0 full sources (443,394,020 bytes, SHA256
+`98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`)
+and PySide 6.12.0 sources (18,211,772 bytes, SHA256
+`099c1a597cf33c1b000e11cf68a0b82d216fb802bf81726efc720394f10c7751`)
+are now retained against the publisher's mirrorlist hashes. Together with the
+earlier native Qt archives and pinned recipe trees, this improves source
+retention but does not certify the complete linked native dependency closure.
+
+The notice generator can now accept the exact Qt-removal plan and full candidate
+inventory. It rejects an incomplete inventory or any remaining reviewed/optional
+binary before recording the exclusion; the original pre-cleanup inventory is
+correctly rejected. A generated review in a separate evidence folder has 209
+collected texts and retains the native source/notice blocker. This removes the
+irrelevant split Pdf/WebEngine source gate only when their absence is proven;
+it never turns blanket redistribution clearance on. The bundled index will be
+refreshed with the final dependency review before publication.
+
+With explicit user approval the missing GLOMAP build-record question was posted
+as https://github.com/colmap/colmap/issues/5036. The old GLOMAP repository is
+archived/read-only and its README identifies COLMAP as its official successor;
+the approved question was posted unchanged there. No reply is present at this
+checkpoint. Exact remaining native source/notice retention must still be closed
+before the conditional public release; passing installer tests is not a reason
+to silently clear that gate.
+
 User accepts the capacity/manual test iteration and requests closing dependency
 provenance, script/error handling and locked dependencies, branding/docs/shortcut
 completion and final real-data validation. User has no surveyed personal fixture

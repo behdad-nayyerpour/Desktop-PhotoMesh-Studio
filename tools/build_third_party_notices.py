@@ -33,7 +33,7 @@ class LegalText(HTMLParser):
             self.parts.append(data)
 
 
-def build(inventory, evidence, upstream, output, primary_proof=None):
+def build(inventory, evidence, upstream, output, primary_proof=None, qt_removal_plan=None):
     data = json.loads(inventory.read_text(encoding='utf-8'))
     output.mkdir(parents=True, exist_ok=True)
     packages = [p for p in data['packages'] if p['name']]
@@ -67,6 +67,26 @@ def build(inventory, evidence, upstream, output, primary_proof=None):
             record['primary_identity']['proof_records'].append(dict(path=name,
                 sha256=hashlib.sha256((primary_proof/name).read_bytes()).hexdigest()))
             proof_links.append(f'<li><a href="{name}">{name}</a></li>')
+    if qt_removal_plan:
+        if not primary_proof:
+            raise ValueError('Qt exclusion requires primary identity evidence')
+        plan = json.loads(qt_removal_plan.read_text(encoding='utf-8'))
+        remaining = {item['path'] for item in data['files']}
+        families = ('Qt6Pdf', 'QtPdf', 'Qt6WebEngine', 'QtWebEngine', 'Qt6WebView', 'QtWebView')
+        if 'python/Lib/site-packages/PySide6/Qt6Core.dll' not in remaining:
+            raise ValueError('Qt exclusion requires a complete runtime inventory')
+        if any(item['path'] in remaining for item in plan['files']):
+            raise ValueError('Reviewed excluded Qt files remain in this runtime')
+        if any(path.startswith('python/Lib/site-packages/PySide6/') and
+               Path(path).name.startswith(families) for path in remaining):
+            raise ValueError('Optional Pdf/WebEngine/WebView binary remains')
+        if not any('Qt6WebEngineCore.dll' in item['path'] for item in plan['files']):
+            raise ValueError('Plan does not establish the optional module exclusion')
+        shutil.copyfile(qt_removal_plan, output/'reviewed-qt-removals.json')
+        record['optional_qt_exclusion'] = dict(files=len(plan['files']),
+            plan_sha256=hashlib.sha256(qt_removal_plan.read_bytes()).hexdigest(),
+            absent_in_inventory=True, validation=plan.get('validation'))
+        record['release_blockers'] = record['release_blockers'][:1]
     (output/'review.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8')
     sections = []
     with zipfile.ZipFile(evidence) as archive:
@@ -166,6 +186,15 @@ The modern engine's vcpkg baseline is127402f1c75bb3d5ff6bce04b285faa4930a5aca;
 the official build removes its install/share notices, so missing linked-library
 source/build records remain an explicit release gate.</p><ul>'''+''.join(proof_links)+'</ul>'
         html = html.replace('<h2>Python distributions', addition+'<h2>Python distributions')
+    if qt_removal_plan:
+        html = html.replace('<h2>Python distributions',
+            '<h2>Excluded optional Qt modules</h2><p>The reviewed runtime excludes '
+            'Pdf, WebEngine and WebView binaries/resources. Distribution metadata '
+            'is retained for attribution, not as a claim that those modules ship. '
+            'The <a href="reviewed-qt-removals.json">exact removal and validation record</a> '
+            'is checked against the complete candidate inventory. Remaining native '
+            'source/notice review is recorded separately; exclusion is not blanket '
+            'redistribution clearance.</p><h2>Python distributions')
     (output/'index.html').write_text(html, encoding='utf-8')
     print(f'Offline notices: {len(packages)} distributions, {len(sections)} collected texts')
 
@@ -177,5 +206,6 @@ if __name__ == '__main__':
     parser.add_argument('--upstream', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--primary-proof', type=Path)
+    parser.add_argument('--qt-removal-plan', type=Path)
     args = parser.parse_args()
-    build(args.inventory, args.evidence, args.upstream, args.output, args.primary_proof)
+    build(args.inventory, args.evidence, args.upstream, args.output, args.primary_proof, args.qt_removal_plan)
