@@ -108,6 +108,18 @@ PNG captures change from that first tested delivery; processing code, PDF and
 runtime remain the same. The exact final delivery revision and hashes are in
 the final patch summary, with actual BAT rollback checks repeated for its bytes.
 
+The delivered app candidate is63b70e534597e17a54e91a31696ed5d423e1b396.
+Its30-file app-only archive is1,649,602 bytes, SHA256
+dd3421f8d5c45c9c130a6d301c4f2707e29d14f37e03ba6d63c69960985af169.
+[Final actual BAT validation](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43415141556)
+passes87 installed regressions, offline native/document checks, complete app
+rollback, reapplication and second rollback. The verified BAT is6,146 bytes,
+SHA25676f24ce716afc75c9c7abe80a3447804722b4c72a2cd503e194c3d0bc938e1c3,
+delivered at artifact commit dbee071a52f69857d10359f980cd72f7a522d995;
+public RAW readback matches those exact tested bytes. No Setup was built.
+Item4 remains open specifically for the corresponding-source/build packaging
+gates recorded above; these tests do not close those findings.
+
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 
 User defers direct point selection/deletion to the following version and requests
