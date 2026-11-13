@@ -1,0 +1,213 @@
+name: Verify private neural CUDA runtime BAT
+on:
+  push:
+    branches: ["candidate-artifacts/lens2mesh-105"]
+    paths: ["candidates/105-neural-runtime/**", "validation/neural-runtime/**", ".github/workflows/test-neural-runtime-delta.yml"]
+permissions:
+  contents: read
+jobs:
+  download-apply-rollback:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact disposable baseline
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Could not fetch verified baseline' }
+          $setup=Join-Path $PWD 'released/PhotoMeshStudio_Setup_1.0.4.exe'
+          if ((Get-FileHash -LiteralPath $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline checksum mismatch' }
+          $root=Join-Path $env:RUNNER_TEMP 'BAT test فارسی'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Baseline install failed' }
+          "PATCH_TEST_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Restore exact previously accepted candidate baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105/Lens2Mesh_TestPatch_0f112b74f09d_r2.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'f3b3486073a3f64f7df98d8abf1bfb8c67c35d75441eb7ff1e68b9d39aca5f7f') { throw 'Prior candidate checksum mismatch' }
+          Expand-Archive -LiteralPath $zip.FullName -DestinationPath prior-payload
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python prior-payload/apply_patch.py --root $env:PATCH_TEST_ROOT --payload prior-payload
+          if ($LASTEXITCODE) { throw 'Prior candidate fixture failed' }
+          $before=@{}
+          foreach ($name in @('mainwindow.py','activity.py','dialogs.py','progress.py')) { $before[$name]=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+      - name: Apply accepted splash baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-splash/Lens2Mesh_TestPatch_03a12f826c5b.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '7388bfb3f806f900a3e35307dec6a8ab0c6345d9f05e222092fab7f217d29a5e') { throw 'Splash checksum mismatch' }
+          Expand-Archive $zip.FullName splash-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python splash-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload splash-baseline
+          if ($LASTEXITCODE) { throw 'Splash baseline failed' }
+          $before=@{ 'mainwindow.py'=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT 'app/photomesh/mainwindow.py')).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+          python -m pip install --quiet --target test-deps pytest pytest-qt
+          if ($LASTEXITCODE) { throw 'Test dependency preparation failed' }
+      - name: Apply accepted display baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-display/Lens2Mesh_TestPatch_b1fd490ab9d8.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'b117d3d89b455cb43e80896ff90d133c05a299407ac5ef7c13c207f9f47161b5') { throw 'Display checksum mismatch' }
+          Expand-Archive $zip.FullName display-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python display-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload display-baseline
+          if ($LASTEXITCODE) { throw 'Display baseline failed' }
+          $before=@{}
+          foreach ($name in @('mainwindow.py','activity.py','dialogs.py','progress.py')) { $before[$name]=(Get-FileHash (Join-Path $env:PATCH_TEST_ROOT ('app/photomesh/'+$name))).Hash }
+          $before | ConvertTo-Json | Set-Content splash-before.json
+      - name: Apply verified progress baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-progress/Lens2Mesh_TestPatch_eb5d544da880.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '2273624944cbf7428ac3cc286ab96a9e0a856c942647a02e52814fe2ae421cf4') { throw 'Progress checksum mismatch' }
+          Expand-Archive $zip.FullName progress-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python progress-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload progress-baseline
+          if ($LASTEXITCODE) { throw 'Progress baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Apply verified combined survey baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-survey/Lens2Mesh_TestPatch_52f18f45a505.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '07ee1d62958391f88115eb4641774f251b85b2b271f4b7e3e60300b6208716be') { throw 'Survey baseline checksum mismatch' }
+          Expand-Archive $zip.FullName survey-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python survey-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload survey-baseline
+          if ($LASTEXITCODE) { throw 'Survey baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Apply verified docked panel baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-survey-panel/Lens2Mesh_TestPatch_de38ba9e9b37.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'ab0e759239503c0982f4dfddc250d521be41c61c9356cf359e9f406cad4f9cb8') { throw 'Panel baseline checksum mismatch' }
+          Expand-Archive $zip.FullName panel-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python panel-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload panel-baseline
+          if ($LASTEXITCODE) { throw 'Panel baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Apply accepted section baseline and retain section baseline
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-section-fixes-final/Lens2Mesh_TestPatch_02c42b5c0fa4.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'fe09f1eadc62899509ea07b6b35356f27af45482eeef3e2b27181fbe3ff0feaa') { throw 'Section baseline checksum mismatch' }
+          Expand-Archive $zip.FullName section-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python section-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload section-baseline
+          if ($LASTEXITCODE) { throw 'Section baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+      - name: Apply accepted capacity baseline and snapshot complete application
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-capacity-help/Lens2Mesh_TestPatch_281db7dc7f6b.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'f17996475342121e67f384c0828e1cd04e427b371b630c9781183a2ac75eec84') { throw 'Accepted capacity baseline identity differs' }
+          Expand-Archive $zip.FullName capacity-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python capacity-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload capacity-baseline
+          if ($LASTEXITCODE) { throw 'Accepted capacity baseline failed' }
+          & $python packaging/verify_runtime_lock.py --root $env:PATCH_TEST_ROOT
+          if ($LASTEXITCODE) { throw 'Accepted package versions differ' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content survey-before.json
+
+      - name: Apply the user's accepted finalization baseline and snapshot files
+        shell: pwsh
+        run: |
+          $zip=Get-Item candidates/105-finalization/Lens2Mesh_TestPatch_63b70e534597.zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne 'dd3421f8d5c45c9c130a6d301c4f2707e29d14f37e03ba6d63c69960985af169') { throw 'Accepted finalization checksum differs' }
+          Expand-Archive $zip.FullName finalization-baseline
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python finalization-baseline/apply_patch.py --root $env:PATCH_TEST_ROOT --payload finalization-baseline
+          if ($LASTEXITCODE) { throw 'Accepted finalization baseline failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          $before | ConvertTo-Json | Set-Content neural-before.json
+          $qt=@{}
+          $plan=Get-Content packaging/reviewed-qt-removals.json -Raw | ConvertFrom-Json
+          foreach ($entry in $plan.files) {
+            $file=Join-Path $env:PATCH_TEST_ROOT $entry.path
+            if (Test-Path -LiteralPath $file) { $qt[$entry.path]=(Get-FileHash $file).Hash }
+          }
+          if ($qt.Count -ne 137) { throw 'Accepted Qt baseline differs' }
+          $qt | ConvertTo-Json | Set-Content neural-qt-before.json
+      - name: Execute the actual downloading BAT and validate installed offline workflows
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force verified-download | Out-Null
+          $zip=Get-Item candidates/105-neural-runtime/Lens2Mesh_TestPatch_b8b2b9f0ab8e.zip
+          $sha=(Get-FileHash $zip).Hash.ToLowerInvariant()
+          $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-neural-runtime/'+$zip.Name
+          $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_NeuralGPU_1.0.5.bat'
+          python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
+          if ($LASTEXITCODE) { throw 'Launcher generation failed' }
+          $key='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
+          Set-ItemProperty -LiteralPath $key -Name InstallLocation -Value ($env:PATCH_TEST_ROOT+'\')
+          & $env:ComSpec /d /c ('call "'+$bat+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Actual BAT official runtime download/apply failed' }
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Private runtime byte/notice/environment validation failed' }
+          & $python packaging/verify_runtime_lock.py --root $env:PATCH_TEST_ROOT
+          if ($LASTEXITCODE) { throw 'Python environment changed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Installed PLY processing failed' }
+          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          if ($LASTEXITCODE) { throw 'Installed terrain/manual/cleanup checks failed' }
+          $suite=Join-Path $env:RUNNER_TEMP 'installed-neural-regressions'
+          New-Item -ItemType Directory -Force $suite | Out-Null
+          Copy-Item validation/neural-runtime/*.py $suite
+          $env:PYTHONPATH=$env:PYTHONPATH+';'+(Join-Path $PWD 'test-deps')
+          Push-Location $suite
+          & $python -m pytest test_survey_metadata_105.py test_photo_accuracy_105.py test_coordinate_frames_105.py test_terrain_bundle_105.py test_survey_geometry_105.py test_survey_ui_105.py test_survey_interaction_105.py test_section_workflow_105.py test_survey_capacity_105.py test_documentation_105.py test_script_execution_105.py -q -p no:cacheprovider --basetemp (Join-Path $env:RUNNER_TEMP 'neural-short-tests')
+          $result=$LASTEXITCODE
+          Pop-Location
+          if ($result) { throw 'Installed offline regressions failed' }
+          $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like 'b8b2b9f*' | Select-Object -First 1
+          Copy-Item -LiteralPath (Join-Path $receipt.FullName 'state.json') verified-download/applied-state.json
+          & $env:ComSpec /d /c ('call "'+(Join-Path $receipt.FullName 'ROLLBACK.bat')+'" <NUL')
+          if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }
+          $app=Join-Path $env:PATCH_TEST_ROOT 'app'
+          $before=Get-Content neural-before.json -Raw | ConvertFrom-Json -AsHashtable
+          $after=@{}
+          Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $after[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
+          if ($before.Count -ne $after.Count) { throw 'Added native DLLs/resources survived rollback' }
+          foreach ($name in $before.Keys) { if ($after[$name] -ne $before[$name]) { throw ('Rollback bytes differ: '+$name) } }
+          $qt=Get-Content neural-qt-before.json -Raw | ConvertFrom-Json -AsHashtable
+          foreach ($name in $qt.Keys) { if ((Get-FileHash -LiteralPath (Join-Path $env:PATCH_TEST_ROOT $name)).Hash -ne $qt[$name]) { throw 'Reviewed optional Qt rollback differs' } }
+          Copy-Item -LiteralPath (Join-Path $receipt.FullName 'state.json') verified-download/rollback-state.json
+          @('Actual BAT official downloads/hash validation/apply passed.','Installed private DLL/notice/environment and offline regressions passed.','All prior app files and 137 reviewed Qt files restored byte-exactly; added native files removed.','No GPU available on runner; real GPU/CPU tests retained separately.') | Set-Content verified-download/result.txt
+          Get-FileHash -LiteralPath $bat | Format-List
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Verified-Neural-CUDA-105-BAT
+          path: verified-download/
+          retention-days: 30

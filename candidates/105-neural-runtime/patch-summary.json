@@ -1,0 +1,812 @@
+{
+  "candidate": "b8b2b9f0ab8e691c37e55452606ce5b52032b973",
+  "archive": "Lens2Mesh_TestPatch_b8b2b9f0ab8e.zip",
+  "sha256": "08ab6184a90702e7d142558c0b406ece14c12bec7293ccd5b1083de2f508e8c1",
+  "bytes": 3415812,
+  "files": [
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/designer/qwebengineview.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/imageformats/qpdf.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/webview/qtwebview_webengine.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/webview/qtwebview_webview2.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/+Material/PdfStyle.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/+Universal/PdfStyle.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/PdfLinkDelegate.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/PdfMultiPageView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/PdfPageView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/pdfquickplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/PdfScrollablePageView.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/PdfStyle.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Pdf/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/AlertDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/AuthenticationDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/AutofillPopup.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/ColorDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/ConfirmDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/DirectoryPicker.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/FilePicker.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/Menu.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/MenuItem.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/MenuSeparator.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/PromptDialog.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/qtwebenginequickdelegatesplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/ToolTip.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/TouchHandle.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/TouchSelectionMenu.qml",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/ControlsDelegates/WebEngineQuickDelegatesQml.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebEngine/qtwebenginequickplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebView/plugins.qmltypes",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebView/qmldir",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtWebView/qtwebviewquickplugin.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Pdf.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6PdfQuick.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6PdfWidgets.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebEngineCore.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebEngineQuick.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebEngineQuickDelegatesQml.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebEngineWidgets.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebView.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6WebViewQuick.dll",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtPdf.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtPdf.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtPdfWidgets.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtPdfWidgets.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineCore.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineCore.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineProcess.exe",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineQuick.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineQuick.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineWidgets.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebEngineWidgets.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebView.pyd",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtWebView.pyi",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/icudtl.dat",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_devtools_resources.debug.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_devtools_resources.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources.debug.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources_100p.debug.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources_100p.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources_200p.debug.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/qtwebengine_resources_200p.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/resources/v8_context_snapshot.bin",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_ca.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_de.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_en.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_es.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_ka.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_kk.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_ko.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_lg.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/am.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ar.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/bg.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/bn.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ca.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/cs.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/da.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/de.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/el.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/en-GB.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/en-US.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/es-419.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/es.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/et.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/fa.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/fi.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/fil.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/fr.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/gu.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/he.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/hi.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/hr.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/hu.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/id.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/it.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ja.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/kn.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ko.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/lt.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/lv.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ml.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/mr.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ms.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/nb.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/nl.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/pl.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/pt-BR.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/pt-PT.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ro.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ru.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/sk.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/sl.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/sr.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/sv.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/sw.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/ta.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/te.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/th.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/tr.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/uk.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/vi.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/zh-CN.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_locales/zh-TW.pak",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_pl.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_pt_BR.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_ru.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_sv.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_tr.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_uk.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/translations/qtwebengine_zh_CN.qm",
+      "sha256": null,
+      "remove": true
+    },
+    {
+      "path": "app/docs/candidate-105.md",
+      "sha256": "a0717ddb40af58353bcfefcf372f6247393e240ea67d1ad4376b61c99e7bac2f"
+    },
+    {
+      "path": "app/docs/user-guide.md",
+      "sha256": "408b881348e18f1a5cda6bd84ec1658a830a56a6d8c0b34542ded194bd5864db"
+    },
+    {
+      "path": "app/photomesh/dialogs.py",
+      "sha256": "73e83a6a6086809af466c1c07ac71396c9e29fe464c7b1a9c4c236aa0aad43dd"
+    },
+    {
+      "path": "app/photomesh/documentation.py",
+      "sha256": "7a7036799b23733dc0e1a3080266b0bb1b0f622387c70a0d32f1a5c885567879"
+    },
+    {
+      "path": "app/photomesh/engine.py",
+      "sha256": "5a5e1aeda831f6735c49bfda77592067f5d78e47749eeb55b31ee574766c1734"
+    },
+    {
+      "path": "app/photomesh/mainwindow.py",
+      "sha256": "dc3ab361f6dcee5d5a6dd5c1928b491ff040cbb2cf12f68dc8d62671d11e4cb4"
+    },
+    {
+      "path": "app/photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf",
+      "sha256": "716a33f587cd3cd3303629b33d6096d7a120bed4c753808f3b0e21bf58f04706"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/index.html",
+      "sha256": "c5609c7e30f5283cb36da5a10314bb6512840aa696d6d3731f9788a34910b888"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/neural-cuda12/Boost-1.0.txt",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/neural-cuda12/NVIDIA-CUDA-12.8.1-LICENSE.txt",
+      "sha256": "e2c71babfd18a8e69542dd7e9ca018f9caa438094001a58e6bc4d8c999bf0d07"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/neural-cuda12/NVIDIA-cuDNN-9.8.0-LICENSE.txt",
+      "sha256": "7936e1f9f2a6d9deea237aee6aa7f1abd032d34bcc1c35de1e6516b223d09487"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/neural-cuda12/README.md",
+      "sha256": "fe6f958ca445090ba71f423898714adbcea203daab0d7b13d8901ec975622ef4"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/neural-cuda12/cuDNN-9.8.0-Acknowledgements.txt",
+      "sha256": "59b9bf312c3d4655c4b06a564b146b8463322c16f433506c3a54a0009fea723b"
+    },
+    {
+      "path": "app/photomesh/workflow_ui.py",
+      "sha256": "1539c5b637a6c7aa751ec8c884032acbf52893227843671f24931f4dbf559dab"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudart64_12.dll",
+      "sha256": "c2c9a9c22a9bcba90e261825968836787b331038047a26770cffb7a583c28344"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cublas64_12.dll",
+      "sha256": "9513540e4ec4c51ee9e7304138c2cc255c29a8c181f9e80c38efa25738becd99"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cublasLt64_12.dll",
+      "sha256": "b199d1ff892a81b7fd3d57ba1781549609b41500b36008fef326038393ad46c7"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn64_9.dll",
+      "sha256": "0edb24306db36121137a3150ac55015aee174d4582d5b807bd3220180a7a57db"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_adv64_9.dll",
+      "sha256": "631af1130b27b4d14683c7da690dddec8e25ffe3097d498fbba7129faba1601c"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_cnn64_9.dll",
+      "sha256": "68c9f6bf98a5620a0bb0519c3997800ef2c7cb8979f17a60afcf82d341629c73"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_engines_precompiled64_9.dll",
+      "sha256": "59e71b3adae62186d3336ccbda6d0c8b14a3a0ef21694757e2b32e84fa840152"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_engines_runtime_compiled64_9.dll",
+      "sha256": "8671c24fc0debbd99c3dca57bfdf657f4c9490e2a009f641cfc2fcf7a1256180"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_graph64_9.dll",
+      "sha256": "22c21907fb2108259cb25738156f4459c12c0a001715bbb6d5aafac150060e85"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_heuristic64_9.dll",
+      "sha256": "5378e50729665245fa5abe89c729b782de686675e9bd6319cda1a3165d9492e6"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/cudnn_ops64_9.dll",
+      "sha256": "080c2bb37e9d1fdd585cdd53fdbb23c0478b99610a19f8bba512b596b1e302fe"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/runtime.json",
+      "sha256": "554cc664d35af1f5941c5bb29d5d82e289872acde1668e172e892226f49520ae"
+    },
+    {
+      "path": "app/runtime.id",
+      "sha256": "decb048ceac5ee63ae081a2f28851e11fa9823c13e30cacf416445619e15a5f4"
+    },
+    {
+      "path": "app/release_manifest.txt",
+      "sha256": "71aa052776565c15472e76b4f86e5ce2c68a31e828a947c518bef490fdb6db2a"
+    }
+  ],
+  "unchanged_python_and_engines": false,
+  "removed_dependency": true,
+  "python_engine_replacement": false,
+  "removed_qt_files": 137,
+  "setup_built": false,
+  "added_neural_runtime": true,
+  "neural_runtime_path": "app/photomesh/resources/neural-cuda12"
+}
