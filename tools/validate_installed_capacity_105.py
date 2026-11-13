@@ -13,7 +13,7 @@ import photomesh  # noqa: E402
 assert Path(photomesh.__file__).resolve().is_relative_to(app_root)
 install = app_root.parent
 plan = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
-assert len(plan['files']) == 881
+assert len(plan['files']) == 1018
 for entry in plan['files']:
     assert not (install/entry['path']).exists(), entry['path']
 assert (install/'python/Lib/site-packages/PySide6/Qt6Core.dll').is_file()

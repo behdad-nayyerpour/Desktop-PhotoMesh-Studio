@@ -48,13 +48,43 @@ Do not claim neural GPU execution passed. CPU fallback was genuinely executed
 successfully, with no survey files or settings modified. Native failure logs and
 complete input settings are retained in `modern-feature-diagnostics`.
 
-The optional Qt review now also passes 87 installed offline integration tests
-in run 43432288679. A preceding harness run missed shared fixture modules (74
+The optional Qt review now passes 87 installed offline integration tests and
+917 complete regressions (9 skipped) in run 43436592948. The exact 1,018-file
+plan is adopted with this evidence recorded in the plan itself; final complete
+patch/rollback inventory and Setup validation remain required. A preceding
+harness run missed shared fixture modules (74
 passed / 13 fixture import failures); copying the complete fixture set corrected
 the harness without modifying application calculations. The static closure check
 finds no remaining imports of removed modules among 1,272 remaining PE files.
-This remains disposable review evidence, not production adoption or license
-clearance. Production removal plan/patch rollback still require finalization.
+Artifact 14043109942, SHA256
+`ccc606478147583a09cacac3d9a627fbf7d8bfe9df30203a32845b492905d32f`,
+is retained. These checks establish runtime behavior and static import closure,
+not legal clearance. The full-suite harness also needed the independent PLY/DXF
+test readers and their parser dependencies outside the shipped runtime; those
+collection failures did not indicate missing application dependencies.
+
+Further primary-source investigation identifies the legacy executable's exact
+source commit as `45edd3dfde0d945d305de3f299f3c36ae098620c`. Its versioned Azure
+recipe pins vcpkg `4efb7ed628be5e56eeee009524e6ca7f3cc49c74`; that baseline's
+Qt5-base version is 5.15.8, consistent with the shipped DLL. Earlier notes calling
+the legacy recipe unpinned were incomplete. Both this pinned recipe tree and the
+modern `127402f1c75bb3d5ff6bce04b285faa4930a5aca` tree are retained, along with
+official hash-verified Qt Base/SVG 5.15.8 and 6.11.1 source archives. Full linked
+dependency source/notice retention is still being completed. GLOMAP1.2.0's
+versioned workflow remains unpinned; its authenticated 18,151,227-byte official
+ZIP was independently inspected and contains only executable/DLL members.
+No request has been sent to upstream maintainers without user authorization.
+
+A complete private Setup candidate was built from 65a3848 (847,159,638 bytes,
+SHA256 `00e2790e78db56279ae1ba66d18c2ef3fb0cb06a881350f99cf82d575488aa8b`).
+Upgrade and custom Unicode installation both passed exact application-file,
+About/license/themes, updated manual, package lock and offline native terrain/PLY
+checks. Shortcut target string comparison then failed before uninstall checks;
+the original target was not logged, so it is not established whether this is a
+path-alias test problem or a real shortcut defect. The next run records original
+shortcut metadata and compares canonical file destinations. Do not deliver this
+earlier unapproved Setup as final. The next build also applies the expanded
+reviewed Qt cleanup.
 
 Manual review identified a DTM dialog note incorrectly describing a DSM. Its
 title/context now explicitly describes class-2 ground; the numerical processing
