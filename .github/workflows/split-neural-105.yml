@@ -32,23 +32,30 @@ jobs:
           $p=Start-Process -FilePath $file -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
           if ($p.ExitCode) { throw 'Baseline install failed' }
           "SPLIT_ORIGINAL=$root" >> $env:GITHUB_ENV
-      - name: Stage unchanged runtime plus the explicitly approved documentation
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Split-105-Test-Installers
+          run-id: 43502578265
+          github-token: ${{ github.token }}
+          path: comparison
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Split-105-Evidence
+          run-id: 43502578265
+          github-token: ${{ github.token }}
+          path: prior-evidence
+      - name: Reuse the already verified base and preserve its exact compact payload map
         shell: pwsh
         run: |
-          $stage=Join-Path $env:RUNNER_TEMP 'lm-split-stage'
-          New-Item -ItemType Directory -Force comparison | Out-Null
-          foreach ($name in @('app','python','tools')) {
-            & robocopy (Join-Path $env:SPLIT_ORIGINAL $name) (Join-Path $stage $name) /E /NFL /NDL /NJH /NJS /NP /R:1 /W:1 | Out-Null
-            if ($LASTEXITCODE -ge 8) { throw 'Isolated source copy failed' }
-          }
-          $global:LASTEXITCODE=0
-          foreach ($name in @('README.md','UPDATING.md','docs/installation.md','photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf')) {
-            Copy-Item -LiteralPath (Join-Path $PWD $name) -Destination (Join-Path (Join-Path $stage 'app') $name) -Force
-          }
-          python packaging/installer_payload.py --stage $stage --output comparison/base-files.iss --report comparison/base-payload.json --neural-profile base
-          if ($LASTEXITCODE) { throw 'Base payload generation failed' }
-          "SPLIT_STAGE=$stage" >> $env:GITHUB_ENV
-      - name: Compile the compact base and optional rollback-enabled GPU add-on
+          $base=(Get-Item comparison/Lens2Mesh_Setup_1.0.5.exe).FullName
+          if ((Get-Item $base).Length -ne 598550777) { throw 'Reused base size differs' }
+          $hash=(Get-FileHash $base).Hash.ToLowerInvariant()
+          if ((Get-Content comparison/Lens2Mesh_Setup_1.0.5.exe.sha256 -Raw) -notmatch $hash) { throw 'Reused base checksum differs' }
+          Copy-Item -LiteralPath prior-evidence/base-payload.json -Destination comparison/base-payload.json
+          # Preserve the failed installer only as an unadvertised diagnostic file.
+          $bad=(Get-Item comparison/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).FullName
+          Move-Item -LiteralPath $bad -Destination ($bad+'.failed')
+      - name: Recompile only the corrected optional GPU installer
         shell: pwsh
         run: |
           $compiler="${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
@@ -57,13 +64,8 @@ jobs:
             if ($LASTEXITCODE) { throw 'Compiler preparation failed' }
           }
           $out=Join-Path $PWD 'comparison'
-          $packed=(Get-Item comparison/base-files.iss).FullName
-          $baseArgs=@('/Q','/DAppVersion=1.0.5',('/DStageDir='+$env:SPLIT_STAGE),('/DOutputDir='+$out),('/DPackedFiles='+$packed),(Join-Path $PWD 'packaging/release.iss'))
-          $process=Start-Process -FilePath $compiler -ArgumentList $baseArgs -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $out 'base-build.log') -RedirectStandardError (Join-Path $out 'base-build-error.log')
-          & packaging/build_neural_addon.ps1 -RuntimeFolder (Join-Path $env:SPLIT_STAGE 'app/photomesh/resources/neural-cuda12') -ISCC $compiler -OutputDir $out -Revision '${{ github.sha }}' -Python 'python'
+          & packaging/build_neural_addon.ps1 -RuntimeFolder (Join-Path $env:SPLIT_ORIGINAL 'app/photomesh/resources/neural-cuda12') -ISCC $compiler -OutputDir $out -Revision '${{ github.sha }}' -Python 'python'
           if ($LASTEXITCODE) { throw 'Optional GPU installer compilation failed' }
-          $process.WaitForExit()
-          if ($process.ExitCode -ne 0) { Get-Content comparison/base-build-error.log; throw 'Base installer compilation failed' }
           $file=Join-Path $out 'Lens2Mesh_Setup_1.0.5.exe'
           $hash=(Get-FileHash $file).Hash.ToLowerInvariant()
           "$hash *Lens2Mesh_Setup_1.0.5.exe" | Set-Content "$file.sha256" -Encoding ascii
@@ -99,10 +101,20 @@ jobs:
         run: |
           $addon=(Get-Item comparison/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).FullName
           $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-')
-          $p=Start-Process -FilePath $addon -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-          if ($p.ExitCode) { throw 'Optional add-on install or target detection failed' }
           $root=$env:SPLIT_ROOT
           $python=Join-Path $root 'python/python.exe'
+          $worker=Start-Process -FilePath $python -ArgumentList @('-c','"import time; time.sleep(180)"') -PassThru -WindowStyle Hidden
+          try {
+            $busyArgs=$args+('/LOG="'+(Join-Path $PWD 'comparison/addon-busy.log')+'"')
+            $p=Start-Process -FilePath $addon -ArgumentList $busyArgs -Wait -PassThru -WindowStyle Hidden
+            if ($p.ExitCode -eq 0) { throw 'Add-on reported success while a base Python job was running' }
+            if (@(Get-ChildItem -LiteralPath (Join-Path $root 'app/photomesh/resources/neural-cuda12') -Filter '*.dll').Count) { throw 'Busy-app rejection changed DLLs' }
+          } finally {
+            if (-not $worker.HasExited) { Stop-Process -Id $worker.Id -ErrorAction SilentlyContinue }
+          }
+          $args+=('/LOG="'+(Join-Path $PWD 'comparison/addon-install.log')+'"')
+          $p=Start-Process -FilePath $addon -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Optional add-on install or target detection failed' }
           $env:PYTHONPATH=Join-Path $root 'app'
           & $python tools/validate_installed_neural_105.py
           if ($LASTEXITCODE) { throw 'Optional DLLs/notices/child lookup failed' }

@@ -66,9 +66,13 @@ def ensure_closed(root):
         if process.pid == me:
             continue
         try:
-            executable = Path(process.info["exe"] or "").resolve()
+            # Protected/system processes may have no executable path. Resolving
+            # an empty path would falsely identify the current working directory
+            # as their executable (notably when Setup starts us in root/python).
+            name = process.info['exe']
+            executable = Path(name).resolve() if name else None
             args = process.info["cmdline"] or []
-            if (executable.is_relative_to(root / "python")
+            if ((executable is not None and executable.is_relative_to(root / "python"))
                     or any(str(root / "app").casefold() in arg.casefold() for arg in args)):
                 raise RuntimeError("Close this application's windows and processing jobs before updating.")
         except (psutil.NoSuchProcess, psutil.AccessDenied):

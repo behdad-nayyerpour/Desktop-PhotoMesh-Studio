@@ -38,6 +38,14 @@ Source: "{#RuntimeFolder}\*"; DestDir: "{tmp}\Lens2MeshGpuPayload\app\photomesh\
 Source: "{#AddonStage}\packaging\*"; DestDir: "{tmp}\Lens2MeshGpuPayload\packaging"; Flags: ignoreversion deleteafterinstall
 
 [Code]
+var
+  AddonFailed: Boolean;
+
+function GetCustomSetupExitCode: Integer;
+begin
+  if AddonFailed then Result := 1 else Result := 0;
+end;
+
 function GetBaseDir(Param: String): String;
 begin
   if not RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1', 'InstallLocation', Result) then
@@ -64,7 +72,8 @@ begin
     Params := '"' + ExpandConstant('{tmp}\Lens2MeshGpuPayload\packaging\neural_addon.py') +
       '" --root "' + ExpandConstant('{app}') + '" --payload "' +
       ExpandConstant('{tmp}\Lens2MeshGpuPayload') + '" --revision {#AddonRevision} --log "' + LogPath + '"';
-    if not Exec(ExpandConstant('{app}\python\python.exe'), Params, '', SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then begin
+    if not Exec(ExpandConstant('{app}\python\python.exe'), Params, ExpandConstant('{tmp}\Lens2MeshGpuPayload'), SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then begin
+      AddonFailed := True;
       Details := '';
       LoadStringFromFile(LogPath, Details);
       RaiseException('GPU add-on was not installed. Close Lens2Mesh and verify the selected folder.' + #13#10 + String(Details));

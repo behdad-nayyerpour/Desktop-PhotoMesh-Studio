@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -64,3 +65,21 @@ def test_addon_does_not_accept_arbitrary_managed_targets(name):
     spec = dict(assets=[dict(files=[dict(name=name, sha256='0' * 64)])])
     with pytest.raises(ValueError, match='Unsafe'):
         addon.addon_files(spec)
+
+
+@pytest.mark.parametrize('reported_exe,app_argument,blocked', [(None, False, False), ('', False, False), ('owned', False, True), (None, True, True)])
+def test_app_close_missing_executable_is_not_the_working_directory(tmp_path, monkeypatch, reported_exe, app_argument, blocked):
+    import psutil
+    root = tmp_path / 'install'
+    (root / 'python').mkdir(parents=True)
+    monkeypatch.chdir(root / 'python')
+    executable = str(root / 'python/python.exe') if reported_exe == 'owned' else reported_exe
+    args = [str(root / 'app/main.py')] if app_argument else []
+    monkeypatch.setattr(addon.updater.os, 'getpid', lambda: 102)
+    processes = [SimpleNamespace(pid=101, info=dict(exe=executable, cmdline=args))]
+    monkeypatch.setattr(psutil, 'process_iter', lambda *_: processes)
+    if blocked:
+        with pytest.raises(RuntimeError, match='Close this application'):
+            addon.updater.ensure_closed(root)
+    else:
+        addon.updater.ensure_closed(root)

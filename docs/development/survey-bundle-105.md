@@ -809,3 +809,22 @@ newline translation); fixed fixtures then passed. Targeted payload/add-on/native
 engine/runtime/manual tests pass; remote full installer tests will exercise base
 alone, detected Unicode targets, add-on repeat/rollback/reapply, base upgrade
 preservation, invalid-target rejection and normal uninstall before publication.
+
+First split run43502578265 built the 598,550,777-byte base (64.255% reduction)
+and 923,121,476-byte add-on. Base retained24,640 files, with unchanged runtime
+bytes; all base CPU/native/UI/manual checks passed. Add-on installation failed
+the app-close guard and was NOT published. Diagnostics43505590473/43507077720
+showed correct explicit/automatic Unicode target detection; the problem was
+not destination selection. `ensure_closed` resolved missing system executable
+paths as `Path('')`, i.e. its working directory. Inno starts Python in its own
+directory by default, so system PID0 was incorrectly classified as app Python.
+The exact failure was reproduced locally with the cwd set to a disposable
+root/python; it now passes after ignoring missing executable paths while still
+checking app command arguments. Real owned Python jobs and app arguments remain
+blocking. No broad ancestor/process exemptions were retained.
+
+Inno also returned0 after an ssPostInstall exception, so a custom nonzero exit
+code now accompanies helper failure. The retry reuses the exact verified base,
+rebuilds only the corrected add-on, and tests a real active Python job to ensure
+the guard still rejects installation without changing DLLs. Targeted updater,
+add-on, runtime and payload tests:54 passed. No faulty add-on was published.
