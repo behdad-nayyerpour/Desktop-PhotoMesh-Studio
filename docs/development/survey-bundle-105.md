@@ -71,6 +71,34 @@ ownership and collisions; source/license evidence versus legal conclusions;
 coordinate units, independent checkpoints and real-data reference quality.
 No unrelated processing math or defaults changed in this finalization iteration.
 
+Final candidate delivery is be95c3a06b734dade16830f206c1d1f4024696cb; only
+the two visually verified screenshot PNGs differ from the fully tested app tree
+at a93c60855ae15c9da3c6b25b0100a5556642a199. Full Windows917/9skip and
+Linux913/13skip plus Mesa checks pass. Disposable exact1.0.4→candidate inventory
+has25,398 files; rollback restores all26,196 original files byte-for-byte.
+Fresh hash-required76-wheel download and offline isolated installation/import
+pass. The actual finalization BAT workflow43410086457 tests the accepted
+capacity baseline,87 installed offline regressions, exact package versions,
+native mesh DEM/PLY/manual/splash behavior, full app rollback, reapplication
+and a second byte-exact rollback. The app-only delta updates30 components,
+2,454,185 bytes; PDF, reusable Python and engines are unchanged.
+
+Additional bounded target-GPU smoke used four SHA-verified public photos
+(MAX_0104/0105/0106/0108.JPG) in a new validation folder. RTX3080 Laptop16GiB,
+driver512.36 correctly selects the unchanged legacy COLMAP3.8 CUDA fallback.
+The production PipelineRunner performs undistortion, GPU PatchMatch, fusion
+and filtering: fresh8.65s/70,300 points; cached1.26s/70,301 points, zero repeated
+PatchMatch commands and byte-identical geometric depth maps. An initial harness
+asserted exact fused point-count equality; that is not a valid contract for the
+native row-parallel fused-pixel masking. Follow-up four-thread fusion repeats
+vary slightly; two one-thread repeats produce identical70,876-point files with
+SHA256c549c4c1c359bebb67833fd5a7c35785b2e6523f426f5078a8e662494d61d10d.
+This isolates native fusion variability from depth-cache invalidation. No
+application reconstruction calculation or threading default was changed to
+force that comparison. This is a Low-resolution four-photo GPU/reuse smoke,
+not independent surveyed dense-surface accuracy or modern-CUDA13 driver proof.
+The retained engineering/source-packaging gates above still apply before Setup.
+
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 
 User defers direct point selection/deletion to the following version and requests
