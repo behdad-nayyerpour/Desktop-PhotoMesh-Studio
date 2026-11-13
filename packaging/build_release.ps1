@@ -63,7 +63,7 @@ function Copy-Tree([string]$Source, [string]$Destination, [string[]]$ExcludeDirs
 New-Item -ItemType Directory -Force -Path $stage, $out | Out-Null
 Write-Host "Staging Lens2Mesh $version"
 $appStage = Join-Path $stage "app"
-Copy-Tree (Join-Path $app "photomesh") (Join-Path $appStage "photomesh") @("__pycache__") @("*.pyc", "*.log")
+Copy-Tree (Join-Path $app "photomesh") (Join-Path $appStage "photomesh") @("__pycache__", (Join-Path $app "photomesh\resources\neural-cuda12")) @("*.pyc", "*.log")
 foreach ($name in @("main.py", "LICENSE", "README.md", "CHANGES.md", "UPDATING.md", "SCREENSHOT-LICENSE.txt", "requirements.txt", "run.bat", "setup.bat")) {
     Copy-Item -LiteralPath (Join-Path $app $name) -Destination (Join-Path $appStage $name)
 }

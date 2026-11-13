@@ -40,13 +40,12 @@ folders `modern-gpu-validation` and `modern-gpu-high-validation`. High-quality
 processing emitted observed ETAs after stable samples; this bounded four-photo
 check does not establish independent dense accuracy or hour-long ETA accuracy.
 
-Real offline extraction/matching probes passed: SIFT on GPU; ALIKED/LightGlue
-and SIFT/LightGlue through the existing same-method CPU fallback. The neural GPU
-probe fails because the bundled ONNX provider requires missing
-`cublasLt64_12.dll`; a newer display driver does not supply this CUDA library.
-Do not claim neural GPU execution passed. CPU fallback was genuinely executed
-successfully, with no survey files or settings modified. Native failure logs and
-complete input settings are retained in `modern-feature-diagnostics`.
+The initial offline probes passed SIFT on GPU and both learned methods through
+the existing same-method CPU fallback. The ONNX GPU provider initially lacked
+`cublasLt64_12.dll`; a newer display driver does not supply this library. Those
+initial failures are retained in `modern-feature-diagnostics`. The subsequent
+private-runtime fix and genuine neural GPU results are recorded in
+[the completion section below](#private-onnx-cuda-runtime-completion-2026-11-13).
 
 The optional Qt review now passes 87 installed offline integration tests and
 917 complete regressions (9 skipped) in run 43436592948. The exact 1,018-file
@@ -432,7 +431,7 @@ Primary docs consulted: https://colmap.github.io/cameras.html and official
 colmap/colmap doc/faq.rst parameter orders; https://laspy.readthedocs.io/en/latest/
 installation.html and github.com/laspy/laspy for chunked writer/LAZ and CRS support.
 No external code copied; dependencies need exact wheel/version/license verification.
-# Private ONNX CUDA runtime completion (2026-11-13)
+## Private ONNX CUDA runtime completion (2026-11-13)
 
 The native ONNX CUDA provider in the official modern engine imports CUDA 12
 cuBLAS/cuBLASLt/runtime DLLs, while the dense engine carries CUDA 13 libraries.
@@ -483,4 +482,28 @@ headers, static libraries, developer tools or driver is installed.
 Manual review: no menus, settings, defaults or documented processing workflow
 changed; retain the approved 119-page PDF unchanged. Public release remains
 conditional on the independently recorded remaining native source/notice gate.
+
+The exact app iteration is `b8b2b9f0ab8e691c37e55452606ce5b52032b973`.
+General run43462827366 passed925 Windows /921 Linux regressions (9/13 skips),
+plus the existing numerical checks and2 Mesa overlay checks. Actual BAT
+run43463385549 passed87 installed offline regressions, native PLY/mesh/DEM,
+package-lock, exact11 DLL/notice checks and byte-exact app/137 Qt file rollback.
+Verified artifact14057422779 SHA256
+`5bd414d639d257266b922e2f1e948ce51e1a603bb3dfa048280969b0ccffdec7`;
+BAT SHA256 `8dda6a4a125f547a4e264eba248e66070afdce5cff2266bde1c014f4af55b39e`.
+The BAT is independently reproduced byte for byte and pins artifact commit
+`0431030dcc91482cdf4e63b8a5413be80aaeed8d`, delta ZIP3,415,812 bytes SHA256
+`08ab6184a90702e7d142558c0b406ece14c12bec7293ccd5b1083de2f508e8c1`.
+Offline local preparation/application/rollback independently restored334 exact
+fixture files, with sockets disabled. The legacy3.8 SIFT GPU probe passed with
+no private-runtime lookup; modern dense Low fresh13.45s/70,992 points and
+cached2.20s/70,984 points passed with all four map hashes unchanged. These
+fusion count differences remain the previously established parallel variability.
+
+The later build-stage safeguard excludes only the absolute generated private
+DLL source directory, preserving the differently located license directory.
+Setup always recreates the DLL stage from pinned assets; a local developer's
+ignored probe DLLs cannot bypass verified preparation. PowerShell parsing and
+targeted static checks passed. This safeguard changes build staging, not the
+tested app or delta payload.
 

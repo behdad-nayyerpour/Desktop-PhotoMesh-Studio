@@ -21,8 +21,21 @@ python packaging/make_patch_launcher.py --url <exact-raw-GitHub-ZIP-URL> --sha25
 The user runs the BAT with the application closed. It uses the existing
 installation registry entry or an explicit first argument to find the installed
 root. If no entry exists it asks for the folder containing `app` and `python`.
-It downloads only the ZIP, checks its SHA256 and runs the updater with the
-installed Python. No pip, Setup or full runtime download occurs.
+It checks the changed-app ZIP SHA256 and runs the updater with the installed
+Python. A candidate using `--with-neural-runtime` also includes a pinned
+preparation helper: the bootstrap fetches only the required official NVIDIA
+component archives, authenticates them and stages the explicitly reviewed DLLs
+before the updater changes any installed files. No pip, Setup, driver or full
+Python/engine environment download occurs. Archives contain SDK material, but
+only selected runtime DLLs are extracted into the app-private directory.
+
+The same `neural_runtime.py` preparation is used by full Setup staging. Exact
+archive and DLL hashes, versions and original license hashes are recorded in
+`neural-runtime-assets.json`; the package retains the original licenses and
+third-party notices offline. Subsequent patches omit already identical neural
+files and do not acquire unchanged components. Downloads happen during updating,
+never during photo processing. Native additions are normal managed app resources
+and are removed/restored by the existing authenticated rollback journal.
 
 The updater validates containment, baseline/payload hashes and running processes
 before replacement. It saves changed files and a recovery journal under
