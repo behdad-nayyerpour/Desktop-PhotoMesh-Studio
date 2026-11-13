@@ -42,8 +42,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern "PhotoMeshStudio_Setup_1.0.4.exe" --dir released
-          $setupPath = Join-Path $PWD "released/PhotoMeshStudio_Setup_1.0.4.exe"
+          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern "Lens2Mesh_Setup_1.0.4.exe" --dir released
+          $setupPath = Join-Path $PWD "released/Lens2Mesh_Setup_1.0.4.exe"
           $expected = "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3"
           if ((Get-FileHash -LiteralPath $setupPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw "Released runtime checksum mismatch" }
           $runtimePath = Join-Path $env:RUNNER_TEMP "PhotoMesh104Runtime"
@@ -88,7 +88,7 @@ jobs:
           $fixture = Join-Path $fixtureRoot "project.pmsx"
           '{"format":"photomesh-studio/2","datasets":[]}' | Set-Content -LiteralPath $fixture
           $before = (Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash
-          $setupPath = Join-Path $PWD "preview/PhotoMeshStudio_Setup_1.0.4.exe"
+          $setupPath = Join-Path $PWD "preview/Lens2Mesh_Setup_1.0.4.exe"
           $installArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', ('/DIR="' + $upgradeRoot + '"'), '/TASKS=""')
           $process = Start-Process -FilePath $setupPath -ArgumentList $installArgs -Wait -PassThru -WindowStyle Hidden
           if ($process.ExitCode -ne 0) { throw "Candidate upgrade failed" }

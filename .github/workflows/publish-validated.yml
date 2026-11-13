@@ -38,11 +38,11 @@ jobs:
           gh api repos/$GH_REPO/actions/artifacts/13578838934/zip > candidate.zip
           echo "c96d19d68456b62469725444d72e8978167310f725336bf008117d37f2aa2940  candidate.zip" | sha256sum -c -
           unzip -q candidate.zip -d candidate
-          test -f candidate/PhotoMeshStudio_Setup_1.0.4.exe
-          test -f candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256
-          echo "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3  candidate/PhotoMeshStudio_Setup_1.0.4.exe" | sha256sum -c -
+          test -f candidate/Lens2Mesh_Setup_1.0.4.exe
+          test -f candidate/Lens2Mesh_Setup_1.0.4.exe.sha256
+          echo "58bbe53ce24f3a0dbd0730129885d76a27471899d1d2098774e8369a594113e3  candidate/Lens2Mesh_Setup_1.0.4.exe" | sha256sum -c -
           cd candidate
-          sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256
+          sha256sum -c Lens2Mesh_Setup_1.0.4.exe.sha256
       - name: Upload verified Setup and publish 1.0.4
         shell: bash
         run: |
@@ -67,10 +67,10 @@ jobs:
           NOTES
           if gh release view v1.0.4 >/dev/null 2>&1; then
             test "$(gh release view v1.0.4 --json isDraft --jq .isDraft)" = true
-            gh release upload v1.0.4 candidate/PhotoMeshStudio_Setup_1.0.4.exe candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256 --clobber
+            gh release upload v1.0.4 candidate/Lens2Mesh_Setup_1.0.4.exe candidate/Lens2Mesh_Setup_1.0.4.exe.sha256 --clobber
             gh release edit v1.0.4 --notes-file release-notes.md --target "$GITHUB_SHA"
           else
-            gh release create v1.0.4 candidate/PhotoMeshStudio_Setup_1.0.4.exe candidate/PhotoMeshStudio_Setup_1.0.4.exe.sha256 --draft --title "PhotoMesh Studio 1.0.4" --target "$GITHUB_SHA" --notes-file release-notes.md
+            gh release create v1.0.4 candidate/Lens2Mesh_Setup_1.0.4.exe candidate/Lens2Mesh_Setup_1.0.4.exe.sha256 --draft --title "PhotoMesh Studio 1.0.4" --target "$GITHUB_SHA" --notes-file release-notes.md
           fi
           test "$(gh release view v1.0.4 --json assets --jq '.assets | length')" = 2
           gh release edit v1.0.4 --draft=false --latest
@@ -80,7 +80,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release download v1.0.4 --pattern 'PhotoMeshStudio_Setup_1.0.4.exe*' --dir public-verify
-          (cd public-verify && sha256sum -c PhotoMeshStudio_Setup_1.0.4.exe.sha256)
-          cmp candidate/PhotoMeshStudio_Setup_1.0.4.exe public-verify/PhotoMeshStudio_Setup_1.0.4.exe
+          gh release download v1.0.4 --pattern 'Lens2Mesh_Setup_1.0.4.exe*' --dir public-verify
+          (cd public-verify && sha256sum -c Lens2Mesh_Setup_1.0.4.exe.sha256)
+          cmp candidate/Lens2Mesh_Setup_1.0.4.exe public-verify/Lens2Mesh_Setup_1.0.4.exe
           test "$(gh api repos/$GH_REPO/releases/latest --jq .tag_name)" = v1.0.4

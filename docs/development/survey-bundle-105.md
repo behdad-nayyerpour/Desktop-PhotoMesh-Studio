@@ -690,3 +690,32 @@ The final workflow requires successful exact-source general and installed
 candidate checks, fresh/custom Unicode installation, upgrade, native processing,
 offline Help, shortcut/uninstall and external-data preservation before publishing.
 Native build-provenance and point deletion remain deferred as previously agreed.
+
+### Published 1.0.5 installer (2026-11-13)
+
+Validated release source: `2c557669381cc651c4e9ab8ac5ac8aba9cea124b`.
+[Final build and publication](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43486717526)
+passed fresh/custom Unicode install, upgrade, shortcut targets, offline native
+terrain/PLY/neural runtime/manual checks, uninstall and external-data preservation.
+Both installations authenticated all 13 private DLLs and original NVIDIA notices.
+The [general checks](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43486717578)
+passed on Linux and Windows; Windows recorded 937 passed and 9 skipped.
+The [installed candidate/inventory/rollback](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/43486717574)
+also passed with 937 tests and 9 skips. These are automated checks, not a new
+claim of complete hardware or native source/build-provenance clearance.
+
+[Public release](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.5):
+`Lens2Mesh_Setup_1.0.5.exe`, 1,674,504,611 bytes, SHA256
+`e4f2b42f33cfcf53b652d9e16228310b3e9b029091725d6985ff18cf5c57b990`.
+The authenticated uploaded download was compared byte-for-byte before publishing;
+the public checksum and GitHub asset digest independently match the build log.
+The release includes the updated 119-page manual with SHA256
+`8af845b74331ca66cb28b3fd44af752189d3199c699b28a9ddd754eda448c940`.
+Main was fast-forwarded to the validated source and v1.0.5 was marked latest.
+Older release titles/descriptions and the archived 1.0.4 asset names are rebranded;
+the 1.0.4 installer bytes/hash remain unchanged, with a corrected named checksum.
+Future baseline-download workflow names now match that archived asset rename.
+Historical tags, internal project/settings identities and original audit evidence
+remain available. Exact logs and public asset records are retained under
+`F:/CodexProjects/Lens2Mesh-validation-evidence/release-105-job-*.log` and
+`Lens2Mesh-1.0.5-publication.json` in that directory.

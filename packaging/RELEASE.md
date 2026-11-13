@@ -27,7 +27,7 @@ Build from the repository checkout with Inno Setup:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File packaging/build_release.ps1 `
-  -RuntimeSource "C:\path\to\installed\PhotoMesh Studio" `
+  -RuntimeSource "C:\path\to\installed\Lens2Mesh" `
   -ISCC "C:\path\to\Inno Setup\ISCC.exe" `
   -OutputDir "C:\path\to\release-output" `
   -StageDir "C:\path\to\fresh-stage"
@@ -35,7 +35,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File packaging/build_release.
 
 `RuntimeSource` may point to a tested development folder containing
 `photomesh-studio\.venv`, `tools\colmap`, and `tools\glomap`; or to an
-existing installer-based PhotoMesh Studio installation containing
+existing installer-based Lens2Mesh installation containing
 `python\python.exe`, `app\runtime.id`, and the two tools folders.
 The source is read but not changed. The builder validates copied Python
 packages, creates the Setup EXE, and writes a matching `.sha256` file.
@@ -89,7 +89,7 @@ must additionally be checked on target hardware before distributing a release.
 
 ## Verified 1.0.4 distribution
 
-[PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.4) includes the full offline Windows Setup and its checksum. The corrected 1.0.4 Setup is 861,743,162 bytes. Its SHA-256 digest is `059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
+[Lens2Mesh 1.0.4](https://github.com/behdad-nayyerpour/Lens2Mesh/releases/tag/v1.0.4) includes the full offline Windows Setup and its checksum. The corrected 1.0.4 Setup is 861,743,162 bytes. Its SHA-256 digest is `059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f`.
 
 The original [installer run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42383383859) tested upgrading 1.0.3. The corrected [installer run](https://github.com/behdad-nayyerpour/Lens2Mesh/actions/runs/42411192019) tested replacing the installed 1.0.4. The [publication workflow](https://github.com/behdad-nayyerpour/Lens2Mesh/blob/main/.github/workflows/replace-104-setup.yml) verifies the public executable byte-for-byte against the corrected candidate. The [release review](../docs/development/release-review-104.md) records the validated source and numerical results.
 
@@ -102,4 +102,4 @@ Documentation and screenshot changes appear on GitHub immediately. The offline d
 The builder copies the root `LICENSE` into the staged application. Inno Setup
 shows that file as the application's license agreement. Preserve the separate
 third-party license notices; the application license does not replace them.
-The 1.0.4 installation also provides offline access to the bundled license through Help > About.
+The archived 1.0.4 installation also provides offline access to the bundled license through Help > About.

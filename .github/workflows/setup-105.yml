@@ -26,9 +26,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern Lens2Mesh_Setup_1.0.4.exe --dir released
           if ($LASTEXITCODE) { throw 'Baseline acquisition failed' }
-          $baseline=(Get-Item released/PhotoMeshStudio_Setup_1.0.4.exe).FullName
+          $baseline=(Get-Item released/Lens2Mesh_Setup_1.0.4.exe).FullName
           if ((Get-FileHash -LiteralPath $baseline).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline identity differs' }
           $root=Join-Path $env:RUNNER_TEMP 'Lens2Mesh 105 upgrade baseline'
           $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')

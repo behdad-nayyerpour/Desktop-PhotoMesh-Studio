@@ -21,9 +21,9 @@ jobs:
         run: |
           python -m pip install pefile
           if ($LASTEXITCODE) { throw 'PE reader setup failed' }
-          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          gh release download v1.0.4 --repo behdad-nayyerpour/Lens2Mesh --pattern Lens2Mesh_Setup_1.0.4.exe --dir released
           if ($LASTEXITCODE) { throw 'Baseline download failed' }
-          $setup=(Get-Item released/PhotoMeshStudio_Setup_1.0.4.exe).FullName
+          $setup=(Get-Item released/Lens2Mesh_Setup_1.0.4.exe).FullName
           if ((Get-FileHash -LiteralPath $setup).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline hash mismatch' }
           $root=Join-Path $env:RUNNER_TEMP 'native-review'
           $p=Start-Process -FilePath $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""') -Wait -PassThru -WindowStyle Hidden
