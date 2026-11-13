@@ -74,7 +74,7 @@ foreach ($screenshot in @("screenshot.png", "screenshot-light.png")) {
     Copy-Item -LiteralPath (Join-Path $app $screenshot) -Destination (Join-Path $appStage $screenshot)
 }
 New-Item -ItemType Directory -Force -Path (Join-Path $appStage "packaging") | Out-Null
-foreach ($guide in @("README.md", "RELEASE.md", "fix_shortcut_icon.ps1")) {
+foreach ($guide in @("README.md", "RELEASE.md", "fix_shortcut_icon.ps1", "migrate_shortcuts.ps1", "requirements-runtime-win313.lock")) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $guide) -Destination (Join-Path (Join-Path $appStage "packaging") $guide)
 }
 
@@ -89,6 +89,9 @@ if ($sourceMode -eq "venv") {
 Write-Host "Removing the independently replaced PLY dependency and reviewed unused Qt addons"
 & (Join-Path $pythonStage "python.exe") (Join-Path $app "packaging\runtime_dependencies.py") --stage $stage
 if ($LASTEXITCODE -ne 0) { throw "Staged dependency cleanup failed" }
+Write-Host "Checking the exact audited Windows package versions"
+& (Join-Path $pythonStage "python.exe") (Join-Path $app "packaging\verify_runtime_lock.py") --root $stage
+if ($LASTEXITCODE -ne 0) { throw "Staged package versions differ from the audited lock" }
 Write-Host "Retaining the tested legacy reconstruction engine"
 $legacyColmap = Join-Path $runtime "tools\colmap-legacy"
 if (-not (Test-Path -LiteralPath $legacyColmap)) { $legacyColmap = $colmap }

@@ -49,6 +49,9 @@ jobs:
         run: python tools/audit_runtime.py --root "${{ env.BASELINE_ROOT }}" --output evidence/published-104
       - name: Full regression suite
         run: python -m pytest -q --tb=short -rs -p no:cacheprovider tests
+      - name: Validate exact-install shortcut migration in disposable folders
+        shell: pwsh
+        run: ./tools/validate_shortcuts_105.ps1 -Fixture "$env:RUNNER_TEMP/shortcut validation فارسی"
       - name: PLY interoperability and equal-workload performance
         run: python tools/benchmark_ply_105.py --output evidence/ply-performance.json
       - name: Exact survey capacity and peak memory comparison
@@ -67,6 +70,8 @@ jobs:
           $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
           & $python -c "import os,sys,importlib.util; sys.path.insert(0,os.environ['PYTHONPATH']); import photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PYTHONPATH']).resolve()); from photomesh import APP_NAME, APP_VERSION, appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); assert importlib.util.find_spec('plyfile') is None; print('Installed patch identity/icon and dependency removal OK')"
           if ($LASTEXITCODE) { throw 'Installed candidate smoke failed' }
+          & $python packaging/verify_runtime_lock.py --root $env:BASELINE_ROOT
+          if ($LASTEXITCODE) { throw 'Installed runtime differs from the audited package lock' }
           & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
           if ($LASTEXITCODE) { throw 'Installed native processing or documentation failed after cleanup' }
           python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate

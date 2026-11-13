@@ -48,6 +48,7 @@ def main():
     from PySide6.QtCore import QSettings, QTimer
     from photomesh import APP_VERSION, shortcut_icon
     QTimer.singleShot(3000, lambda: shortcut_icon.maybe_fix(QSettings(), APP_VERSION))
+    QTimer.singleShot(6000, lambda: shortcut_icon.maybe_migrate(QSettings(), APP_VERSION))
     rc = app.exec()
     diag.stop_watchdog()
     diag.log.info("exit code %s", rc)

@@ -36,7 +36,8 @@ def build(source, installed, output, revision):
     for relative in tracked:
         path = source / relative
         allowed = (relative.startswith("photomesh/")
-                   or relative in ("main.py", "requirements.txt", "packaging/fix_shortcut_icon.ps1"))
+                   or relative in ("main.py", "requirements.txt", "packaging/fix_shortcut_icon.ps1",
+                                   "packaging/migrate_shortcuts.ps1", "packaging/requirements-runtime-win313.lock"))
         if not allowed or not path.is_file():
             continue
         target = "app/" + relative
