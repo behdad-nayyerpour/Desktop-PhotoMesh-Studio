@@ -1,0 +1,71 @@
+name: Review optional Qt web removal on disposable runtime
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: ["tools/plan_qt_cleanup.py", ".github/workflows/optional-web-review-105.yml"]
+permissions:
+  contents: read
+jobs:
+  optional-web:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Prepare disposable audited installation
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m pip install pefile pytest pytest-qt
+          if ($LASTEXITCODE) { throw 'Review dependencies failed' }
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Baseline acquisition failed' }
+          $setup=(Get-Item released/PhotoMeshStudio_Setup_1.0.4.exe).FullName
+          if ((Get-FileHash -LiteralPath $setup).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline identity differs' }
+          $root=Join-Path $env:RUNNER_TEMP 'optional-web-review'
+          $p=Start-Process -FilePath $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""') -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Disposable installation failed' }
+          "REVIEW_ROOT=$root" >> $env:GITHUB_ENV
+          python tools/audit_runtime.py --root $root --output review-before
+          if ($LASTEXITCODE) { throw 'Inventory failed' }
+          python tools/review_native_dependencies.py --root $root --output review-native
+          if ($LASTEXITCODE) { throw 'PE review failed' }
+          python tools/plan_qt_cleanup.py --inventory review-before/inventory.json --native review-native/native-dependencies.json --optional-web --output optional-web-plan.json
+          if ($LASTEXITCODE) { throw 'Removal plan failed' }
+      - name: Remove only exact reviewed bytes in the disposable installation
+        shell: pwsh
+        run: |
+          $plan=Get-Content optional-web-plan.json -Raw | ConvertFrom-Json
+          foreach ($item in $plan.files) {
+            $target=Join-Path $env:REVIEW_ROOT $item.path
+            if ((Get-FileHash -LiteralPath $target).Hash.ToLowerInvariant() -ne $item.sha256) { throw 'Reviewed bytes differ' }
+            $resolved=[IO.Path]::GetFullPath($target)
+            if (-not $resolved.StartsWith(($env:REVIEW_ROOT+'\python\Lib\site-packages\PySide6\'),[StringComparison]::OrdinalIgnoreCase)) { throw 'Removal escapes disposable PySide6' }
+          }
+          foreach ($item in $plan.files) { Remove-Item -LiteralPath (Join-Path $env:REVIEW_ROOT $item.path) }
+          Copy-Item photomesh (Join-Path $env:REVIEW_ROOT 'app') -Recurse -Force
+          $env:PYTHONPATH=Join-Path $env:REVIEW_ROOT 'app'
+          $python=Join-Path $env:REVIEW_ROOT 'python/python.exe'
+          & $python packaging/runtime_dependencies.py --stage $env:REVIEW_ROOT
+          if ($LASTEXITCODE) { throw 'Reviewed cleanup failed' }
+          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          if ($LASTEXITCODE) { throw 'Offline native/manual check failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'PLY check failed' }
+          python tools/review_native_dependencies.py --root $env:REVIEW_ROOT --output review-after
+          if ($LASTEXITCODE) { throw 'Remaining dependency review failed' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Optional-web-removal-review
+          path: |
+            optional-web-plan.json
+            review-native/
+            review-after/
+          retention-days: 30
