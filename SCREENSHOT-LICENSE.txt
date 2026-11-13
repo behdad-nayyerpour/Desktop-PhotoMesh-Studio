@@ -1,0 +1,15 @@
+Lens2Mesh1.0.5 screenshot attribution
+
+screenshot.png and screenshot-light.png are actual application captures of a
+sparse reconstruction from OpenDroneMap/odm_data_helenenschacht, revision
+eece33e9ece2ff358a7bdc02e1db6f67925e00c4. Photos and their calibration pixels
+were reduced together by4 solely for the display fixture. No dense or textured
+model is implied. Public photos, survey observations and their derived visual
+content retain the dataset's GNU General Public License version3 terms.
+The captures are provided under those terms; this does not change the license
+of the application code or other third-party components.
+
+Dataset, attribution and source:
+https://github.com/OpenDroneMap/odm_data_helenenschacht/tree/eece33e9ece2ff358a7bdc02e1db6f67925e00c4
+License text: photomesh/resources/third-party/GPL-3.0.txt
+Capture recipe: tools/capture_public_ui_105.py and .github/workflows/public-ui-105.yml

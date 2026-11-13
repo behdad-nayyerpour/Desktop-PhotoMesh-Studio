@@ -1,10 +1,11 @@
 # Documentation
 
-## Using PhotoMesh Studio
+## Using Lens2Mesh
 
 - [Installation and requirements](installation.md)
 - [Installing a newer version](../UPDATING.md)
 - [User guide](user-guide.md)
+- [1.0.5 candidate additions and limitations](candidate-105.md)
 - [Troubleshooting](troubleshooting.md)
 - [Changelog](../CHANGES.md)
 

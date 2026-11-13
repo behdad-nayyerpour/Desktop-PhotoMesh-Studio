@@ -2,7 +2,7 @@
 
 Use **[build_release.ps1](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/build_release.ps1)**
 and **[release.iss](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/blob/main/packaging/release.iss)**
-to produce one complete `PhotoMeshStudio_Setup_<version>.exe` and its SHA256.
+to produce one complete `Lens2Mesh_Setup_<version>.exe` and its SHA256, after candidate acceptance.
 Follow the [release guide](RELEASE.md). The same Setup installs a new copy or
 replaces an existing EXE installation. No separate Update EXE is produced.
 
@@ -14,6 +14,9 @@ replaces an existing EXE installation. No separate Update EXE is produced.
 | `release.iss` | Inno Setup definition, managed installation folders, shortcuts, and launch action |
 | `engine-assets.json` | Pinned engine/model download URLs and SHA256 values |
 | `fix_shortcut_icon.ps1` | Repair the icon of an existing shortcut; called by `photomesh/shortcut_icon.py` in source installations |
+| `migrate_shortcuts.ps1` | Rename only this install's per-user legacy shortcuts, with backup and collision protection |
+| `requirements-runtime-win313.lock` | Exact Windows CPython3.13 wheel versions and official SHA256 pins |
+| `verify_runtime_lock.py` | Reject staged version drift or unexpected packages before Setup compilation |
 | `RELEASE.md` | Installer build and release validation instructions |
 | `README.md` | This overview |
 

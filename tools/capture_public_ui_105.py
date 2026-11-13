@@ -15,6 +15,7 @@ import urllib.request
 
 
 def main(evidence, output):
+    evidence, output = evidence.resolve(), output.resolve()
     import numpy as np
     from PIL import Image
     from photomesh import colmap_io as cio

@@ -1,8 +1,20 @@
-# PhotoMesh Studio changelog
+# Lens2Mesh changelog
 
 Changes are listed from newest to oldest. Installation instructions in older
 entries describe the release at that time; current releases use one full Setup
 EXE. See [Updating](UPDATING.md).
+
+### 1.0.5 (test candidate; Setup pending acceptance)
+
+- Rename current branding to Lens2Mesh; retain project extensions, settings and installer identity for compatibility.
+- Add strict EXIF/XMP decoding, camera models, calibration presets, opt-in GPS accuracy and explicit horizontal/vertical reference controls.
+- Add ground classification, class display, ground-only DTM and LAS/LAZ export with coordinate/class provenance.
+- Combine measurement and cross section in Survey > Cross Section, in a closable bottom panel with live drawing, endpoint/midpoint editing and background mesh processing.
+- Improve measured progress, ETA suppression, automatic successful-product display and large-project solver/GPS/DEM capacity.
+- Replace the PLY dependency independently, remove reviewed unused Qt addons and add offline third-party notices and unchanged approved PDF access.
+- Report complete user-script tracebacks, preserve source encoding and validate exact Windows runtime package versions against hashed wheel pins.
+- Test upgrades using incremental BAT packages and byte-exact rollback; full Setup is not yet published.
+- Direct point selection/deletion remains deferred. The approved complete English PDF remains unchanged.
 
 ### 1.0.4 (2026-11-07, corrected installer 2026-11-08)
 

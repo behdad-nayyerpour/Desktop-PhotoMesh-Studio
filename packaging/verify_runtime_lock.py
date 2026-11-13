@@ -31,7 +31,15 @@ def verify(root, lock):
     paths = [root/'python/Lib/site-packages', root/'app/photomesh/_vendor']
     found = {}
     for dist in metadata.distributions(path=list(map(str, paths))):
-        name = normalized(dist.metadata['Name'])
+        name = dist.metadata.get('Name')
+        if not name:
+            # Exact reviewed dependency cleanup may leave an empty dist-info
+            # directory. importlib still enumerates it although no distribution
+            # metadata remains. A malformed surviving METADATA is an error.
+            if dist.read_text('METADATA') is None and dist.read_text('PKG-INFO') is None:
+                continue
+            raise ValueError('Installed distribution metadata has no Name')
+        name = normalized(name)
         if name in found:
             raise ValueError('Duplicate installed distribution: '+name)
         found[name] = dist.version

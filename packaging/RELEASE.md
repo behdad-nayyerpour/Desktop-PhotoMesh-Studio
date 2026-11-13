@@ -16,7 +16,7 @@ candidate. Build from the accepted revision and validate the installer afterward
 Public publication remains a separate authorization. The commands below describe
 the full installer stage after candidate acceptance.
 
-Each release produces one offline file: `PhotoMeshStudio_Setup_<version>.exe`.
+Each new release produces one offline file: `Lens2Mesh_Setup_<version>.exe`.
 It contains the app, Python, Python packages and COLMAP, with optional legacy
 GLOMAP. Users run
 the new Setup on the existing installation; it replaces the managed app,
@@ -40,6 +40,16 @@ existing installer-based PhotoMesh Studio installation containing
 The source is read but not changed. The builder validates copied Python
 packages, creates the Setup EXE, and writes a matching `.sha256` file.
 Choose a fresh stage directory for each build.
+
+For Windows x64 CPython3.13, `requirements-runtime-win313.lock` records the exact
+audited wheel versions and SHA256 values. To prepare a fresh wheel cache use
+`python -m pip download --require-hashes --no-deps -r packaging/requirements-runtime-win313.lock --dest wheel-cache`.
+Use `pip install --no-index --find-links wheel-cache --require-hashes --no-deps -r packaging/requirements-runtime-win313.lock`
+only in a fresh disposable build environment. Never run pip on the user's
+installation as part of an incremental update. The stage builder checks exact
+distribution versions after reviewed cleanup; binary identity and provenance
+remain separate inventory checks. Source development requirements are broader
+and are not the reproducible Windows release lock.
 
 Before preparing a new release, complete the [release quality
 checklist](../docs/development/release-quality.md) and retain the review evidence

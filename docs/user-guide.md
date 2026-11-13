@@ -2,13 +2,17 @@
 
 [Documentation](README.md) · [Installation](installation.md)
 
+For Lens2Mesh1.0.5, read the [candidate additions](candidate-105.md) alongside
+this baseline guide. **Help > User Manual (PDF)** opens the approved complete
+English 1.0.4 manual offline; that PDF has deliberately not been rewritten.
+
 1. *Project → Add Photos…* / *Add Photo Folder…* — photos are analysed in parallel
    (EXIF GPS, thumbnails, global descriptors) and appear in **Photos**,
    **Project** and **Cameras** panes.
 2. *Process → Align Photos…* — image resolution, matching mode (**Fast** default /
    Exhaustive / Sequential), **camera estimation** (Auto / Global / Incremental /
    Hierarchical), coarse-to-fine, key point limit, guided matching…
-   Result: camera positions + tie points in the **Model** view.
+   Result: camera positions + tie points in **3D View**.
 3. *Process → Build Point Cloud…* — Quality + Depth filtering (CUDA).
 4. *Process → Build Mesh…* — Source (Point cloud / Delaunay from fused cloud and visibility),
    trimming and target triangle count.

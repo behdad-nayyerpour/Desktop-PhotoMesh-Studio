@@ -37,7 +37,11 @@ def build(source, installed, output, revision):
         path = source / relative
         allowed = (relative.startswith("photomesh/")
                    or relative in ("main.py", "requirements.txt", "packaging/fix_shortcut_icon.ps1",
-                                   "packaging/migrate_shortcuts.ps1", "packaging/requirements-runtime-win313.lock"))
+                                   "packaging/migrate_shortcuts.ps1", "packaging/requirements-runtime-win313.lock",
+                                   "README.md", "CHANGES.md", "UPDATING.md", "SCREENSHOT-LICENSE.txt",
+                                   "screenshot.png", "screenshot-light.png", "docs/README.md",
+                                   "docs/user-guide.md", "docs/candidate-105.md", "docs/installation.md",
+                                   "packaging/README.md", "packaging/RELEASE.md"))
         if not allowed or not path.is_file():
             continue
         target = "app/" + relative

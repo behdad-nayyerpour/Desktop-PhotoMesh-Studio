@@ -1,8 +1,8 @@
-# PhotoMesh Studio
+# Lens2Mesh
 
-**Version 1.0.4** — a distinct panel layout, shared Plan View, photo-only marker measurements, and reviewed calibration/GPS/error workflows.
+**Version 1.0.5 — test candidate.** New Lens2Mesh branding, reference/calibration controls, ground classification, LAS/LAZ, DTM and an interactive cross-section panel.
 
-PhotoMesh Studio is a desktop photogrammetry application for processing aerial
+Lens2Mesh is a desktop photogrammetry application for processing aerial and terrestrial
 imagery locally, without a cloud service. It is available at no charge for
 personal and educational non-commercial use under the [project license](LICENSE).
 
@@ -10,7 +10,7 @@ Built with Python and PySide6, it uses COLMAP for photo alignment and dense
 reconstruction, alongside application code for project management, visualization,
 and surveying workflows.
 
-**[Download for Windows](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)** ·
+**[Latest published Windows release: PhotoMesh Studio 1.0.4](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/tag/v1.0.4)** ·
 [User guide](docs/user-guide.md) · [Installation](docs/installation.md) ·
 [Changelog](CHANGES.md) · [License](LICENSE) ·
 [Report a problem](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/issues/new?template=bug_report.md)
@@ -26,27 +26,30 @@ Third-party components retain their respective licenses.
 
 ## Screenshots
 
-The `Odm_Wietrznia` project is open in PhotoMesh Studio 1.0.4 on Windows.
-Both themes show the same textured 3D model, reconstructed from 225 photographs.
+The public Helenenschacht survey is open in Lens2Mesh 1.0.5.
+Both themes show the same sparse reconstruction from 35 photographs, with surveyed controls and independent check points.
 The Project panel is on the left and the photo thumbnails are on the right.
+These are actual application captures with Mesa OpenGL. See [image attribution and license](SCREENSHOT-LICENSE.txt).
 
 **Dark theme**
 
-![Dark theme in PhotoMesh Studio 1.0.4 with the textured Wietrznia model in 3D View](screenshot.png)
+![Lens2Mesh 1.0.5 Dark theme, public survey tie points and camera positions](screenshot.png)
 
 **Light theme**
 
-![Light theme in PhotoMesh Studio 1.0.4 with the same model, project tree and photo thumbnails](screenshot-light.png)
+![Lens2Mesh 1.0.5 Light theme with the same public survey and Photos panel](screenshot-light.png)
 
 ## Install
 
-Download `PhotoMeshStudio_Setup_<version>.exe` from
+The currently published installer is `PhotoMeshStudio_Setup_1.0.4.exe` from
 [Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest)
 and run it. The offline installer includes Python, its required packages, COLMAP,
 and optional legacy GLOMAP; a separate Python or Git installation is not needed.
 
-For a later version, close PhotoMesh Studio and run the newer Setup over the
-existing installation. There is no separate Update EXE.
+The 1.0.5 candidate is tested using an exact-baseline BAT that downloads only
+changed components, checks their hashes and retains rollback backups. Close the
+application before using the supplied candidate updater. A complete
+`Lens2Mesh_Setup_1.0.5.exe` will be built only after candidate acceptance.
 Keep projects, processing results, and original photos outside the installation folder.
 See [installation and requirements](docs/installation.md) and [updating](UPDATING.md).
 
@@ -56,6 +59,9 @@ See [installation and requirements](docs/installation.md) and [updating](UPDATIN
 - Optional offline SIFT/LightGlue or ALIKED/LightGlue matching; SIFT remains the default.
 - Dense point clouds, filtering, meshes, textures, and tiled 3D models.
 - Ground control and check points, camera optimization, and error reports.
+- Explicit coordinate/height references, optional GPS constraints and camera-model calibration.
+- Ground/non-ground classification, class display, ground-only DTM and streaming LAS/LAZ.
+- Survey > Cross Section in a bottom panel, live drawing and endpoint/midpoint editing.
 - Orthomosaic and DEM generation with georeferenced raster export.
 - Mesh contour export to DXF with `minor` and `major` layers.
 - Import and export of survey shapes and common 3D formats.
@@ -94,7 +100,7 @@ see the [user guide](docs/user-guide.md).
 
 ## Project
 
-PhotoMesh Studio uses [COLMAP](https://colmap.github.io/) for reconstruction,
+Lens2Mesh uses [COLMAP](https://colmap.github.io/) for reconstruction,
 with the application's `fastpipe` orchestration pipeline and a Python/PySide6
 interface using pyqtgraph.
 
@@ -102,6 +108,6 @@ Optional components include LightGlue and ALIKED for local feature matching,
 and [GLOMAP](https://github.com/colmap/glomap) for compatible legacy workflows.
 Third-party components retain their respective licenses.
 
-PhotoMesh Studio is an independent project and is not affiliated with or endorsed
+Lens2Mesh is an independent project and is not affiliated with or endorsed
 by Agisoft. See [project notes and third-party components](docs/development/project-notes.md)
 for interface references and component information.

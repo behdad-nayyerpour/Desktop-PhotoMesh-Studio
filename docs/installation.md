@@ -4,6 +4,12 @@
 
 ## Windows installer
 
+The published release below is PhotoMesh Studio1.0.4. Lens2Mesh1.0.5 is a
+test candidate delivered as an exact-baseline BAT; its full Setup is pending
+acceptance. Existing installation folders remain supported. The next Setup
+uses the Lens2Mesh name and offers destination selection on fresh installs
+and upgrades; final Setup validation follows candidate acceptance.
+
 1. Open [Releases](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/releases/latest).
 2. Download `PhotoMeshStudio_Setup_<version>.exe`.
 3. Run Setup and choose an installation folder. The default is
