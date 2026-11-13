@@ -698,7 +698,7 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
     Returns {"markers": {label: X}, "tie_rms_px", "iterations"}.
     """
     import scipy.sparse as sp
-    from scipy.linalg import cho_factor, cho_solve
+    from .survey_capacity import solve_camera_system
     from scipy.spatial.transform import Rotation
     o = {"tie_points": 40000, "tie_accuracy": 1.0, "projection_accuracy": 0.5,
          "fit_intrinsics": True, "intrinsics": "f,cx,cy,k1-k3,p1,p2", "max_iterations": 30,
@@ -833,10 +833,10 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         sw = np.sqrt(wgt)[:, None, None]
         A = A * sw; B = B * sw; rw = r * sw[:, :, 0]
         # ---- normal equations
-        # U (camera side): dense n_cam x n_cam
+        # Keep the camera side sparse; point/camera weighting is unchanged.
         AtA = np.einsum("nki,nkj->nij", A, A)                             # (nO, nb, nb)
         U = sp.coo_matrix((AtA.ravel(), (np.repeat(ocols, nb, 1).ravel(), np.tile(ocols, (1, nb)).ravel())),
-                          shape=(n_cam, n_cam)).toarray()
+                          shape=(n_cam, n_cam)).tocsr()
         gc = np.zeros(n_cam)
         np.add.at(gc, ocols.ravel(), -np.einsum("nki,nk->ni", A, rw).ravel())
         # V (point blocks) and gp
@@ -845,10 +845,12 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         gp = np.zeros((nP, 3)); np.add.at(gp, o_pt, -np.einsum("nki,nk->ni", B, rw))
         for p, ref, s in ctrl:
             V[p] += np.diag(1 / s ** 2); gp[p] -= (X[p] - ref) / s ** 2
+        prior_diagonal = np.zeros(n_cam)
         for i, cg, s in priors:
             for j in range(3):
                 q = 6 * i + 3 + j
-                U[q, q] += 1 / s[j] ** 2; gc[q] -= (C[i, j] - cg[j]) / s[j] ** 2
+                prior_diagonal[q] += 1 / s[j] ** 2; gc[q] -= (C[i, j] - cg[j]) / s[j] ** 2
+        U = U + sp.diags(prior_diagonal)
         # W (camera side x points), per observation block A^T B
         AtB = np.einsum("nki,nkj->nij", A, B)                             # (nO, nb, 3)
         Wrows = np.repeat(ocols, 3, 1).ravel()
@@ -856,16 +858,16 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         W = sp.csr_matrix((AtB.ravel(), (Wrows, Wcols)), shape=(n_cam, 3 * nP))
         accepted = False
         for _ in range(10):
-            Ud = U + lam * np.diag(np.maximum(np.diag(U), 1e-9))
+            Ud = U + sp.diags(lam * np.maximum(U.diagonal(), 1e-9))
             Vd = V + lam * np.einsum("nii->ni", V)[:, :, None] * np.eye(3)
             Vd += 1e-12 * np.eye(3)
             Vinv = np.linalg.inv(Vd)
             Vi = _block_diag_csr(Vinv)
             WVi = W @ Vi
-            S = Ud - (WVi @ W.T).toarray()
+            S = Ud - WVi @ W.T
             rhs = gc - WVi @ gp.ravel()
             try:
-                dc = cho_solve(cho_factor(S, check_finite=False), rhs, check_finite=False)
+                dc = solve_camera_system(S, rhs)
             except np.linalg.LinAlgError:
                 lam *= 10; continue
             dp = np.einsum("nij,nj->ni", Vinv, gp - (W.T @ dc).reshape(nP, 3))

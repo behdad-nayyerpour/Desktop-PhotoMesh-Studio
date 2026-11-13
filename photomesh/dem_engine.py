@@ -68,7 +68,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             if not npoints: raise ValueError("Point cloud is empty")
             if c.get("aggregation")=="median" and npoints*64>require_available_bytes()*.5:
                 raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller source")
-            if npoints*80 < require_available_bytes()*.4:
+            if c.get('aggregation') != 'median' and npoints*80 < require_available_bytes()*.4:
                 data = read_fast(c["cloud"])
                 if data is not None:
                     v=selected_records(data["vertex"]); P=np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
@@ -152,11 +152,10 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
                 if npoints*32>require_available_bytes()*.5:
                     raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller region")
                 idx=np.concatenate(med_idx); z=np.concatenate(med_z)
-                order=np.argsort(idx,kind="stable"); keys=idx[order]
-                unique,first,counts=np.unique(keys,return_index=True,return_counts=True)
-                zs=z[order]
-                for key,start,count in zip(unique,first,counts):
-                    dem.ravel()[key]=np.median(zs[start:start+count])
+                from .survey_capacity import grouped_median
+                unique, values = grouped_median(idx, z)
+                check()
+                dem.ravel()[unique] = values
             elif aggregate=="highest": dem.ravel()[has]=sums[has]
             else: dem.ravel()[has]=sums[has]/cnt[has]
         if not measured.any(): raise ValueError("No valid source data inside the output grid")

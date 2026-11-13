@@ -69,7 +69,8 @@ MENUS = [
         "Export Cameras...", "Export Markers...", "Export Reference", "Export Shapes...", "-",
         "Generate Report...",
     ]),
-    ("&Help", ["Contents", "Report a Problem...", "Open Log Folder", "-", "About PhotoMesh Studio..."]),
+    ("&Help", ["User Manual (PDF)", "Contents", "Third-party Notices...", "-",
+               "Report a Problem...", "Open Log Folder", "-", "About PhotoMesh Studio..."]),
 ]
 
 # Presentation labels do not change command IDs or toolbar text.

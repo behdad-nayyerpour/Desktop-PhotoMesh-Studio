@@ -1,5 +1,22 @@
 # Combined survey/terrain tools candidate (2026-11-12)
 
+## Approved performance, offline manual and dependency iteration (2026-11-13)
+
+User defers direct point selection/deletion to the following version and requests
+one BAT for: sparse camera-side bundle solution, exact GPS neighbour preselection,
+faster exact DEM median aggregation; offline Help access to the approved unchanged
+complete PDF; and completion of the engineering dependency/redistribution review.
+Review numerical contracts and callers, compare equal inputs to the current
+implementation, include deterministic ties and cancellation, and measure memory
+and runtime. Preserve project formats, reference weights, section interaction and
+all other candidate functionality. Reconstruct the exact accepted section baseline
+from authenticated artifacts; validate apply/offline/rollback on a disposable
+installed runtime. Audit Qt/native/model components against exact inventory and
+primary upstream terms, collect version-matched notices/source information, and
+remove a component only after dependency verification. Record unresolved evidence
+honestly; do not describe engineering review as legal clearance. No full Setup,
+repository rename, PDF edits or public installer release in this iteration.
+
 User explicitly requests GPS/calibration, coordinates, classification, LAS/LAZ,
 DTM, measurement and cross section in ONE incremental BAT. Do not deliver small
 intermediate BATs for these items. No Setup before candidate acceptance; retain

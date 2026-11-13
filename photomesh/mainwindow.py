@@ -395,6 +395,8 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
             "View Model Statistics...": self.model_statistics,
             "Run Script...": self.run_script, "Preferences...": self.preferences,
             "Contents": self.help_contents,
+            "User Manual (PDF)": self.user_manual,
+            "Third-party Notices...": self.third_party_notices,
             "About PhotoMesh Studio...": self.about,
         }
         for key, name in LAYER_ACTIONS.items():
@@ -2856,6 +2858,14 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
     def help_contents(self):
         readme = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "README.md")
         QDesktopServices.openUrl(QUrl.fromLocalFile(readme))
+
+    def user_manual(self):
+        from .documentation import open_manual
+        return open_manual(self)
+
+    def third_party_notices(self):
+        from .documentation import open_notices
+        return open_notices(self)
 
     def about(self):
         from .about_ui import show_about

@@ -548,11 +548,9 @@ def select_pairs(names, infos, k_desc=8, k_gps=8, window=3, use_desc=True, use_g
             # Chord distances are continuous across the date line and do not
             # mistake invalid longitude/latitude for usable reference data.
             xyz = geodetic_to_ecef(gps[:, 1], gps[:, 0], gps[:, 2])
-            d = np.linalg.norm(xyz[:, None, :] - xyz[None, :, :], axis=2)
-            np.fill_diagonal(d, np.inf)
-            for a, i in enumerate(idx):
-                for b in np.argsort(d[a])[:min(k_gps, len(idx)-1)]:
-                    add(i, idx[b])
+            from .survey_capacity import nearest_neighbours
+            for a, b in nearest_neighbours(xyz, k_gps):
+                add(idx[a], idx[b])
     if use_desc:                # global descriptor top-k (cosine similarity)
         idx, D = [], []
         for i in range(n):
