@@ -2,7 +2,6 @@
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -133,6 +132,7 @@ def independently_triangulate(model, marker):
 def evaluate(model_path, data, output):
     import numpy as np
     import pyproj
+    from PIL import Image
     from photomesh import colmap_io as cio, georef
     from photomesh.exif import photo_metadata
     output.mkdir(parents=True)
@@ -142,7 +142,8 @@ def evaluate(model_path, data, output):
     assert len(original.images) >= photo_count*.8, 'Too few registered public photos'
     gps = {}
     for image in original.images.values():
-        metadata = photo_metadata(str(data/'images'/image.name))
+        with Image.open(data/'images'/image.name) as photo:
+            metadata = photo_metadata(photo)
         if all(metadata.get(key) is not None for key in ('lon','lat','alt')):
             gps[image.name] = [metadata[key] for key in ('lon','lat','alt')]
     projector = pyproj.Transformer.from_crs(4326, 32633, always_xy=True)
