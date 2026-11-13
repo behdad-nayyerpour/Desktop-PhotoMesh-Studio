@@ -12,6 +12,7 @@
 # Binary data
 *.png  binary
 *.ico  binary
+*.pdf  binary
 *.shp  binary
 *.shx  binary
 *.dbf  binary
