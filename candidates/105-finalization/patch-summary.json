@@ -1,0 +1,133 @@
+{
+  "candidate": "be95c3a06b734dade16830f206c1d1f4024696cb",
+  "archive": "Lens2Mesh_TestPatch_be95c3a06b73.zip",
+  "sha256": "e7a119f4c8dd0f21ab69c5e4c7698b3d4e12b4416fc1fe3c2fa1ed90773f164c",
+  "bytes": 2454185,
+  "files": [
+    {
+      "path": "app/CHANGES.md",
+      "sha256": "2bdf86fd784bb2f9a8a675a9150f144d915bf39f31be9e21e080a250c5681847"
+    },
+    {
+      "path": "app/README.md",
+      "sha256": "80ff3f19a51e91f606f3f2afb5e1c5d79d03322446011614d7bb94dab4a0e2cb"
+    },
+    {
+      "path": "app/SCREENSHOT-LICENSE.txt",
+      "sha256": "63e6aad933fe3b79d2666e95e40b0b46b5f5c35af22e18205bfed03fcbe47f46"
+    },
+    {
+      "path": "app/UPDATING.md",
+      "sha256": "07310a15eca2b69666165cd7bdca256607ee3fe070a397770aed0a5549889416"
+    },
+    {
+      "path": "app/docs/README.md",
+      "sha256": "e4a3421e7afd38aa4d0fdbf803fe5356682a2caaa3750608befeeb0e8afdf9fe"
+    },
+    {
+      "path": "app/docs/candidate-105.md",
+      "sha256": "c6a69ed02af41061e5eb88cfbaa682cf7d03cb7fa54d9d2ff3f218dfdb6b36f1"
+    },
+    {
+      "path": "app/docs/installation.md",
+      "sha256": "8367ef50cdac2ae47100fcffeffdfefcc7d4093aa62d78dbf6e0ec024c88ec38"
+    },
+    {
+      "path": "app/docs/user-guide.md",
+      "sha256": "2889cda93a1eaae3683461f24b2e7cf1b2286193252c1bf2d901f412c27c8040"
+    },
+    {
+      "path": "app/main.py",
+      "sha256": "19f99bc5f8b4ef1334f77a1bbd77aff8394c32b08b27efc28444a613a0026ca1"
+    },
+    {
+      "path": "app/packaging/README.md",
+      "sha256": "cb70fafdba71bdba5f7596391375aed5d9f7b98666fbd9a9affbce764f4ceeab"
+    },
+    {
+      "path": "app/packaging/RELEASE.md",
+      "sha256": "b9c6662741ec5a10c6d11f7d0ae42e196062294a9214b2ef091e66756517422a"
+    },
+    {
+      "path": "app/packaging/migrate_shortcuts.ps1",
+      "sha256": "2494338f6e887de15d4b0a9f2c75743b6962b452ec3759cf8fa3d7b89bb3cc98"
+    },
+    {
+      "path": "app/packaging/requirements-runtime-win313.lock",
+      "sha256": "d8de350e95723c05cc204ef55ddafec2d64e53877cc4cac456ed51ca0cd239d0"
+    },
+    {
+      "path": "app/photomesh/mainwindow.py",
+      "sha256": "8eed635053214f5ee646ecfcd92e8488317207fc99ae3c154c9cf13ff5c1299c"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/COLMAP-3.8-LICENSE.txt",
+      "sha256": "861013cc9865c3dc3be99bf94058dfb8bfc46eeb96202a29fdea398eb08dc39c"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/COLMAP-3.8-build-dependencies.txt",
+      "sha256": "d185388b82d52e5f4920e891de308cc217c645bf33331e8116fece33c209331c"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/GLOMAP-1.2.0-LICENSE.txt",
+      "sha256": "358b9447b62440370a71eea5d3509a32a5f8fd9b3560c731b66efa6ab0b5f1d4"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/GLOMAP-1.2.0-vcpkg.json",
+      "sha256": "0a67d3fecb69be5a22ef770e3e3f90c34c48fe1411dc1885f05658898b6e6002"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/NVIDIA-CUDA-11.8-EULA.txt",
+      "sha256": "948e4e75d1d3e8e1ddc5d52718980ae564801948eb24d9a45b1d9ee2f615ed1c"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/NVIDIA-CUDA-13.2-EULA.txt",
+      "sha256": "e920ae41b770a180cc213b18a038c20801023d08aefb88dc9dc54b86e6233236"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/index.html",
+      "sha256": "f5e4a4557a8bc17b89d2a4919804c11efe444fdc3ee907aa8b9ff4a293ec4cc9"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/native-official-byte-comparison.json",
+      "sha256": "b84c7d1c6c6561bc2a7dbc1bfad83ac554dbe1b9b304171e948c2fe4c00f742f"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/native-version-origins.json",
+      "sha256": "47295d56b0798cda14061b97021973fa458464c85b3ad8b28ffde16252df9665"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/python-origins.json",
+      "sha256": "dbb4c69aa76987e42c87088410302ec78a527e0789b829f8b80dc011715fd790"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/qt-official-byte-comparison.json",
+      "sha256": "4244b8115e3fe267d1c904486685c6850f4e080e65b56463397e7be6837193a4"
+    },
+    {
+      "path": "app/photomesh/resources/third-party/review.json",
+      "sha256": "4ff6c18686fd1f25c83d1743b0bf9bde98470dd26cf3beed76d92c1a0561a1cb"
+    },
+    {
+      "path": "app/photomesh/shortcut_icon.py",
+      "sha256": "012ec61399a1ab6a5a71da5ffcd3365122fb460f6d4ba4bbf29835a3e27026a8"
+    },
+    {
+      "path": "app/screenshot-light.png",
+      "sha256": "5a0e0b10caafec0cf4f1df88e7a4b6556dfb14bbd317ab3bea48b34f5e7eead0"
+    },
+    {
+      "path": "app/screenshot.png",
+      "sha256": "fb3aafc2466900ceabbc77366f286d230eee8fc55c2a619613e6f5f4fcefe624"
+    },
+    {
+      "path": "app/release_manifest.txt",
+      "sha256": "ea07f4e2c7dda1fe7ee0913b0a6ea945ffe7949eb5786334bcd9f199d10eb5df"
+    }
+  ],
+  "unchanged_python_and_engines": true,
+  "removed_dependency": false,
+  "python_engine_replacement": false,
+  "removed_qt_files": 0,
+  "setup_built": false
+}
