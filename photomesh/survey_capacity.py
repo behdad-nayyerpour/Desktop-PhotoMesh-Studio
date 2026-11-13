@@ -42,6 +42,32 @@ def nearest_neighbours(xyz, k):
     order = np.argsort(inverse, kind='stable')
     first = np.r_[0, np.cumsum(counts)]
     tree = cKDTree(unique)
+    if len(unique) == len(xyz):
+        # Normal surveys have distinct positions. Batch their exact queries;
+        # only a tie at the selection boundary needs a radius refinement.
+        original = order[first[:-1]]
+        width = min(k+2, len(xyz))
+        for start in range(0, len(xyz), 2048):
+            points = xyz[start:start+2048]
+            _, neighbours = tree.query(points, k=width, eps=0, workers=1)
+            candidates = original[np.asarray(neighbours).reshape(-1, width)]
+            distance = np.linalg.norm(xyz[candidates]-points[:, None], axis=2)
+            distance[candidates == np.arange(start, start+len(points))[:, None]] = np.inf
+            sorting = np.lexsort((candidates, distance), axis=1)
+            candidates = np.take_along_axis(candidates, sorting, axis=1)
+            distance = np.take_along_axis(distance, sorting, axis=1)
+            for local, row in enumerate(candidates):
+                index = start+local
+                radius = distance[local, k-1]
+                tolerance = 8*np.finfo(float).eps*max(1., radius)
+                if np.isfinite(distance[local, k]) and distance[local, k]-radius <= tolerance:
+                    row = original[tree.query_ball_point(points[local], radius+tolerance, eps=0)]
+                    row = row[row != index]
+                    exact = np.linalg.norm(xyz[row]-points[local], axis=1)
+                    row = row[np.lexsort((row, exact))]
+                for other in row[:k]:
+                    yield index, int(other)
+        return
     query_k = min(k+1, len(unique))
     for start in range(0, len(unique), 2048):
         distances, groups = tree.query(unique[start:start+2048], k=query_k, eps=0, workers=1)
@@ -68,7 +94,7 @@ def nearest_neighbours(xyz, k):
 
 def grouped_median(indices, heights):
     """Exact odd/even medians without a Python loop per occupied raster cell."""
-    indices, heights = np.asarray(indices), np.asarray(heights)
+    indices, heights = np.asarray(indices), np.asarray(heights, float)
     if len(indices) != len(heights):
         raise ValueError('Cell indices and heights must have equal lengths')
     if not len(indices):

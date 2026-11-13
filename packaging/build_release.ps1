@@ -86,7 +86,7 @@ if ($sourceMode -eq "venv") {
 } else {
     Copy-Tree (Join-Path $runtime "python") $pythonStage @("__pycache__") @("*.pyc")
 }
-Write-Host "Removing the independently replaced PLY dependency from the fresh stage"
+Write-Host "Removing the independently replaced PLY dependency and reviewed unused Qt addons"
 & (Join-Path $pythonStage "python.exe") (Join-Path $app "packaging\runtime_dependencies.py") --stage $stage
 if ($LASTEXITCODE -ne 0) { throw "Staged dependency cleanup failed" }
 Write-Host "Retaining the tested legacy reconstruction engine"
@@ -115,7 +115,7 @@ if ($sourceMode -eq "venv") {
     $runtimeDescription = @("Reused installed runtime ID: $runtimeId")
 }
 $engineHash = (Get-FileHash -LiteralPath (Join-Path $stage "tools\colmap\photomesh-engine.json") -Algorithm SHA256).Hash.ToLowerInvariant()
-$runtimeDescription += "runtime-cleanup=independent-ply-codec; removed-plyfile"
+$runtimeDescription += "runtime-cleanup=independent-ply-codec; removed-plyfile-and-reviewed-unused-Qt-addons"
 $runtimeDescription += "modern-engine-manifest=$engineHash"
 $sha = [Security.Cryptography.SHA256]::Create()
 $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()

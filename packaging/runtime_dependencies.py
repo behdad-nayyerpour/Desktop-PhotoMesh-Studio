@@ -1,7 +1,28 @@
 """Exact, reviewed removal of the replaced PLY dependency from staged runtimes."""
 from importlib import metadata
+import hashlib
+import json
 from pathlib import Path
 import re
+
+
+def reviewed_qt_files(root):
+    """Only exact, PE-reviewed unused addon bytes; never infer from filenames."""
+    root = Path(root).resolve(strict=True)
+    plan = json.loads(Path(__file__).with_name('reviewed-qt-removals.json').read_text(encoding='utf-8'))
+    result = []
+    for record in plan['files']:
+        relative = record['path']
+        if not relative.startswith('python/Lib/site-packages/PySide6/') or '..' in Path(relative).parts:
+            raise ValueError('Qt removal plan escapes reviewed scope')
+        path = root/relative
+        if path.is_symlink() or not path.resolve().is_relative_to(root):
+            raise ValueError('Linked Qt removal target')
+        if path.is_file():
+            if hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']:
+                raise ValueError('Qt dependency bytes differ from reviewed baseline: '+relative)
+            result.append(path)
+    return result
 
 
 def plyfile_files(root):
@@ -33,7 +54,7 @@ def plyfile_files(root):
 
 def clean_staged_runtime(root):
     """Only used on a newly created build stage, before any Setup is compiled."""
-    paths = plyfile_files(root)
+    paths = plyfile_files(root) + reviewed_qt_files(root)
     # All declarations are checked before the first managed file is removed.
     for path in paths:
         path.unlink()

@@ -51,6 +51,8 @@ jobs:
         run: python -m pytest -q --tb=short -rs -p no:cacheprovider tests
       - name: PLY interoperability and equal-workload performance
         run: python tools/benchmark_ply_105.py --output evidence/ply-performance.json
+      - name: Exact survey capacity and peak memory comparison
+        run: python tools/benchmark_capacity_105.py --output evidence/capacity-performance.json
       - name: Build only changed application components
         run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}"
       - name: Apply and roll back on installed Python with unchanged runtime

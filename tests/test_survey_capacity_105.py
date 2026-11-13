@@ -28,6 +28,17 @@ def test_duplicate_neighbours_do_not_expand_quadratically():
     assert all(i != j and j <= 2 for i, j in pairs)
 
 
+@pytest.mark.parametrize('k', [1, 2, 4])
+def test_distinct_equidistant_neighbours_are_deterministic(k):
+    xyz = np.array([[0, 0, 0], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]], float)
+    actual = list(nearest_neighbours(xyz, k))
+    for i in range(len(xyz)):
+        other = np.flatnonzero(np.arange(len(xyz)) != i)
+        distance = np.linalg.norm(xyz[other]-xyz[i], axis=1)
+        expected = other[np.lexsort((other, distance))][:k].tolist()
+        assert [j for a, j in actual if a == i] == expected
+
+
 @pytest.mark.parametrize('size', [1, 2, 3, 20000])
 def test_vectorized_median_matches_independent_per_cell_numpy(size):
     rng = np.random.default_rng(4)
@@ -43,6 +54,27 @@ def test_singleton_large_height_does_not_overflow():
     keys, heights = grouped_median([3], np.array([1e308]))
     np.testing.assert_array_equal(heights, [1e308])
     assert keys.tolist() == [3]
+
+
+def test_median_preserves_automatic_resolution_population(tmp_path, monkeypatch):
+    import math
+    from photomesh import memguard, ortho
+    from photomesh.dem_engine import build_dem
+    from photomesh.plyio import save_ply
+    rng = np.random.default_rng(72)
+    xyz = rng.uniform([0, 0, 0], [100, 100, 3], size=(120001, 3)).astype(np.float32).astype(float)
+    path = tmp_path/'cloud.ply'; save_ply(str(path), xyz)
+    # Legacy fast-read path estimates occupancy using every point when it fits;
+    # streaming the median must not silently substitute a smaller sample here.
+    lo, hi = xyz.min(0), xyz.max(0)
+    grid = max(float(np.ptp(hi[:2]-lo[:2])), float(np.max(hi[:2]-lo[:2])))/512 or 1.
+    cells = np.floor((xyz[:, :2]-lo[:2])/grid).astype(np.int64)
+    occupied = len(np.unique(cells[:, 0]*100000+cells[:, 1]))
+    expected = ortho.nice(2*math.sqrt(occupied*grid*grid/len(xyz)))
+    monkeypatch.setattr(memguard, 'require_available_bytes', lambda: 8*1024**3)
+    result = build_dem(dict(cloud=str(path), out_dir=str(tmp_path/'dem'), aggregation='median',
+        interpolation='Disabled', tile=256), log=lambda *_: None)
+    assert result['pixel_size'] == expected
 
 
 def test_sparse_direct_solution_preserves_dense_normal_equations(monkeypatch):

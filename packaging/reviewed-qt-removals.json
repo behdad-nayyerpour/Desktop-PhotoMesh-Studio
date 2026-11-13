@@ -1,0 +1,4412 @@
+{
+  "schema": 1,
+  "scope": "Reviewed unused GPL-only Qt addon families and their static consumers; exact 1.0.4 bytes",
+  "native_evidence_sha256": "1a179a927d156a15007ad8583d838c2088fbabdfeb697afd5cb04c124bbf80ce",
+  "files": [
+    {
+      "path": "python/Lib/site-packages/PySide6/balsam.exe",
+      "sha256": "5cd493e1cef242112f42ded79829413dd1f84c717b14690cfdab4a2e8c66738d",
+      "bytes": 60728
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/balsamui.exe",
+      "sha256": "52b421cc95762befb994466971fc517af23ff83272c4350f82015266cce3624b",
+      "bytes": 122168
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/assetimporters/assimp.dll",
+      "sha256": "8fddc882f355c806abdb5c3c4d31ba318a4c2c032e2d29b4188dda6909809dcb",
+      "bytes": 2094904
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+      "sha256": "bbf479e6380061699e734a32f4fe0b6fc8bc2de007ae53b0206e6e36abf1e3e2",
+      "bytes": 36664
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/qmltooling/qmldbg_quick3dprofiler.dll",
+      "sha256": "b0b70e67eb10d908ba61b967b3d4c06055aabbe42f04b5a916bf0cea9dbb027b",
+      "bytes": 44344
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/plugins/vectorimageformats/qlottievectorimage.dll",
+      "sha256": "d0b360d746e0d75f007c29b62939124e2eeb67abb1b43731f313fe881fa63199",
+      "bytes": 35128
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/ChartViewSpecifics.qml",
+      "sha256": "6db4e22510efd743fd4f3aeeaeec6c694c22b12455144a6de200a91e51a7bf61",
+      "bytes": 3726
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/AreaSeries.qml",
+      "sha256": "c6446db513b373df69984182b2b17112718f3421b2523baf9e3bdf24152b142b",
+      "bytes": 458
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/BarSeries.qml",
+      "sha256": "2aaece040b9988287623d6baf34350b2a46196dca79438d0cb0473009e9a3537",
+      "bytes": 421
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/BoxPlotSeries.qml",
+      "sha256": "77422671535f23b5a4ee8f6421fb5b9cab012bb8704b37eb98a1f026a640d5c1",
+      "bytes": 464
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalBarSeries.qml",
+      "sha256": "4c892b2bbada1e9121c9d20057f03acfcd8d508e8e5e860e79f6b8aba5eaeef2",
+      "bytes": 441
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalPercentBarSeries.qml",
+      "sha256": "e8b427db85d4a366d93a4376db613b3ddc9c9bc396b91c48c0c6beb6be68733c",
+      "bytes": 455
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/HorizontalStackedBarSeries.qml",
+      "sha256": "a129098ed44656ef18f2ffc14fe9c9bbf081bc8e0fed3f0594cd64e0719a51d1",
+      "bytes": 455
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/LineSeries.qml",
+      "sha256": "fc751765b7ee5fc93c8a5b3991d13b226e242504bf3e1b5484f7acc906bb0fc5",
+      "bytes": 398
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PercentBarSeries.qml",
+      "sha256": "60a8a394258fa4534b037a2c44673459841f068070aa9c02e37dff2e1ed2c46b",
+      "bytes": 435
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PieSeries.qml",
+      "sha256": "c136bf936c13b7189d7eb912ecd0869e66650fabff190813078d28ae44056729",
+      "bytes": 412
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarAreaSeries.qml",
+      "sha256": "797e32b7ff301ad8bcbb4b95e6191af5ccce392fdc2e153d5ad6326c9285161e",
+      "bytes": 1061
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarLineSeries.qml",
+      "sha256": "e5f607e695d44116c6ae8af6848c474351e883c91c287ed8cf170dde5b04f51f",
+      "bytes": 634
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarScatterSeries.qml",
+      "sha256": "c1584f21240b09a1ae911eba4e08d7c83fcf826f9e1a94b75f6c35a119ed098b",
+      "bytes": 604
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/PolarSplineSeries.qml",
+      "sha256": "b6ccfa2bf36dde96e71612c2a5e151812805304b0dbb727b5d349779981d4c27",
+      "bytes": 638
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/ScatterSeries.qml",
+      "sha256": "8964f2d61fecc99ca05ea56f9c28a885778122325b4a1446c43cab2d272badd4",
+      "bytes": 396
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/SplineSeries.qml",
+      "sha256": "6fcfc6b7ecdf0a129dc7145ba2e4e3eb4b8cbf7d408ca2e76d696ff624dc45e5",
+      "bytes": 400
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/default/StackedBarSeries.qml",
+      "sha256": "b3ea816cfb930cffbf049b979f8dc98509cc03693802fc196ae733af40b35cd3",
+      "bytes": 435
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-chart-icon.png",
+      "sha256": "af0e57a01b87cb200d1b64f9143f04634b36f0a744a51402236b7a9aaf27c7e4",
+      "bytes": 1483
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-chart-icon16.png",
+      "sha256": "e2113ad636d1f0acdaa2e82c464310cb1c1cb1f246eede8184d00bae4bfcf461",
+      "bytes": 1340
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-polar-icon.png",
+      "sha256": "fe643919bb866cc3ceceef46cee6acd29372eafc99e7d1a61d791341cf1fa7b6",
+      "bytes": 1665
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/areaseries-polar-icon16.png",
+      "sha256": "312864dbeff2a38d262c156360e8efbe345ee0b388a778ae11f9a5165fb4b88d",
+      "bytes": 1361
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/barseries-icon.png",
+      "sha256": "7933d73bb41500be2fe889f2c5e59e4284f57c7cbc6ce3e2ba96d25fba8e695d",
+      "bytes": 1104
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/barseries-icon16.png",
+      "sha256": "45990024622fe548292746f4403a8642cb5d8548ed344f983411242f1507731b",
+      "bytes": 1088
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/boxplotseries-chart-icon.png",
+      "sha256": "3ad1755251f5579dc1def8eff99fed3ac36d724114d371ae57d272cf8f91072d",
+      "bytes": 1154
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/boxplotseries-chart-icon16.png",
+      "sha256": "d809c3ad01d2a1b37436abf23efaf92ac0bc0d68a4a849c8d146d358e9c4ea80",
+      "bytes": 1138
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalbarseries-icon.png",
+      "sha256": "a14135b332f353f823814e41ac227b484345af456085cb9a1fd3feb1cff33755",
+      "bytes": 1104
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalbarseries-icon16.png",
+      "sha256": "28f83e07695bd95de160a3444e652f6a384d2c5ea68e27d992dded3b70af464a",
+      "bytes": 1098
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalpercentbarseries-icon.png",
+      "sha256": "da1e2d16ea10eabbfe1b04e59a1aaafec51c85616d0e25e94fd0685ee76ba971",
+      "bytes": 1124
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalpercentbarseries-icon16.png",
+      "sha256": "15e9acc3af4b01d03bcfd03c2b21872a56867f17e5df589efc12bb32b006b65c",
+      "bytes": 1116
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalstackedbarseries-icon.png",
+      "sha256": "4383e5654becaecba96c923257843d18df309b28b0d7d6686221f00417077682",
+      "bytes": 1125
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/horizontalstackedbarseries-icon16.png",
+      "sha256": "17daf1955d8920046ff3c463797ec0089ee0f3e0cf0b2ecb2fada0402ff81840",
+      "bytes": 1116
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-chart-icon.png",
+      "sha256": "82f63de9f1fef850a2fbef2f67d040b44e25e579f797dddd62c0421f22e14fc8",
+      "bytes": 1353
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-chart-icon16.png",
+      "sha256": "8f20652ea48c67926bbca18a8f268b4e2ca5420fd5e4700bdb62b131dff4a7a2",
+      "bytes": 1242
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-polar-icon.png",
+      "sha256": "7a72af766f11a7f54a9d51c443ce2eb2b54517df8a3449420c79e93214fbfe91",
+      "bytes": 1661
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/lineseries-polar-icon16.png",
+      "sha256": "34a5b16a772266dd3481e907d9b5efdb22d6691b0d9a7d156954bff621acf1b1",
+      "bytes": 1379
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/percentbarseries-icon.png",
+      "sha256": "2fcb2a93d09dcf2f88b1a376f862d72d0201f2a0effa4893fe4d0fb3950a4fee",
+      "bytes": 1126
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/percentbarseries-icon16.png",
+      "sha256": "c9dd884a3d070360304b5c5d52ba47d8b682e77903706e5293f3551a2f65cdef",
+      "bytes": 1114
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/pieseries-chart-icon.png",
+      "sha256": "2abc53976dfe7e01378f9efa6474cc529578df81cae5c5f208493e868f05ff93",
+      "bytes": 1501
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/pieseries-chart-icon16.png",
+      "sha256": "842601fcc191bd702eaad7fd096372a02422b1771dce7b906af14e04c16f9a36",
+      "bytes": 1285
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-chart-icon.png",
+      "sha256": "7f21aca31654f30a1a8c0070a51e37fd99bdddec5c5b165d55dcacf16645fc19",
+      "bytes": 1166
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-chart-icon16.png",
+      "sha256": "e6bef68194165e79c8bd7277ed5055c8dcf9679e8a263ad6af10049ad4c44b70",
+      "bytes": 1172
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-polar-icon.png",
+      "sha256": "b9316698c7930fd4d0e4924bacf91709d926343faadd4b374292a11cbc3e7475",
+      "bytes": 1575
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/scatterseries-polar-icon16.png",
+      "sha256": "fd19a8c614848f337acc96552363d6125f48110469024a9adec6dfb563cfbdd8",
+      "bytes": 1344
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-chart-icon.png",
+      "sha256": "cb75a5924dca25533b828d20ebb03a52a2ab08f8737f4ffffa93a0ce1b3f07ec",
+      "bytes": 1413
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-chart-icon16.png",
+      "sha256": "51d91addd73ad09a92e5140cd559c4fc6ae8f6fac6e5daad6501fbeedcddbaf7",
+      "bytes": 1289
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-polar-icon.png",
+      "sha256": "a29c4a6e991a18245db3f84b4127761f915db98e2eeb616bfae365b2771b54a8",
+      "bytes": 1652
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/splineseries-polar-icon16.png",
+      "sha256": "a25b00da8e5dad81d92b0f76deab862993982af12392ff7a8d8a1dea47785109",
+      "bytes": 1357
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/stackedbarseries-icon.png",
+      "sha256": "9fbc2c43dc51f3d3dcd4ee1a9841417f8dde7c8bc030a061be88a70587b3e6a1",
+      "bytes": 1127
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/images/stackedbarseries-icon16.png",
+      "sha256": "6759ac535e45df099580b26f8b113f32b39d07cb803190a4186b426d39c2f2ad",
+      "bytes": 1116
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/designer/qtcharts.metainfo",
+      "sha256": "bd18b865a79b51404752aaba4095d3ae342ff628236583416695065f5776bda6",
+      "bytes": 6806
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/plugins.qmltypes",
+      "sha256": "6c419d760d7e0d17892c07121c5a6664d44d5b2dd8f88169b06ccb64987917d7",
+      "bytes": 232188
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/qmldir",
+      "sha256": "ee43c3c207b88aabab83457ef66c8c5db67634e637ad750774b56de64946b1dc",
+      "bytes": 221
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtCharts/qtchartsqml2plugin.dll",
+      "sha256": "d9699fb80ee2b65dab6cef2e8574cb2e6b9100bd8bb23ec0d8b3929a4512dbb4",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/datavisualizationqmlplugin.dll",
+      "sha256": "bde0588c6a558626a0c9d010ef0b0ed572c2934e7d139cd8bef694d8fff6dedf",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Bars3DSpecifics.qml",
+      "sha256": "3e45098922c70e5c5486f5332b8de57ec2e3f8717b2ea07ad9293d218315d546",
+      "bytes": 14988
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Bars3D.qml",
+      "sha256": "0f5cbaf99db7cfb52d01ab61460c9c0be5195408dd3a7be276ef63b8ba0fa86f",
+      "bytes": 666
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Scatter3D.qml",
+      "sha256": "962b9405212349faff724c637c2d25a332f24d9f9e7f758cba52d0171ae572a0",
+      "bytes": 598
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/default/Surface3D.qml",
+      "sha256": "c3289bcee72594bccba5572d98ee93cd44ba7282d78f291f0d93a7fc73931b3e",
+      "bytes": 690
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/bars3d-icon.png",
+      "sha256": "b30d9579bdfe2d5013978fd7382165977595c86728ca90c7acf13b16a9f71e6c",
+      "bytes": 1352
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/bars3d-icon16.png",
+      "sha256": "055f241985f73cabb81d30aba5a4c4ea365213ed89481eba138c60b5b74be3ba",
+      "bytes": 1232
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/scatter3d-icon.png",
+      "sha256": "fce1b4064669a6f86d60bb4f91c83c88856e85853184c49f72472c716617bf8e",
+      "bytes": 1271
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/scatter3d-icon16.png",
+      "sha256": "ebef12dec0ffb5e7120012721eb871cf3a164967907144f45253bb9a9fd138c3",
+      "bytes": 1146
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/surface3d-icon.png",
+      "sha256": "6e14b24ed156a983c23cf6f04f782ea412991ce6058c3033afc42f787b60295c",
+      "bytes": 1413
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/images/surface3d-icon16.png",
+      "sha256": "89cc3a126f1c0a129d85059c3a56eaa8ed307e3303ceb2eb971a3ba78ea84cc4",
+      "bytes": 1231
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/qtdatavisualization.metainfo",
+      "sha256": "39000d3fba043716041864c76272fea64b3a960b8f926b867ce618d62418cfb4",
+      "bytes": 1272
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Scatter3DSpecifics.qml",
+      "sha256": "de050c455ff136d3a2162632e45e13839312e1bd3f87a03d3b63a95065bd2e4d",
+      "bytes": 6433
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/designer/Surface3DSpecifics.qml",
+      "sha256": "4d587014ca262f5f806c350ca4428bec2894c1a6bb940286fab79f7dd82b765f",
+      "bytes": 12775
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/plugins.qmltypes",
+      "sha256": "8a498af066f2976f810d3119c5874e62ee71e2022e8001ca94645a72567c5e4b",
+      "bytes": 176753
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtDataVisualization/qmldir",
+      "sha256": "3069b64957835a0791e421e855a84be948d6254229f3811d13e659bb19e8af6b",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Bars3DSpecifics.qml",
+      "sha256": "03de2305e45aa2391387122c0f4a6fe2b3ae02ec3114ebf72fec980b6abd774f",
+      "bytes": 10219
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/AreaSeries.qml",
+      "sha256": "b9439f8ff0a291fc895af7e199d33a477baefd7b87d5028975b80014b73b7a17",
+      "bytes": 451
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Bars3D.qml",
+      "sha256": "6c35bf59ce73a06481219672a011d4022adf83380c0aba30a273759b58b8e7a2",
+      "bytes": 651
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/BarSeries.qml",
+      "sha256": "bc1f8b0696122359422d38a0cc034d14124eb670d85069256716a2d542e489b1",
+      "bytes": 438
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/LineSeries.qml",
+      "sha256": "dad1396c59a4d2e704ec952014ed870e05656ceb0eaa9775a89564e14ea690ae",
+      "bytes": 385
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/PieSeries.qml",
+      "sha256": "da7731f045c0c6b85822b355786a2d92a979c29f2cc18ffefc2305af383ffbea",
+      "bytes": 401
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Scatter3D.qml",
+      "sha256": "2ef1155237edeb3595cb872d3ef8f9fe083e86b761c7964c107accd431b73991",
+      "bytes": 583
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/ScatterSeries.qml",
+      "sha256": "de914dad7fb941fcf7e97e5bd9dcc2f771b060df27cafcd401f2ff7d24968359",
+      "bytes": 382
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/SplineSeries.qml",
+      "sha256": "4190d5ad95998c1f036c3f57eee3f6da17bcace00356aee3ad24513a1cb34918",
+      "bytes": 383
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/default/Surface3D.qml",
+      "sha256": "31aa8d2f1111fad0384d63df585a87e0f97448dee9cba3892054ff4c271a2720",
+      "bytes": 675
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsCameraSection.qml",
+      "sha256": "aba9dcd2e64fd1436af75053270adab54fa26be287a98022f85e694d1c62daa3",
+      "bytes": 5892
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsSection.qml",
+      "sha256": "86b590695360fceba79ab23b3528d5fd5c42bab5438c45edd474ad5ca16eebb9",
+      "bytes": 3844
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/GraphsViewSpecifics.qml",
+      "sha256": "3a49ceb9802e5fa3032a2f521fb571ee6ae3e1c3c08a0e43c112cfa6e7ef0d7e",
+      "bytes": 2964
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/areaseries-icon.png",
+      "sha256": "af0e57a01b87cb200d1b64f9143f04634b36f0a744a51402236b7a9aaf27c7e4",
+      "bytes": 1483
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/areaseries-icon16.png",
+      "sha256": "e2113ad636d1f0acdaa2e82c464310cb1c1cb1f246eede8184d00bae4bfcf461",
+      "bytes": 1340
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/bars3d-icon.png",
+      "sha256": "b30d9579bdfe2d5013978fd7382165977595c86728ca90c7acf13b16a9f71e6c",
+      "bytes": 1352
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/bars3d-icon16.png",
+      "sha256": "055f241985f73cabb81d30aba5a4c4ea365213ed89481eba138c60b5b74be3ba",
+      "bytes": 1232
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/barseries-icon.png",
+      "sha256": "7933d73bb41500be2fe889f2c5e59e4284f57c7cbc6ce3e2ba96d25fba8e695d",
+      "bytes": 1104
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/barseries-icon16.png",
+      "sha256": "45990024622fe548292746f4403a8642cb5d8548ed344f983411242f1507731b",
+      "bytes": 1088
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/lineseries-icon.png",
+      "sha256": "82f63de9f1fef850a2fbef2f67d040b44e25e579f797dddd62c0421f22e14fc8",
+      "bytes": 1353
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/lineseries-icon16.png",
+      "sha256": "8f20652ea48c67926bbca18a8f268b4e2ca5420fd5e4700bdb62b131dff4a7a2",
+      "bytes": 1242
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/pieseries-icon.png",
+      "sha256": "2abc53976dfe7e01378f9efa6474cc529578df81cae5c5f208493e868f05ff93",
+      "bytes": 1501
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/pieseries-icon16.png",
+      "sha256": "842601fcc191bd702eaad7fd096372a02422b1771dce7b906af14e04c16f9a36",
+      "bytes": 1285
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatter3d-icon.png",
+      "sha256": "fce1b4064669a6f86d60bb4f91c83c88856e85853184c49f72472c716617bf8e",
+      "bytes": 1271
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatter3d-icon16.png",
+      "sha256": "ebef12dec0ffb5e7120012721eb871cf3a164967907144f45253bb9a9fd138c3",
+      "bytes": 1146
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatterseries-icon.png",
+      "sha256": "7f21aca31654f30a1a8c0070a51e37fd99bdddec5c5b165d55dcacf16645fc19",
+      "bytes": 1166
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/scatterseries-icon16.png",
+      "sha256": "e6bef68194165e79c8bd7277ed5055c8dcf9679e8a263ad6af10049ad4c44b70",
+      "bytes": 1172
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/splineseries-icon.png",
+      "sha256": "cb75a5924dca25533b828d20ebb03a52a2ab08f8737f4ffffa93a0ce1b3f07ec",
+      "bytes": 1413
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/splineseries-icon16.png",
+      "sha256": "51d91addd73ad09a92e5140cd559c4fc6ae8f6fac6e5daad6501fbeedcddbaf7",
+      "bytes": 1289
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/surface3d-icon.png",
+      "sha256": "6e14b24ed156a983c23cf6f04f782ea412991ce6058c3033afc42f787b60295c",
+      "bytes": 1413
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/images/surface3d-icon16.png",
+      "sha256": "89cc3a126f1c0a129d85059c3a56eaa8ed307e3303ceb2eb971a3ba78ea84cc4",
+      "bytes": 1231
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/qtgraphs.metainfo",
+      "sha256": "c4835765c98d12a74f59eae0fbc3172daa2510cb467140ad4510514c4dc96d3a",
+      "bytes": 1170
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/qtgraphs2d.metainfo",
+      "sha256": "ac1677b0d4eb57edcd07dad55157cebdf20cdc327e24c1f3c8e30900a88aac4b",
+      "bytes": 2439
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Scatter3DSpecifics.qml",
+      "sha256": "3348e582c2363f3717786b9876549fad815751a70df8a3837e406173956d610a",
+      "bytes": 2033
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/designer/Surface3DSpecifics.qml",
+      "sha256": "8b9016343b1c394fd11b36ff178a756f92cbc55b139ece45852a781778297605",
+      "bytes": 7441
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/Graphs.qmltypes",
+      "sha256": "0df052e0f9b418534b6a5b9d1ae4145d794f3df76b4c44f9b173772a7a3dc72a",
+      "bytes": 332083
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/graphsplugin.dll",
+      "sha256": "317994c9231c30a59c87c8613413293cf73bf1dd093c49192da1a756d633206d",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtGraphs/qmldir",
+      "sha256": "a0a995fb91e07387bbef737037f31ec660bb251436169ef04731b25475a730c3",
+      "bytes": 235
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/plugins.qmltypes",
+      "sha256": "3e7c6a87adf6dca860f24a19911f661b518cadbeddb8cf860e0eb991af647782",
+      "bytes": 3782
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/qmldir",
+      "sha256": "a84f67cf9a5cef6fa5d075d00929579e06909a09f1618b55235e7d089d49e9ec",
+      "bytes": 340
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/BlendTrees/qtquicktimelineblendtreesplugin.dll",
+      "sha256": "c5fb4de419282bbb8f1809d56f4581e4762ee4af033f770162b2d2a4bba8ff76",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/plugins.qmltypes",
+      "sha256": "29f1a65bba3bff9ff64057c634d86ab09682050af27374a4039170ed34d7fa65",
+      "bytes": 6081
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/qmldir",
+      "sha256": "909c392f04ff9392bc120e694a62f3e4f5861eff7ba8c4af5886af9a3c642e87",
+      "bytes": 257
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/Timeline/qtquicktimelineplugin.dll",
+      "sha256": "770238ea72b59171af09377ce2d2745b8bc3a1c4896ed2b9059fb78657508799",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/AlternativeKeys.qml",
+      "sha256": "2d1435c45a2c4d9a7d3aaf2807b41cb406972f8446d93eb6454e9d79247e361c",
+      "bytes": 4359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/BackspaceKey.qml",
+      "sha256": "29b65df3495279b7c1663dc665a83bc23dfe891e141832b9cfe0ea0776477d5f",
+      "bytes": 771
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/BaseKey.qml",
+      "sha256": "c995349d3118c390e80367b022c331ad6218bd2a4da46ae089df3d148960a538",
+      "bytes": 8136
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ChangeLanguageKey.qml",
+      "sha256": "86d6b5b468013260c7f0106f3ec17e662c246d5c82c1a45bf0aca532290be5a4",
+      "bytes": 1973
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/CharacterPreviewBubble.qml",
+      "sha256": "ddf256523c4eb095d699b6d39c6a06b5c3d01460a56ef5fb7be228bd4af712ec",
+      "bytes": 2185
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/EnterKey.qml",
+      "sha256": "9e5297bf27acabefa0b722df5e13bf8af14b46e2d2398dbb36aef4acd9f1acdd",
+      "bytes": 1249
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FillerKey.qml",
+      "sha256": "348c58bfe1edc5a93d9de162bf3a3a38d782cdf7cd1d0d81dbcb592401eb8bb8",
+      "bytes": 587
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FlickKey.qml",
+      "sha256": "b2ca42e52539a6ee7b9771942f23422249b12e63c13a00738250247c4e7cb230",
+      "bytes": 3101
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/FunctionPopupList.qml",
+      "sha256": "620d775a0366d7c0dc955fefa66dc2f2a931f440754bc24fc95594dd495b486a",
+      "bytes": 3604
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/HandwritingModeKey.qml",
+      "sha256": "a9279efecd732ca8e4d9e4d6f3ba2798265f920aacf1ad7bb961eb9d5e755c5d",
+      "bytes": 1168
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/HideKeyboardKey.qml",
+      "sha256": "65235e6d3a298270077d6d0b008dc63babad017b38631768a79ac0ef461bfd30",
+      "bytes": 947
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/InputModeKey.qml",
+      "sha256": "edc3248ae79d95c1a088628112cb260ba3365b6b25f5e69f5669cd290bd06b72",
+      "bytes": 4128
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/Key.qml",
+      "sha256": "c2df2af803e2c678dac4ff146dcc90185dd6be0e977e8812b2e685d182307315",
+      "bytes": 762
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/Keyboard.qml",
+      "sha256": "96f2c6019d86a276aa542cb0953b4bc088af7b9f5d16560e7b7d98c057ce0cd2",
+      "bytes": 88672
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardColumn.qml",
+      "sha256": "b1be2bac7872c25c34d03bf43d1f19de24070ffd8f19cdfb468371c73e7ca9a9",
+      "bytes": 1073
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardLayout.qml",
+      "sha256": "39ed998f286d3b629642737cfaf0bfabd2ba655198ea85bb7517047b69976cb0",
+      "bytes": 4713
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardLayoutLoader.qml",
+      "sha256": "cd2cd2efc5d864f1e51e9143536bc499483c08a11c135e51f61e0b969e9418f0",
+      "bytes": 3650
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/KeyboardRow.qml",
+      "sha256": "a632121cd5371e220dc89e2a6f79b773815b0e93fe522f621c57b8c017e1617f",
+      "bytes": 1003
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ModeKey.qml",
+      "sha256": "64ebdd431264bf628b86ef0f5bac124ef2f0da964ddb6ae8e4d3277cd8e9d5e5",
+      "bytes": 1346
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/MultiSoundEffect.qml",
+      "sha256": "f41421708bf1db47f8dd65b2658802a94364a4b3c09858bb6b04d2a84d12c913",
+      "bytes": 1513
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/MultitapInputMethod.qml",
+      "sha256": "c0cdb6d4714dbeaf188337c30a4c16c661b5a54154a507ac81da412d0945bb5a",
+      "bytes": 3075
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/NumberKey.qml",
+      "sha256": "28f881a02e09fd1645a43174311950556c917f948dd1457f96e99f9c9ca6a743",
+      "bytes": 701
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/PopupList.qml",
+      "sha256": "27ca4ddeacb29a1e627aceebec2b507ad3e10a0175afae91bab65b1b532a1edb",
+      "bytes": 1273
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qmldir",
+      "sha256": "b5c42dbb526e91fd66c0cc5c9c94898ee299d317fdf413295e98692a643033db",
+      "bytes": 3846
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qtvkbcomponentsplugin.dll",
+      "sha256": "22b5d1e4da36d239a41b51736d407fb80276effad47563f679b0e4a91403d5c4",
+      "bytes": 812344
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/qtvkbcomponentsplugin.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SelectionControl.qml",
+      "sha256": "b06918814915c39df03946f27f2c246bf9d16a2f7bdbd0d8d2e2893878cdf944",
+      "bytes": 3501
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ShadowInputControl.qml",
+      "sha256": "5e383ed19ebe4a2af01a7e810efd283052524e1a263ffb6caea2bfb9efae7dfc",
+      "bytes": 6169
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/ShiftKey.qml",
+      "sha256": "3f151456df675f491ed1c634b63757e747efd40d44528bbb7d1a0e74a18334da",
+      "bytes": 846
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SpaceKey.qml",
+      "sha256": "86a33e4722d6335e08e3eedbd360cc69eb0b4ea5763788219ea6885895571991",
+      "bytes": 752
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/SymbolModeKey.qml",
+      "sha256": "92ad7d4b5cbd986381dc3cb24c24723f76a97d52a92361b7e67740492a76ce42",
+      "bytes": 818
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/TraceInputArea.qml",
+      "sha256": "455c382b0fbda525a8d28b88ff42c870e52de66dc6672abf66e7bbddfbafe697",
+      "bytes": 7484
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/TraceInputKey.qml",
+      "sha256": "9db4af9c16ea97519a755f2fb0e1e7b8dbe68485c86113e1c41283f821b05a1a",
+      "bytes": 3085
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Components/WordCandidatePopupList.qml",
+      "sha256": "83434ba657c11fb7918b90167bb3cf9e39083302b8e50d1405d2d784c3a10d23",
+      "bytes": 2815
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/plugins.qmltypes",
+      "sha256": "599cd339947a862cc23bf77f1c4081c02e7bb5c7b348eee56c11e41cb16f1c0d",
+      "bytes": 62557
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/qmldir",
+      "sha256": "e3be2a64ca3d5595b5ad2782fde7fb6df325572a09850a4d9428a2fcdd32b6d7",
+      "bytes": 270
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Core/virtualkeyboardplugin.dll",
+      "sha256": "d329dab3d4bdff92a4fa6a8231f7ec49a1f28a26b16073cc946ff742f9e006ee",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/EnterKey.qml",
+      "sha256": "3ab944c1c1c92484077ac37111f29df24104703f9b487e7f3af2771dc121d09d",
+      "bytes": 216
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/HandwritingInputPanel.qml",
+      "sha256": "04fb6c8786cb5abde2b7364955cbea32172922382e71bb37390a1e220a7f73dc",
+      "bytes": 5041
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/InputPanel.qml",
+      "sha256": "bc66105684db3e94132fbcff7ae9ebc10908184e6aa91295dcd1643e47baf0be",
+      "bytes": 5275
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qmldir",
+      "sha256": "512383a8d5354007e857c13fa79d3de440252e6fc91a712a18e66033e70cbf99",
+      "bytes": 258
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qtvkblayoutsplugin.dll",
+      "sha256": "e96589970c1d624e15b59237de96600c79549352cf04ef4c8342792b40eb08ef",
+      "bytes": 82232
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Layouts/qtvkblayoutsplugin.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/plugins.qmltypes",
+      "sha256": "882428d70f2ad7710fdb4a3b3731d624b75b3626f330f7a35fc580ceb21fd7ba",
+      "bytes": 753
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/qmldir",
+      "sha256": "47ed523fb3074abe2914203d559bf9416d1c1f98af352b0fc0d6e8409489a9a1",
+      "bytes": 309
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Hangul/qtvkbhangulplugin.dll",
+      "sha256": "73d370870054fad368e683372805a2d04de58f8de65d708d3cd5aa4aa07b09f9",
+      "bytes": 58680
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/plugins.qmltypes",
+      "sha256": "41ebf510aa9e94e2c8f0b5e3f02222acb3b9988ca5c141a967c91feb4d0c6c76",
+      "bytes": 764
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/qmldir",
+      "sha256": "e0c9633dbfaa1041a639196ad4996d4ce2fb17b5a014b45fa63dc3fc5cd47d1b",
+      "bytes": 314
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/OpenWNN/qtvkbopenwnnplugin.dll",
+      "sha256": "fb448752b6bcc5c584e7fecb8065ba01e25554c4a3eee50812f6c2ab554ec395",
+      "bytes": 1569080
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/plugins.qmltypes",
+      "sha256": "addf7686db2f8e0ba3d9a147979b77e1dce5b3dc5ec21f09f893c7a3d64f966e",
+      "bytes": 753
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/qmldir",
+      "sha256": "1caafc85d4d1ee9383dce2eccad198028ef9359f180a18122647dbdf7e4f2f8f",
+      "bytes": 309
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Pinyin/qtvkbpinyinplugin.dll",
+      "sha256": "8bfc0d643c78eed575c82945439d6a0205647f3c4f1a474af69739cefac79180",
+      "bytes": 1191736
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qmldir",
+      "sha256": "c48081aa2da3cdb6593f81b5cb704170803afded728165eda2860a00294f72b9",
+      "bytes": 525
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qtvkbpluginsplugin.dll",
+      "sha256": "a035e1ae770f43704fef921d73d1775505c430eb534489296888824b61865800",
+      "bytes": 32056
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/qtvkbpluginsplugin.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/plugins.qmltypes",
+      "sha256": "4bf09979521dc5d8a616833d68bafc3fca855e81d165c15ed92f49020e039337",
+      "bytes": 1030
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/qmldir",
+      "sha256": "b6c077bb8a2222ecc926b29ba5ba4e0f482480216b26d93b10c5abb6d8ae6b1b",
+      "bytes": 304
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/TCIme/qtvkbtcimeplugin.dll",
+      "sha256": "88bb0077f92ad95b8321d0fc4cbc149426da06d2480883e6958d532e0e449368",
+      "bytes": 311096
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/plugins.qmltypes",
+      "sha256": "26217146bffd37039a75e34e430022fba33cb6e4efea2eaab6db1b9301cc63fc",
+      "bytes": 737
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/qmldir",
+      "sha256": "7984d9516ddb1bd637ad9f3d027ab43a381ea6d382bcd486ab5942e0d404e2fc",
+      "bytes": 299
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Plugins/Thai/qtvkbthaiplugin.dll",
+      "sha256": "360e1fa778de6a8c2b579821775c145c1495d92f3c0ebfcb168dfafbf07e23c7",
+      "bytes": 43832
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/qmldir",
+      "sha256": "cfbbd404ccafa30d24129294c3b5eeabacef98bab9eccccf41252439371362f0",
+      "bytes": 907
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/qtvkbplugin.dll",
+      "sha256": "45cc6b1d79b051536f6ad12076442d11a69f63e3946b97d601dec312e325abf2",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/plugins.qmltypes",
+      "sha256": "4976d80ca75091383e3946e7b6f798b1d2c4b722b8fdbf0b6b6896cb65fee328",
+      "bytes": 10320
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/qmldir",
+      "sha256": "631f0bdc55a31dbe5531f0b2901035c9fe50cf27ec313bb54fe07376a10a9a26",
+      "bytes": 307
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Settings/qtvkbsettingsplugin.dll",
+      "sha256": "e1b2559fa65e53fb68ebe931b6348988d4e4541eb5ae45dccc2a8ba17e3b196f",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/plugins.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/qmldir",
+      "sha256": "16d480f97e886213af67db1db712061e86ea9ecf179373157415237495a36556",
+      "bytes": 277
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/Builtin/qtvkbbuiltinstylesplugin.dll",
+      "sha256": "c5f7423f0a1d802bec6cac0d3e8fb5d28ca9b1c78afc6d8298cf267ddb5525d2",
+      "bytes": 370488
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyboardStyle.qml",
+      "sha256": "cb14e91e6c7a109e59564f4de561c424ea1967d891fdbd28c5f43855482d1b96",
+      "bytes": 20592
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyIcon.qml",
+      "sha256": "c2acc6ed54fb44d9fa6481687161aa256a140b6cd32049fc0f0f44db5506afe0",
+      "bytes": 1476
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/KeyPanel.qml",
+      "sha256": "4983143b61ac07831ed4ce7bffbf631d8bbc9cd56e8e13cf039e86fba1fde094",
+      "bytes": 2462
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/plugins.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
+      "sha256": "528d4c74ed341ab81398ce5ac75897bfa7b6c6b1c5df8b28930a7576a1cd2fdf",
+      "bytes": 1046
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/qtvkbstylesplugin.dll",
+      "sha256": "e54c9ca37d8e94170b087f58aeee62ea37d4892430be13b419591731f4cba39e",
+      "bytes": 152888
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/SelectionListItem.qml",
+      "sha256": "1a525173c2c849e9b26e1cde5e32d5e73bc282451887fc8312778e27bd7a1d98",
+      "bytes": 1276
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceCanvas.qml",
+      "sha256": "b71104c639fdd51a9163856403e3fa03c95f8c26ed3baeb20d015b51b0a1d868",
+      "bytes": 5351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceInputKeyPanel.qml",
+      "sha256": "baab82154ec12cf6520dd87ce9b03dfc2b682939179d0cfe08fb04761ada879a",
+      "bytes": 1149
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/Styles/TraceUtils.js",
+      "sha256": "b4d1a3ccc5a9322a40354d51a4b102f438b5366e1c18abd8b34a10c56b0dd5e2",
+      "bytes": 1701
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick/VirtualKeyboard/VirtualKeyboardQml.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/assetutils.metainfo",
+      "sha256": "6397280f1dadd6f89fc53820850eea64b505a1e4ebdf26c9c2d8b3f3dbd910a0",
+      "bytes": 572
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy.png",
+      "sha256": "fbc370c541a931e22eeba5157b47f30fc60c7e29580b9b4904703b6e17910bf3",
+      "bytes": 375
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy16.png",
+      "sha256": "20367abdb3621f0bbbe473dc2c16708318303c600356dd3a53c9465c8a694e22",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/dummy@2x.png",
+      "sha256": "ac0ced9846290510f32ffb115d29e5329442fec01b6527a863ebf541ca8c8ed5",
+      "bytes": 499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader.png",
+      "sha256": "3b0c1111157bd3a63ff510e0cd1b911391702e160169d8ced01f93c51c7d72ed",
+      "bytes": 744
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader16.png",
+      "sha256": "1e22fc524e78e023f48a3cf4d23958824d098772f8724f2c6cfa235bcac9a662",
+      "bytes": 476
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/images/runtimeloader@2x.png",
+      "sha256": "cbcf7e6058c00b738fb595274781fc0c4a1da1196a54324a92f0b2de7f6165b2",
+      "bytes": 1441
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/NodeSection.qml",
+      "sha256": "4f7635a15ea0041e49823d84a1f778b7e93ff1d8a4e42c67a668658e68fe59bc",
+      "bytes": 12259
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/RuntimeLoaderSection.qml",
+      "sha256": "cc90032e51baa18566f451d8cdfc2a6f07a82b1a99383301b6a21e09efa1c9fe",
+      "bytes": 1511
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/designer/RuntimeLoaderSpecifics.qml",
+      "sha256": "e9d3bdee909a601e02b0e817f82578e3bbeb90290b0e5bd25ba582b445767312",
+      "bytes": 354
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/plugins.qmltypes",
+      "sha256": "807abd8689c6b2d31769b884560a5a5b7198dc1c52de161414a24ed7f7cb1c90",
+      "bytes": 7284
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/qmldir",
+      "sha256": "0aeafb9b0037cf4abd82712f4134652d17e28217d4c5e827d1eaea6149b826df",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/AssetUtils/qtquick3dassetutilsplugin.dll",
+      "sha256": "a4d5cf58dfc737425977191ad63e4804e795abaac5d2cb417c1c3134c7ea37ea",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/AbstractLightSection.qml",
+      "sha256": "ea7075d41212d401978e39a4b213a35e7f69861a675c3ca452e94f8f00f974df",
+      "bytes": 3162
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferInputSection.qml",
+      "sha256": "8f3157282b60fa17d90174dc81b3a4053f859b06cf3c43545461872110167533",
+      "bytes": 1393
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferInputSpecifics.qml",
+      "sha256": "1c635fef88bcaacee777ebc94b4b83f4a41c7be32b73f83c0b6982282f4aedba",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferSection.qml",
+      "sha256": "99855cdf1a8744b784ce931be416c4590d5bf15799b375cc2a9bc89814df411d",
+      "bytes": 3950
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/BufferSpecifics.qml",
+      "sha256": "fd2969400f4cfb4320360e49b15739693b2814eb4cb63d5ff6e922b46fb85f28",
+      "bytes": 290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CameraSection.qml",
+      "sha256": "a5b51f74a6830e6c5b3a02ec7e7aedbe6a0df601f9419fcf109cbb77685244f2",
+      "bytes": 2096
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CascadesSection.qml",
+      "sha256": "4933430c86bef6d13ed178624dfaf0ad5d914867e42528a295c87b57b35e1fb1",
+      "bytes": 4726
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CubeMapTextureSpecifics.qml",
+      "sha256": "04fb32970d61b72cc962218acd2ddcf7cc968a4298cba6cee5f0332321e5e806",
+      "bytes": 379
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomCameraSpecifics.qml",
+      "sha256": "2e4a8cb91a91742ef182d96cc795d45e99b4e6c1a063bf090722baaa183ed81e",
+      "bytes": 476
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomMaterialSection.qml",
+      "sha256": "bf14d114b7897c75cae951e1ae0cba4befc2a103b7e30d0e9dac9331a313593c",
+      "bytes": 4509
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/CustomMaterialSpecifics.qml",
+      "sha256": "d33dd65075ccc19206c4ddea52952a5750cd17cea5c54bdeb4400e9ac5735f96",
+      "bytes": 359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DebugSettingsSection.qml",
+      "sha256": "312a517cc3599fb8e3592a8d462a6b308016e82ef021850d07f215b23982f7db",
+      "bytes": 1703
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DebugSettingsSpecifics.qml",
+      "sha256": "2c748ac231e42213d058fbca431e5165ed3657b0b8b8ecee9123d0b182e05036",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DefaultMaterialSection.qml",
+      "sha256": "8cf8a56372ca81d956f9def8cd5f1e24dd8eb132b4bef1386a5dc4e340ce8af8",
+      "bytes": 22768
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DefaultMaterialSpecifics.qml",
+      "sha256": "7fac88e8fb532e29af38216a7b2483a129150579d25f8efe6b268785ff377c14",
+      "bytes": 360
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DirectionalLightSection.qml",
+      "sha256": "cf33a015bd84b337489a8c8099fa376802a9dc1874939a76916ed2ecaa8da15f",
+      "bytes": 231
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/DirectionalLightSpecifics.qml",
+      "sha256": "5f13a38768dd4813000063f38ea82c2b0d88fb63e11304622620f37b4cc433a7",
+      "bytes": 358
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/EffectSection.qml",
+      "sha256": "e7cf499b4bcdcc645e063eb6325dc5802e4d517935be900b88072241e183b6b8",
+      "bytes": 1137
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/EffectSpecifics.qml",
+      "sha256": "9fcae9653bc67397db53290eac2e0ff091b47a5c5977bdd952b2db636f73232c",
+      "bytes": 290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FileInstancingSection.qml",
+      "sha256": "d2365525868d8684a22f17196dd8365c0f456a86a28c4e2b863775112bf596e2",
+      "bytes": 682
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FileInstancingSpecifics.qml",
+      "sha256": "a6bc47bad9c581910c4a3259404277db2f77eaa34bb9b2b4344d9f396e3e8d91",
+      "bytes": 361
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FogSection.qml",
+      "sha256": "3c9f7dffc663a1f5ebf9f6b4b283897edecd0714c206f54b51443539c8100209",
+      "bytes": 8626
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FogSpecifics.qml",
+      "sha256": "768324bcbcef57535dc23ad96da22f70df32435457d4c0d4133e16df5a7d27d8",
+      "bytes": 285
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FrustumCameraSection.qml",
+      "sha256": "2ec5f0746f98879cb9b47a20c307565ddb04afffae3f8af4f4b9f9955e2e1d59",
+      "bytes": 2601
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/FrustumCameraSpecifics.qml",
+      "sha256": "f065493dcf4e9d7a5556a9b51fab34ca0b3f77e475f5ceb666df188572ecd77d",
+      "bytes": 483
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera.png",
+      "sha256": "6b729b7342a702fcb6597bd9df20879fd240f61071d8883fc6790fc67cb1a7a6",
+      "bytes": 276
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera16.png",
+      "sha256": "52d40de87fc0f2909fd2b664580e9e4ba70816e485cd8de6b8a95437f5c01c2a",
+      "bytes": 241
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/camera@2x.png",
+      "sha256": "9337189d349ac1dd05b4882beebcf888cd6790dd97d14a55f41fe8e198a103bd",
+      "bytes": 385
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone.png",
+      "sha256": "9ed3eba5db89d20f83101aa1e0dc05c4cafbc5ed40edcb463ac8a4259a98ae40",
+      "bytes": 412
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone16.png",
+      "sha256": "0debc338d32740c84e9b75ed0e21ce1f6248d7b4de7d682cea58aef2dbf9e991",
+      "bytes": 277
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cone@2x.png",
+      "sha256": "23a24f3b15cddf7a57c775dd04280de24d430104aaad90555f4de3d8d1575b80",
+      "bytes": 731
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube.png",
+      "sha256": "c73d67b48492c645ed2e8fedb3ecdf6b032d9ce73d9bae4432537811b2172038",
+      "bytes": 369
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube16.png",
+      "sha256": "3b33e04d7ef0ed5308f7afeda2c169fb52192bcc49f55a8aa6c6bac639dc1dbd",
+      "bytes": 190
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cube@2x.png",
+      "sha256": "33be3f86bb9c8460554260e331920f27dd9354f347820d208355401865cd509f",
+      "bytes": 733
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture.png",
+      "sha256": "4db299b5a86276d216a37eef66152fe3e76786673b7d40ef4d11922f5b13af21",
+      "bytes": 3182
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture16.png",
+      "sha256": "91934bfe7e438886ac711be05681788dd21ffebfd06655272406cbfbacc997a6",
+      "bytes": 258
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cubemaptexture@2x.png",
+      "sha256": "03654b6aefb74c54e12d6605ee09cb5f60ca5e4cc6d3d0185597bbf9ec7aa873",
+      "bytes": 3237
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial.png",
+      "sha256": "d95a7e080272f584ece47a21150fa86a8f49538a3ff006a4facfc492c5187af1",
+      "bytes": 563
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial16.png",
+      "sha256": "094b15191562f79499c8a29340823a26bc6025141cfbe32e3e937325e2979df0",
+      "bytes": 347
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/custommaterial@2x.png",
+      "sha256": "20a9093e7484341241f4df1efaa3ea89ebc0691d1a01c655b1c6d3dc7820df03",
+      "bytes": 1171
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder.png",
+      "sha256": "9f6d91bddf473139b03bcf5d9018ae7d697f1078cd82ea7ca2a7b9f05920f49a",
+      "bytes": 445
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder16.png",
+      "sha256": "756333e9861e4486f661ad2f35de6c7b7be37bd9efa3989fae6c80b21c234ca3",
+      "bytes": 336
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/cylinder@2x.png",
+      "sha256": "e196eaecfc364668aa71ce16c1b9482f24ac9f8f0a8a4ce771b2bdfb6febb65b",
+      "bytes": 789
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings.png",
+      "sha256": "9a6c3ec3a01e7836c9d83ba95c8eb13fdb7e84baf0e76f91c01f1fa4a035684e",
+      "bytes": 907
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings16.png",
+      "sha256": "87c3ea0fb24dcbbf088a73fe68094c13f02de4fb661d6a8ee8c7bc678225565e",
+      "bytes": 731
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/debugsettings@2x.png",
+      "sha256": "d289959a7af243c1c49a0111156bab554de17c0f9540def50fbc1191c36d5e01",
+      "bytes": 1359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy.png",
+      "sha256": "fbc370c541a931e22eeba5157b47f30fc60c7e29580b9b4904703b6e17910bf3",
+      "bytes": 375
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy16.png",
+      "sha256": "20367abdb3621f0bbbe473dc2c16708318303c600356dd3a53c9465c8a694e22",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/dummy@2x.png",
+      "sha256": "ac0ced9846290510f32ffb115d29e5329442fec01b6527a863ebf541ca8c8ed5",
+      "bytes": 499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect.png",
+      "sha256": "740f9dd817e0c14999b016fece76c99df4b28065acb78ce819552bc6ec576773",
+      "bytes": 411
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect16.png",
+      "sha256": "b33107a111e79a9f74993d8bd843ef3f55c132bdbb4038053d4321ea995e8db1",
+      "bytes": 321
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/effect@2x.png",
+      "sha256": "7c48754241a74a3ae698fd219293adc84fc7eb5efe8f81b218d776d4342bb26d",
+      "bytes": 714
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing.png",
+      "sha256": "fa62e3ff27e0690af718f6ad2fec5c7020d2dcffa08b076444431c11360ec0fb",
+      "bytes": 597
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing16.png",
+      "sha256": "894835058ee9469a7e7971ee11c657272ee8d71de0c6f0f7d00ecb151255d9dd",
+      "bytes": 406
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fileinstancing@2x.png",
+      "sha256": "b39e0c2c6e481fb786ed5803d90162d2f85e598453e8a1f2146429414a95ed0e",
+      "bytes": 1223
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog.png",
+      "sha256": "def5f5f30d476076347dcb7986ff68b177193d837aaf642911c8a98a99195b34",
+      "bytes": 793
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog16.png",
+      "sha256": "d721d22e030882118df22d940c9b3c38033e09ae0ba435c67db5c3718097ee77",
+      "bytes": 748
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/fog@2x.png",
+      "sha256": "a8a66701d2725e660136db204d0ffd5280e0e81b6844ead8c8ff6fb069a201c2",
+      "bytes": 1175
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group.png",
+      "sha256": "f1ebe725da4eefdd292b12cb2a4ec2a803ce3fc1e0ea1d9e272f089f667703cf",
+      "bytes": 496
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group16.png",
+      "sha256": "eb34affa8c6104e9b5fae1fa16a3c3762201fb2bb19339770d21504915d4de84",
+      "bytes": 284
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/group@2x.png",
+      "sha256": "b756535f7a9763e53c612c06d8e5062f82985b5390019e19b8c6b692d2c6b65c",
+      "bytes": 822
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist.png",
+      "sha256": "ea87ebfd0d09d3fdf7834f5d2fba5560988a749b3e76c991908e8b55aa906541",
+      "bytes": 602
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist16.png",
+      "sha256": "a33bc23eae61ac3e2929c7791a12bb4a210414e2e0ed632ea80fd07d5e85527f",
+      "bytes": 395
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelist@2x.png",
+      "sha256": "7ddd9f62eeb0b0c9e70647b1273b050228dca09cc28a05903251757eb0ac172d",
+      "bytes": 1119
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry.png",
+      "sha256": "9abf5f81a50586da84f90fdff86302b43a80525019665c192bf1fa71067f39e3",
+      "bytes": 462
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry16.png",
+      "sha256": "da11556c8ae2a1bd80e9d969f46ba3fe02ef7b046381433a4ee286b0f3abcafb",
+      "bytes": 308
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/instancelistentry@2x.png",
+      "sha256": "38eb4f81600fb6d3877469f8a95fa3558411d8e734c02a42c9838d49387fd361",
+      "bytes": 742
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint.png",
+      "sha256": "a94896f60bd5ba93a8fef590e54dd717096104505434c8218667e08387572752",
+      "bytes": 530
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint16.png",
+      "sha256": "da10520d14da218f352b2e08efb28563ffc3c3f48a6ccd467670df45b5ac6bbd",
+      "bytes": 349
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/joint@2x.png",
+      "sha256": "80c29b57f4ab377530934f9c2e06a2fd514c01693a9e0c66c571a2e06f7add45",
+      "bytes": 1217
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional.png",
+      "sha256": "ac39ebbe88958e24103b7203b4569e26ac0e0c9d9c835ddbf33cedb7022d19fc",
+      "bytes": 269
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional16.png",
+      "sha256": "2fd0ffdcd7d6fe8496cfdd046beea8a7079ea918921dff6d3631a2de8dd03dce",
+      "bytes": 223
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightdirectional@2x.png",
+      "sha256": "344a33c29632393d25d70300b6dac8137ce6447ef35eb8efbe407dd9d4c9a100",
+      "bytes": 457
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper.png",
+      "sha256": "34bb921c85ad5e8882fb377cad2e8deca10ec87bb12b824556146d8db8d3b23d",
+      "bytes": 913
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper16.png",
+      "sha256": "9a8c1b8df5209a84409a48c0a0db84d898b9c984bb35ad942a1e1dc4f5affd95",
+      "bytes": 760
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightmapper@2x.png",
+      "sha256": "daddda5755d7025ef2bab97b460008c3bbe4b200783e73cf9eacaac3a3bd3d8e",
+      "bytes": 1402
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint.png",
+      "sha256": "201b5e77534f3c87ea9e7aa31a17207d23ff794ceff2ffd4132a15353af50ae1",
+      "bytes": 559
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint16.png",
+      "sha256": "55e9532536b3a0955f30308efef3979f8aadca5947fef7e5ba3ed2aa39be2c64",
+      "bytes": 367
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightpoint@2x.png",
+      "sha256": "27ae7add140de90111d6d830d9edebd5ddb4c04358c845977079bf77add14d04",
+      "bytes": 1033
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot.png",
+      "sha256": "784db6a900e28477eac6e8fcaeb8a72632fca1cb38dd7586121c1afa44a67301",
+      "bytes": 491
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot16.png",
+      "sha256": "7c02e9912c07fb681167d72e108f1d69c2654ac813397ee6351c4a13042101ab",
+      "bytes": 358
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/lightspot@2x.png",
+      "sha256": "9d6f896aa1a2c5cd681814dae80dc0edaaf7ca23724b1e10e4043ebe157df367",
+      "bytes": 964
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d.png",
+      "sha256": "7db9b2b5064d335f90aa6526cd7081ec7f1a26261075bf4516fd0f3c2b1f406c",
+      "bytes": 546
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d16.png",
+      "sha256": "05eea9635f5dc43f44d4d46edf153717e3e61f8eae95b538c47ceac299d6fbd2",
+      "bytes": 376
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/loader3d@2x.png",
+      "sha256": "9fe448f495218c0d58aa918e09865bc789fafce4c7178d153b1abd9caed35ecb",
+      "bytes": 887
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material.png",
+      "sha256": "cc1e1674b239730bcec93be0e2b93c665ecc20e57098be637da401abac4ca05b",
+      "bytes": 333
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material16.png",
+      "sha256": "28dc5a98224ba3418bd64baec84ce3bc9e16dede7838f797f085210d90409497",
+      "bytes": 314
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/material@2x.png",
+      "sha256": "8abe051df801948a8768a405ef6c61ecce60bdcc6c6cbfe68e0b715e12ae25a7",
+      "bytes": 621
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/model16.png",
+      "sha256": "3b33e04d7ef0ed5308f7afeda2c169fb52192bcc49f55a8aa6c6bac639dc1dbd",
+      "bytes": 190
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget.png",
+      "sha256": "6f3b89971c208746756c95e7264f3c52d467524287eb258650b99a0c57f210a8",
+      "bytes": 394
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget16.png",
+      "sha256": "5172b94ee6ae042f19e44f21f1ee85deb65efb3f3120c28cdff988a2ba614310",
+      "bytes": 265
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/morphtarget@2x.png",
+      "sha256": "7deb876818fe000df2647a8f478c19329912b9b36fb86afc84924e9da8365d30",
+      "bytes": 703
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane.png",
+      "sha256": "a3f434324f162a428e046e1d6f0215158228ec29b6b9a0d57a39bf40f414f819",
+      "bytes": 154
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane16.png",
+      "sha256": "9a5f6892a99dee0d0fc5800a8e48057515fc9ea5556b701a7c3f3b8b955bbbec",
+      "bytes": 204
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/plane@2x.png",
+      "sha256": "e9e25cc1b2ed62131864b2b76e500bf2f481c8f7b8da27fc54191e10dc668682",
+      "bytes": 181
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe.png",
+      "sha256": "2adaff33d032bcc719c7835ca20b076c4323b9220bed03077a3c7b95e14015fe",
+      "bytes": 3210
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe16.png",
+      "sha256": "74f444703617d1f82fc7484a23166c695f096b372c06d59df83aa235728b966c",
+      "bytes": 3033
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/reflectionProbe@2x.png",
+      "sha256": "0c23b11554e2bed27f12301e6e7e05d6a0c719170e4875a55d424f4f1250478d",
+      "bytes": 3786
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d.png",
+      "sha256": "cbbe0d2ccc5fccd0ad61eb71c2bb060c0457ec6d340d2b635dfc531a87b63206",
+      "bytes": 588
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d16.png",
+      "sha256": "41c9240ffb0bc65ac8f25e1f2c20a17760d82533effbf47e32e9045e53f0847e",
+      "bytes": 379
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/repeater3d@2x.png",
+      "sha256": "2faa3bbd6206cbb256816b33e1dafff71c5d23c88722cea10000337ac7b4f07e",
+      "bytes": 919
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader.png",
+      "sha256": "2aa505af77be3014b77aef73bcddc77bbe8cc235dad3e52cdc616d925949ee4a",
+      "bytes": 900
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader16.png",
+      "sha256": "b77aa81c80179ffafb8ae147f1ac38b28a02a288506c927edd34fca1bcbdedf6",
+      "bytes": 719
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/resourceloader@2x.png",
+      "sha256": "9b8019abbb1db2bf16842e9066d349b10f26c9e4ecb36b17767205cb6d29b024",
+      "bytes": 1318
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene.png",
+      "sha256": "f188787b3b5601fbe03298515c5a95416cbb20aac0092b2cae6eac80f14cb69a",
+      "bytes": 172
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene16.png",
+      "sha256": "2156bce7bfcd291bf3c51170acba4f4088f6495e1a0442a4198eabb934a39b86",
+      "bytes": 219
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/scene@2x.png",
+      "sha256": "43c5f674a0635921ae66da215f328d2be153cf8aeeef48c6e805168e7cb614dd",
+      "bytes": 201
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand.png",
+      "sha256": "a52be37e748bf1ce65a56089aefae0602034fe28840c306f15ea61389da00287",
+      "bytes": 160
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand16.png",
+      "sha256": "218ce40ede337ec7a2b0d344b08f31e51b03785c617cc07b5338cbea91067786",
+      "bytes": 112
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shadercommand@2x.png",
+      "sha256": "325759e7b7c208ecff3cb181e0833b8ad4df81778588c2be1f1df04e31714764",
+      "bytes": 145
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil.png",
+      "sha256": "3c097b468e0ce8e50f4f0bb91fb612150f9fc8a2566efa74d839b52bce7dd05b",
+      "bytes": 304
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil16.png",
+      "sha256": "32237a87af29a627566fd01b045b864bf8916dc502e26f45fe6a7a85b0f0c70f",
+      "bytes": 191
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/shaderutil@2x.png",
+      "sha256": "6bfbbd3cea48d9771236375bfa8437facd1e45fae082e0e67441cf57dd1a8cde",
+      "bytes": 525
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton.png",
+      "sha256": "8dec0124c3ee0849367b02447d994c7d817523754aa87395a91e1fb14ada8197",
+      "bytes": 524
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton16.png",
+      "sha256": "ad2a7f5437a11dfb0684dcab67a038c5e39a28f51045b7979f15ed7c033dc129",
+      "bytes": 349
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skeleton@2x.png",
+      "sha256": "d254e496728b8a6cd7d71d21ce5c7eb770586ea7141f35efdad82f12bd75bebf",
+      "bytes": 1157
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin.png",
+      "sha256": "521edb9cde5eea7a9479b24b2af7315fe3a385b84e476097f2024259895b4a41",
+      "bytes": 863
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin16.png",
+      "sha256": "5e2d4ed3f31d319b3e98bd19f16b8ecf2e7f1d696ad76e5d73d46f2164547c42",
+      "bytes": 743
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/skin@2x.png",
+      "sha256": "8c74969e9fc2c6f6642aaa40fa8b1b71d1ff7d7cbb960b6d64b19a598eabd98e",
+      "bytes": 1354
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere.png",
+      "sha256": "629cd8166c5982c5fd23c77279a82e4789a8540cec810ffe69bfe84626b8711d",
+      "bytes": 233
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere16.png",
+      "sha256": "80e55974310acc26b5f092fee148caf8c7c6c4c2abf8058d6126489504aa3b86",
+      "bytes": 212
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/sphere@2x.png",
+      "sha256": "698ef5f1a2e719aab395dbb22bfe988cc814fdb4f9595a59579cfc57b05c25af",
+      "bytes": 381
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture.png",
+      "sha256": "5ec0cac93f6a7c64115543e37c6cfbbeca05c04f3d55ee01c455badb88665901",
+      "bytes": 278
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture16.png",
+      "sha256": "104e671505378d6d4425ee6b4835d453880abacf9c4dbf85fd9d75ab40a4d14b",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/texture@2x.png",
+      "sha256": "d7dd82e076410a193cdefdc5ab2625e80fdeab5b381b44476a4ff0e1bc6eb93c",
+      "bytes": 433
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D.png",
+      "sha256": "e20d60904087b088ecd4e5f2e4175bb4be9b2c054f943b1db01edc210618a624",
+      "bytes": 255
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D16.png",
+      "sha256": "642fd00521beae88d9112db38eae568605674dc2425f10865229863fc90cde1d",
+      "bytes": 242
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/images/view3D@2x.png",
+      "sha256": "e53661499352a9a0d6cbae1bea9266798880de5b572825a634550cd9704ec110",
+      "bytes": 411
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListEntrySection.qml",
+      "sha256": "f61f50cc941d10a63f57ceca5bbfdd44dc646ad0da718b0bf948f5fb1af7a830",
+      "bytes": 8601
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListEntrySpecifics.qml",
+      "sha256": "1a6228e13052d51a157d2a1ee2bb4e709a28459565853ccf5c5112f23045018b",
+      "bytes": 301
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListSection.qml",
+      "sha256": "8fc98982171637897e2c86dc831d7f092c13a91d415abc12812db211fb6cef4f",
+      "bytes": 1227
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstanceListSpecifics.qml",
+      "sha256": "2f94632b39d4004a2e1658604e9b4350438e1785512065f667714c400b2e4f26",
+      "bytes": 359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/InstancingSection.qml",
+      "sha256": "97b5580735fc9bc994cba6d997c5d53e79873eb46ce08af690275b9e83b572fc",
+      "bytes": 2198
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/JointSection.qml",
+      "sha256": "a5a4e33f5593f4d717e5b32ba0ff5cb4025857f7f12e0b40b41cefb21c29f2a7",
+      "bytes": 1419
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/JointSpecifics.qml",
+      "sha256": "aa6a53ab6402c4ddb7deb50582cb1c7762e2b6d6be3573d7bd27954c836555c7",
+      "bytes": 289
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/LightmapperSection.qml",
+      "sha256": "0f0c62f7bef226518e52bc246b2df9ba8b66e61bbdb0de61bd49be28e1b06b20",
+      "bytes": 5854
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/LightmapperSpecifics.qml",
+      "sha256": "61d910fd5567a5f8d9a5b07537f993e45288ff23d3c00da4b11b1044e66ef6fd",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Loader3DSection.qml",
+      "sha256": "238614147004e45e95432fb0a3ea29e9ce3e194b0f65c9c4a66ff76ef70e8a85",
+      "bytes": 2285
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Loader3DSpecifics.qml",
+      "sha256": "48d59b3f907168306ad2f1550f1ca9c6b3604f707253a3c346cf3302091d8cbe",
+      "bytes": 349
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MaterialSection.qml",
+      "sha256": "1f959523dac7c7eb47498c702221c09eb8925845138f1359668164afb757b2b2",
+      "bytes": 2296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ModelSection.qml",
+      "sha256": "1c143fafce09d44e5335e70a7a0f4d04ac8b76ae6a89aa062d47ed29b4e65f78",
+      "bytes": 13321
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ModelSpecifics.qml",
+      "sha256": "a2996ef29ff568564effe280060706a2bc042b0b903e597548563d9e00fdea78",
+      "bytes": 346
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MorphTargetSection.qml",
+      "sha256": "ebd173d27fd46bfff33724cddca7c3cd200b6d35ec5512bd5ad64a993e993990",
+      "bytes": 1498
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/MorphTargetSpecifics.qml",
+      "sha256": "0a0d7f3a6ca8bae52e01fe605fa004886163862f6d517ac2bce7da33d92cf906",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/NodeSection.qml",
+      "sha256": "bb73fb980c6174dd316b83860307c95bd055edb44c67ef0ab416af8a570c2d98",
+      "bytes": 12259
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/NodeSpecifics.qml",
+      "sha256": "28b63dbefe7f97205ea9c6bcd7c5def0721155b3cc4ff787bc9ae9dfbfafb343",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Object3DSection.qml",
+      "sha256": "1c814f166a3b48cb9a3a16a40edbca8b995eea9ea53700cd19e2eb62f3b3fc3e",
+      "bytes": 236
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/OrthographicCameraSection.qml",
+      "sha256": "f9a88c1e6ce655a417ea74aa2c8a96fea4f9c9968f3a449e827d198400f7ea96",
+      "bytes": 2789
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/OrthographicCameraSpecifics.qml",
+      "sha256": "f701948a7ed1c43b0f55cf3164f30ad95ac24ead23516f09a7045ad81cabeb67",
+      "bytes": 418
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PassSection.qml",
+      "sha256": "3b915635cda805c5c8acce9d71d06d2bac1bf2d7d0ab76b73d2458c791b0c5ff",
+      "bytes": 2475
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PassSpecifics.qml",
+      "sha256": "4633f8a38af4785f685953ef837b677ec32d69f801f214501871027e2b0b8118",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PerspectiveCameraSection.qml",
+      "sha256": "a161fd17f314dd6f70755de42433021eae338b7ee4b00e26e9502389051bae98",
+      "bytes": 2724
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PerspectiveCameraSpecifics.qml",
+      "sha256": "efd1d2783b9f1055e50d1ab7db19ee2601a6f6b11ad2fb71d0fbafb376b18148",
+      "bytes": 417
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PointLightSection.qml",
+      "sha256": "a7d8aeedcb6aabf0dc2068376e5a1035b90089ffc1b7b2e51b74b24902d20214",
+      "bytes": 2139
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PointLightSpecifics.qml",
+      "sha256": "b23c6df317f27c596c241f19a61d117addbea1068ecf57d69f19e7c771c2bfa3",
+      "bytes": 360
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PrincipledMaterialSection.qml",
+      "sha256": "226725bc511e86ad1d5a5e1fd46afcb0ade75ba4094405b15f75740afabf50b3",
+      "bytes": 52724
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/PrincipledMaterialSpecifics.qml",
+      "sha256": "565c57402b5d6c843a171ad207c414db5be36794b26d27d4d1acd539ada7ad1f",
+      "bytes": 363
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/propertyGroups.json",
+      "sha256": "2aec9312eaedf4dc63ab3695ccfc8d77e0cd473e86fcb310e070bb13717c81fc",
+      "bytes": 5043
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/quick3d.metainfo",
+      "sha256": "19c7f65125885f9715f8d815ccf468bc6b8ec3a70285394f29cf66bee26a3e0e",
+      "bytes": 26943
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ReflectionProbeSection.qml",
+      "sha256": "733bf8b7a2b73b0dd86f74ec9167efb23140d5a8f10efb5dc1fb1e3996ea044d",
+      "bytes": 8587
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ReflectionProbeSpecifics.qml",
+      "sha256": "64571f3bc5fd5f80f7995ef548a381c8197afdeb6272ff212ea160a8fd4f2524",
+      "bytes": 356
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Repeater3DSection.qml",
+      "sha256": "f56c768d0613376d03c962066b31cb37f8b9ac7f535ea917c3ec63ed8bba04fe",
+      "bytes": 1581
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/Repeater3DSpecifics.qml",
+      "sha256": "cb610d28db184c3e0dd9acaf71108aac9d7bf105ba84c1e73d741d6823a46331",
+      "bytes": 351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ResourceLoaderSection.qml",
+      "sha256": "6096d7aa5baf28c74a6d8d16eb208dbd7eb8cebbce7e461fafacd75498118526",
+      "bytes": 3212
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ResourceLoaderSpecifics.qml",
+      "sha256": "de79f1beaf9507c0253956275061c515724451b0e6ca24542acd0c7865cc6d36",
+      "bytes": 298
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SceneEnvironmentSection.qml",
+      "sha256": "2a8e3c3f59c5ad0bd3b87a92a34c7c4b9433f17acbb73dab78910abb847acddb",
+      "bytes": 26070
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SceneEnvironmentSpecifics.qml",
+      "sha256": "0d4d9e38655486800671cf63febc6029d477541474a731e97cfd8ab6b2e53877",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SetUniformValueSection.qml",
+      "sha256": "c243beebd65c0ac2454199d5b91a32c1774f4a1dd3a762cdba082ab32d7dc7b0",
+      "bytes": 1474
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SetUniformValueSpecifics.qml",
+      "sha256": "dfb430ae091d9d6c8d444e51ae137eee4d898317b04cf4d918e7e184f2bbd943",
+      "bytes": 299
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShaderSection.qml",
+      "sha256": "925d018d0187d657be297d5dc0f33f0401b9e12026ee4a53ac780e7fd107c893",
+      "bytes": 1226
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShaderSpecifics.qml",
+      "sha256": "0a5018d9785a555e0ce3c6b5c500dd1ce740a0627aedc07cf58263689bb23774",
+      "bytes": 290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/ShadowSection.qml",
+      "sha256": "803dec37eb4225cacfeb8a8ab80fce2d7b29e1fda9c2bbfe3dd05c326a469433",
+      "bytes": 6290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SkinSection.qml",
+      "sha256": "24eed5e2f02901320b92159e19acdc07c2aeb456b7402be3b0f4d78d7e5d4bb2",
+      "bytes": 328
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SkinSpecifics.qml",
+      "sha256": "2b7c118a97d3aecded26f78b0338989c57155ae6cb8880dd93a970987601ea4b",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/custom_material_default_shader.frag",
+      "sha256": "d4d0f1a78d1bdde502f0102173024817c5b67aa9251994723143a9da09022a53",
+      "bytes": 65
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/effect_default_shader.frag",
+      "sha256": "3ce48c23d0c55de0fdea89b51487a88ace80c758800186e142bbf2dfd94568b9",
+      "bytes": 149
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/effect_template.qml",
+      "sha256": "34e70fbadb4124013448fab3518231c1204e8d33b307c7853b52187e73d56162",
+      "bytes": 389
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/source/view3D_template.qml",
+      "sha256": "ea983e7cc0232c95d8f12cdd3dbaa9c9ca8c9fcaae8dead81dce1fb47d12b4b7",
+      "bytes": 756
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpecularGlossyMaterialSection.qml",
+      "sha256": "6035af2b09c4a75768d4c9cf3ec943acfde9476aa5355d8bb58c80807d566242",
+      "bytes": 47864
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpecularGlossyMaterialSpecifics.qml",
+      "sha256": "730c59fc54384e33bac3015a0794f7d6d916498a786c2ba3812be8538a538165",
+      "bytes": 367
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpotLightSection.qml",
+      "sha256": "7e38ec6d034c0e4d3387486ae7e8017ea63ab732df1efe66f1b4985b5386a376",
+      "bytes": 3254
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/SpotLightSpecifics.qml",
+      "sha256": "9158121f507968a7052570f179becee4cd0a9f88ed829b1606f82213acd2ae46",
+      "bytes": 359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureInputSection.qml",
+      "sha256": "d6cf6f22b760f5dbe98e59d5c55c82724fde64f08bfb165805aa9c1362819417",
+      "bytes": 1350
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureInputSpecifics.qml",
+      "sha256": "30db9fc51f3f5099f8f845b99e8df365e9b1f7d86082ecac947714c3f3c47cf9",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureSection.qml",
+      "sha256": "b12dcb69ec4158ddd250ffb47e1c7e16e504efd0b09a290bfa3e8f2b24b3fbfe",
+      "bytes": 13268
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/TextureSpecifics.qml",
+      "sha256": "195dd8fc49eb54e5d84c31dcf971161bb52a41ff6db6c8c9faa51c5facbd0009",
+      "bytes": 291
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/View3DSection.qml",
+      "sha256": "07a5d9a523b837d6d74e2aef08081b4b34d2fe778db9d390109f900ce105d147",
+      "bytes": 2529
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/designer/View3DSpecifics.qml",
+      "sha256": "29641c85c6e66ff7b641928eff95889bdbf389367f1c9d6f2ec9727a2094414b",
+      "bytes": 290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/AdditiveColorGradient.qml",
+      "sha256": "8e0dc0af2b153d89d220e75679b540b64cee30ce18a4b170d910d3e22f6b4940",
+      "bytes": 552
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Blur.qml",
+      "sha256": "2e9bc9584be5b25367ba135d51e2bfc01e8f4cce5d954585c8662d16b43c3a66",
+      "bytes": 410
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/BrushStrokes.qml",
+      "sha256": "872dc1db2c9fcd76273c04135539fa8b3bacbf484e9168700b0eeb3255f6471d",
+      "bytes": 1071
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/ChromaticAberration.qml",
+      "sha256": "17d0074213094541f4ef2e53689cd06f93a9776dae28fa05aac289eedf7f758b",
+      "bytes": 757
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/ColorMaster.qml",
+      "sha256": "81b2510585f489ac30386a6426fabfb50f387056eb8f4d540b1406ed288666f9",
+      "bytes": 600
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DepthOfFieldHQBlur.qml",
+      "sha256": "0875ada4c24ff3c42fa4913f867d24c4da8be1b2c7abbbe5ad74a4536a9cb1b0",
+      "bytes": 1787
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Desaturate.qml",
+      "sha256": "b5185d55bcb322abcbac44b3e3ff95c6b8aaa625ded4a140711934b3fcf49e57",
+      "bytes": 427
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/AdditiveColorGradientSection.qml",
+      "sha256": "ed1746daef7766b8f1d531f97c029febd912676ef50057c86e6cb9175d014123",
+      "bytes": 722
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/AdditiveColorGradientSpecifics.qml",
+      "sha256": "e2bcf210ae4913b338d151e62dc3ff08486d799a0e36a20e4ed7718b14971914",
+      "bytes": 305
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BlurSection.qml",
+      "sha256": "2c7e64ac75695e138916ba65b1244f57fa5e3b3cd37d8fd51a4bb3f45a7046b3",
+      "bytes": 893
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BlurSpecifics.qml",
+      "sha256": "03f17d4c2d05a259a16955dbdd95140191482f3a30dd2cb8a5e067b0e7500eb4",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BrushStrokesSection.qml",
+      "sha256": "05e6710fb3a71481b5e5a5d926faf05f6d784ce6d0d365f4d8612ea5d0a553a1",
+      "bytes": 2978
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/BrushStrokesSpecifics.qml",
+      "sha256": "ca5dbe30421ff8545fe330ed7cb38895e66c91708b12b36ff03958bc5dd2612e",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ChromaticAberrationSection.qml",
+      "sha256": "266b0585e97e260b7133be9657efa621d1c22b9ad68fd87a9bb2cc0da0e04082",
+      "bytes": 2369
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ChromaticAberrationSpecifics.qml",
+      "sha256": "9d4f23348f51e757eecc59a4c3403173f140cc20274233d79410be21f9e57436",
+      "bytes": 303
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ColorMasterSection.qml",
+      "sha256": "403c2fd9fc8e3fea28ffb7d84fe82cae630a8afe4be368430a18f13f087e76df",
+      "bytes": 2607
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ColorMasterSpecifics.qml",
+      "sha256": "d49f38f751d28c4fced7bc835cc61a6a114f6cd6685d33fdeab177f1b38bc6c2",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DepthOfFieldHQBlurSection.qml",
+      "sha256": "5e6f2e116728353e580bdfe30ef1de36a58a0de05ad298297af9bec9deab1154",
+      "bytes": 1968
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DepthOfFieldHQBlurSpecifics.qml",
+      "sha256": "01d99dc52f10d6814b91ed1cbfde12780e09215bed07008b17efec37d3aa5275",
+      "bytes": 302
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DesaturateSection.qml",
+      "sha256": "f9a5defe5ae61a069c808132b3b96fbb7ccc9fedbe169906d15c9c750dc3a879",
+      "bytes": 903
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DesaturateSpecifics.qml",
+      "sha256": "8127f76fbed7cac7cde9b0a931344df1d32de6df8952f1780015ea334a8a251c",
+      "bytes": 294
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionRippleSection.qml",
+      "sha256": "004b59b4eda3be172fa7be4ff4e50dc06274b447a4ec3988b4f69c139b627faf",
+      "bytes": 3821
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionRippleSpecifics.qml",
+      "sha256": "88e79e8519b2729ef96a719b31fcef3df59e2a2279461ca275f0b3c951e75bc0",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSphereSection.qml",
+      "sha256": "d95d4fd6ae7196457a78154948b12f8bacdc468e1942f897c8bce3dd446b081a",
+      "bytes": 2784
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSphereSpecifics.qml",
+      "sha256": "ceaffb1fec01b1e88f06721df73c7b711da0afc9109493f7d4201348268aeb9e",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSpiralSection.qml",
+      "sha256": "442f5571be414fc2f1bb3351f2c2168bf53969ab26dba04a01bcc84a92e4b994",
+      "bytes": 2761
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/DistortionSpiralSpecifics.qml",
+      "sha256": "f105554a349df08a91e76745e2c1f203e6c68cd714c260e60f8fd09d4b6c2cf2",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EdgeDetectSection.qml",
+      "sha256": "23e9942e2f03fd4159af87c45f13c06dc99091a023ef51a4f20c6782c88890da",
+      "bytes": 898
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EdgeDetectSpecifics.qml",
+      "sha256": "75de4d0189cf2504de1d8f2868a84a1dc0c6f1e207c535e1141d6f2f69a86caa",
+      "bytes": 294
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/effectlib.metainfo",
+      "sha256": "0dcfb7e1a8d8e9205a5d18ca27bd8d433efb8666bf32855cf091208b10d895b0",
+      "bytes": 11436
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EmbossSection.qml",
+      "sha256": "5b289b4e498a7cc7f413036ce39f03ef97ecc9861e121b2d44b254f47aef4661",
+      "bytes": 899
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/EmbossSpecifics.qml",
+      "sha256": "af2142238368284d94decf55b510df7333a7aa27878e336e8f4d73a304a3915f",
+      "bytes": 290
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FlipSection.qml",
+      "sha256": "eab8eed46858005ba427a9c3a67d6bed9ef13fcc1370a180bd044ea0f369b980",
+      "bytes": 1354
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FlipSpecifics.qml",
+      "sha256": "aca1b6362295dbc083b1784d6ec72492d01e8b07976ffb70bca21de4a272883b",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FxaaSection.qml",
+      "sha256": "15d25ee547a37a7e0b3317f3737ce7f6dc47e6f1827ef055bd8a1ccd0d9e9ce5",
+      "bytes": 282
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/FxaaSpecifics.qml",
+      "sha256": "3beb33f15991456d21c48995d6ca22c2c9c38f2398d63d0ef4514f2faebdc573",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/GaussianBlurSection.qml",
+      "sha256": "9aa5f764b76006809febcba3ada55b35b72b155e5354f8bc25f7e8d59c1ce4fe",
+      "bytes": 860
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/GaussianBlurSpecifics.qml",
+      "sha256": "f7488e6dba45cb7ffa808b780df4f9e4f6fe172bc2b3606faa4b10dff1716985",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/HDRBloomTonemapSection.qml",
+      "sha256": "add91b8f823e4bb98e68380ca16211f0b008930145760804492edbf38beb184c",
+      "bytes": 3754
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/HDRBloomTonemapSpecifics.qml",
+      "sha256": "34513d581f0372f61fc68745fb720e89ccdec12ae459683d4a275b170c0b36a6",
+      "bytes": 299
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect.png",
+      "sha256": "740f9dd817e0c14999b016fece76c99df4b28065acb78ce819552bc6ec576773",
+      "bytes": 411
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect16.png",
+      "sha256": "b33107a111e79a9f74993d8bd843ef3f55c132bdbb4038053d4321ea995e8db1",
+      "bytes": 321
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/images/effect@2x.png",
+      "sha256": "7c48754241a74a3ae698fd219293adc84fc7eb5efe8f81b218d776d4342bb26d",
+      "bytes": 714
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/MotionBlurSection.qml",
+      "sha256": "ecfaa36e5508040e5439c6e58bab5f67897c0acaaa75505e7f6a00fc39d14e75",
+      "bytes": 1492
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/MotionBlurSpecifics.qml",
+      "sha256": "0e61102974d3f7b2043fd0e0c07574ef9f0e9535409877227ad00a88b1e7f924",
+      "bytes": 294
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ScatterSection.qml",
+      "sha256": "5bc533483333a7007a1e38cb07dedf0914bba1dac4f1fd719e68cf620e00a665",
+      "bytes": 2962
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/ScatterSpecifics.qml",
+      "sha256": "0f058afeee5c350c6b4d41af935a819f45b3faf7a5fbe7b5461f14f9da2f7b78",
+      "bytes": 291
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/SCurveTonemapSection.qml",
+      "sha256": "daaf006e1f2b66ca0bc6c979af97f89b20c90534e99374ac0d768cedd262bb17",
+      "bytes": 6896
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/SCurveTonemapSpecifics.qml",
+      "sha256": "c464047b9a725ed8544b86ae910ff15e1a0b0563541e2dbc711ff6a236ca9126",
+      "bytes": 297
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/TiltShiftSection.qml",
+      "sha256": "aa89104019927e3d591352b663ea1e45a6cca644a17ca7bc4dbf51e28d75eb15",
+      "bytes": 3079
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/TiltShiftSpecifics.qml",
+      "sha256": "4c68229c0ffd5f96750a72d236db0b4ae22676efb51a755cdc64c5c73e0f6d94",
+      "bytes": 293
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/VignetteSection.qml",
+      "sha256": "6cbd9d23db31c4009f46db148f471aa75d4ef354d6b77df0f2ba86edcca36cda",
+      "bytes": 1673
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/designer/VignetteSpecifics.qml",
+      "sha256": "696521aaff293166748c1caddd4565c3d5d27ebd6c19831099f446c7c37ccca1",
+      "bytes": 292
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionRipple.qml",
+      "sha256": "8c7e960e26458a3b4624745716bbc526d3043751ba7cd92932e1354f2226dbeb",
+      "bytes": 849
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionSphere.qml",
+      "sha256": "6b660030076082c6de30838c718faf6e9e72def9b2ac8fb335ca8e5f242d08a3",
+      "bytes": 726
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/DistortionSpiral.qml",
+      "sha256": "f73b3a687f44e6cc84317f23212c7667d83bafc6aa3c4d9f37b856a8ac60e08f",
+      "bytes": 736
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/EdgeDetect.qml",
+      "sha256": "33a5b78b812d075855af9814fffe46382bf0c1c6abd280070636427369423d95",
+      "bytes": 588
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Emboss.qml",
+      "sha256": "fdd725e9ee22063b6aca03382b3907406854bdbd7b158b636866cf18993a7281",
+      "bytes": 429
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Flip.qml",
+      "sha256": "b2687875f6746bbe27e0267470e0ad6768047e8eb99a6780db3391ed7338cb0e",
+      "bytes": 460
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Fxaa.qml",
+      "sha256": "4532de6407fa2511f8169dac84a69d578c8f70ae9708152b0aeebeccbc7169b4",
+      "bytes": 1293
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/GaussianBlur.qml",
+      "sha256": "e25c9aa3ecae2d9278a61d0fb64eec0120f5f8043f6b35b49eee8742ce12e5c2",
+      "bytes": 1224
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/HDRBloomTonemap.qml",
+      "sha256": "98b98402a18647c5410a2c95160304c0cbd2db7acc3d111879946b027866a8d6",
+      "bytes": 3793
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/MotionBlur.qml",
+      "sha256": "ec02afcdbfdae54bcd7d352ddef74d9caedf606f0ce625d80e8af2fa1f9c9dec",
+      "bytes": 3227
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/qmldir",
+      "sha256": "e2ca68b7a7c8ddb2305cd32f96a4b14393729a938a324e88c479eb6f76a1bf61",
+      "bytes": 1027
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/qtquick3deffectplugin.dll",
+      "sha256": "1896501c56aa579062fb5bcd43b52805fd5076def1078acf3dd97ceabee89dd3",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Quick3DEffects.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Scatter.qml",
+      "sha256": "8bc7b4761b17e1f91a5cd5d1966d6dc19478a682ce2494b536cf3972aa708c9d",
+      "bytes": 813
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/SCurveTonemap.qml",
+      "sha256": "76a20f94559f9a880f0d89e24deb660f187273dd0a671a7c4809a7b1b0f1c3b6",
+      "bytes": 1066
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/TiltShift.qml",
+      "sha256": "f51ca2687297fa574d874168f7c1664963ac6eee134d3b37f28d3b70882bddca",
+      "bytes": 1956
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Effects/Vignette.qml",
+      "sha256": "1c166a627d1e4294bda46f5d824e8ef21c7cace4570042d17e31ee71388a1585",
+      "bytes": 554
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/AxisHelper.qml",
+      "sha256": "d5154eb5748884840e85aa10a2a4b78d28ef03ba3421cde17473a89838b61d72",
+      "bytes": 2392
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/DebugView.qml",
+      "sha256": "1cc0aa55677919f594b8c8f091722020fd63a4d832988cdaddd25bb9f6139a8c",
+      "bytes": 27452
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/AxisHelperSection.qml",
+      "sha256": "029e2872e5468439d67464d3ec1b837b09ba8236863bbb08c155b2234b05a993",
+      "bytes": 3523
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/AxisHelperSpecifics.qml",
+      "sha256": "699f0fef92a4c57ec283321a1bbc6baac53df328ff4d72841f32f48dcdc1a858",
+      "bytes": 351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/DebugViewSection.qml",
+      "sha256": "bfe818a5fa48f270ef901ab3a6da1daee69ca91278af85ae5fec0dcefdc0b9b5",
+      "bytes": 1632
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/DebugViewSpecifics.qml",
+      "sha256": "35da31f47f1ae43a832532d82b97697d2d18e8411ba7bba0a2a5bb8406eb9c65",
+      "bytes": 293
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ExtendedSceneEnvironmentSection.qml",
+      "sha256": "1da88e37b5e06a33add851bdc3f007474fe64e987e62c238c70b491b074b431b",
+      "bytes": 71964
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ExtendedSceneEnvironmentSpecifics.qml",
+      "sha256": "a97db94279b63bcf41bd9cfe1f736d7527a2ddd2035fc24544ee81ae8eced5e2",
+      "bytes": 308
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/GridGeometrySection.qml",
+      "sha256": "b071a41783493e8c45ef64658592c590597c323e24f57e4d4df8de434cff9259",
+      "bytes": 3025
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/GridGeometrySpecifics.qml",
+      "sha256": "f07789ad79fd714175b1bbed24a2624edeaa64c83133140011354758fa832e06",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/HeightFieldGeometrySection.qml",
+      "sha256": "eef79d1004b032a6238b8b08d025f404c12717dff21ec2b5f65d87cdd650bd18",
+      "bytes": 4244
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/HeightFieldGeometrySpecifics.qml",
+      "sha256": "68d41795c3e378500637cc9cc88f66c7b90f2aab85b6163aa284ff0ac1025506",
+      "bytes": 303
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/helpers.metainfo",
+      "sha256": "7198bc4d18baf80325cdfa3cdb137807e691cfd93c06564cd2b81b9ff14571df",
+      "bytes": 7274
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper.png",
+      "sha256": "b94024abe09f747a784483c12dbe22430313f35cc0a2d0b78d3212a9afa92264",
+      "bytes": 573
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper16.png",
+      "sha256": "661466499edb590c81199322f38f309f093cf5af0ee25b5f1943a34ac5603391",
+      "bytes": 260
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/axishelper@2x.png",
+      "sha256": "d7f9caeaf4c57fd5704b27ad89764b54b1311643986185a75d788aba701a8267",
+      "bytes": 1255
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview.png",
+      "sha256": "428a2c3169c87d11675a5239f68ce4e5377a107259495f0422676d9760058e07",
+      "bytes": 257
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview16.png",
+      "sha256": "fea33ce882ad92be805c2628ce4bc4b4c74a2daf7e8043f32b6534b502aac026",
+      "bytes": 224
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/debugview@2x.png",
+      "sha256": "866516c9597671b6eae708bb95bf199f394bafa5d5f2ac8bc98c5aebf7b9fae3",
+      "bytes": 391
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy.png",
+      "sha256": "fbc370c541a931e22eeba5157b47f30fc60c7e29580b9b4904703b6e17910bf3",
+      "bytes": 375
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy16.png",
+      "sha256": "20367abdb3621f0bbbe473dc2c16708318303c600356dd3a53c9465c8a694e22",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/dummy@2x.png",
+      "sha256": "ac0ced9846290510f32ffb115d29e5329442fec01b6527a863ebf541ca8c8ed5",
+      "bytes": 499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment.png",
+      "sha256": "6dcf0bf81eab2fa624d5a2bb8a5ef11e33cbfb9e37448424a377e145f7e21f73",
+      "bytes": 821
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment16.png",
+      "sha256": "8b5f433fb8a6de9dceecefa7cb274a61eb5fb0751bd06f6ec9b7ee9f6302eef8",
+      "bytes": 673
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/extendedsceneenvironment@2x.png",
+      "sha256": "1629f2634f3a83713b2e589ced5f2263db8936d0124c87f4700d9e018d53d165",
+      "bytes": 1138
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry.png",
+      "sha256": "f91584e9fe68349be717d4388866ac779381bd1ff02123ea7f71abfd77ea8d64",
+      "bytes": 550
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry16.png",
+      "sha256": "15646d68d59ffcf7c8441ab10314cc5688d2af7650f45eda5a1d2d6eb0a0b17c",
+      "bytes": 373
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/gridgeometry@2x.png",
+      "sha256": "d1ab734f939f0fb56f46f185298608f030e53cab655a8836487266d97834ae79",
+      "bytes": 1115
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry.png",
+      "sha256": "d6f86affb82de047db3d313ed68c0845a3e970dd05f7a89602072ea523e00793",
+      "bytes": 3197
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry16.png",
+      "sha256": "909fa25685f38d4fe38ea92f5e8dbd97946406182ba3103e216937c3a4603c5d",
+      "bytes": 3032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/heightfieldgeometry@2x.png",
+      "sha256": "702adbc09401eab8f7599ae287e1be9814c92cc10f60330a569fe02eab612e01",
+      "bytes": 3745
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid.png",
+      "sha256": "a691d92e68e77286ada1d417e15402ebda0654b3cbba7b5ad735604458e28af1",
+      "bytes": 1152
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid16.png",
+      "sha256": "508edc03522177ecf1ef5ace5df754e7f9c70d4a3fdcbc215cd8a1bd387544c3",
+      "bytes": 890
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/infinitegrid@2x.png",
+      "sha256": "4c505e53c4febec98894a395c90301b98376cd311d68211e1b65568d917d4aa8",
+      "bytes": 2103
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel.png",
+      "sha256": "64046065657d87e6b976191da26b241776891a4dff63bb197cfd68ccf69c2cf7",
+      "bytes": 693
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel16.png",
+      "sha256": "8fc38250549d12d48558bb5540004c19dfb272e20876e71a5b4022cd3f6ef345",
+      "bytes": 317
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancemodel@2x.png",
+      "sha256": "bcac8c5117c0a13c89dc115ca0e99f9b342c5ca75d1ea2aa68f2beada797ec84",
+      "bytes": 1218
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater.png",
+      "sha256": "90a2e4be5dd0af449bf6423bf529fcd3ea531b00faf7c650e33418ba77237b9a",
+      "bytes": 805
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater16.png",
+      "sha256": "a38a0f4b44a56ca48c9ebddbd3ae4cefc146043a40ebf1940d82522c93ca5095",
+      "bytes": 315
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/instancerepeater@2x.png",
+      "sha256": "487f30b676c2039ab7e8af616fbb9dfcd40a72d047b067d03a68e57382aa5867",
+      "bytes": 1618
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager.png",
+      "sha256": "bcbf051e83a4a8e4fbab9f0052c498cf5f7e6951cb3810af79eb77687c0fa8eb",
+      "bytes": 1023
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager16.png",
+      "sha256": "c13190439f7d987000d72a70a7ff616b5462896050faa06619617866269036d9",
+      "bytes": 811
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lodmanager@2x.png",
+      "sha256": "03fee875400b4ea6795983859dcc64a506601ad00ac1f130f4f988fcbbcf19ff",
+      "bytes": 1594
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode.png",
+      "sha256": "a6b1e91f3c377771e67d79875e46e9593a9be05a3627738cad2053da1e8fe899",
+      "bytes": 399
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode16.png",
+      "sha256": "48bb2d3b0f0ac0a638c125ff4d1bb5d24fa57def288966bea2d9cc1b8f2cf767",
+      "bytes": 241
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/lookatnode@2x.png",
+      "sha256": "f7a38ef6d29c543671459efe608a2d02af6a1dd0225767305866aef14287aca3",
+      "bytes": 838
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller.png",
+      "sha256": "49776022b535eb06da2ba58643bceb9a494946afe49a913fabc2c8f864c1cc51",
+      "bytes": 953
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller16.png",
+      "sha256": "5aa9df64c2475a0e51b36494f13c57493720d9c3a458bbba77c90742025882da",
+      "bytes": 752
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/orbitcameracontroller@2x.png",
+      "sha256": "235e8212f708ef15a0c5c8c91c8651e25c9db04ba19ea464e41f940470facc6b",
+      "bytes": 1442
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata.png",
+      "sha256": "c9f226296e32f846ef7832ac3ac8c8e7eefa77240da63ff82a6fa016adfefc25",
+      "bytes": 792
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata16.png",
+      "sha256": "b5edf99fde72ea779ceffb5bce4830d1e7850d589b54366bc26e83601b3b8399",
+      "bytes": 740
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/proceduralskytexturedata@2x.png",
+      "sha256": "7242d61314a2774689c6b52577a249d1693596e4cb69b34728b391c7bfacb8ca",
+      "bytes": 1062
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller.png",
+      "sha256": "6ef3348532a260152cd049645efe3ca951cf02986f7c26f8e384b2d6a8738acb",
+      "bytes": 241
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller16.png",
+      "sha256": "00eb041be39034b5306cb12c67a7722f40d3ccc51cb5f72196b8ccd7c9378605",
+      "bytes": 202
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/images/wasdcontroller@2x.png",
+      "sha256": "410090257293b3b6f7133908a1c5968424f44d156a6ea46b62c67f562388b3db",
+      "bytes": 334
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InfiniteGridSection.qml",
+      "sha256": "49e6ca2997523393f4c1ca0e74b37da9512dd562acf1337af8576511d6f7e35e",
+      "bytes": 2007
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InfiniteGridSpecifics.qml",
+      "sha256": "b428d63c0072242b49ad7b936930c4ef01ffd9d34c801ac9369b68df10e589f0",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceModelSection.qml",
+      "sha256": "f6a199b12843979648d7c4f1d4f1f3c35bb79f947e8f59bd7666c62b6d23a178",
+      "bytes": 886
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceModelSpecifics.qml",
+      "sha256": "99cd98b9b8d326d8891aa6939c1688218ad9f2a99c3b3f45d21ad6ec32bfd527",
+      "bytes": 297
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceRepeaterSection.qml",
+      "sha256": "4905a3155ce385acd78fb57d2ab4146f08389af36bbdcad1c03078ad11764e7d",
+      "bytes": 886
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/InstanceRepeaterSpecifics.qml",
+      "sha256": "f22b42b26dcb4877425e66ee8a22ef9bd2bd17727a9fa188359b8cadc85d512d",
+      "bytes": 420
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LodManagerSection.qml",
+      "sha256": "773b0655d01da9531ac0b8e16c3bcb79787055fd862565d99fab633b51eec5ae",
+      "bytes": 2744
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LodManagerSpecifics.qml",
+      "sha256": "e4f8ca8927834180c47f987b7b31656ee848b95dbf4428bc97ec469a05f72860",
+      "bytes": 351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LookAtNodeSection.qml",
+      "sha256": "bb796ef1ebc3b4579738f2e5080f9acaf5213e11ab8e7ec8f4f99831a509c525",
+      "bytes": 964
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/LookAtNodeSpecifics.qml",
+      "sha256": "b4fa9bb02a9653f07d6d769c062974c348d4963b369ebf114cf181f82e86baf0",
+      "bytes": 351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/NodeSection.qml",
+      "sha256": "4f7635a15ea0041e49823d84a1f778b7e93ff1d8a4e42c67a668658e68fe59bc",
+      "bytes": 12259
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/OrbitCameraControllerSection.qml",
+      "sha256": "980b7f41f8ff589b60baac9d3f307452546440c5cdabe4bb6af628486de9c964",
+      "bytes": 5617
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/OrbitCameraControllerSpecifics.qml",
+      "sha256": "6463eb1b93f6e16aed4f4e301d8e524e0be323888723b4b9e635a12f7be04038",
+      "bytes": 305
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ProceduralSkyTextureDataSection.qml",
+      "sha256": "b7301d898f4935a46f3c81b8c94666ec84dd87816435d9de68b858ee369a1476",
+      "bytes": 10466
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/ProceduralSkyTextureDataSpecifics.qml",
+      "sha256": "0c26aa0d62ee861132cd1d211998908ad2db713c8d68e400a43f305c9cc48fab",
+      "bytes": 308
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/Repeater3DSection.qml",
+      "sha256": "fba7d619970e6b498f1679ea4bd5d95089aa974bb22efe881cf70d8468db4767",
+      "bytes": 1581
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/WasdControllerSection.qml",
+      "sha256": "8b34f83a99eb21e8507a2ecae61e6436c1c1e11c8b4a6ad56ff0b7e07c6361d6",
+      "bytes": 10245
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/designer/WasdControllerSpecifics.qml",
+      "sha256": "3299dac249efb6746a998d2ef5258e72c780254a994f4b2b1f63450bb8d8e4c3",
+      "bytes": 298
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/ExtendedSceneEnvironment.qml",
+      "sha256": "be5e8a5c2a12b8997c4ebd6ff8376b841d994fc8c88939a6c3d2afbad87e2b08",
+      "bytes": 5215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/DepthOfFieldBlur.qml",
+      "sha256": "b6b0e904148bf061802312b9321d32bea528ce40e040b987e0d31fc2221ce2f1",
+      "bytes": 1836
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/plugins.qmltypes",
+      "sha256": "a11de82258fb6a04d9a75b442dd93140753ef5f896538a798edcf58aef3f59a2",
+      "bytes": 6496
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/qmldir",
+      "sha256": "6276457238bf56004c6eef26ee4f87657f1d210a13bf8dd532974baf165af5f8",
+      "bytes": 411
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/qtquick3dhelpersimplplugin.dll",
+      "sha256": "3b7dd55707a1ea4b4594b930b6d4b777a2db82eb3a4a6e5bdce2c7762ba5dd0a",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SceneEffect.qml",
+      "sha256": "31538b88d09e263221489c277c138a53b7c30b0a203b38de80ce402b584af1a2",
+      "bytes": 20589
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SsgiEffect.qml",
+      "sha256": "e405f70cdebb7207b8a0c5319c257f3a581fe2a545169361e3b3b380e7b763de",
+      "bytes": 4618
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/impl/SsrEffect.qml",
+      "sha256": "389b297ca167b8c0da4c863e4d21d46c511bce5fa0c544c46b4acaa9f9a5d676",
+      "bytes": 2046
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/LodManager.qml",
+      "sha256": "81ecd82a1b503be94633c31c7b79a119a872695eaeacc3628b9dd34302b51f47",
+      "bytes": 2701
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/meshes/axisGrid.mesh",
+      "sha256": "b5a6bb5880c2863a7f28890efcba82d4b0606409ab68c44631b2212e98989a31",
+      "bytes": 128684
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/OrbitCameraController.qml",
+      "sha256": "e52b71e1b1d7af856199b247c600f1cf388a9309da3288f6cd1112c134159a38",
+      "bytes": 7891
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/plugins.qmltypes",
+      "sha256": "9f80a4094be80281b645d5d57e9bf06920b081c457ac89ce31fa34672b8e8d08",
+      "bytes": 58982
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/qmldir",
+      "sha256": "8de02e3c446a9b4113dbda13c05c3155e7b3500713bcd94f0c478ce0b256fb8e",
+      "bytes": 802
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/qtquick3dhelpersplugin.dll",
+      "sha256": "711393df7a480783b60dc41cf8955df129dbecb415c1d065a6cecbe3762835ca",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Helpers/WasdController.qml",
+      "sha256": "0f74294fbbaea04f457cf67ab167a8b1b84977ba5e7acb545191a0f69e42fa28",
+      "bytes": 8712
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/LightmapperOutputWindow.qml",
+      "sha256": "bf3a35d39cb1dba48734e9084e4dcefb0d6c8595e7eebd9b5aa8f4c0ec5821a2",
+      "bytes": 3337
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/ArcballController.qml",
+      "sha256": "57357fd1a69c39f6412cba83b2f767998c6bc62818e49cc06d8047df03f6540c",
+      "bytes": 3391
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/ImageViewer.qml",
+      "sha256": "321f296385d54ed636a77c746a2fb1bd508d3b2ca55cd5ee8476e1ecadc48a69",
+      "bytes": 5635
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/LightmapViewer.qml",
+      "sha256": "540e6366c097e0c61230fc209c86d868b27ce14e4c61a0d75c9642bde1d5f652",
+      "bytes": 12028
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/lightmapviewer.qmltypes",
+      "sha256": "1d727a9129f7e9fdfdeb7cff700d726a96c9b2bf2e4cb0240d9d870c17d05601",
+      "bytes": 1389
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/MeshViewer.qml",
+      "sha256": "f30e583f3f7be2afdb95a715f6fa5252e220aea636fcdfeca376b6db049b90b6",
+      "bytes": 10176
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/OriginGizmo.qml",
+      "sha256": "5ad8653b6c87e00ba53af0dc77eb8c7ef13fcfa580c389ba438262bc4e482dd2",
+      "bytes": 16159
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/qmldir",
+      "sha256": "ab5a1e35802d31b191208e8f0550ef39ae847a666d096c634448129e8639dd42",
+      "bytes": 389
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/lightmapviewer/SceneMetadataView.qml",
+      "sha256": "0a7f99763700721d34961af13633a638f31c9cf72aef6753da7f2b1f1cf58175",
+      "bytes": 2740
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/AboutDialog.qml",
+      "sha256": "096ecc5ffb8c204dac401b4e386e0fab98f6790fac4569d69c025917c4e2321d",
+      "bytes": 800
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/EditorView.qml",
+      "sha256": "64d42e11ef86f7ee4db0eb22b3a73565c85b3da9f08d77b12da0563753fdbc65",
+      "bytes": 5057
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/FrostedGlass.qml",
+      "sha256": "1ae09deaff378633e1673ad89b7b32cc0279b6b04e9312c33a217e702727003c",
+      "bytes": 1479
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/InstancingPropertiesPane.qml",
+      "sha256": "1b3167a965222c2d1c9c7e54f77308106f2809331060b958114ed6688a1e05ea",
+      "bytes": 3789
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/main.qml",
+      "sha256": "10d19ddb1d9c8db4e5f2aedd40a152dc3cb69bae22235b1210b1b01fc8d52162",
+      "bytes": 10668
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/MaterialPropertiesPane.qml",
+      "sha256": "e7e436fd59227c34b5cdea003b4b8499244952ce344272088fa1e49236d73c08",
+      "bytes": 7068
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/plugins.qmltypes",
+      "sha256": "17aaaa0c14f792dd99fd2c7842934b1147f7e66d624c8bc5dca55365a42a9769",
+      "bytes": 10980
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/Preview.qml",
+      "sha256": "30c4206f37084f2fe83ed475368372ef2bc18cac116af83670f24605344c93ee",
+      "bytes": 3187
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/PreviewControls.qml",
+      "sha256": "55b27a1df2c3b4fa4588e8bbeaf09c54de24957abeb86201f79ca0444ac5fc5c",
+      "bytes": 3743
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/qmldir",
+      "sha256": "76237d9c84e211e7eacd277923869d1d1b452fcdaebf7537f25a89d6c58ad004",
+      "bytes": 562
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/SaveChangesDialog.qml",
+      "sha256": "7ef46af0e0e1bc9beb266037588996375f97e4d4879337cd3071591a0f0c4232",
+      "bytes": 3711
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/ShaderEditor.qml",
+      "sha256": "a98c6a446119e627a096a33897fdc965c57f501b8c155d2fb0438ddd0c852073",
+      "bytes": 3066
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/MaterialEditor/UniformManagerPane.qml",
+      "sha256": "e1bee00bd397a5c8e1c8a0c4c17ca901638b6e8e65423ff617d9fb9720c2cf09",
+      "bytes": 44662
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/color_table.png",
+      "sha256": "0c1933b4282facd74f9186b725060c3050fe49e30a347e9dcf45a98e0f4a0e5d",
+      "bytes": 14173
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/color_table2.png",
+      "sha256": "2bb1915e668d39b2a44cd948b31d6678548592bae31b0d1eba673c7bab0a8764",
+      "bytes": 4469
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/droplet.png",
+      "sha256": "96c04fe1fbf292e0ab5e9e4833b440984b5b6cdee99d4f14e557a5c36c2db261",
+      "bytes": 6951
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy.png",
+      "sha256": "fbc370c541a931e22eeba5157b47f30fc60c7e29580b9b4904703b6e17910bf3",
+      "bytes": 375
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy16.png",
+      "sha256": "20367abdb3621f0bbbe473dc2c16708318303c600356dd3a53c9465c8a694e22",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/dummy@2x.png",
+      "sha256": "ac0ced9846290510f32ffb115d29e5329442fec01b6527a863ebf541ca8c8ed5",
+      "bytes": 499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/rain.png",
+      "sha256": "11e6a26b6402daaa10e5f5fa8e8be4c1e545f12cde8ccd833e251b6c0bc86c1a",
+      "bytes": 2138
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/ripple.png",
+      "sha256": "3463794a44b0823abd0e625b1c74e9444d60c312d8972c08eb607e6a1b48e53c",
+      "bytes": 7438
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke2.png",
+      "sha256": "50ce09d2dbf58b46987d53a01d5628ae542c060ec29d00d1da934ae4d2c1af1c",
+      "bytes": 15475
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke_sprite.png",
+      "sha256": "04207e7b342f32d285995a61d19fb07f91f1c79f46c603ce72219146c4deb3e2",
+      "bytes": 62006
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/smoke_sprite2.png",
+      "sha256": "32a5237115d8fd20ed17cf05deadc622b634ea1c7fea0bb1396730256aec839f",
+      "bytes": 29414
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/snowflake.png",
+      "sha256": "53f22e1ba849ed42ffb90005da639b86f07a0a246a096dc2fd858f7458b756c4",
+      "bytes": 37226
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/sphere.png",
+      "sha256": "75d099fd3c6d5e6e07b39408a4f8158d00f0b73fc3b6e3302818642719211731",
+      "bytes": 1604
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/images/splash7.png",
+      "sha256": "7321b5ff375b0b6f19bae3231c09192f91c8faf145151718ce07a3feaa28afee",
+      "bytes": 46580
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/particleeffects.metainfo",
+      "sha256": "26fc6ee26a0bacc84a0c20b45a8836ca4ca4a16067eec73a6969a825fc899d02",
+      "bytes": 8061
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_clouds.qml",
+      "sha256": "fcca097d5ea7e5f00c816ffb829cca8a19bb09c79c9d9285eb8c8e25dbc35028",
+      "bytes": 3382
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_dust.qml",
+      "sha256": "c9e35bb7cce6754dfdf2f693e0031a5fb7aebeaf0bcd3d7fdd8beb9acdb155e2",
+      "bytes": 1634
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_exhaust.qml",
+      "sha256": "15fd08e56f1d1023b2c438757ead8787c45624c6840b2f1173e89fff6fff226b",
+      "bytes": 2099
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_fire.qml",
+      "sha256": "14678993462d366da9f71fd37e66dd149a8b2fcdb021b2fe7ea71b4fe3d674c6",
+      "bytes": 3664
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_heavyrain.qml",
+      "sha256": "058cfb2c2857646f2f973fdeaefc04eae1c317d77ede460335f55ce37e7177b7",
+      "bytes": 5499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_heavyrain_tirespray.qml",
+      "sha256": "9b183efa476a84e93e15e81eb0ecdc098c803b5eb1d77d1bf87c9452a9c766d5",
+      "bytes": 6069
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_lightrain.qml",
+      "sha256": "a2b6d90192c477b1b3911100daaa3c1e8188179d13694d62187385610ad3f16f",
+      "bytes": 2953
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_lightrain_tirespray.qml",
+      "sha256": "db20d3f8dc202afe0b70679d79989d2372d74baa373b498ddc3519ffff861659",
+      "bytes": 3708
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_rainmist.qml",
+      "sha256": "8f6a297e1e36267c17b193a8bece20d76ae376deb6e8e20bb3b4da91e17c3a6c",
+      "bytes": 1973
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_snow.qml",
+      "sha256": "9c308d0a9d17d29dd36a9ba3cc91428e595cdd19e8ef49bec438fedd95d4012c",
+      "bytes": 1516
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/designer/source/particleeffect_steam.qml",
+      "sha256": "d96fb726d093d62fbc925a1f37197249fab0719eac3a55494e7043fda6b808fa",
+      "bytes": 1908
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/qmldir",
+      "sha256": "4a809cc4b30eef9507a0f869aef0472cb91ba6243929d2f3a034594fbd75a4f1",
+      "bytes": 372
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/qtquick3dparticleeffectsplugin.dll",
+      "sha256": "47576d9cb8b32f075994e07e8e8c0cc49446effd4435ea0c4fcf6ddca4929394",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/ParticleEffects/Quick3DParticleEffects.qmltypes",
+      "sha256": "a96c7bf5832767bdc9d91e2290a3920aec3abfbf2e3814bce38b49483f16f84a",
+      "bytes": 215
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Affector3DSection.qml",
+      "sha256": "9d51ebb2e93853e12c64f01dc41982d31e59cee871ada62f519d73f951b33cf7",
+      "bytes": 2520
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Affector3DSpecifics.qml",
+      "sha256": "d6e95a6864aaebed653b19a52b43cb5346006239f285317d88f86654e9c94f62",
+      "bytes": 351
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Attractor3DSection.qml",
+      "sha256": "43490416a039afef11ccc9edf156542f09887ac150d173123d33f2b74a57317b",
+      "bytes": 6023
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Attractor3DSpecifics.qml",
+      "sha256": "053b5a83602fa7c5e02ab800a20035aa99da515c0cb411350c763d027e3a62c1",
+      "bytes": 415
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/DynamicBurst3DSection.qml",
+      "sha256": "bb768f75464517329eb167ba864dd8370f8cc578428aaaa35d7c96c1c87db480",
+      "bytes": 2164
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/DynamicBurst3DSpecifics.qml",
+      "sha256": "f416a8f992f05d619e52e21f09722ee62638030df699e99ed4ab503a2f32cfee",
+      "bytes": 362
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/EmitBurst3DSection.qml",
+      "sha256": "622e8388b7f4bfaf271288b40a065e6aa6cfb09812f7552cca4301bca969247d",
+      "bytes": 2038
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/EmitBurst3DSpecifics.qml",
+      "sha256": "9d12f827bb5e515d50dba9e6e635404072356e7c9010cefe99cea03294b2b988",
+      "bytes": 295
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Gravity3DSection.qml",
+      "sha256": "1523d282318efbc2738cc9dd881b2af0db06cb021cabd80dfe3908a9cf3ed538",
+      "bytes": 3048
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Gravity3DSpecifics.qml",
+      "sha256": "e02b221e96ce77fdd54e008c68b23e9ffea254220ee1884d7dcf572eb67b62d4",
+      "bytes": 356
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-16px.png",
+      "sha256": "650e8c5cc5d18f1f11ef3b54705294fca2f24af8e02862df75bcf8ce8e31396d",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-24px.png",
+      "sha256": "250a2dbe1c533bf16ea9e48930434de2c13d3cff3287baf0c1338d2574852e65",
+      "bytes": 371
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/attractor-24px@2x.png",
+      "sha256": "bc86e717730d778f2fee3202fd774156e357d7111f60c47a80673bf684dacf17",
+      "bytes": 586
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy.png",
+      "sha256": "fbc370c541a931e22eeba5157b47f30fc60c7e29580b9b4904703b6e17910bf3",
+      "bytes": 375
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy16.png",
+      "sha256": "20367abdb3621f0bbbe473dc2c16708318303c600356dd3a53c9465c8a694e22",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/dummy@2x.png",
+      "sha256": "ac0ced9846290510f32ffb115d29e5329442fec01b6527a863ebf541ca8c8ed5",
+      "bytes": 499
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-16px.png",
+      "sha256": "c6125902c4a88d5549fd803f7ca738a75cb343d4a9fb129623429d4e7e328383",
+      "bytes": 381
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-24px.png",
+      "sha256": "d82033cceaed7d0817921638b8adb713c9d0dca2d020e2294fb850a8a02378f6",
+      "bytes": 650
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emit-burst-24px@2x.png",
+      "sha256": "193e33d3617d7e2233fcf7b4d27e0236ae4220f34d688e3d02be95edafd0817f",
+      "bytes": 1529
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-16px.png",
+      "sha256": "2e97e9c0e7dfb0a01d01098030e972241f7d1b3b87545afb2bdc73de207eab94",
+      "bytes": 318
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-24px.png",
+      "sha256": "00cdfa3996f7675ba52607e633c78e0f977dc6fbf14c2a4138f30a810dd3a906",
+      "bytes": 675
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/emitter-24px@2x.png",
+      "sha256": "9a87b59c92e0ecd1176cdcccb4521401e8aa8f7798c92d91a2fc5f3f184ef5ba",
+      "bytes": 1512
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-16px.png",
+      "sha256": "2608678dee26bf574645deda71d54950c702b3e231572bf18cc4599e3777a1be",
+      "bytes": 328
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-24px.png",
+      "sha256": "bcc88bec4b40b5e505be11e176bcfdb0249bfd41687ac1d38dd43c5283ef072d",
+      "bytes": 448
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/gravity-24px@2x.png",
+      "sha256": "b3200846584366989dbd4347762adbe6e0cfbdf6f5ffd20b5f8748978a6289bd",
+      "bytes": 873
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-16px.png",
+      "sha256": "614ca672ce33ca8437531c8584016780122eed235efbaf89184464aed33a8de9",
+      "bytes": 515
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-24px.png",
+      "sha256": "d02651e6ed59cd44837f28f1da669cf0e51b7a5beeca969628f917fe41bd744b",
+      "bytes": 923
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/line-particle-24px@2x.png",
+      "sha256": "cecda26cf6c157f272e3ed130eb33e9ef9924971e786e5390606141433c02abe",
+      "bytes": 2268
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-16px.png",
+      "sha256": "63cb4a6ed6b52a8e01c4f22b7e1c900208d554fef655badb2cf16026961afbb8",
+      "bytes": 384
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-24px.png",
+      "sha256": "c34270b55346b008c12ebc2d6b9d6ba98253f2203be34ea62db92d63891ce211",
+      "bytes": 515
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-blend-particle-24px@2x.png",
+      "sha256": "64b59358cc239a18720606ffe97205ac76d0d87cd252f8e910adc8d81f031355",
+      "bytes": 1055
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-16px.png",
+      "sha256": "1077156323f7f70c29e194e50b0fc36411f839da2dcd406371a414e33e8fe5e8",
+      "bytes": 448
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-24px.png",
+      "sha256": "1faa89f2d4c7cdb347294f061ebb6f9493857fc92558a33c115881ede7da00ee",
+      "bytes": 811
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-particle-24px@2x.png",
+      "sha256": "2cf39b14a5d4b43facf6271053332ca37336457e1736f676e144e3b891665d2c",
+      "bytes": 1725
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-16px.png",
+      "sha256": "1380acb665690876127e3ffb8a485387324a10ad6ff04086b06a4921629f4465",
+      "bytes": 367
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-24px.png",
+      "sha256": "19613328d7033573dc1cc39a761c914daf6c5d26e8f8694c719de36ec7770546",
+      "bytes": 496
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/model-shape-24px@2x.png",
+      "sha256": "602be80f9cf9757642ee87f4871ef5c76a6d50db77256072ae7d52ccbc3b3169",
+      "bytes": 997
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-16px.png",
+      "sha256": "2bbc93e98109e3e7aac684edd17397b6ef48fc3a9d159d6da47798a5a72b7270",
+      "bytes": 364
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-24px.png",
+      "sha256": "0912c9abb7b9a70bb8314bc3594347845fb477533bc5a9070c30078dd5f2d06a",
+      "bytes": 911
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-custom-shape-24px@2x.png",
+      "sha256": "041e04ddcaca0205e3a75194e82d41fb7a89b79aeba39352dccdd8db3b8ee91b",
+      "bytes": 1850
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-16px.png",
+      "sha256": "1724d9a3bd3b0c25fa61646c79289bd405ed410b35523ddffe35a203c2edebfe",
+      "bytes": 331
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-24px.png",
+      "sha256": "df7d8b0e00be5cf4134b496e857d647df1a62a50c99f3984c7efca9320fdd821",
+      "bytes": 719
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-shape-24px@2x.png",
+      "sha256": "661d2e9ccda9614fb5c9aa22043349cfb359c3b256875d225340cf4449085f79",
+      "bytes": 1475
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-16px.png",
+      "sha256": "9703c98b1e53f3838d5b6e9cddbdc4ac5be15ee709eb347f3e14a5e858aef8c9",
+      "bytes": 334
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-24px.png",
+      "sha256": "a980c3f637194ff432ac030f7c2454172687a3585bbe12e491f815e1a67c38b4",
+      "bytes": 811
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/particle-system-24px@2x.png",
+      "sha256": "eae926d52c86e6f040b32fdb80775486cfbdfc57a2bc17e492bda1be81cf5a1b",
+      "bytes": 1702
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-16px.png",
+      "sha256": "845b389f401e9dd7ff9a400899abe3624ed96e1d87f34ce2815cba8d20430247",
+      "bytes": 421
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-24px.png",
+      "sha256": "38e9bfaeaad0965ce62954b2455992decef16fcaf895bde3ee05406f27634e00",
+      "bytes": 600
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/point-rotator-24px@2x.png",
+      "sha256": "b0d833cc645cba7a4f98d37ba71f8f538b9f218a0d9372a2d64efc26baacfd1e",
+      "bytes": 1125
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-16px.png",
+      "sha256": "44bcdc44467b0c957dac6cc18d084bcc3b24cc62636c8ebe161a1172bb99c294",
+      "bytes": 758
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-24px.png",
+      "sha256": "c9fb5dc155b0db054ef79ffe96c25597d8894a535a1b3018209a3558f0831c91",
+      "bytes": 758
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/repeller-24px@2x.png",
+      "sha256": "09ab631442b7c312d6d01708837453c2de6aec36ecc2eda11fbf09a5e5f0ed73",
+      "bytes": 1625
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-16px.png",
+      "sha256": "e55be95bbf0dc141d6c0ce404aa7b34ea51aa7f86422b8a6c5fc55db78679f12",
+      "bytes": 795
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-24px.png",
+      "sha256": "2ab5ac609f75627a171fd4ec3eb3aa7a6e176044414851923ed02475ad36401c",
+      "bytes": 795
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/scale-affector-24px@2x.png",
+      "sha256": "5ffd4135e3c870b032ab73917b58b9cc037267289364ec3115b32033dc16adea",
+      "bytes": 1658
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-16px.png",
+      "sha256": "44328a9d75f5caad9aaa2b6274848beb80e1ead8c90219e3c90e824b93d07d71",
+      "bytes": 393
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-24px.png",
+      "sha256": "a59629ac5c1f9b60ba1f0f6c9d05cca686574111d16e2c801435a08aba773cd5",
+      "bytes": 774
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-particle-24px@2x.png",
+      "sha256": "7306c2785f21f5fb33b89336cf7bf72c446329fd317f86235d9e64763a373136",
+      "bytes": 1489
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-16px.png",
+      "sha256": "e79c2bdb023a10c24f10b2b99867cbb5c3f884b354ea5870994102905a19642d",
+      "bytes": 299
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-24px.png",
+      "sha256": "c0b0e4ebaa4ad180bd0a0811c232c56d5cc73c4462bfd6bbd226085db903f07f",
+      "bytes": 389
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/sprite-sequence-24px@2x.png",
+      "sha256": "f357c40a0e5c9e6ba5ad532ee73e24b4e3c24f3d7a2c1c37cf866cc345cca2f1",
+      "bytes": 515
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-16px.png",
+      "sha256": "9a5131eadcd800c9e8febec554a847b5ca24a007633495bcf633688803615ca9",
+      "bytes": 253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-24px.png",
+      "sha256": "962f3290862d8b213a22d37b1c91c61e13fe646a570fb658df90fdc9a23b5aa0",
+      "bytes": 436
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/target-direction-24px@2x.png",
+      "sha256": "03b8b9fc08d2ff684e79e8fbade522253733297e4bffeb8489a0ba8af76f3e33",
+      "bytes": 879
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-16px.png",
+      "sha256": "8df5956f6e3a744810036d6d3660354e1426ce664956bde6f47a54ba697a15e1",
+      "bytes": 359
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-24px.png",
+      "sha256": "980fdc73ecfa830fc4d9384dd35bb3db6e6836641c6dbcd5e7c8e5e1151e5086",
+      "bytes": 646
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/trail-emitter-24px@2x.png",
+      "sha256": "db874deb86b9ac2b90fa708a7ef5915011bdf5add0cc1911de1cf87f9612aaa0",
+      "bytes": 1364
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-16px.png",
+      "sha256": "e10aa6b32b04e72c99ee9d903f72ef581dc1c7d182a4880a15007db8ebdf9c32",
+      "bytes": 323
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-24px.png",
+      "sha256": "931f7e06b6337ae88b0c8d02513078ad64fe274c6cff25fd5929f2e918851402",
+      "bytes": 444
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/vector-direction-24px@2x.png",
+      "sha256": "fa6f9e767642f017b8dfde9e6f935814711829cd6570dff88aa512394c68808e",
+      "bytes": 694
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-16px.png",
+      "sha256": "40e8d28fb1ec57642106803ac3ef64d544a1e30aab7a4aea3af2d39e2a0855b2",
+      "bytes": 334
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-24px.png",
+      "sha256": "a446903fb14040c5342faf7f4b36ef8fe5cb5ddd52275e834bbb628706affd4f",
+      "bytes": 458
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/images/wander-24px@2x.png",
+      "sha256": "008b84a8d07d0aef5e73498942c122da87037a9d4ba1d241c693d37127d64c35",
+      "bytes": 864
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/LineParticle3DSection.qml",
+      "sha256": "7059f812577295beab87864433108781250fbdca5e33b0621d69305d037b53b7",
+      "bytes": 5614
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/LineParticle3DSpecifics.qml",
+      "sha256": "a5e8b964ccba806546e3e9e82884e1933dc79e7d9e293b914b218a0b42dc491d",
+      "bytes": 430
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelBlendParticle3DSection.qml",
+      "sha256": "322290479ba5e86e63e436df639702fe441c5af5ba9d8c39fdf51d208969870e",
+      "bytes": 3721
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelBlendParticle3DSpecifics.qml",
+      "sha256": "8eef170ec4f803b3a28b264bcf7c28acbe6f4087d2ad1975dacef7b48032301b",
+      "bytes": 367
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelParticle3DSection.qml",
+      "sha256": "3bc705d16f6095e9ad4ed6f61edd9906bb20dc8235a37a6f3a22c297e185f6bc",
+      "bytes": 895
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ModelParticle3DSpecifics.qml",
+      "sha256": "037e487910ab33ba42c74141c0d04663ca5cfb3ebc9cc437337bc3fe3ac0924a",
+      "bytes": 362
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/NodeSection.qml",
+      "sha256": "a047599fce78ecd91612eff61d1fe84d35a2c494f3476bf81b555e98974391e6",
+      "bytes": 12256
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/NodeSpecifics.qml",
+      "sha256": "28b63dbefe7f97205ea9c6bcd7c5def0721155b3cc4ff787bc9ae9dfbfafb343",
+      "bytes": 288
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Particle3DSection.qml",
+      "sha256": "d75251309f7b4c03bb751fe0a59471bb99e931a104ccaa98ae8c8d4ea2eaf2b1",
+      "bytes": 11323
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Particle3DSpecifics.qml",
+      "sha256": "2221257321acf66a568ab68e9f48be5f713ddd62d6f734f6ba90413228754a05",
+      "bytes": 294
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleCustomShape3DSection.qml",
+      "sha256": "5b748c8e090f913bc9934cc1d3d5a8cf22c96211084e110e1608641196624cea",
+      "bytes": 1329
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleCustomShape3DSpecifics.qml",
+      "sha256": "9a3c65ad4a0051a101e1957a56c41633693e2f9f8d92c95f7f5acbbb49b84cce",
+      "bytes": 305
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleEmitter3DSection.qml",
+      "sha256": "cee79b32a722b722a3fe7475dee09ddf14c1e5c4b1f34cc000c5d5a949638e6a",
+      "bytes": 20877
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleEmitter3DSpecifics.qml",
+      "sha256": "f9e92f2b37c82c244389a50a0baf7931dc3666a76d49a9a7b79a464e2f801cc5",
+      "bytes": 358
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleModelShape3DSection.qml",
+      "sha256": "d6343a26215271a583691796baca93d21f0e8aaae25de311bfb6bbb08e39c49f",
+      "bytes": 1469
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleModelShape3DSpecifics.qml",
+      "sha256": "707649f952bb5e042dea381c65590da731a6cb4de0784091f151b937eea5ddc7",
+      "bytes": 304
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/particles3d.metainfo",
+      "sha256": "2e2e9b14cc0fe45ef64ed9ae1f1c53f6ece49e4910566d1d886e4458d55cf005",
+      "bytes": 17764
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleShape3DSection.qml",
+      "sha256": "753e77675d07b04aef0ec6d5fb383d9f67705a2d39c3d2682aaa6e0e0a8ceda5",
+      "bytes": 3548
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleShape3DSpecifics.qml",
+      "sha256": "4b07819fe8854e5d45607c3571787a39e057b884b1cb62c433c38f7697cc1052",
+      "bytes": 299
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleSystem3DSection.qml",
+      "sha256": "1719ae04b8166064292415e66d68f4dba2cf5a841d3db22b97d99cfa1c1ce2fc",
+      "bytes": 4313
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ParticleSystem3DSpecifics.qml",
+      "sha256": "d5a6b7d60b1b48f633b6de5543fe519e1dca3f74500b8209647a095f18cf24ab",
+      "bytes": 357
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/PointRotator3DSection.qml",
+      "sha256": "9052e91f814fe783a3ab90a3c591ed87a31b223404d016b9c50d4622583b8278",
+      "bytes": 5253
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/PointRotator3DSpecifics.qml",
+      "sha256": "cd29214ce0ef6fb65e6d4517a2cfbaddca1ab5ede51522da3e98cf2abcd733d7",
+      "bytes": 361
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Repeller3DSection.qml",
+      "sha256": "f62813f6157295601581e73b85a61dadf346ab62f6397d735080632103d0bb77",
+      "bytes": 2012
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Repeller3DSpecifics.qml",
+      "sha256": "b54c87ae7733107a326eabc4e1ad127d8332b5cf1b7b21a32b2ab51e2567b3ef",
+      "bytes": 414
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ScaleAffector3DSection.qml",
+      "sha256": "d4f6a61111a64945ca12f6bfbc33ce96e2eff587c5bb97dea96a7c31e7d9bcaf",
+      "bytes": 3198
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/ScaleAffector3DSpecifics.qml",
+      "sha256": "d87efe42acba5cce8af5be42fa0e40939a7eee568b7b7279aa4c9234e450858d",
+      "bytes": 419
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_animatedsprite_template.qml",
+      "sha256": "dd3e7fd7af684ba285890dc1c12c7bf7d19d8dbca2b4a52d88164358413c8ecd",
+      "bytes": 993
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_attractor_template.qml",
+      "sha256": "5a16f4babd7f2b5be5d32567addda325a30fcd839290240f674d094284c061a3",
+      "bytes": 848
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_burst_template.qml",
+      "sha256": "3a38e6657ff55c29e3afb4510650c5820983e825473ac2b19ea194cdd807a1cb",
+      "bytes": 828
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_modelblend_template.qml",
+      "sha256": "efc5b39127bf53c531a627ca1c480092d8b3dbc63d4696ec6d37449735ed1ecb",
+      "bytes": 1184
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_modelshape_template.qml",
+      "sha256": "ffbdab588cee56031149f4f41a4214f1dfae15feb6e251686cd1de8156e065cc",
+      "bytes": 1445
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_particletrail_template.qml",
+      "sha256": "0deca64424b0bb07a694318bea320900bd292606ae5ddee21d01cb1ff0215ba8",
+      "bytes": 1208
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_sprite_template.qml",
+      "sha256": "8020d7a9c87e0901c7636af76da8436dfd9305861e2f2b3f7a32738c47376234",
+      "bytes": 690
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_template.qml",
+      "sha256": "04607fd1ec3f3dec6c9ee531d139fc172defccc950661f69be48af9ceecc090c",
+      "bytes": 1044
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/source/particlesystem_wander_template.qml",
+      "sha256": "0e4913421f91bf4619956947a6c672dff9e6b33a8042e637a185494e44989503",
+      "bytes": 1335
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteParticle3DSection.qml",
+      "sha256": "962a7fbe0d8553873298a476267ede5edd9191236d84c9a35ee8832ea22ab06b",
+      "bytes": 6543
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteParticle3DSpecifics.qml",
+      "sha256": "8495a8a8267910c7dd6013a2c6fe7975abe142c0f66dbc58bdd3855203a80766",
+      "bytes": 363
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteSequence3DSection.qml",
+      "sha256": "9f6c0d65cdd59d269eaf1dd7445222a718a5190ff4e6a516b9018389a9f0795b",
+      "bytes": 4550
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/SpriteSequence3DSpecifics.qml",
+      "sha256": "82aae84ff2b17ecc3f40ce3454c08917137c1545253cd640666d1ac8cdb5708e",
+      "bytes": 300
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TargetDirection3DSection.qml",
+      "sha256": "ef0ce789f6780ac55d4c0075fe283cd4225ba806368f8f04b85d0652d123af51",
+      "bytes": 6371
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TargetDirection3DSpecifics.qml",
+      "sha256": "7a47d1528c69cb21b89c35d33974ff8240597a5999b496d995cf1457e9341833",
+      "bytes": 301
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TrailEmitter3DSection.qml",
+      "sha256": "7692adf31b245748122e7a7549b62fd7f8257da8103c57d215f1ddaf2865dee1",
+      "bytes": 892
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/TrailEmitter3DSpecifics.qml",
+      "sha256": "e51780290bcf1e6762c4873a0cca38a87e393586cf54710a657b0d2cd11e2285",
+      "bytes": 368
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/VectorDirection3DSection.qml",
+      "sha256": "b81bae8433710e3da9bc7a6a5bc84ce5adda6053d26a4bb13cb269c10cfe2042",
+      "bytes": 5239
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/VectorDirection3DSpecifics.qml",
+      "sha256": "6758045177efd14b711ec43e690823d94b9bfed0b6391debde145b405d031619",
+      "bytes": 301
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Wander3DSection.qml",
+      "sha256": "e5dfaba8e89ecea9dbe11e67fef2da127572d0d3c7a0cc306e92279a592d8ce6",
+      "bytes": 17111
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/designer/Wander3DSpecifics.qml",
+      "sha256": "92cfd03f06766c32dc50ed0482ebc2f869dd1f9fdacc4aa1b90d7360e984310f",
+      "bytes": 355
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/plugins.qmltypes",
+      "sha256": "14f9b331526c3f91743533b9d03b3fbc0cc4208eccf7475f0a52599f83a7bef4",
+      "bytes": 78722
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/qmldir",
+      "sha256": "326a5090209cae8ca5b6e6b8ac6157874f1acf2d08d64f5ac19dbb2d58ecbf6e",
+      "bytes": 301
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Particles3D/qtquick3dparticles3dplugin.dll",
+      "sha256": "f7755967b38c34df4e9a0830f0b4853facca0eaa241d22472d3e5165def3055d",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/BoxShapeSection.qml",
+      "sha256": "ee5aa2be4ab0734f21247e4521747ba5f97ef09d87da451ca94fdbdf88f91de2",
+      "bytes": 2462
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/BoxShapeSpecifics.qml",
+      "sha256": "56d2743ead4dcbe7332c34d2444a03bdb3e42d762f722014f13678cc9399b483",
+      "bytes": 416
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CapsuleShapeSection.qml",
+      "sha256": "9d88122189aa51f780111ea258781137cdfe6299e780f5a8e96c33d5ed7aabe7",
+      "bytes": 1447
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CapsuleShapeSpecifics.qml",
+      "sha256": "b9f247a86f5a50224e88a5bf98651fd9dc41224fc7f5bde98ad605e1c7f57506",
+      "bytes": 420
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CharacterControllerSection.qml",
+      "sha256": "2bd34966c15c61142d0ca5e696f1d5a23e9d4922e3d8423281aeec2fd73772e6",
+      "bytes": 5752
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CharacterControllerSpecifics.qml",
+      "sha256": "e24bf55b20a0bfdae3d01da7d9eab6e227328247aaaae0820f8a95b9b8c19fff",
+      "bytes": 488
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/CollisionShapeSection.qml",
+      "sha256": "38e2b704da83c077269fb7e81980f91c33a97e115065cf84d68aae3953d02a52",
+      "bytes": 995
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/ConvexMeshShapeSection.qml",
+      "sha256": "08a2d8f39e21ffd3e8e59135143a37e4b1ac5d6e067c094e4a73f4f844c0ac1b",
+      "bytes": 749
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/ConvexMeshShapeSpecifics.qml",
+      "sha256": "f49e797f0fefda67fac0d8f562f2e51a1458fb0da03f23bdc80e08785c262936",
+      "bytes": 423
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DistanceJointSpecifics.qml",
+      "sha256": "cf345e98a46d109aca3e696e8be6838daa5f3cd7edf1e5bcef766dd1552bc06f",
+      "bytes": 1705
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DynamicRigidBodySection.qml",
+      "sha256": "87dbba5b65d45c8a477bde3e3844638ab69d33607dec679a4b9370d2d49c31b1",
+      "bytes": 25311
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/DynamicRigidBodySpecifics.qml",
+      "sha256": "eb277afeb233ebea2c1cce4af7b233478695af7991107879de8d51a74c624883",
+      "bytes": 485
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/FixedJointSpecifics.qml",
+      "sha256": "b6d4ed84a20a480cebb38af801ad2c5066bb8bd3aa0573b19ede6dcd8da427bf",
+      "bytes": 289
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/HeightFieldShapeSection.qml",
+      "sha256": "33add978cfd0f71079edf0dc6a712a59351fedcd1074e2de1f4fe63c27decc45",
+      "bytes": 2818
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/HeightFieldShapeSpecifics.qml",
+      "sha256": "e90db85d6a4feff29c1e27bb69ccbc47c4b82b8fd0898c86414eaa1880c44288",
+      "bytes": 424
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape.png",
+      "sha256": "dca11356eb3d007462d8ce707c8c6af6d8ac290d2534dd9324800ea1f2ebb0f8",
+      "bytes": 890
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape16.png",
+      "sha256": "a28024e5a22da5e7a7e2ad74e5c3b1fd99b51a886a922930930b44faa02bdcb2",
+      "bytes": 771
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/boxshape@2x.png",
+      "sha256": "2415f132e3bdcee9fbc95048de0a28b0975cb62e273e9f8ac1fafa1effd64ab6",
+      "bytes": 1147
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape.png",
+      "sha256": "336646c5c1c4cd1cd5d7caaebc819311b6c5deef9481739210572976959ba052",
+      "bytes": 821
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape16.png",
+      "sha256": "e07f87d39387d2c803dbc262182575779b9ee9d830bdacdbc944ac9dd01ebd86",
+      "bytes": 697
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/capsuleshape@2x.png",
+      "sha256": "02e8ff10b0221be6306bb75c3aac3cf9a4141001861b38f4be3442489e00cad3",
+      "bytes": 1294
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller.png",
+      "sha256": "ded3d0707de26bd99474c3a765ad94e4d904c9cc709b77d101d9f88d1c8c7253",
+      "bytes": 846
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller16.png",
+      "sha256": "5f70078f652e6b0dbfe82a4c57ffdcda2d0dfaade787b7df8688118b617caaff",
+      "bytes": 698
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/charactercontroller@2x.png",
+      "sha256": "b53e54b5e4cfd35ce1c4625ab5dae7cb1ad3854814b8348ca10f004930c77a01",
+      "bytes": 1249
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape.png",
+      "sha256": "a1e971e916f8d4bf99eb0d349d9de6dfc94796303c5b0952642ac26184adb368",
+      "bytes": 1162
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape16.png",
+      "sha256": "e2b394d563251706cb35b2e0bc34847573b75aaf7578cbdce6fe59f2ab3effe3",
+      "bytes": 860
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/convexmeshshape@2x.png",
+      "sha256": "b88599393a86fcdfe499571db6db6c481c5ca7bcfefa7b0a2d8b256fd7382017",
+      "bytes": 2321
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody.png",
+      "sha256": "db9a430701ebea5e809fe538bad2133caf28f1bac5f446c50e52770141ba3979",
+      "bytes": 831
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody16.png",
+      "sha256": "70bae820c477fd907d0dd58ddc59e63af7c2db6dc369fff3376fd271e606ac0c",
+      "bytes": 728
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/dynamicrigidbody@2x.png",
+      "sha256": "a2fd4018b459bbf38dc80cfd1d2dbf5109c21df50d06b5afd544f9dfd5085895",
+      "bytes": 1230
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape.png",
+      "sha256": "cfb4fb4e665fc3b3c463fb186f5b8992a53890ae463b012b6f68848a8e0ff2fd",
+      "bytes": 873
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape16.png",
+      "sha256": "47a2f0da98882645bb30db596c7537e9ea1ac899f9ae4b368549b0217834ad0b",
+      "bytes": 725
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/heightfieldshape@2x.png",
+      "sha256": "f8a4c8b38a5f86885cbbbbebb4b56cee8968d173aa74ab457124d5b7aa917cfe",
+      "bytes": 1546
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint.png",
+      "sha256": "a94896f60bd5ba93a8fef590e54dd717096104505434c8218667e08387572752",
+      "bytes": 530
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint16.png",
+      "sha256": "da10520d14da218f352b2e08efb28563ffc3c3f48a6ccd467670df45b5ac6bbd",
+      "bytes": 349
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/joint@2x.png",
+      "sha256": "80c29b57f4ab377530934f9c2e06a2fd514c01693a9e0c66c571a2e06f7add45",
+      "bytes": 1217
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial.png",
+      "sha256": "6ff77b864d883524a824bc9772cf3721a505b8ad2f174ae52ffcb3f7363e6006",
+      "bytes": 1032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial16.png",
+      "sha256": "b35442da7785b36ea89531f982b50a0e25cb4b453ef632ad75043a4ce27fb7c8",
+      "bytes": 779
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsmaterial@2x.png",
+      "sha256": "ff2d4a6cf905308720fce370356311d435e8d36218cc5f8a232d28b628d020d5",
+      "bytes": 2014
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld.png",
+      "sha256": "a51133c854ce0e519620880ff547420fd81f7a8db6171b04a7f9f615a64315a8",
+      "bytes": 860
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld16.png",
+      "sha256": "6f115d99ed80183b699ec5f675cd3688e3e8c8d2253d8544bbe93c9e160c4732",
+      "bytes": 735
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/physicsworld@2x.png",
+      "sha256": "2b7f685a83939e5ae5300420bd5725148e973f9b1bcbf7fa1d545ec920482847",
+      "bytes": 1265
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape.png",
+      "sha256": "8fa474066519b88d22d8f2333871abb64db525830ccece5aca40d92a41c82329",
+      "bytes": 890
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape16.png",
+      "sha256": "be24832b0d24200a42fff24eaef10b7075713df38e3bab1fc28bcf3a18538e77",
+      "bytes": 716
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/planeshape@2x.png",
+      "sha256": "53dca3b9a173c4363d16acdd0b42b19742cb3f6c49e4b1a87cd85a033e0b769f",
+      "bytes": 1501
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape.png",
+      "sha256": "504ee98cf374c8797ec31d71b75bfacdb69d03121cfa747cf0caa918d7f6c8b3",
+      "bytes": 984
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape16.png",
+      "sha256": "68abcc8258479a951d7b6318d3f5cb2c5bd3893134ef5e0e069c3323b2059c47",
+      "bytes": 768
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/sphereshape@2x.png",
+      "sha256": "e3ced859ca2e1a97741df21339717c533fa05b29e0d9024b0b5cadd0ebf886cf",
+      "bytes": 1932
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody.png",
+      "sha256": "4f2edffbb219e52d8b7588c9a6eddc368678c5bcf9ba03a324ce312648173a11",
+      "bytes": 792
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody16.png",
+      "sha256": "852bd915b635ce5ed39fedaeeb0409bc62be1b5b68dec5432bbcfac9fd1aa70c",
+      "bytes": 715
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/staticrigidbody@2x.png",
+      "sha256": "3c2a7a45da8b5328ca42bac4d2b7c161a300ec4f673412a0bd8f50852cf22f88",
+      "bytes": 1203
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape.png",
+      "sha256": "5f3f0788a8e21dd2857b05194d935044ff9502a0c7fa05b3a63c790c9c050d04",
+      "bytes": 1038
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape16.png",
+      "sha256": "7be91463760084eee6aaa4982f8c8c5ac10fa77e9bc38ff8d5d6f32de2d8fca9",
+      "bytes": 813
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/trianglemeshshape@2x.png",
+      "sha256": "539b7d8b0e22b9c3b645c77cc1c55791e03201d211df594650faca8bb100c8ea",
+      "bytes": 1781
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody.png",
+      "sha256": "1e4195ea9ced8bd73bc7fc8383a764adbdfe04c145dab9f7aea766f5c4c99473",
+      "bytes": 1158
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody16.png",
+      "sha256": "bc090a9ec206a23085d11350027616c8b439b8c9fa737d6958b3551f37385732",
+      "bytes": 915
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/images/triggerbody@2x.png",
+      "sha256": "6772c6db91b176874013e9ca04179255aaeefdab190fa3edebfe66df3cc68a5f",
+      "bytes": 1944
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/JointSection.qml",
+      "sha256": "252d51ea55c895a5e904c7e665b355a75882b4c6ff6487e66e4d5f8995745ddf",
+      "bytes": 12520
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/NodeSection.qml",
+      "sha256": "fc0c9d97c83ee19d7431d6e265ed9fcee26be2121adc3c9c2017c45ffff3551b",
+      "bytes": 12256
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/physics.metainfo",
+      "sha256": "d6c2adc53def0749f8338ecd3344a19d68f82ffae988b3ff31accbf8a4794365",
+      "bytes": 9975
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsBodySection.qml",
+      "sha256": "17aaad2f3e526ceb0c91b2a19f6045c9c7ed933efba0aa66c4582f050f5ad39f",
+      "bytes": 998
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsMaterialSection.qml",
+      "sha256": "90c5b46bb141d7c975bb239a41aee49e7c65e178209abfeb95b7628565342af8",
+      "bytes": 2213
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsMaterialSpecifics.qml",
+      "sha256": "62688fac45aaa26e00821c416f838b88a316369b1641f887bd83aa2702974e82",
+      "bytes": 297
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsNodeSection.qml",
+      "sha256": "f453fc12b9f4660af1ea317d071e70f4459e2b842d14e8e23792820f787ff413",
+      "bytes": 3919
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsWorldSection.qml",
+      "sha256": "17c37ddff251d7eba6f3775ac5ff660b709caeb755e144fcecee9e45a2ec3a21",
+      "bytes": 8552
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PhysicsWorldSpecifics.qml",
+      "sha256": "a804b77c2b31c00d42c6522aca53be6c873e0483842eac1e6aa2943172916760",
+      "bytes": 296
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PlaneShapeSpecifics.qml",
+      "sha256": "d68cf19189fa73e3667054dd7d79d80d63493cdfee9b17f1f4b2f6691d298aa6",
+      "bytes": 355
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/PrismaticJointSpecifics.qml",
+      "sha256": "ba185cf8c445979729bbbf9c970103f78446b3bd01b42d44629c27e654db97a2",
+      "bytes": 1802
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/RevoluteJointSpecifics.qml",
+      "sha256": "b2a47309dd1cca4fa67ba374d904747ece970955b241125aa52a2995d03dd4a5",
+      "bytes": 2380
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphereShapeSection.qml",
+      "sha256": "7ddb91da190f89bd948a295ea4297fd2696b4d7c14ce598e41b7ac0a4981f340",
+      "bytes": 893
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphereShapeSpecifics.qml",
+      "sha256": "f3c889cb3fb932a2f47a2f701a0057b0dd0f3c93cf9015f015d04ee660a017a3",
+      "bytes": 419
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/SphericalJointSpecifics.qml",
+      "sha256": "8677920c8079cf1d11ce75445501d53a649a9237b46940e4af6496ca99592ce2",
+      "bytes": 2317
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/StaticRigidBodySpecifics.qml",
+      "sha256": "147e4c619924b32efa4495a34b9d7b87003e2079e9566d4aa49b3692c6b6839c",
+      "bytes": 416
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriangleMeshShapeSection.qml",
+      "sha256": "6ea6da455dd275d70575ad75322ddfe840bde5a2f4c0dde865e71d38ec7bf749",
+      "bytes": 751
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriangleMeshShapeSpecifics.qml",
+      "sha256": "0f6c2256fdeb5c2048f7e263fa5c3dc93cfe4e4ef2ffb0b7a8ee21c0d3f25d4e",
+      "bytes": 425
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/designer/TriggerBodySpecifics.qml",
+      "sha256": "bb84faab9063804a41df49bea5597aebf57cb05961cfb41fe4cad9efe6cb274d",
+      "bytes": 352
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/plugins.qmltypes",
+      "sha256": "7393c41dd9499303d0ac78a316684448585a9d6b478b7644fc1ec99501aa0c9c",
+      "bytes": 2662
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/qmldir",
+      "sha256": "d78699b1f4a398472e29a999add7dc8a241ad3d509255ef677e828c3cde006b6",
+      "bytes": 355
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/Helpers/qtquick3dphysicshelpersplugin.dll",
+      "sha256": "7d4ecf6ccdab57d49bf956f2cba5eaae3aae8ae668109be81bee2f7ee5a07251",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/plugins.qmltypes",
+      "sha256": "a6b899298d3aff0909ae954754013c768b74bb04a2515f4ede626ccb50c0dde6",
+      "bytes": 45899
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/qmldir",
+      "sha256": "8c352270e03436fce4256f6b36b7fad7dc9b7d47b15c25274335a9bb8152d86d",
+      "bytes": 265
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Physics/qquick3dphysicsplugin.dll",
+      "sha256": "c4b22e0b33e5519f7dc6a0fafd474c3013d5e68937d058a258dde99408362049",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/qmldir",
+      "sha256": "70847e9b5c8a809dbe9308c8aeceffd4bf3172a59167db9ab58e3d707972d783",
+      "bytes": 270
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/qquick3dplugin.dll",
+      "sha256": "6e6a720a623135c14387aa705aaeccba1f151b60a81654a6dac57d1300538e4e",
+      "bytes": 36152
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Quick3D.qmltypes",
+      "sha256": "b424ef0dc03d655fd6c9c18e292020102d3a970bdd9871d85b4e8cce52f573ff",
+      "bytes": 316820
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/plugins.qmltypes",
+      "sha256": "290f045e51bc00d3f065446d315d38cb92cd700459b1a77909edb9af3b9f1bed",
+      "bytes": 13330
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/qmldir",
+      "sha256": "0b2a363445243079d0f5483ff61822cda26910f11eabcca51689a8fd7261a498",
+      "bytes": 264
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/SpatialAudio/quick3dspatialaudioplugin.dll",
+      "sha256": "bda969537718cb0f970376196b612592f25c60d855a15d9c48fe18e3e07ce44f",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/plugins.qmltypes",
+      "sha256": "e353a2c01c650468c8d928b66def8914668b56e950b43f5eb31f88a6f4b75e03",
+      "bytes": 41880
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/qmldir",
+      "sha256": "2fb03071e1a17f662c1ab7ee94bdfdcba7eaca69f85393628b07dd3726c6948f",
+      "bytes": 266
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/quick3dxrplugin.dll",
+      "sha256": "bac34824eceedf533b21952dda1fb2605b01a77891784aa4a2669326c8010820",
+      "bytes": 31032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qml/QtQuick3D/Xr/XrErrorDialog.qml",
+      "sha256": "3fd1c387a313561e879fb381510736e71949e3354c759b2f46737b18b2f2b8ed",
+      "bytes": 809
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlcachegen.exe",
+      "sha256": "c9e2735a9dae98fe1f05cf99e044a3bc1dee12bf0caedd0b7455ee36487a7958",
+      "bytes": 65848
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlformat.exe",
+      "sha256": "c213adc5fb82259271fa5f1f52ca4a31aa347f8d7c5aec112d5b2339fc889b08",
+      "bytes": 2351416
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlimportscanner.exe",
+      "sha256": "207b163a4c16cd2c6d64e0d239c42ceec8d3ee5c7f0520777b512071237a3f3c",
+      "bytes": 140088
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmllint.exe",
+      "sha256": "87f24be8be630650ec88c9a1547baa8b6f8587e0688d99051a78304664edbd0c",
+      "bytes": 479032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/qmlls.exe",
+      "sha256": "04d76aaa1bb3f7b6d2fb8d537198273c9d38c80c2798cc4ef9ac80886bf42f05",
+      "bytes": 4164408
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6CanvasPainter.dll",
+      "sha256": "50b6a9ef26f6eda406358b82d84955d1453d38eea7c6b3be0211ee636299649d",
+      "bytes": 704312
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Charts.dll",
+      "sha256": "44ee6f27317b2aa7b1a77d6acd2b33e68c143f86224ed4e4275f3dde143460b2",
+      "bytes": 1725752
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6ChartsQml.dll",
+      "sha256": "289bd8e6f8b8ad485919092f0a91799b7ca6afff1e6bbe08820c106a76105dbc",
+      "bytes": 548664
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6DataVisualization.dll",
+      "sha256": "873a8a0260a22847fce9a65040e029f6b10c6c820df1c77b4736c6b1dfc8be6e",
+      "bytes": 1201464
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6DataVisualizationQml.dll",
+      "sha256": "52d2ef13b6ec7bf322ce271dee10d2df3d03b993a94aed8862004b3f108b5ab8",
+      "bytes": 443192
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Graphs.dll",
+      "sha256": "992c79bcedee69618bfc3697f6db3a725a47b4d9007a7eac7ca73fb88e863f59",
+      "bytes": 2578232
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Graphs2DImpl.dll",
+      "sha256": "c29b301c5cd9c08ebfba38be4ef066967d5532f34e249aa8d3c9e421bc7e15a4",
+      "bytes": 45880
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6GraphsWidgets.dll",
+      "sha256": "e7f05604eed0a42f5d3bb4fe115cd3214354cb2a7e2451c35ac85c89145c67b7",
+      "bytes": 146232
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6HttpServer.dll",
+      "sha256": "782ecbf654b44e4a3f083269428de94a5d3ecde7c5d535d2ec8c80038812d72a",
+      "bytes": 251704
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Lottie.dll",
+      "sha256": "afed59f985b2d1e052e0e2c9863cbfdfe2da596be1ec766c65b0e1344c4d2d1d",
+      "bytes": 465720
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6LottieVectorImageGenerator.dll",
+      "sha256": "5061ab7f00f4be095469ac350e12ff6e4372f23c5bc2809d84e686ba62fbff93",
+      "bytes": 183608
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6LottieVectorImageHelpers.dll",
+      "sha256": "39b9036f5ee784b88c4d157f67b694fdac3b69908c03daf80ac3013e4d998b5b",
+      "bytes": 38712
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6NetworkAuth.dll",
+      "sha256": "1d8e51a32f90a03df5e2aa381ab892b31c5ad3a1b4348cf49a10deeef178d30f",
+      "bytes": 300856
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QmlCompiler.dll",
+      "sha256": "a6210151100a13d7f535912f13a92add812be7f3832e1a96b1971dc45fc8d8f0",
+      "bytes": 2374456
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3D.dll",
+      "sha256": "951a81051de342b4cb7087b1a7501351578f5069614a4750b82b69bec61d64fe",
+      "bytes": 1490744
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DAssetImport.dll",
+      "sha256": "c74aff88ce91f4f635730439cdc6be66e1b35aa5283caf20df57e83d83d3e2a3",
+      "bytes": 69944
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DAssetUtils.dll",
+      "sha256": "5fcb3d842f50f876525ac985fd4fd1e99686de824d488572f110834c87d94e26",
+      "bytes": 352056
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DEffects.dll",
+      "sha256": "f9569bac54bd40e51b690e5d37cbddd6bdc882e19473c7031f8657f8ba3d9429",
+      "bytes": 411448
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DGlslParser.dll",
+      "sha256": "3907e0a721303390837b9ca055e3010e7d11db38562766d8858abcc188f1b5ad",
+      "bytes": 283960
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DHelpers.dll",
+      "sha256": "ff56c8f9ec1e0a8aeba8f5254471a6b420cfa5306c90666be6284a21c15e6e01",
+      "bytes": 780600
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DHelpersImpl.dll",
+      "sha256": "4680395f35de3ed3e8f7d721e612dc97026b5642399d2aa18ed0a8828f8dd9e4",
+      "bytes": 515384
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DIblBaker.dll",
+      "sha256": "ad614df62a0bbcbc8de8d537b17f93a4e6cbf52931c81d1b82db1f293d909b12",
+      "bytes": 75576
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DParticleEffects.dll",
+      "sha256": "7e277ecf7110deba64b3ada7295419bc28521beb34f581f93c55fb106ae5f4cb",
+      "bytes": 24888
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DParticles.dll",
+      "sha256": "c797e0495d57623fc58bd8c4e831d2025c13d16d3e27348b061b10634c9bc79d",
+      "bytes": 2057528
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DPhysics.dll",
+      "sha256": "f54f789f17f35677e78181fd47c4376bc38e92b4b9ec4cdf97a7cb4a9e4db9fb",
+      "bytes": 3861816
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DPhysicsHelpers.dll",
+      "sha256": "aabc32135f9dc26e94657d3318ca7b9c07b863563eb103309cfdc540b307bbac",
+      "bytes": 48440
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DRuntimeRender.dll",
+      "sha256": "bcbffd8944e3be183d8f294844bea82026e2c7d9af608315167bbc3b8ed2586d",
+      "bytes": 4479800
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DSpatialAudio.dll",
+      "sha256": "ff2aa1d004d6dbd0cd36033dbe767ba9d147f80c77fe939ae65b70533c5827ff",
+      "bytes": 85304
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DUtils.dll",
+      "sha256": "08c936f555e46c3640c1f188ebd0c7ecdcdaffaf1796335fd8a4070cd5cbcc91",
+      "bytes": 486200
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6Quick3DXr.dll",
+      "sha256": "3579c89eb9b6a420f81094893d8735ffc85e5ca38e6dfc25010a663d60e3fb12",
+      "bytes": 923448
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QuickTimeline.dll",
+      "sha256": "88092345621c98649f803cf9fd13dcdecf75393089818eb91f2f466576ee660f",
+      "bytes": 95032
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6QuickTimelineBlendTrees.dll",
+      "sha256": "5ccdcf37655273f7e9b0f358c712073b2be2c8b3379c95c305e0db422028b40c",
+      "bytes": 79160
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboard.dll",
+      "sha256": "973369caa6d13fa08f6b1cd57004dcf4f137f8ef98ec6876ad07ba690ee0b9a3",
+      "bytes": 424248
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboardQml.dll",
+      "sha256": "2efa7a0da5175f2a92d9a2c531c269ea847c4ce969429d642be8f1c91543775a",
+      "bytes": 133944
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/Qt6VirtualKeyboardSettings.dll",
+      "sha256": "0baeb91615a3221903f097201807f3b063852c29ba3e7d82c5cd8653e0c07a45",
+      "bytes": 71480
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCanvasPainter.pyd",
+      "sha256": "ad628935635ab93cfb0773222463544b215ecd1ea5d8844700608a16a3afa420",
+      "bytes": 378168
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCanvasPainter.pyi",
+      "sha256": "c56b60c39d3ce3f57f54b41d94c74a0ea785fc10350c3852f4c2c9d1a8460336",
+      "bytes": 48447
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCharts.pyd",
+      "sha256": "64b41e4b7d43c7c7908d5718a2aa96e4affd32e617f25e46a7ff40d79f1c0922",
+      "bytes": 826680
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtCharts.pyi",
+      "sha256": "aa885fd61e80d2d432256611db46263308b03e51229c1bfe661be99120f6bebe",
+      "bytes": 108504
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtDataVisualization.pyd",
+      "sha256": "20564e9a595d9c2a447a403d59d256185dc83a8f59c86c9ae6df3d130e1fa371",
+      "bytes": 664888
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtDataVisualization.pyi",
+      "sha256": "2711d981bae4c20a7b56c62a0545701c375d3ee15452015e41a25acf645f7c7c",
+      "bytes": 116173
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphs.pyd",
+      "sha256": "b7c842f3a946d4400fb7ab9e49993576e4d2f9198abfbd103313c6fd61b46b8a",
+      "bytes": 905016
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphs.pyi",
+      "sha256": "286577df11175e589bf3e0b581359b39fbcd32bfe6267c1f4ad942ee970dcd2a",
+      "bytes": 175336
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphsWidgets.pyd",
+      "sha256": "ea768c05e06cac29548238412e4bef0d352f703eec03824cf5c3ea0869eddcf5",
+      "bytes": 176440
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtGraphsWidgets.pyi",
+      "sha256": "3f229735cfc6c92fe4533f2b62a1d2b89678a2b871fdd8766a7396aba4bba8c9",
+      "bytes": 21622
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtHttpServer.pyd",
+      "sha256": "9f0cb91bbc232709ad63f808334dcddf5943feb57476465a6fc3620a1928f8b1",
+      "bytes": 171832
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtHttpServer.pyi",
+      "sha256": "0884ad49ccef6d0e20641c8305933994c41a486c6a6b03c0ae6fc4b2cc3c33ab",
+      "bytes": 16711
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtNetworkAuth.pyd",
+      "sha256": "688243ccfdb7bab892b5d10b2093aff486847cb5bbd8b230ea082a9fdeb8303d",
+      "bytes": 268088
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtNetworkAuth.pyi",
+      "sha256": "21c6bff1c0576bfa83f19480873a16422ad7d39bb8b4d4e94c065283eff0a3f8",
+      "bytes": 28125
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtQuick3D.pyd",
+      "sha256": "6fc3f7804d0bfec561373b43460f68f1bf89557d088aa61110e281828068ee2f",
+      "bytes": 179000
+    },
+    {
+      "path": "python/Lib/site-packages/PySide6/QtQuick3D.pyi",
+      "sha256": "d900947fb9290be05435469576d5893bde411a700416684ee90d15312a8d3767",
+      "bytes": 14821
+    }
+  ]
+}

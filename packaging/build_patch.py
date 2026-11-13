@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 import zipfile
 
-from runtime_dependencies import plyfile_files
+from runtime_dependencies import plyfile_files, reviewed_qt_files
 
 
 def digest(path):
@@ -27,7 +27,9 @@ def build(source, installed, output, revision):
     # distribution's installed RECORD files are considered, and declared
     # transitive requirements block removal for manual review.
     ply = plyfile_files(installed)
-    for path in ply:
+    qt = reviewed_qt_files(installed)
+    removed = ply + qt
+    for path in removed:
         target = path.relative_to(installed.resolve()).as_posix()
         baseline[target] = digest(path)
         files.append({"path": target, "sha256": None, "remove": True})
@@ -47,15 +49,16 @@ def build(source, installed, output, revision):
         if baseline.get(target) != sha:
             files.append({"path": target, "sha256": sha})
     generated = {}
-    if ply:
+    if removed:
         # Keep the runtime identity honest after dependency removal, while
         # downloading no unchanged Python or native engine components.
         old_id = (installed / "app/runtime.id").read_text().strip()
-        runtime_id = hashlib.sha256((old_id + "\nremoved:plyfile\n" + revision).encode()).hexdigest()
+        runtime_id = hashlib.sha256((old_id + '\nremoved:' + '\n'.join(sorted(
+            path.relative_to(installed.resolve()).as_posix() for path in removed)) + '\n' + revision).encode()).hexdigest()
         generated["app/runtime.id"] = (runtime_id + "\n").encode("ascii")
         generated["app/release_manifest.txt"] = (
             f"Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n"
-            "Runtime change: removed plyfile; no Python/engine replacement\n").encode("utf-8")
+            "Runtime change: removed reviewed unused dependencies; no Python/engine replacement\n").encode("utf-8")
         for target, data in generated.items():
             files.append({"path": target, "sha256": hashlib.sha256(data).hexdigest()})
     if not files:
@@ -67,7 +70,7 @@ def build(source, installed, output, revision):
     generated['app/release_manifest.txt'] = (
         f'Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n'
         'Application components bound to the incremental patch manifest.\n'
-        'Python and engine bundles preserved; no runtime pip operations.\n').encode('utf-8')
+        'Python/engine replacement is not used; reviewed removals are explicit in the manifest.\n').encode('utf-8')
     target = 'app/release_manifest.txt'
     files = [entry for entry in files if entry['path'] != target]
     files.append({'path': target, 'sha256': hashlib.sha256(generated[target]).hexdigest()})
@@ -80,6 +83,7 @@ def build(source, installed, output, revision):
     with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("manifest.json", json.dumps(manifest, indent=2))
         archive.write(source / "packaging/apply_patch.py", "apply_patch.py")
+        archive.write(source / 'packaging/reviewed-qt-removals.json', 'reviewed-qt-removals.json')
         for entry in files:
             if entry.get("remove"):
                 continue
@@ -92,7 +96,8 @@ def build(source, installed, output, revision):
     (output / "patch-summary.json").write_text(json.dumps({
         "candidate": revision, "archive": filename, "sha256": sha,
         "bytes": archive_path.stat().st_size, "files": files,
-        "unchanged_python_and_engines": True, "removed_dependency": bool(ply), "setup_built": False,
+        "unchanged_python_and_engines": not bool(qt), "removed_dependency": bool(removed),
+        "python_engine_replacement": False, "removed_qt_files": len(qt), "setup_built": False,
     }, indent=2), encoding="utf-8")
     return archive_path
 

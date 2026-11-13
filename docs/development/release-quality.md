@@ -220,12 +220,14 @@ this preliminary review as legal clearance or proof of full compliance.
   feedback/counts and practical rectangle/freehand selection; make visible-only
   versus through-depth selection behavior explicit. Support deselection and
   undo/restore for deletion, and keep marker/camera selection separate.
+  Deferred beyond the current1.0.5 candidate at the user's request on2026-11-13.
 - [ ] Persist point edits in the actual product/model, not only the rendered
   preview: keep tie-point tracks/observation references consistent and preserve
   cloud attributes, normals, confidence and class labels for retained points.
   Review effects on optimization, meshing, DEM/orthomosaic, export and stale
   products. Verify save/reopen, rebuild behavior, cancellation and large-cloud
   responsiveness, without silently restoring removed points from a stale cache.
+  This persistence work follows the same deferral as the selection/deletion tool.
 - [ ] Improve large-project capacity with a sparse camera-optimization solver
   (F10), efficient GPS-neighbor pair selection (F14), and DEM median aggregation
   (F15). Compare accuracy, deterministic behavior, peak memory and runtime on

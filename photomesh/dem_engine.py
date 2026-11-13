@@ -68,7 +68,7 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             if not npoints: raise ValueError("Point cloud is empty")
             if c.get("aggregation")=="median" and npoints*64>require_available_bytes()*.5:
                 raise ValueError("Exact median needs more RAM for this cloud; choose Mean/Highest or a smaller source")
-            if c.get('aggregation') != 'median' and npoints*80 < require_available_bytes()*.4:
+            if npoints*80 < require_available_bytes()*.4:
                 data = read_fast(c["cloud"])
                 if data is not None:
                     v=selected_records(data["vertex"]); P=np.column_stack([v["x"],v["y"],v["z"]]).astype(float) @ R.T
@@ -100,6 +100,11 @@ def build_dem(cfg, log=print, progress=None, cancel=None):
             cells=np.floor((samples[:,:2]-lo[:2])/g).astype(np.int64)
             occupied=len(np.unique(cells[:,0]*100000+cells[:,1]))
             auto=o.nice(2*math.sqrt(occupied*g*g/npoints))
+            # Keep the existing automatic-resolution population unchanged, then
+            # release its full XYZ/sample grids before median sorting begins.
+            del samples, cells, sample
+            if c.get('aggregation') == 'median':
+                P = None
         region=region_checked(c.get("region"))
         if region:
             b=np.asarray(region)-np.array([off[0],off[1],off[0],off[1]])

@@ -26,3 +26,18 @@ def test_missing_or_unopenable_manual_reports_actionable_error(window, monkeypat
     monkeypatch.setattr(documentation, 'RESOURCES', tmp_path)
     assert not documentation.open_manual(window)
     assert 'Reapply' in errors[-1]
+
+
+def test_third_party_notice_index_opens_offline_with_local_license_texts(window, monkeypatch):
+    import json
+    opened = []
+    monkeypatch.setattr(QDesktopServices, 'openUrl', lambda url: opened.append(url.toLocalFile()) or True)
+    window.actions['Third-party Notices...'].trigger()
+    path = Path(opened[0]); text = path.read_text(encoding='utf-8')
+    assert path.is_file() and path.name == 'index.html'
+    assert 'LGPL' in text and 'LightGlue' in text and 'numpy' in text
+    assert '<script' not in text and '<iframe' not in text and '<img' not in text
+    record = json.loads((path.parent/'review.json').read_text(encoding='utf-8'))
+    assert record['redistribution_clearance'] is False and record['release_blockers']
+    for name in ('GPL-3.0.txt', 'LGPL-3.0.txt', 'COLMAP-4.2.1.txt', 'GCC-exception-3.1.txt'):
+        assert (path.parent/name).is_file()

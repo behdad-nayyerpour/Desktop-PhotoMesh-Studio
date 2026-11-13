@@ -48,6 +48,10 @@ def show_about(parent):
     license_button = QPushButton("View full license")
     license_button.clicked.connect(lambda: show_license(dialog))
     layout.addWidget(license_button)
+    from .documentation import open_notices
+    notices_button = QPushButton('Third-party licenses and notices')
+    notices_button.clicked.connect(lambda: open_notices(dialog))
+    layout.addWidget(notices_button)
     layout.addWidget(QLabel("© 2026 Behdad Nayyerpour."))
     buttons = QDialogButtonBox(QDialogButtonBox.Close)
     buttons.rejected.connect(dialog.reject)

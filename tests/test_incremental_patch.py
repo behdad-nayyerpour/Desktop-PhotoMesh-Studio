@@ -43,6 +43,35 @@ def test_apply_and_rollback_preserve_runtime_and_user_data(fixture):
     assert (root / "project.pmsx").read_bytes() == b"user data"
 
 
+def test_reviewed_qt_removal_and_recovery_keep_core_and_plan(fixture):
+    root, payload, manifest = fixture
+    relative = 'python/Lib/site-packages/PySide6/Qt6Charts.dll'
+    assert relative in updater._QT_REMOVALS
+    addon = root/relative; addon.parent.mkdir(parents=True); addon.write_bytes(b'reviewed fixture addon')
+    core = addon.with_name('Qt6Core.dll'); core.write_bytes(b'required core')
+    manifest['baseline'][relative] = updater.digest(addon)
+    manifest['files'].append(dict(path=relative, sha256=None, remove=True))
+    state = updater.apply(root, payload, manifest)
+    assert not addon.exists() and core.read_bytes() == b'required core'
+    assert (state/'reviewed-qt-removals.json').is_file()
+    updater.rollback(root, state)
+    assert addon.read_bytes() == b'reviewed fixture addon'
+    assert core.read_bytes() == b'required core'
+    with pytest.raises(ValueError, match='allowed runtime'):
+        updater.managed(root, 'python/Lib/site-packages/PySide6/Qt6Core.dll')
+
+
+def test_reviewed_qt_scope_cannot_replace_a_runtime_binary(fixture):
+    root, payload, manifest = fixture
+    relative = 'python/Lib/site-packages/PySide6/Qt6Charts.dll'
+    target = root/relative; target.parent.mkdir(parents=True); target.write_bytes(b'old')
+    manifest['baseline'][relative] = updater.digest(target)
+    manifest['files'].append(dict(path=relative, sha256='b'*64))
+    with pytest.raises(ValueError, match='cannot replace Python'):
+        updater.apply(root, payload, manifest)
+    assert target.read_bytes() == b'old'
+
+
 @pytest.mark.parametrize("target", ["app/../project.pmsx", "app/../../file", "python/python.exe",
                                     "app\\main.py", "C:/app/main.py", "/app/main.py", "app//main.py"])
 def test_reject_paths_outside_managed_application(fixture, target):

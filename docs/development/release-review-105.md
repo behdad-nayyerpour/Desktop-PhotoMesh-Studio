@@ -534,3 +534,59 @@ One BAT and its checksum are available at artifact commit
 `downloads/105/Lens2Mesh_Update_SectionFixes_1.0.5.bat`; public raw download was
 read back and matches the verified BAT hash above. User target-project/display
 testing and candidate acceptance remain pending. No full Setup or PDF change.
+
+## Capacity, offline manual and dependency iteration (2026-11-13)
+
+The user accepts the section correction, defers point selection/deletion to the
+following version, and requests one combined BAT for remaining items2/3/4.
+Scope: camera-side Schur normal equations, GPS ECEF-neighbour graph, exact DEM
+medians, offline Help manual and dependency/notice remediation. The approved PDF
+is copied byte-for-byte (SHA256
+`632dde8b0392787d735610dcf805ade49f10068f6086d4e01137f5a5e31610a4`), with explicit
+Git binary attributes. No text, screenshots, compression or PDF pages changed.
+Existing Documentation remains; User Manual (PDF) and Third-party Notices are
+added. Missing files/viewers yield actionable messages and no network dependency.
+
+Maintainability: extracted exact capacity operations into survey_capacity.py.
+Camera U and Schur matrices remain sparse; small systems retain Cholesky and
+larger ones use a direct sparse LU solve with a backward-error gate, identical
+reference weights, damping and objective acceptance. No iterative approximation
+or fewer observations are substituted. Reviewed intrinsic/pose update, GPS and
+control priors and final independent reprojection diagnostics. Sparse fill-in
+can still be large for a fully connected problem; no unlimited-capacity claim.
+
+GPS uses exact KD-tree queries in ECEF, preserves date-line geometry and excludes
+self/invalid positions. Duplicate locations are compressed before radius queries;
+equal-distance neighbours use deterministic original-index ties. The descriptor
+similarity path is unchanged and remains quadratic; this change targets GPS.
+Median uses vectorized per-cell order statistics including even-count averaging.
+The existing automatic-resolution population is retained, then XYZ/sample arrays
+are released before streaming the median. Existing memory preflight, exactness,
+region/ground filtering, cancellation, coverage masks and transactional output
+publication remain; external-memory unlimited-size sorting is not claimed.
+
+Focused capacity/documentation/normal-equation/updater checks:125 passed before
+the final automatic-resolution case. The broader reused local environment had
+98 passed and3 missing-dash/Open3D failures, a known environment limitation; do
+not weaken those tests. The new automatic-resolution regression and15 other
+capacity cases pass. Fresh remote regressions are required for final acceptance.
+The first Windows run at082ec78 had900 passed and one PDF-hash failure because
+Git converted PDF line endings on checkout. Explicit binary attributes fix this;
+the original committed bytes already matched the approved PDF. Linux passed.
+
+Equal-workload local benchmark:1800-variable banded camera system,2500 GPS
+positions with8 neighbours and1M heights in120k median cells. Checksums agree;
+maximum linear-equation error8.9e-16. One-run time/RSS comparisons:
+camera0.138s/101MB to0.097s/58MB; GPS0.253s/434MB to0.169s/67MB;
+median1.56s/100MB to0.24s/86MB. These controlled local workloads include common
+interpreter/import RSS and are not target-project/GPU performance promises.
+Fresh runner benchmark evidence will be retained with the final candidate.
+
+Dependency review and remaining release gates are in dependency-audit-105.md.
+It covers exact PE evidence, reviewed unused Qt addon removals and rollback,
+upstream licenses/weight terms, and unresolved version-matched native/source
+provenance. The offline index collects198 texts,76 distribution records and
+source/replacement information. App license and engine bytes are unchanged.
+This is engineering remediation, not complete redistribution/legal clearance;
+the latter remains a final-release gate, explicitly visible in the review record.
+No full Setup, repository rename or public installer release is requested here.

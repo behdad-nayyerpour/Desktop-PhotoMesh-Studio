@@ -1,5 +1,59 @@
 # Exact-runtime dependency review for 1.0.5
 
+## Performance/manual iteration review (2026-11-13)
+
+The user requested completion of the engineering review and one combined BAT.
+Fresh static PE inspection of the exact published installer ran on a disposable
+Windows runner in [run43382179244](https://github.com/behdad-nayyerpour/Desktop-PhotoMesh-Studio/actions/runs/43382179244).
+It read1378 PE files. Artifact14016927512 SHA256
+`38de00358b370f8da5ea10d44b4f22eaf155b3f0f64c36a1857282ba34f25a2f`
+is retained locally. Application/pyqtgraph imports, native consumers and QML
+families were reviewed together; absence in a text search alone was not used.
+
+The explicit removal plan covers881 unchanged PySide6 optional files (47.8MiB),
+including78 PE files: GPL-only addon families, their transitive static consumers,
+associated QML resources and binding stubs. Core/Gui/Widgets/OpenGLWidgets and
+the app's image/platform plugins remain. These optional families are not part of
+Lens2Mesh's documented application or script API. The updater permits only the
+reviewed paths, validates exact baseline hashes, never replaces a Python binary,
+and keeps the allowlist with each rollback journal. Existing engine bytes remain.
+Full installed UI/processing/rollback validation is required below before delivery.
+
+The approved unchanged PDF and a separate offline Third-party Notices entry are
+added to Help; About also links notices. The notice index collects197 upstream
+texts for76 named Python distributions plus full GPL/LGPL/GCC exception and
+COLMAP/ALIKED/LightGlue texts. Source/replacement information is separate from
+the application's own license, which is unchanged. Exact inventory/evidence hashes,
+native/model hashes and outstanding provenance are retained in its review.json.
+
+Primary-source review:
+- [Qt module terms](https://doc.qt.io/qt-6/licensing.html) distinguish GPL-only
+  addons from modules available under LGPL; top-level PySide metadata is not
+  sufficient. [Qt's LGPL obligations](https://www.qt.io/development/open-source-lgpl-obligations)
+  were checked for notice, license text, shared-library replacement/debugging and
+  corresponding-source access. [PySide6 6.12.0 source archives](https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-6.12.0-src/)
+  exist, but that does not establish provenance of the split6.12.0.140 packages.
+- [COLMAP4.2.1 build recipe](https://github.com/colmap/colmap/blob/4.2.1/.github/workflows/build-windows.yml)
+  explicitly removes install/share. Its [vcpkg registry baseline](https://github.com/colmap/colmap/blob/4.2.1/vcpkg-configuration.json)
+  is127402f1c75bb3d5ff6bce04b285faa4930a5aca. Restoring only COLMAP's BSD text
+  cannot establish all linked native dependencies' redistribution conditions.
+- [LightGlue ONNX](https://github.com/colmap/LightGlue-ONNX#license) explicitly
+  covers pretrained LightGlue weights with Apache-2.0, including the bundled
+  ALIKED/SIFT variants. [ALIKED ONNX](https://github.com/colmap/ALIKED-ONNX/blob/main/LICENSE)
+  supplies BSD-3-Clause. The known hashes remain in the engine asset manifest.
+- [CUDA13.2 EULA](https://docs.nvidia.com/cuda/archive/13.2.0/eula/index.html)
+  was collected. The PE evidence also shows ONNX's CUDA provider imports CUDA12
+  libraries while the legacy engine contains CUDA11 runtime libraries; the
+  modern engine's toolkit label alone cannot clear all those binaries. Existing
+  optional provider probing/fallback is unchanged in this iteration.
+
+Engineering findings and remediation are recorded, but **complete redistribution
+clearance remains open**: exact matching native source/build records, split Qt
+package provenance and version-specific CUDA evidence are still required before
+the final public Setup. No engine is silently removed or replaced, and no claim
+of legal clearance follows from the BAT tests. Retained unresolved gates below
+are historical context and remain subject to these newer findings.
+
 This is an engineering inventory and an unfinished redistribution review, not
 legal clearance. The application's own license has not been changed.
 

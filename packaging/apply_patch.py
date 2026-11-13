@@ -16,6 +16,10 @@ import shutil
 import sys
 import uuid
 
+_QT_PLAN = Path(__file__).with_name('reviewed-qt-removals.json')
+_QT_REMOVALS = ({entry['path'] for entry in json.loads(_QT_PLAN.read_text(encoding='utf-8'))['files']}
+                if _QT_PLAN.is_file() else set())
+
 
 def digest(path):
     h = hashlib.sha256()
@@ -32,12 +36,13 @@ def managed(root, relative):
             or any(x in (".", "..", "") for x in relative.split("/"))
             or len(p.parts) < 2):
         raise ValueError(f"Not a managed application path: {relative!r}")
-    # The only runtime dependency removed by this candidate is plyfile. Do not
-    # turn dependency cleanup into permission to overwrite arbitrary Python/DLLs.
+    # Exact reviewed Qt addon removals also permit restoration of their backups.
+    # Arbitrary Python/engine replacement remains forbidden.
     dependency = re.fullmatch(
         r"python/Lib/site-packages/(?:plyfile\.py|plyfile/[^:]+|"
         r"plyfile-[0-9][^/]*\.dist-info/[^:]+|__pycache__/plyfile\.[^/]+\.pyc)", relative)
-    if p.parts[0] != "app" and not dependency:
+    qt_dependency = relative in _QT_REMOVALS and relative.startswith('python/Lib/site-packages/PySide6/')
+    if p.parts[0] != "app" and not dependency and not qt_dependency:
         raise ValueError(f"Not an allowed runtime dependency path: {relative!r}")
     target = root.joinpath(*p.parts)
     for part in (target, *target.parents):
@@ -123,7 +128,7 @@ def validate_manifest(manifest, root, payload):
                 raise ValueError("Removal has no verified baseline file")
         else:
             if relative.startswith("python/"):
-                raise ValueError("This candidate can remove plyfile but cannot replace Python dependencies")
+                raise ValueError("This candidate can remove reviewed dependencies but cannot replace Python dependencies")
             source = managed(payload, relative)
             if not source.is_file() or digest(source) != entry["sha256"]:
                 raise ValueError(f"Candidate payload checksum mismatch: {relative}")
@@ -189,6 +194,8 @@ def apply(root, payload, manifest):
         entries.append({**entry, "before": before})
     state = {"root": str(root), "status": "applying", "files": entries}
     shutil.copy2(__file__, state_dir / "apply_patch.py")
+    if _QT_PLAN.is_file():
+        shutil.copy2(_QT_PLAN, state_dir / _QT_PLAN.name)
     write_json(state_dir / "state.json", state)
     # ASCII-only batch source with Unicode paths obtained from cmd's %~dp0.
     # Embedding UTF-8 path literals breaks under legacy console code pages.
