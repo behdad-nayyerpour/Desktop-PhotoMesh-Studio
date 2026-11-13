@@ -1,0 +1,33 @@
+name: Exact hashed Windows runtime wheel cache
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: ["packaging/requirements-runtime-win313.lock", ".github/workflows/runtime-lock-105.yml"]
+permissions:
+  contents: read
+jobs:
+  wheel-cache:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Acquire exact wheels with hashes and no dependency resolution
+        run: python -m pip download --require-hashes --no-deps -r packaging/requirements-runtime-win313.lock --dest audited-wheels
+      - name: Verify a fresh isolated environment from the offline wheel cache
+        shell: pwsh
+        run: |
+          python -m venv audited-runtime
+          if ($LASTEXITCODE) { throw 'Disposable environment preparation failed' }
+          & audited-runtime/Scripts/python.exe -m pip install --no-index --find-links audited-wheels --require-hashes --no-deps -r packaging/requirements-runtime-win313.lock
+          if ($LASTEXITCODE) { throw 'Exact offline package installation failed' }
+          & audited-runtime/Scripts/python.exe -c "import PySide6,numpy,scipy,open3d,pyproj,psutil,laspy,lazrs; print('Exact locked offline dependencies import successfully')"
+          if ($LASTEXITCODE) { throw 'Locked native package imports failed' }
+          Get-ChildItem audited-wheels -File | ForEach-Object { [pscustomobject]@{name=$_.Name;bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName).Hash.ToLowerInvariant()} } | ConvertTo-Json -Depth 3 | Set-Content wheel-cache-evidence.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Exact-runtime-wheel-cache-evidence
+          path: wheel-cache-evidence.json
+          retention-days: 30

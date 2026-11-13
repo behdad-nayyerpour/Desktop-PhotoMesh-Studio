@@ -41,3 +41,17 @@ def test_third_party_notice_index_opens_offline_with_local_license_texts(window,
     assert record['redistribution_clearance'] is False and record['release_blockers']
     for name in ('GPL-3.0.txt', 'LGPL-3.0.txt', 'COLMAP-4.2.1.txt', 'GCC-exception-3.1.txt'):
         assert (path.parent/name).is_file()
+
+
+def test_primary_provenance_records_retain_exact_evidence_bytes():
+    import json
+    root = documentation.RESOURCES/'third-party'
+    record = json.loads((root/'review.json').read_text(encoding='utf-8'))
+    proof = record['primary_identity']
+    assert proof['qt_mismatches'] == 0 and proof['qt_compared'] == 1564
+    assert sum(group['matched'] for group in proof['native_groups']) == 145
+    for item in proof['proof_records']:
+        assert hashlib.sha256((root/item['path']).read_bytes()).hexdigest() == item['sha256']
+    for version in ('11.8','13.2'):
+        text = (root/f'NVIDIA-CUDA-{version}-EULA.txt').read_text(encoding='utf-8')
+        assert 'NVIDIA' in text and 'Distribution' in text and '<script' not in text

@@ -2,10 +2,35 @@
 import argparse
 import hashlib
 from html import escape
+from html.parser import HTMLParser
 import json
 from pathlib import Path
 import shutil
 import zipfile
+
+
+class LegalText(HTMLParser):
+    """Retain legal text without shipping active web-page scripts/assets."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+        self.skipped = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script','style','head','noscript') and self.skipped is None:
+            self.skipped = tag
+        if self.skipped is None and tag in ('p','div','br','li','tr','h1','h2','h3','h4'):
+            self.parts.append('\n')
+
+    def handle_endtag(self, tag):
+        if tag == self.skipped:
+            self.skipped = None
+        if self.skipped is None and tag in ('p','div','li','tr','h1','h2','h3','h4'):
+            self.parts.append('\n')
+
+    def handle_data(self, data):
+        if self.skipped is None:
+            self.parts.append(data)
 
 
 def build(inventory, evidence, upstream, output, primary_proof=None):
@@ -32,12 +57,15 @@ def build(inventory, evidence, upstream, output, primary_proof=None):
         record['primary_identity'] = dict(qt_compared=summary['qt_compared'], qt_mismatches=0,
             native_groups=[dict(group=r['group'],matched=r['matched'],url=r['url'],sha256=r['sha256']) for r in native],
             python_packages=summary['python_packages'], binary_identity_is_not_source_clearance=True)
+        record['primary_identity']['proof_records'] = []
         record['release_blockers'] = [
             'Exact corresponding source, third-party notices and build/patch recipes for every linked native dependency still require complete retention; release archive identity alone does not establish them.',
             'Official PySide6 Pdf/WebEngine6.12.0.140 wheel identity is verified; exact matching Chromium/split-module corresponding-source packaging remains to be established.',
         ]
         for name in ('python-origins.json','qt-official-byte-comparison.json','native-official-byte-comparison.json','native-version-origins.json'):
             shutil.copyfile(primary_proof/name, output/name)
+            record['primary_identity']['proof_records'].append(dict(path=name,
+                sha256=hashlib.sha256((primary_proof/name).read_bytes()).hexdigest()))
             proof_links.append(f'<li><a href="{name}">{name}</a></li>')
     (output/'review.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8')
     sections = []
@@ -55,10 +83,16 @@ def build(inventory, evidence, upstream, output, primary_proof=None):
     for name in ('COLMAP-3.8-LICENSE.txt','COLMAP-3.8-build-dependencies.txt','GLOMAP-1.2.0-LICENSE.txt',
                  'GLOMAP-1.2.0-vcpkg.json','NVIDIA-CUDA-11.8-EULA.html','NVIDIA-CUDA-13.2-EULA.html'):
         if (upstream/name).is_file():
-            shutil.copyfile(upstream/name, output/name)
-            proof_links.append(f'<li><a href="{name}">{name}</a></li>')
-            if name.endswith('.txt'):
-                sections.append(f'<details><summary>{escape(name)}</summary><pre>{escape((upstream/name).read_text(encoding="utf-8"))}</pre></details>')
+            target = name
+            if name.endswith('.html'):
+                parser = LegalText(); parser.feed((upstream/name).read_text(encoding='utf-8'))
+                target = Path(name).with_suffix('.txt').name
+                (output/target).write_text(''.join(parser.parts), encoding='utf-8')
+            else:
+                shutil.copyfile(upstream/name, output/target)
+            proof_links.append(f'<li><a href="{target}">{target}</a></li>')
+            if target.endswith('.txt'):
+                sections.append(f'<details><summary>{escape(target)}</summary><pre>{escape((output/target).read_text(encoding="utf-8"))}</pre></details>')
     rows = ''.join('<tr><td>'+escape(p['name'])+'</td><td>'+escape(p['version'])+'</td><td>'+
                    escape(p.get('license_expression') or str(p.get('license') or 'See collected notices'))+'</td></tr>' for p in packages)
     html = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">

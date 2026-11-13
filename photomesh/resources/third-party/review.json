@@ -6566,6 +6566,24 @@
       }
     ],
     "python_packages": 76,
-    "binary_identity_is_not_source_clearance": true
+    "binary_identity_is_not_source_clearance": true,
+    "proof_records": [
+      {
+        "path": "python-origins.json",
+        "sha256": "dbb4c69aa76987e42c87088410302ec78a527e0789b829f8b80dc011715fd790"
+      },
+      {
+        "path": "qt-official-byte-comparison.json",
+        "sha256": "4244b8115e3fe267d1c904486685c6850f4e080e65b56463397e7be6837193a4"
+      },
+      {
+        "path": "native-official-byte-comparison.json",
+        "sha256": "b84c7d1c6c6561bc2a7dbc1bfad83ac554dbe1b9b304171e948c2fe4c00f742f"
+      },
+      {
+        "path": "native-version-origins.json",
+        "sha256": "47295d56b0798cda14061b97021973fa458464c85b3ad8b28ffde16252df9665"
+      }
+    ]
   }
 }

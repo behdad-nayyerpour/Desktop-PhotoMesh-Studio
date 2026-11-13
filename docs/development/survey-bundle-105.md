@@ -17,6 +17,60 @@ No claim of target-GPU validation without that hardware. Deliver one combined
 incremental BAT against the accepted capacity baseline; no Setup, repository
 rename, announcement or public installer release is authorized by this request.
 
+### Finalization evidence (2026-11-13)
+
+- User-script reading/compilation/execution now reports complete tracebacks,
+  accepts Python encoding declarations and preserves console objects. Script
+  execution remains on the GUI thread to preserve Qt ownership; long blocking
+  custom scripts remain the author's responsibility.
+- An exact76-package Windows x64 CPython3.13 lock records official wheel hashes.
+  Build stages reject version drift and unexpected packages; package metadata
+  is checked separately from binary inventories and upstream byte comparison.
+  Native package preparation stays on disposable builders, never user patching.
+- All1564 compared Qt binaries/resources match official PyPI wheels, including
+  Pdf/WebEngine6.12.0.140. All71 legacy COLMAP3.8 and74 GLOMAP1.2.0 native files
+  match primary release archives. Legacy CUDART identifies as11.8.89. Retained
+  source/build descriptions, versioned NVIDIA terms and source locations improve
+  the offline notices. Exact linked-library corresponding-source/build retention
+  and split WebEngine source packaging remain release gates; do not mark legal
+  redistribution clearance complete merely from those identity matches.
+- Per-user legacy shortcuts are renamed only when their launcher, main script
+  and working directory identify this exact install. Preserve original bytes,
+  target and arguments; skip collisions and unrelated shortcuts. Real WScript
+  fixtures verify custom paths with spaces, backup, repeat behavior and ownership.
+- Current README/update/install/packaging guidance identifies Lens2Mesh1.0.5 as
+  a candidate, retaining the public1.0.4 download and compatibility identities.
+  Sharp actual Dark/Light Mesa screenshots use public data with attribution.
+  The complete approved English PDF remains byte-for-byte unchanged.
+- Independent public RTK/GCP data: OpenDroneMap/odm_data_helenenschacht at
+  eece33e9ece2ff358a7bdc02e1db6f67925e00c4. All35 selected photos register;
+  12,459 sparse points. Controls1/2/4 constrain adjustment, while3/5 remain
+  independent. Their XY errors are0.08855/0.07382m and height differences
+  -0.16925/-0.20267m. GPS-only XY errors are0.09401/0.12220m; GPS height is not
+  assessed against a control datum that was not confirmed. Mixed unknown
+  heights are rejected. Results match the accepted capacity baseline exactly;
+  these limited results do not certify centimetre accuracy for all projects.
+- Public human-labelled LiDAR: PDAL/data Autzen at
+  ce0024257c573526389c4db9ab26e82739b8aaa9,10,653,336 points. Read horizontal
+  international feet and vertical US-survey feet separately from its compound
+  CRS; convert units without inferring a datum transformation. Ground recall
+  98.944%, precision90.200% over documented known classes; unclassified points
+  are excluded from negative truth. Full LAS/LAZ coordinate/class/attribute
+  round trips pass. A2m DTM has326,537 measured cells and zero filled cells;
+  all measured means match independent aggregation, with real coverage retained.
+- Actual CPU extraction timestamps show35 monotonic counts over91.42s from
+  first to last completed image. Bursty two-worker rates correctly suppress ETA;
+  the4–5s classification workload also does not invent a stable ETA. Existing
+  equal-workload sparse/GPS/DEM capacity benchmarks retain identical numerical
+  results. This does not establish target-CUDA, cached dense or long-run GPU ETA
+  behavior. Those hardware checks remain explicit before a public Setup.
+
+Review scope: script/UI callers, Qt ownership and console state; exact-baseline
+patch allowlists and recovery; stage metadata after reviewed removals; shortcut
+ownership and collisions; source/license evidence versus legal conclusions;
+coordinate units, independent checkpoints and real-data reference quality.
+No unrelated processing math or defaults changed in this finalization iteration.
+
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 
 User defers direct point selection/deletion to the following version and requests

@@ -62,6 +62,8 @@ def main(evidence, output):
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     from PySide6.QtWidgets import QApplication
     app = QApplication([]); app.setOrganizationName('Lens2Mesh105VisualReview'); app.setApplicationName('PublicSurvey')
+    from photomesh.appicon import app_icon
+    app.setWindowIcon(app_icon())
     QSettings.setDefaultFormat(QSettings.IniFormat)
     QSettings.setPath(QSettings.IniFormat, QSettings.UserScope, tempfile.mkdtemp())
     from photomesh.mainwindow import MainWindow

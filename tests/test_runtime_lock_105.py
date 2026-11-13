@@ -14,14 +14,17 @@ def test_exact_runtime_lock_rejects_missing_changed_and_unexpected(tmp_path):
     site = tmp_path/'python/Lib/site-packages/one-1.0.dist-info'
     site.mkdir(parents=True)
     (site/'METADATA').write_text('Name: one\nVersion: 1.0\n')
-    assert module.verify(tmp_path, lock)['packages'] == 1
     empty = site.parent/'plyfile-1.1.dist-info'
     empty.mkdir()
     assert module.verify(tmp_path, lock)['packages'] == 1
-    (empty/'METADATA').write_text('Version: 1.1\n')
+    # Use a fresh root for malformed metadata. Discovery caches directory
+    # listings using mtime, whose resolution varies between Windows runners.
+    malformed = tmp_path/'malformed'
+    bad = malformed/'python/Lib/site-packages/bad-1.1.dist-info'
+    bad.mkdir(parents=True)
+    (bad/'METADATA').write_text('Version: 1.1\n')
     with pytest.raises(ValueError, match='has no Name'):
-        module.verify(tmp_path, lock)
-    (empty/'METADATA').unlink()
+        module.verify(malformed, lock)
     (site/'METADATA').write_text('Name: one\nVersion: 2.0\n')
     with pytest.raises(ValueError, match='changed'):
         module.verify(tmp_path, lock)

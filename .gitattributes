@@ -19,3 +19,6 @@
 
 # Preserve exact upstream wheel bytes and RECORD hashes.
 photomesh/_vendor/** -text
+# Preserve primary audit records exactly as downloaded from disposable runners.
+photomesh/resources/third-party/*-origins.json -text
+photomesh/resources/third-party/*-comparison.json -text
