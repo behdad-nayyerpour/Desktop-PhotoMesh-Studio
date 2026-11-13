@@ -2,7 +2,7 @@ name: Lens2Mesh incremental candidate and runtime inventory
 on:
   push:
     branches: ["release/lens2mesh-1.0.5-candidate"]
-    paths: ["photomesh/**", "main.py", "tests/**", "packaging/**", "tools/audit_runtime.py", ".github/workflows/candidate-105.yml"]
+    paths: ["photomesh/**", "main.py", "tests/**", "packaging/**", "tools/audit_runtime.py", "tools/benchmark_capacity_105.py", "tools/validate_installed_capacity_105.py", ".github/workflows/candidate-105.yml"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -67,6 +67,8 @@ jobs:
           $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
           & $python -c "import os,sys,importlib.util; sys.path.insert(0,os.environ['PYTHONPATH']); import photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PYTHONPATH']).resolve()); from photomesh import APP_NAME, APP_VERSION, appicon; from PySide6.QtWidgets import QApplication; app=QApplication([]); assert APP_NAME == 'Lens2Mesh'; assert APP_VERSION == '1.0.5'; assert not appicon.app_icon().isNull(); assert importlib.util.find_spec('plyfile') is None; print('Installed patch identity/icon and dependency removal OK')"
           if ($LASTEXITCODE) { throw 'Installed candidate smoke failed' }
+          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          if ($LASTEXITCODE) { throw 'Installed native processing or documentation failed after cleanup' }
           python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate
           if ($LASTEXITCODE) { throw 'Candidate inventory collection failed' }
           python tools/verify_patch_inventory.py --before evidence/published-104/inventory.json --after evidence/candidate/inventory.json --manifest (Join-Path $payload 'manifest.json')
@@ -75,6 +77,11 @@ jobs:
           if ($LASTEXITCODE) { throw 'Installed rollback failed' }
           & $python -c "import os,sys; sys.path.insert(0,os.environ['PYTHONPATH']); import photomesh; from pathlib import Path; assert Path(photomesh.__file__).resolve().is_relative_to(Path(os.environ['PYTHONPATH']).resolve()); from photomesh import APP_NAME,APP_VERSION; assert APP_NAME == 'PhotoMesh Studio' and APP_VERSION == '1.0.4'; print('Rollback identity OK')"
           if ($LASTEXITCODE) { throw 'Rolled-back app identity differs' }
+          python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/rollback
+          if ($LASTEXITCODE) { throw 'Rollback inventory failed' }
+          @{ files=@() } | ConvertTo-Json | Set-Content -Encoding utf8 evidence/rollback-manifest.json
+          python tools/verify_patch_inventory.py --before evidence/published-104/inventory.json --after evidence/rollback/inventory.json --manifest evidence/rollback-manifest.json
+          if ($LASTEXITCODE) { throw 'Full runtime rollback bytes differ' }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
