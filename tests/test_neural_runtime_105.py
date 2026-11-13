@@ -15,6 +15,13 @@ sys.path.insert(0, str(ROOT/'packaging'))
 import neural_runtime as runtime  # noqa: E402
 
 
+def test_shipped_nvidia_license_bytes_match_reviewed_archives():
+    for asset in runtime.specification()['assets']:
+        name = 'NVIDIA-cuDNN-9.8.0-LICENSE.txt' if asset['component'] == 'cudnn' else 'NVIDIA-CUDA-12.8.1-LICENSE.txt'
+        text = ROOT/'photomesh/resources/third-party/neural-cuda12'/name
+        assert hashlib.sha256(text.read_bytes()).hexdigest() == asset['license_sha256']
+
+
 def test_private_runtime_does_not_change_host_or_legacy_lookup(tmp_path, monkeypatch):
     module = tmp_path/'app/photomesh/engine.py'
     private = module.parent/'resources/neural-cuda12'

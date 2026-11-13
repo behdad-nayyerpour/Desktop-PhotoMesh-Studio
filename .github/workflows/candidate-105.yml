@@ -76,6 +76,8 @@ jobs:
           if ($LASTEXITCODE) { throw 'Installed runtime differs from the audited package lock' }
           & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
           if ($LASTEXITCODE) { throw 'Installed native processing or documentation failed after cleanup' }
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Installed private neural runtime or exact original license differs' }
           python tools/audit_runtime.py --root $env:BASELINE_ROOT --output evidence/candidate
           if ($LASTEXITCODE) { throw 'Candidate inventory collection failed' }
           python tools/verify_patch_inventory.py --before evidence/published-104/inventory.json --after evidence/candidate/inventory.json --manifest (Join-Path $payload 'manifest.json')
