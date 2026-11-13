@@ -30,11 +30,12 @@ def evaluate(source, output):
     reference = laspy().read(source)
     crs = reference.header.parse_crs()
     factors = [axis.unit_conversion_factor for axis in crs.axis_info]
-    if len(factors) != 2 or not np.allclose(factors, factors[0]) or not .3047 < factors[0] < .3049:
-        raise ValueError('Expected documented foot-based source coordinate system')
-    # Convert both horizontal and vertical coordinates to metres. No vertical
-    # datum transformation is inferred; the original height reference is kept.
-    xyz = np.column_stack([reference.x, reference.y, reference.z])*factors[0]
+    if not crs.is_projected or len(factors) < 2 or not np.allclose(factors[:2], factors[0]) or factors[0] <= 0:
+        raise ValueError('Expected a projected linear source CRS: '+str(crs))
+    # The newer classified derivative may use a different CRS from the original
+    # Autzen file. Read its own axes, never infer units from the dataset name.
+    scale = [*factors[:2], factors[2] if len(factors) > 2 else factors[0]]
+    xyz = np.column_stack([reference.x, reference.y, reference.z])*scale
     origin = xyz.mean(0)
     records = np.empty(len(xyz), dtype=[('x','f8'),('y','f8'),('z','f8'),('source_index','u4')])
     for i, name in enumerate('xyz'):
@@ -79,7 +80,8 @@ def evaluate(source, output):
         reference_ground=int(truth.sum()), predicted_ground=int(ground.sum()),
         tp=tp, fp=fp, fn=fn, tn=tn, precision=tp/(tp+fp), recall=tp/(tp+fn),
         seconds=seconds, settings={k:v for k,v in info.items() if k not in ('path','rotation')},
-        units=f'Metres converted with source CRS factor {factors[0]}; XYZ use source feet, height datum unchanged',
+        units=f'Metres converted with source axis factors {scale}; height datum unchanged; absent a vertical axis Z uses the source horizontal unit',
+        source_crs=crs.to_wkt(),
         progress=samples, las_laz_roundtrip=True,
         limitation='One public tile with published class labels; no universal accuracy or target GPU claim')
     (output/'results.json').write_text(json.dumps(record, indent=2), encoding='utf-8')
