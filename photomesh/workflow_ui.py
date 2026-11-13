@@ -237,14 +237,15 @@ def tiles_context(d, parent):
     source_status(d,parent,d.source)
 
 
-def dem_context(d, parent):
+def dem_context(d, parent, *, ground_only=False):
     d.aggregation = QComboBox(); d.aggregation.addItems(["Mean", "Median", "Highest"])
     d.max_fill = number(0, 1e6, 10, 4)
     d.smooth_distance = number(0, 1e6, 0, 4)
     d.aform.addRow("Point-cell height:", d.aggregation)
     d.aform.addRow("Maximum fill distance (model units):", d.max_fill)
     d.aform.addRow("Fill smoothing distance (0 = none):", d.smooth_distance)
-    note(d, "Surface model (DSM): buildings/vegetation are retained. This is not classified bare earth.")
+    note(d, "Terrain model (DTM): only classified ground points (class 2) are used. Inspect the ground classification before building."
+         if ground_only else "Surface model (DSM): buildings/vegetation are retained. This is not classified bare earth.")
     grid_info=note(d, "")
     def preview(*_):
         from .ortho import raster_size

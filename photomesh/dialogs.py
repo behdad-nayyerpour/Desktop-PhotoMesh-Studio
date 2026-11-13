@@ -767,8 +767,8 @@ class _RegionBox(QGroupBox):
 
 class BuildDEMDialog(_SettingsDialog):
     """Process > Build DEM (from the point cloud or the mesh, see ortho.py)."""
-    def __init__(self, parent=None, sources=("Point cloud",), crs="", unit="m", bounds=None):
-        super().__init__("Build DEM", parent)
+    def __init__(self, parent=None, sources=("Point cloud",), crs="", unit="m", bounds=None, *, ground_only=False):
+        super().__init__("Build DTM — classified ground only" if ground_only else "Build DEM", parent)
         st = QSettings()
         self.proj = QLabel(crs or "Local coordinates (model units)"); self.proj.setWordWrap(True)
         self.source = _combo(list(sources), st.value("dem/source", sources[0], str))
@@ -782,7 +782,7 @@ class BuildDEMDialog(_SettingsDialog):
         self.region_box = _RegionBox(bounds, unit)
         self.content_layout.insertWidget(2, self.region_box)
         from .workflow_ui import dem_context
-        dem_context(self, parent)
+        dem_context(self, parent, ground_only=ground_only)
 
     def settings(self):
         st = QSettings()

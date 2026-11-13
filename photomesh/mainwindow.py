@@ -2562,9 +2562,7 @@ class MainWindow(SurveyMixin, RegistrationMixin, ReferenceMixin, MarkerEditMixin
         if self._workflow_source_plans is None:
             return
         dlg = BuildDEMDialog(self, sources, crs=processing_crs(ch.georef), unit="m" if ch.georef else "model units",
-                             bounds=self._workflow_source_plans[sources[0]]["bounds"])
-        if ground_only:
-            dlg.setWindowTitle('Build DTM — classified ground only')
+                             bounds=self._workflow_source_plans[sources[0]]["bounds"], ground_only=ground_only)
         if not dlg.exec():
             return
         s = dlg.settings()

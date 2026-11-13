@@ -19,7 +19,7 @@ def open_bundled(parent, relative, title):
 
 
 def open_manual(parent):
-    return open_bundled(parent, 'manual/PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf', 'User Manual (PDF)')
+    return open_bundled(parent, 'manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf', 'User Manual (PDF)')
 
 
 def open_notices(parent):

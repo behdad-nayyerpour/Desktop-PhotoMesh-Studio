@@ -18,6 +18,63 @@ user's display driver. Source/notice collection, optional Qt dependency closure,
 installer fresh/upgrade/custom-path/uninstall checks, PDF rendering and final
 repository/caller/static review remain work to complete before publication.
 
+## Target driver and modern-CUDA checks (2026-11-13)
+
+The user explicitly authorized preparing the official Studio 621.14 notebook
+driver and then opening its installer, and confirmed installation. Read-only
+`nvidia-smi` now reports 621.14 on the RTX 3080 Laptop (16 GiB). The application's
+CUDA API probe reports 13050 and selects the modern COLMAP 4.2.1 dense engine,
+SHA256 `9418a14c93d4a5eec5eb33ebf48a917403b5faa7ab5d2232f23e50c206d9e427`.
+The downloaded NVIDIA-signed installer was verified before launch; no silent
+installation or restart was performed by the agent.
+
+Retained public Helenenschacht photos MAX_0104/0105/0106/0108 and the same
+four-view sparse model were processed in separate fresh folders. Low quality:
+fresh 14.55 s / 70,989 points, cached 2.70 s / 70,992 points. High quality:
+fresh 53.94 s / 634,963 points, cached 7.05 s / 634,975 points. Each fresh run
+invoked real CUDA PatchMatch; cached runs invoked none. All four geometric
+depth-map hashes remained identical during replay. Small point-count differences
+are native parallel fusion variability already documented, not repeated depth
+computation. Logs/results/depth hashes are retained under the validation evidence
+folders `modern-gpu-validation` and `modern-gpu-high-validation`. High-quality
+processing emitted observed ETAs after stable samples; this bounded four-photo
+check does not establish independent dense accuracy or hour-long ETA accuracy.
+
+Real offline extraction/matching probes passed: SIFT on GPU; ALIKED/LightGlue
+and SIFT/LightGlue through the existing same-method CPU fallback. The neural GPU
+probe fails because the bundled ONNX provider requires missing
+`cublasLt64_12.dll`; a newer display driver does not supply this CUDA library.
+Do not claim neural GPU execution passed. CPU fallback was genuinely executed
+successfully, with no survey files or settings modified. Native failure logs and
+complete input settings are retained in `modern-feature-diagnostics`.
+
+The optional Qt review now also passes 87 installed offline integration tests
+in run 43432288679. A preceding harness run missed shared fixture modules (74
+passed / 13 fixture import failures); copying the complete fixture set corrected
+the harness without modifying application calculations. The static closure check
+finds no remaining imports of removed modules among 1,272 remaining PE files.
+This remains disposable review evidence, not production adoption or license
+clearance. Production removal plan/patch rollback still require finalization.
+
+Manual review identified a DTM dialog note incorrectly describing a DSM. Its
+title/context now explicitly describes class-2 ground; the numerical processing
+configuration is unchanged. All 13 affected survey/build-display tests pass;
+targeted static checks pass. The updated full English manual has 119 pages and
+covers all 121 reachable menu commands. The approved unaffected content is
+retained, with focused new sections for GPS/calibration/height frames,
+classification, DTM, LAS/LAZ, section interaction, progress and offline help.
+Updated native 2x PNG screenshots are embedded losslessly. All page layouts
+were reviewed as rendered contact sheets, with full-page checks of changed
+reference, terrain and section pages. Windows offscreen capture initially lacked
+the Linux font; explicit registration of the installed Segoe UI font corrected
+the capture harness before the final screenshots/PDF were produced. No tofu
+captures were accepted. The PDF SHA256 is
+`716a33f587cd3cd3303629b33d6096d7a120bed4c753808f3b0e21bf58f04706`.
+Help now points to the 1.0.5 PDF. Original approved 1.0.4 PDF/sources remain in
+the separate guide archive; the unused old bundled copy is superseded.
+All 18 affected documentation/survey/build-display tests pass. Fresh complete
+source/trimmed-runtime regression and final installed package tests are pending.
+
 ## Finalization items4/5/6/7 (2026-11-13)
 
 User accepts the capacity/manual test iteration and requests closing dependency

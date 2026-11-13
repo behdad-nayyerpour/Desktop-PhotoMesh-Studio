@@ -81,6 +81,13 @@ jobs:
           $result=$LASTEXITCODE
           Pop-Location
           if ($result) { throw 'Installed workflows failed after optional removal' }
+      - name: Run complete source regression suite with the trimmed installed runtime
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH=$PWD.Path+';'+(Join-Path $PWD 'test-deps')
+          $python=Join-Path $env:REVIEW_ROOT 'python/python.exe'
+          & $python -m pytest tests -q -p no:cacheprovider --basetemp (Join-Path $env:RUNNER_TEMP 'optional-web-full-suite')
+          if ($LASTEXITCODE) { throw 'Complete regression suite failed with trimmed runtime' }
       - uses: actions/upload-artifact@v4
         if: always()
         with:

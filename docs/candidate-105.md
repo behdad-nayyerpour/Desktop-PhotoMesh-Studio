@@ -1,7 +1,8 @@
 # Lens2Mesh1.0.5 candidate additions
 
-This supplement describes the current candidate. The complete English1.0.4
-PDF is retained unchanged and opens offline through Help > User Manual (PDF).
+This supplement describes the current candidate. The complete English 1.0.5
+PDF updates the affected parts of the approved full manual and opens offline
+through Help > User Manual (PDF).
 Help > Third-party Notices opens component licenses and replacement information.
 
 ## References and calibration

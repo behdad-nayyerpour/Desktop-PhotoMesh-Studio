@@ -4,9 +4,9 @@ from PySide6.QtGui import QDesktopServices
 from photomesh import documentation
 
 
-def test_manual_is_exact_approved_unmodified_pdf():
-    path = documentation.RESOURCES/'manual/PhotoMeshStudio_1.0.4_Complete_User_Manual.pdf'
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == '632dde8b0392787d735610dcf805ade49f10068f6086d4e01137f5a5e31610a4'
+def test_manual_is_exact_render_reviewed_updated_pdf():
+    path = documentation.RESOURCES/'manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf'
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == '716a33f587cd3cd3303629b33d6096d7a120bed4c753808f3b0e21bf58f04706'
 
 
 def test_help_manual_resolves_installed_resources_offline(window, monkeypatch):
