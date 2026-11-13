@@ -1,0 +1,58 @@
+name: Retain verified 1.0.5 Setup in transferable artifact parts
+on:
+  push:
+    branches: [candidate-artifacts/lens2mesh-105]
+    paths: [.github/workflows/retain-setup-105.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Acquire exact successful Setup artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 43442904216 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --name Lens2Mesh-1.0.5-Setup-Candidate --dir verified
+      - name: Verify installer and split transport only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('verified')
+          data=(root/'Lens2Mesh_Setup_1.0.5.exe').read_bytes()
+          expected='b82858ffcfa45dce757bb065ec3481dcc4d61a5ad29c810b988fc88eedb7b1fa'
+          assert hashlib.sha256(data).hexdigest()==expected
+          records=[]
+          for i,start in enumerate(range(0,len(data),400_000_000),1):
+              folder=Path(f'part-{i}');folder.mkdir()
+              payload=data[start:start+400_000_000]
+              name=f'Lens2Mesh_Setup_1.0.5.exe.part{i}'
+              (folder/name).write_bytes(payload)
+              records.append(dict(name=name,bytes=len(payload),sha256=hashlib.sha256(payload).hexdigest()))
+          Path('transport.json').write_text(json.dumps(dict(source_run=43442904216,source_revision='6ec8619313e0a120fed8da9dd66bbed6bba04df2',bytes=len(data),sha256=expected,parts=records),indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Verified-105-Setup-part-1
+          path: part-1/
+          compression-level: 0
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Verified-105-Setup-part-2
+          path: part-2/
+          compression-level: 0
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Verified-105-Setup-evidence
+          path: |
+            transport.json
+            verified/*.txt
+            verified/*.json
+            verified/*.sha256
+            verified/upgrade/
+            verified/fresh-custom/
+          retention-days: 30
