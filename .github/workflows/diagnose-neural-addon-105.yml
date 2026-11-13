@@ -1,0 +1,56 @@
+name: Diagnose optional GPU installer target and execution
+on:
+  push:
+    branches: ["packaging/compact-105"]
+    paths: [".github/workflows/diagnose-neural-addon-105.yml"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnose:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Split-105-Test-Installers
+          run-id: 43502578265
+          github-token: ${{ github.token }}
+          path: packages
+      - name: Capture explicit Unicode and automatic target installation logs
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force diagnostic | Out-Null
+          $root=Join-Path $env:RUNNER_TEMP 'gpu diagnostic فارسی'
+          $base=(Get-Item packages/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $addon=(Get-Item packages/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).FullName
+          $log=(Join-Path $PWD 'diagnostic/base-install.log')
+          $p=Start-Process -FilePath $base -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""',('/LOG="'+$log+'"')) -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Diagnostic base installation failed' }
+          $key='Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
+          $records=@()
+          foreach ($view in @([Microsoft.Win32.RegistryView]::Registry32,[Microsoft.Win32.RegistryView]::Registry64)) {
+            $hive=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::CurrentUser,$view)
+            $entry=$hive.OpenSubKey($key)
+            $records+=@{view=$view.ToString();path=$(if ($entry) {$entry.GetValue('InstallLocation')} else {'missing'})}
+            if ($entry) { $entry.Dispose() }; $hive.Dispose()
+          }
+          $records | ConvertTo-Json | Set-Content diagnostic/registry.json
+          foreach ($mode in @('explicit','automatic')) {
+            $log=Join-Path $PWD ('diagnostic/addon-'+$mode+'.log')
+            $parameters=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/LOG="'+$log+'"'))
+            if ($mode -eq 'explicit') { $parameters+=('/DIR="'+$root+'"') }
+            $p=Start-Process -FilePath $addon -ArgumentList $parameters -Wait -PassThru -WindowStyle Hidden
+            @{mode=$mode;exit_code=$p.ExitCode;dll_count=@(Get-ChildItem -LiteralPath (Join-Path $root 'app/photomesh/resources/neural-cuda12') -Filter '*.dll').Count;root=$root} | ConvertTo-Json | Set-Content ('diagnostic/result-'+$mode+'.json')
+            Get-Content ('diagnostic/result-'+$mode+'.json')
+            if (Test-Path (Join-Path $root '.lens2mesh-patches')) {
+              Get-ChildItem -LiteralPath (Join-Path $root '.lens2mesh-patches') -Recurse -Filter state.json | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $PWD ('diagnostic/state-'+$mode+'.json')) }
+            }
+          }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-GPU-Installer-Diagnostic
+          path: diagnostic/
+          retention-days: 30
