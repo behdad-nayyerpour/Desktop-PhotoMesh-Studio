@@ -84,7 +84,11 @@ jobs:
       - name: Run complete source regression suite with the trimmed installed runtime
         shell: pwsh
         run: |
-          $env:PYTHONPATH=$PWD.Path+';'+(Join-Path $PWD 'test-deps')
+          # Independent PLY/DXF test readers stay outside the shipped runtime
+          # and outside the preceding installed/no-plyfile smoke checks.
+          python -m pip install --quiet --no-deps --target full-test-oracles 'plyfile>=1.0' 'ezdxf>=1.4,<2'
+          if ($LASTEXITCODE) { throw 'Independent format test readers failed' }
+          $env:PYTHONPATH=$PWD.Path+';'+(Join-Path $PWD 'test-deps')+';'+(Join-Path $PWD 'full-test-oracles')
           $python=Join-Path $env:REVIEW_ROOT 'python/python.exe'
           & $python -m pytest tests -q -p no:cacheprovider --basetemp (Join-Path $env:RUNNER_TEMP 'optional-web-full-suite')
           if ($LASTEXITCODE) { throw 'Complete regression suite failed with trimmed runtime' }
