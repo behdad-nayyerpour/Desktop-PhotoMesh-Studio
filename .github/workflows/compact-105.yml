@@ -1,0 +1,103 @@
+name: Measure and validate compact offline Setup
+on:
+  push:
+    branches: ["packaging/compact-105"]
+    paths: [".github/workflows/compact-105.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compact:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Download and install the exact published 1.0.5 in an isolated folder
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.5 --repo $env:GITHUB_REPOSITORY --pattern 'Lens2Mesh_Setup_1.0.5.exe' --dir original
+          if ($LASTEXITCODE) { throw 'Published baseline download failed' }
+          $setup=(Get-Item original/Lens2Mesh_Setup_1.0.5.exe).FullName
+          if ((Get-FileHash -LiteralPath $setup).Hash.ToLowerInvariant() -ne 'e4f2b42f33cfcf53b652d9e16228310b3e9b029091725d6985ff18cf5c57b990') { throw 'Published installer changed' }
+          $root=Join-Path $env:RUNNER_TEMP 'compact baseline'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/portable=1',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Isolated baseline installation failed' }
+          "COMPACT_BASELINE=$root" >> $env:GITHUB_ENV
+      - name: Review exact omissions and generate duplicate-free storage references
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force comparison | Out-Null
+          python packaging/installer_payload.py --stage "$env:COMPACT_BASELINE" --output comparison/installer-files.iss --report comparison/installer-payload.json
+          if ($LASTEXITCODE) { throw 'Exact omission or payload validation failed' }
+      - name: Build the same complete offline application with compact storage
+        shell: pwsh
+        run: |
+          $compiler="${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $compiler)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE) { throw 'Compiler installation failed' }
+          }
+          $packed=(Get-Item comparison/installer-files.iss).FullName
+          $out=Join-Path $PWD 'comparison'
+          & $compiler '/Q' '/DAppVersion=1.0.5' "/DStageDir=$env:COMPACT_BASELINE" "/DOutputDir=$out" "/DPackedFiles=$packed" packaging/release.iss
+          if ($LASTEXITCODE) { throw 'Compact offline Setup compilation failed' }
+          $file=Join-Path $out 'Lens2Mesh_Setup_1.0.5.exe'
+          $hash=(Get-FileHash -LiteralPath $file).Hash.ToLowerInvariant()
+          "$hash *Lens2Mesh_Setup_1.0.5.exe" | Set-Content "$file.sha256" -Encoding ascii
+          $original=(Get-Item original/Lens2Mesh_Setup_1.0.5.exe).Length
+          $compact=(Get-Item $file).Length
+          @{original_bytes=$original;compact_bytes=$compact;saved_bytes=($original-$compact);saved_percent=(100.0*($original-$compact)/$original);sha256=$hash;source='${{ github.sha }}';compiler_version=(Get-Item $compiler).VersionInfo.FileVersion} | ConvertTo-Json | Set-Content comparison/size-comparison.json
+          Get-Content comparison/size-comparison.json
+          if ($compact -ge $original) { throw 'No actual installer-size reduction' }
+      - name: Install the compact Setup and prove all retained bytes match the release
+        shell: pwsh
+        run: |
+          $root=Join-Path $env:RUNNER_TEMP 'compact install فارسی'
+          $setup=(Get-Item comparison/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/portable=1',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Compact Setup installation failed' }
+          python tools/validate_compact_install.py --baseline "$env:COMPACT_BASELINE" --installed $root --report comparison/installer-payload.json --output comparison/installed-byte-verification.json
+          if ($LASTEXITCODE) { throw 'Installed content differs beyond reviewed non-runtime omissions' }
+          "COMPACT_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Validate installed package versions, offline UI, native processing and all 13 GPU DLLs
+        shell: pwsh
+        run: |
+          $python=Join-Path $env:COMPACT_ROOT 'python/python.exe'
+          $env:PYTHONPATH=Join-Path $env:COMPACT_ROOT 'app'
+          & $python packaging/verify_runtime_lock.py --root "$env:COMPACT_ROOT"
+          if ($LASTEXITCODE) { throw 'Runtime package versions changed' }
+          & $python tools/validate_installed_105.py "$env:PYTHONPATH" "$PWD" comparison/installed-ui
+          if ($LASTEXITCODE) { throw 'Installed source/UI/licence/manual verification failed' }
+          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          if ($LASTEXITCODE) { throw 'Native terrain/manual verification failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Native PLY processing failed' }
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Private GPU library/notice/environment verification failed' }
+          'Installed bytes, offline UI/manual, native PLY/DEM, package versions and all 13 GPU DLLs passed.' | Set-Content comparison/validation.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-Compact-Setup-Measurement
+          path: comparison/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-Compact-Measurement-Evidence
+          path: |
+            comparison/*.json
+            comparison/validation.txt
+            comparison/*.sha256
+            comparison/installed-ui/
+          retention-days: 30

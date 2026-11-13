@@ -11,7 +11,8 @@ param(
     [string]$OutputDir = (Join-Path $PSScriptRoot "..\dist"),
     [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage"),
     [string]$EngineCache = (Join-Path $env:LOCALAPPDATA "PhotoMeshStudioBuild\engine-cache"),
-    [switch]$OfflineBuild
+    [switch]$OfflineBuild,
+    [switch]$CompactPayload
 )
 $ErrorActionPreference = "Stop"
 $app = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
@@ -143,7 +144,14 @@ if ($LASTEXITCODE -ne 0) { throw "Copied Python runtime failed validation" }
 
 Write-Host "Building full installer"
 $iss = Join-Path $PSScriptRoot "release.iss"
-& $compiler "/Q" "/DAppVersion=$version" "/DStageDir=$stage" "/DOutputDir=$out" $iss
+$compilerArgs = @("/Q", "/DAppVersion=$version", "/DStageDir=$stage", "/DOutputDir=$out")
+if ($CompactPayload) {
+    $packedFiles = Join-Path $out 'installer-files.iss'
+    & (Join-Path $pythonStage 'python.exe') (Join-Path $PSScriptRoot 'installer_payload.py') --stage $stage --output $packedFiles --report (Join-Path $out 'installer-payload.json')
+    if ($LASTEXITCODE -ne 0) { throw 'Compact installer payload validation failed' }
+    $compilerArgs += "/DPackedFiles=$packedFiles"
+}
+& $compiler @compilerArgs $iss
 if ($LASTEXITCODE -ne 0) { throw "Full installer compilation failed" }
 $file = Join-Path $out $installerName
 $hash = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()

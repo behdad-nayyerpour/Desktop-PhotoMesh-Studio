@@ -719,3 +719,29 @@ Historical tags, internal project/settings identities and original audit evidenc
 remain available. Exact logs and public asset records are retained under
 `F:/CodexProjects/Lens2Mesh-validation-evidence/release-105-job-*.log` and
 `Lens2Mesh-1.0.5-publication.json` in that directory.
+
+### Low-risk installer size evaluation (2026-11-13)
+
+The user approves first measuring safe cleanup with all application features and
+the single-file offline installer retained. Optional GPU splitting is not part
+of this iteration. Scope: installer storage and pinned non-runtime omissions;
+no application processing, numerical algorithms, user settings or PDF changes.
+
+Reviewed staging/copy rules, exact release inventory, runtime lock and native/UI
+validation callers. Inspected large-file groups and searched runtime callers of
+test/debug material. Whole package/test-directory removal is deliberately not
+implemented without a stronger dependency contract. The only omission candidates
+are exact Python HTML documentation and modern Qt-plugin PDB symbols: 629 files,
+214,519,949 uncompressed bytes. The existing pre-neural inventory also identified
+314.55 MB of exact duplicate bytes across paths. These figures are not promised
+Setup savings. Installed duplicate paths remain separate; Inno references one
+canonical source after SHA256 plus exact byte comparison. No native code is edited.
+
+Safety: review plans reject traversal/runtime-file omissions and changed bytes;
+linked entries and generated output inside the source stage are rejected. Stage
+contents remain untouched. Tests reconstruct installed bytes from generated Inno
+entries and verify failure contracts. Ten targeted payload/lock tests and Ruff
+F/E9 pass. Manual assessment: no user workflow/control changes, so the approved
+119-page PDF is retained unchanged. A remote comparison builds from exact released
+1.0.5 and checks installed contents/native processing rather than repeating closed
+audits or unrelated reconstruction benchmarks. Public replacement is not automatic.

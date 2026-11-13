@@ -31,10 +31,14 @@ UsePreviousAppDir=not PortableCheck
 CloseApplications=yes
 RestartApplications=no
 
+#ifdef PackedFiles
+  #include PackedFiles
+#else
 [Files]
 Source: "{#StageDir}\app\*"; DestDir: "{app}\app"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "{#StageDir}\python\*"; DestDir: "{app}\python"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "{#StageDir}\tools\*"; DestDir: "{app}\tools"; Flags: recursesubdirs createallsubdirs ignoreversion
+#endif
 [InstallDelete]
 Type: files; Name: "{autoprograms}\PhotoMesh Studio.lnk"; Check: not PortableCheck
 Type: files; Name: "{autodesktop}\PhotoMesh Studio.lnk"; Check: not PortableCheck
