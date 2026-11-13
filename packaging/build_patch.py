@@ -7,13 +7,14 @@ import subprocess
 import zipfile
 
 from runtime_dependencies import plyfile_files, reviewed_qt_files
+from neural_runtime import runtime_files, RESOURCE
 
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build(source, installed, output, revision):
+def build(source, installed, output, revision, with_neural_runtime=False):
     output.mkdir(parents=True, exist_ok=True)
     baseline = {}
     for path in (installed / "app").rglob("*"):
@@ -53,17 +54,27 @@ def build(source, installed, output, revision):
             continue
         if baseline.get(target) != sha:
             files.append({"path": target, "sha256": sha})
+    external = []
+    for entry in (runtime_files() if with_neural_runtime else []):
+        previous = installed / entry['path']
+        if previous.is_file():
+            baseline[entry['path']] = digest(previous)
+        if baseline.get(entry['path']) == entry['sha256']:
+            continue
+        external.append(entry)
+        files.append(entry)
     generated = {}
-    if removed:
+    if removed or external:
         # Keep the runtime identity honest after dependency removal, while
         # downloading no unchanged Python or native engine components.
         old_id = (installed / "app/runtime.id").read_text().strip()
         runtime_id = hashlib.sha256((old_id + '\nremoved:' + '\n'.join(sorted(
-            path.relative_to(installed.resolve()).as_posix() for path in removed)) + '\n' + revision).encode()).hexdigest()
+            path.relative_to(installed.resolve()).as_posix() for path in removed)) +
+            '\nadded:' + json.dumps(external, sort_keys=True) + '\n' + revision).encode()).hexdigest()
         generated["app/runtime.id"] = (runtime_id + "\n").encode("ascii")
         generated["app/release_manifest.txt"] = (
             f"Lens2Mesh test candidate\nSource: {revision}\nRuntime ID: {runtime_id}\n"
-            "Runtime change: removed reviewed unused dependencies; no Python/engine replacement\n").encode("utf-8")
+            "Runtime change: explicit reviewed removals/additional neural DLLs; no Python/engine replacement\n").encode("utf-8")
         for target, data in generated.items():
             files.append({"path": target, "sha256": hashlib.sha256(data).hexdigest()})
     if not files:
@@ -89,9 +100,14 @@ def build(source, installed, output, revision):
         archive.writestr("manifest.json", json.dumps(manifest, indent=2))
         archive.write(source / "packaging/apply_patch.py", "apply_patch.py")
         archive.write(source / 'packaging/reviewed-qt-removals.json', 'reviewed-qt-removals.json')
+        if external:
+            for helper in ('packaging/neural_runtime.py', 'packaging/neural-runtime-assets.json', 'tools/prepare_engine.py'):
+                archive.write(source / helper, helper)
         for entry in files:
             if entry.get("remove"):
                 continue
+            if entry in external:
+                continue  # Official pinned archives are fetched by the update bootstrap.
             if entry["path"] in generated:
                 archive.writestr(entry["path"], generated[entry["path"]])
             else:
@@ -103,6 +119,7 @@ def build(source, installed, output, revision):
         "bytes": archive_path.stat().st_size, "files": files,
         "unchanged_python_and_engines": not bool(qt), "removed_dependency": bool(removed),
         "python_engine_replacement": False, "removed_qt_files": len(qt), "setup_built": False,
+        "added_neural_runtime": bool(external), "neural_runtime_path": RESOURCE if external else None,
     }, indent=2), encoding="utf-8")
     return archive_path
 
@@ -113,10 +130,11 @@ if __name__ == "__main__":
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--revision", required=True)
+    parser.add_argument("--with-neural-runtime", action='store_true')
     args = parser.parse_args()
     actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=args.source).decode().strip()
     if args.revision != actual:
         raise ValueError("Candidate revision differs from checkout")
     if subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=args.source):
         raise ValueError("Candidate must use committed sources")
-    print(build(args.source, args.baseline, args.output, args.revision))
+    print(build(args.source, args.baseline, args.output, args.revision, args.with_neural_runtime))

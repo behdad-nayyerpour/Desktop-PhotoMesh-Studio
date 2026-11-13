@@ -22,3 +22,4 @@ photomesh/_vendor/** -text
 # Preserve primary audit records exactly as downloaded from disposable runners.
 photomesh/resources/third-party/*-origins.json -text
 photomesh/resources/third-party/*-comparison.json -text
+photomesh/resources/third-party/neural-cuda12/* -text

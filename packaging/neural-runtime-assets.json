@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "platform": "windows-x86_64",
+  "assets": [
+    {
+      "name": "cuda_cudart-windows-x86_64-12.8.90-archive.zip",
+      "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_cudart/windows-x86_64/cuda_cudart-windows-x86_64-12.8.90-archive.zip",
+      "sha256": "4a39058fd8519444a81cfc7ae055d136f48d1a31ffa41ae255b35b2edd61e13b",
+      "bytes": 3037735,
+      "component": "cuda_cudart",
+      "version": "12.8.90",
+      "files": [
+        {
+          "name": "cudart64_12.dll",
+          "bytes": 573952,
+          "sha256": "c2c9a9c22a9bcba90e261825968836787b331038047a26770cffb7a583c28344"
+        }
+      ],
+      "license_sha256": "e2c71babfd18a8e69542dd7e9ca018f9caa438094001a58e6bc4d8c999bf0d07"
+    },
+    {
+      "name": "libcublas-windows-x86_64-12.8.4.1-archive.zip",
+      "url": "https://developer.download.nvidia.com/compute/cuda/redist/libcublas/windows-x86_64/libcublas-windows-x86_64-12.8.4.1-archive.zip",
+      "sha256": "57a470112cec7e112c95253dde8b3c7184d795dbd92b0bde77a4cb7f8c94c8aa",
+      "bytes": 563660944,
+      "component": "libcublas",
+      "version": "12.8.4.1",
+      "files": [
+        {
+          "name": "cublas64_12.dll",
+          "bytes": 113716224,
+          "sha256": "9513540e4ec4c51ee9e7304138c2cc255c29a8c181f9e80c38efa25738becd99"
+        },
+        {
+          "name": "cublasLt64_12.dll",
+          "bytes": 674667520,
+          "sha256": "b199d1ff892a81b7fd3d57ba1781549609b41500b36008fef326038393ad46c7"
+        }
+      ],
+      "license_sha256": "e2c71babfd18a8e69542dd7e9ca018f9caa438094001a58e6bc4d8c999bf0d07"
+    },
+    {
+      "name": "cudnn-windows-x86_64-9.8.0.87_cuda12-archive.zip",
+      "url": "https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.8.0.87_cuda12-archive.zip",
+      "sha256": "d8a23705e3884b137b7e05449fb2b61bfa524e7cfc3fda80743d633f423c6ce4",
+      "bytes": 675349654,
+      "component": "cudnn",
+      "version": "9.8.0.87",
+      "files": [
+        {
+          "name": "cudnn64_9.dll",
+          "bytes": 265760,
+          "sha256": "0edb24306db36121137a3150ac55015aee174d4582d5b807bd3220180a7a57db"
+        },
+        {
+          "name": "cudnn_adv64_9.dll",
+          "bytes": 253583928,
+          "sha256": "631af1130b27b4d14683c7da690dddec8e25ffe3097d498fbba7129faba1601c"
+        },
+        {
+          "name": "cudnn_cnn64_9.dll",
+          "bytes": 4262456,
+          "sha256": "68c9f6bf98a5620a0bb0519c3997800ef2c7cb8979f17a60afcf82d341629c73"
+        },
+        {
+          "name": "cudnn_engines_precompiled64_9.dll",
+          "bytes": 548927544,
+          "sha256": "59e71b3adae62186d3336ccbda6d0c8b14a3a0ef21694757e2b32e84fa840152"
+        },
+        {
+          "name": "cudnn_engines_runtime_compiled64_9.dll",
+          "bytes": 25217568,
+          "sha256": "8671c24fc0debbd99c3dca57bfdf657f4c9490e2a009f641cfc2fcf7a1256180"
+        },
+        {
+          "name": "cudnn_graph64_9.dll",
+          "bytes": 2239520,
+          "sha256": "22c21907fb2108259cb25738156f4459c12c0a001715bbb6d5aafac150060e85"
+        },
+        {
+          "name": "cudnn_heuristic64_9.dll",
+          "bytes": 55919648,
+          "sha256": "5378e50729665245fa5abe89c729b782de686675e9bd6319cda1a3165d9492e6"
+        },
+        {
+          "name": "cudnn_ops64_9.dll",
+          "bytes": 116958752,
+          "sha256": "080c2bb37e9d1fdd585cdd53fdbb23c0478b99610a19f8bba512b596b1e302fe"
+        }
+      ],
+      "license_sha256": "7936e1f9f2a6d9deea237aee6aa7f1abd032d34bcc1c35de1e6516b223d09487"
+    }
+  ],
+  "sources": [
+    "https://developer.download.nvidia.com/compute/cuda/redist/redistrib_12.8.1.json",
+    "https://developer.download.nvidia.com/compute/cudnn/redist/redistrib_9.8.0.json"
+  ],
+  "scope": "Runtime DLLs only, unmodified; isolated child-process lookup. No SDK headers, tools or driver."
+}

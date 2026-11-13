@@ -97,3 +97,4 @@ engine-fixture/
 engine-downloads/
 engine-benchmark.json
 workflow-performance.json
+photomesh/resources/neural-cuda12/

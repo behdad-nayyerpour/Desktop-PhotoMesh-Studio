@@ -432,3 +432,55 @@ Primary docs consulted: https://colmap.github.io/cameras.html and official
 colmap/colmap doc/faq.rst parameter orders; https://laspy.readthedocs.io/en/latest/
 installation.html and github.com/laspy/laspy for chunked writer/LAZ and CRS support.
 No external code copied; dependencies need exact wheel/version/license verification.
+# Private ONNX CUDA runtime completion (2026-11-13)
+
+The native ONNX CUDA provider in the official modern engine imports CUDA 12
+cuBLAS/cuBLASLt/runtime DLLs, while the dense engine carries CUDA 13 libraries.
+Previously both learned methods passed the same-method CPU fallback after the
+native GPU probe failed on missing cublasLt64_12.dll. No driver installation can
+replace these user-mode runtime dependencies.
+
+Pinned official redistributables are CUDA Runtime 12.8.90 and cuBLAS 12.8.4.1
+(CUDA Toolkit 12.8.1), and cuDNN 9.8.0.87 for CUDA 12 / Windows x86-64.
+`packaging/neural-runtime-assets.json` records source archives, official SHA-256,
+sizes, exact archive LICENSE hashes and all 11 selected DLL hashes. CUDA's
+Attachment A expressly lists the runtime and BLAS DLLs, including versioned
+names. The actual cuDNN archive LICENSE chapter 8, section 2 explicitly grants
+redistribution of runtime .dll/.so files subject to the SDK terms. Exact archive
+LICENSE texts, versioned acknowledgements and Boost text are retained offline.
+The application license already excludes third-party components; it is unchanged.
+This closes this additional runtime's component review, not the separate
+corresponding-source/build/notice findings for other native dependencies.
+
+DLL lookup adds `app/photomesh/resources/neural-cuda12` only to pinned modern
+engine child environments, after engine-owned bin/lib. It never mutates the host
+PATH, Python/Qt environment, driver or legacy lookup. No algorithms, weights,
+keypoint limits, numerical tolerances or project coordinates are changed.
+Existing same-method CPU fallback remains available. Review covered all
+child_env callers (capability probes, preflight, PipelineRunner and fastpipe).
+
+Both learned methods passed actual GPU extraction/matching and incremental
+mapping on four retained public photographs: all four cameras registered;
+ALIKED/LightGlue 165 points, SIFT/LightGlue 195. Loaded DLL paths confirmed the
+private CUDA 12 location. Explicit CPU runs also registered all four cameras
+(167 and 339 points). CPU/GPU feature backends are not bit-identical; these are
+runtime/registration checks, not an independent survey accuracy certification.
+Evidence is retained in `Lens2Mesh-validation-evidence/neural-runtime-105/`.
+62 focused tests passed (environment isolation, authentication, partial-update
+selection, malformed payload rejection, native-resource rollback and existing
+engine/updater contracts). The initial local test attempt hit the sandbox's
+overlong TEMP path; rerunning under a short disposable F: test path passed.
+
+Setup staging and incremental preparation share one verified build-time helper.
+The BAT downloads only the changed app archive and needed official components,
+verifies their hashes and prepares the payload before application mutation.
+It does not redownload unchanged Python/engine bundles. Subsequent updates omit
+unchanged neural components. Existing atomic apply, backup and rollback cover
+the added app-private DLLs. Runtime identity includes the manifest. This first
+addition requires about 1.24 GB download / 1.80 GB installed DLLs; no entire SDK,
+headers, static libraries, developer tools or driver is installed.
+
+Manual review: no menus, settings, defaults or documented processing workflow
+changed; retain the approved 119-page PDF unchanged. Public release remains
+conditional on the independently recorded remaining native source/notice gate.
+

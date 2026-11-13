@@ -32,6 +32,12 @@ def child_env(exe):
     base = Path(exe).resolve().parent
     root = base.parent if base.name.lower() == "bin" else base
     paths = [str(base), str(root / "lib")]
+    # ONNX in the pinned modern engine uses CUDA 12; dense COLMAP uses CUDA 13.
+    # Keep the additional DLLs private to native children, after engine-owned
+    # directories, without changing PySide/Python or the legacy engine's lookup.
+    neural = Path(__file__).resolve().parent / 'resources' / 'neural-cuda12'
+    if neural.is_dir() and bundle_manifest(exe).get('version') == PINNED_VERSION:
+        paths.append(str(neural))
     env["PATH"] = os.pathsep.join(paths + [env.get("PATH", "")])
     env.pop("QT_PLUGIN_PATH", None)
     env.pop("QT_QPA_PLATFORM_PLUGIN_PATH", None)

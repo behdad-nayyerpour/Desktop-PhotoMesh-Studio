@@ -33,6 +33,21 @@ class LegalText(HTMLParser):
             self.parts.append(data)
 
 
+def neural_notices(output):
+    """Retain exact NVIDIA archive licenses and the separate review scope."""
+    source = Path(__file__).resolve().parents[1]/'photomesh/resources/third-party/neural-cuda12'
+    destination = output/'neural-cuda12'
+    if source.resolve() != destination.resolve():
+        shutil.copytree(source, destination, dirs_exist_ok=True)
+    links = ''.join(f'<li><a href="neural-cuda12/{escape(path.name)}">{escape(path.name)}</a></li>'
+                    for path in sorted(destination.iterdir()) if path.is_file())
+    return ('<h2>Private ONNX CUDA 12 runtime</h2><p>CUDA Runtime 12.8.90, '
+            'cuBLAS 12.8.4.1 and cuDNN 9.8.0.87. Only reviewed, unmodified runtime DLLs '
+            'are prepared from official hash-pinned archives. NVIDIA and third-party '
+            'licenses apply separately from the application license. This review '
+            'does not close other native source/notice findings.</p><ul>'+links+'</ul>')
+
+
 def build(inventory, evidence, upstream, output, primary_proof=None, qt_removal_plan=None):
     data = json.loads(inventory.read_text(encoding='utf-8'))
     output.mkdir(parents=True, exist_ok=True)
@@ -195,6 +210,7 @@ source/build records remain an explicit release gate.</p><ul>'''+''.join(proof_l
             'is checked against the complete candidate inventory. Remaining native '
             'source/notice review is recorded separately; exclusion is not blanket '
             'redistribution clearance.</p><h2>Python distributions')
+    html = html.replace('</html>', neural_notices(output)+'</html>')
     (output/'index.html').write_text(html, encoding='utf-8')
     print(f'Offline notices: {len(packages)} distributions, {len(sections)} collected texts')
 

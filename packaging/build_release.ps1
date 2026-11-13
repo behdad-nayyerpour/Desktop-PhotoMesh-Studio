@@ -102,6 +102,10 @@ $engineArgs = @((Join-Path $app "tools\prepare_engine.py"), "--output", (Join-Pa
 if ($OfflineBuild) { $engineArgs += "--offline" }
 & (Join-Path $pythonStage "python.exe") @engineArgs
 if ($LASTEXITCODE -ne 0) { throw "Offline engine bundle preparation failed" }
+$neuralArgs = @((Join-Path $app "packaging\neural_runtime.py"), "--output", (Join-Path $appStage "photomesh\resources\neural-cuda12"), "--cache", $EngineCache)
+if ($OfflineBuild) { $neuralArgs += "--offline" }
+& (Join-Path $pythonStage "python.exe") @neuralArgs
+if ($LASTEXITCODE -ne 0) { throw "Verified neural CUDA runtime preparation failed" }
 
 if ($sourceMode -eq "venv") {
     $freeze = @(& (Join-Path $pythonStage "python.exe") -m pip freeze --exclude-editable | Sort-Object)
@@ -120,6 +124,8 @@ if ($sourceMode -eq "venv") {
 $engineHash = (Get-FileHash -LiteralPath (Join-Path $stage "tools\colmap\photomesh-engine.json") -Algorithm SHA256).Hash.ToLowerInvariant()
 $runtimeDescription += "runtime-cleanup=independent-ply-codec; removed-plyfile-and-reviewed-unused-Qt-addons"
 $runtimeDescription += "modern-engine-manifest=$engineHash"
+$neuralHash = (Get-FileHash -LiteralPath (Join-Path $appStage "photomesh\resources\neural-cuda12\runtime.json") -Algorithm SHA256).Hash.ToLowerInvariant()
+$runtimeDescription += "neural-cuda12-manifest=$neuralHash"
 $sha = [Security.Cryptography.SHA256]::Create()
 $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()
 $sha.Dispose()

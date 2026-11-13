@@ -57,7 +57,7 @@ jobs:
       - name: Exact survey capacity and peak memory comparison
         run: python tools/benchmark_capacity_105.py --output evidence/capacity-performance.json
       - name: Build only changed application components
-        run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}"
+        run: python packaging/build_patch.py --baseline "${{ env.BASELINE_ROOT }}" --output candidate --revision "${{ github.sha }}" --with-neural-runtime
       - name: Apply and roll back on installed Python with unchanged runtime
         shell: pwsh
         run: |
@@ -65,6 +65,8 @@ jobs:
           $payload = Join-Path $env:RUNNER_TEMP 'candidate-payload'
           Expand-Archive -LiteralPath $zip.FullName -DestinationPath $payload
           $python = Join-Path $env:BASELINE_ROOT 'python/python.exe'
+          & $python (Join-Path $payload 'packaging/neural_runtime.py') --payload $payload
+          if ($LASTEXITCODE) { throw 'Neural runtime acquisition failed before app mutation' }
           & $python (Join-Path $payload 'apply_patch.py') --root $env:BASELINE_ROOT --payload $payload
           if ($LASTEXITCODE) { throw 'Installed patch application failed' }
           $env:PYTHONPATH = Join-Path $env:BASELINE_ROOT 'app'
