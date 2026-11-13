@@ -51,7 +51,7 @@ jobs:
         run: python -m pytest -q --tb=short -rs -p no:cacheprovider tests
       - name: Validate exact-install shortcut migration in disposable folders
         shell: pwsh
-        run: ./tools/validate_shortcuts_105.ps1 -Fixture "$env:RUNNER_TEMP/shortcut validation فارسی"
+        run: ./tools/validate_shortcuts_105.ps1 -Fixture "$env:RUNNER_TEMP/shortcut validation"
       - name: PLY interoperability and equal-workload performance
         run: python tools/benchmark_ply_105.py --output evidence/ply-performance.json
       - name: Exact survey capacity and peak memory comparison

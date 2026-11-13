@@ -1,0 +1,25 @@
+name: Public manually classified ground and LAS validation
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: ["tools/benchmark_public_ground_105.py", ".github/workflows/public-ground-105.yml"]
+permissions:
+  contents: read
+jobs:
+  ground:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -q -r requirements-dev.txt
+      - name: Classify independent public LiDAR and verify LAS LAZ preservation
+        run: python tools/benchmark_public_ground_105.py --source autzen-classified.laz --output public-ground
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Public-ground-validation
+          path: public-ground/results.json
+          retention-days: 30
