@@ -84,15 +84,19 @@ jobs:
           foreach ($link in @((Join-Path ([Environment]::GetFolderPath('Desktop')) 'Lens2Mesh.lnk'),(Join-Path ([Environment]::GetFolderPath('Programs')) 'Lens2Mesh.lnk'))) {
             if (-not (Test-Path -LiteralPath $link)) { throw 'Installed shortcut missing' }
             $shortcut=$shell.CreateShortcut($link)
-            $shortcutRecords+=[PSCustomObject]@{link=$link;target=$shortcut.TargetPath;arguments=$shortcut.Arguments;icon=$shortcut.IconLocation;working_directory=$shortcut.WorkingDirectory}
+            $nativeJson=& $python tools/read_windows_shortcut_105.py $link
+            if ($LASTEXITCODE) { throw 'Unicode shell-link inspection failed' }
+            $native=$nativeJson | ConvertFrom-Json
+            $shortcutRecords+=[PSCustomObject]@{link=$link;unicode=$native;wsh_target=$shortcut.TargetPath;wsh_icon=$shortcut.IconLocation}
             $shortcutRecords | ConvertTo-Json -Depth 4 | Set-Content preview/shortcut-validation.json
-            # Shell links may expose DOS 8.3 aliases. Compare the canonical
-            # file destinations, retaining the original strings as evidence.
-            $targetMatches=& $python -c "import os,sys; print(os.path.normcase(os.path.realpath(sys.argv[1])) == os.path.normcase(os.path.realpath(sys.argv[2])))" $shortcut.TargetPath (Join-Path $custom 'python/pythonw.exe')
-            if ($LASTEXITCODE -or $targetMatches.Trim() -ne 'True') { throw ('Shortcut target differs: '+$shortcut.TargetPath) }
-            $iconPath=$shortcut.IconLocation -replace ',[0-9-]+$',''
-            $iconMatches=& $python -c "import os,sys; print(os.path.normcase(os.path.realpath(sys.argv[1])) == os.path.normcase(os.path.realpath(sys.argv[2])))" $iconPath (Join-Path $custom 'app/photomesh/resources/photomesh.ico')
-            if ($LASTEXITCODE -or $iconMatches.Trim() -ne 'True') { throw ('Shortcut icon differs: '+$shortcut.IconLocation) }
+            # Explicit IShellLinkW avoids WSH's demonstrated ANSI conversion.
+            # Canonical comparison also handles legitimate DOS 8.3 aliases.
+            $targetMatches=& $python -c "import os,sys; print(os.path.normcase(os.path.realpath(sys.argv[1])) == os.path.normcase(os.path.realpath(sys.argv[2])))" $native.target (Join-Path $custom 'python/pythonw.exe')
+            if ($LASTEXITCODE -or $targetMatches.Trim() -ne 'True') { throw ('Shortcut target differs: '+$native.target) }
+            $iconMatches=& $python -c "import os,sys; print(os.path.normcase(os.path.realpath(sys.argv[1])) == os.path.normcase(os.path.realpath(sys.argv[2])))" $native.icon (Join-Path $custom 'app/photomesh/resources/photomesh.ico')
+            if ($LASTEXITCODE -or $iconMatches.Trim() -ne 'True') { throw ('Shortcut icon differs: '+$native.icon) }
+            $argumentMatches=& $python -c "import os,sys; print(os.path.normcase(os.path.realpath(sys.argv[1].strip(chr(34)))) == os.path.normcase(os.path.realpath(sys.argv[2])))" $native.arguments (Join-Path $custom 'app/main.py')
+            if ($LASTEXITCODE -or $argumentMatches.Trim() -ne 'True') { throw 'Shortcut application argument differs' }
           }
           $uninstaller=Join-Path $custom 'unins000.exe'
           $p=Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru -WindowStyle Hidden
