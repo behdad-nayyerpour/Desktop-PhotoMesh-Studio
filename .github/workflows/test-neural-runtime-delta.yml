@@ -149,7 +149,7 @@ jobs:
           Get-ChildItem $app -Recurse -File | Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '__pycache__' } | ForEach-Object { $before[$_.FullName.Substring($app.Length+1)]=(Get-FileHash $_.FullName).Hash }
           $before | ConvertTo-Json | Set-Content neural-before.json
           $qt=@{}
-          $plan=Get-Content packaging/reviewed-qt-removals.json -Raw | ConvertFrom-Json
+          $plan=Get-Content validation/neural-runtime/tooling/reviewed-qt-removals.json -Raw | ConvertFrom-Json
           foreach ($entry in $plan.files) {
             $file=Join-Path $env:PATCH_TEST_ROOT $entry.path
             if (Test-Path -LiteralPath $file) { $qt[$entry.path]=(Get-FileHash $file).Hash }
@@ -164,7 +164,7 @@ jobs:
           $sha=(Get-FileHash $zip).Hash.ToLowerInvariant()
           $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-neural-runtime/'+$zip.Name
           $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_NeuralGPU_1.0.5.bat'
-          python packaging/make_patch_launcher.py --url $url --sha256 $sha --output $bat
+          python validation/neural-runtime/tooling/make_patch_launcher.py --url $url --sha256 $sha --output $bat
           if ($LASTEXITCODE) { throw 'Launcher generation failed' }
           $key='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{74DCCB58-21F5-4BB0-B93D-7DF3C76D64F5}_is1'
           Set-ItemProperty -LiteralPath $key -Name InstallLocation -Value ($env:PATCH_TEST_ROOT+'\')
@@ -172,13 +172,13 @@ jobs:
           if ($LASTEXITCODE) { throw 'Actual BAT official runtime download/apply failed' }
           $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
           $python=Join-Path $env:PATCH_TEST_ROOT 'python/python.exe'
-          & $python tools/validate_installed_neural_105.py
+          & $python validation/neural-runtime/tooling/validate_installed_neural_105.py
           if ($LASTEXITCODE) { throw 'Private runtime byte/notice/environment validation failed' }
           & $python packaging/verify_runtime_lock.py --root $env:PATCH_TEST_ROOT
           if ($LASTEXITCODE) { throw 'Python environment changed' }
           & $python tools/validate_installed_ply_105.py
           if ($LASTEXITCODE) { throw 'Installed PLY processing failed' }
-          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          & $python validation/neural-runtime/tooling/validate_installed_capacity_105.py validation/neural-runtime/tooling/reviewed-qt-removals.json
           if ($LASTEXITCODE) { throw 'Installed terrain/manual/cleanup checks failed' }
           $suite=Join-Path $env:RUNNER_TEMP 'installed-neural-regressions'
           New-Item -ItemType Directory -Force $suite | Out-Null

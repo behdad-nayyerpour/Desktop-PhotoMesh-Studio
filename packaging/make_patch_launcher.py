@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 # Keep filesystem paths out of Windows PowerShell native argument quoting.
-NATIVE_HANDOFF = '$env:LM_PATCH_INSTALL_ROOT=$root\n  $env:LM_PATCH_PAYLOAD=$payload\n  & $py -c "import os,runpy,sys; p=os.environ[\'LM_PATCH_PAYLOAD\']; s=os.path.join(p,\'packaging\',\'neural_runtime.py\'); sys.argv=[s,\'--payload\',p]; os.path.isfile(s) and runpy.run_path(s,run_name=\'__main__\'); s=os.path.join(p,\'apply_patch.py\'); sys.argv=[s,\'--root\',os.environ[\'LM_PATCH_INSTALL_ROOT\'],\'--payload\',p]; runpy.run_path(s,run_name=\'__main__\')"'
+NATIVE_HANDOFF = '$env:LM_PATCH_INSTALL_ROOT=$root\n  $env:LM_PATCH_PAYLOAD=$payload\n  & $py -c "import os,runpy,sys; p=os.environ[\'LM_PATCH_PAYLOAD\']; s=os.path.join(p,\'apply_patch.py\'); sys.argv=[s,\'--root\',os.environ[\'LM_PATCH_INSTALL_ROOT\'],\'--payload\',p]; runpy.run_path(s,run_name=\'__main__\')"'
 
 def create(url, sha256, output):
     if not re.fullmatch(r"https://raw\.githubusercontent\.com/[\w-]+/[\w.-]+/[0-9a-f]{40}/[\w./-]+\.zip", url):
