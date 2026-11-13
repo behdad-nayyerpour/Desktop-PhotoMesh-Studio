@@ -160,7 +160,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force verified-download | Out-Null
-          $zip=Get-Item candidates/105-neural-runtime/Lens2Mesh_TestPatch_b8b2b9f0ab8e.zip
+          $zip=Get-Item candidates/105-neural-runtime/Lens2Mesh_TestPatch_31636bcc8b87.zip
           $sha=(Get-FileHash $zip).Hash.ToLowerInvariant()
           $url='https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/candidates/105-neural-runtime/'+$zip.Name
           $bat=Join-Path $PWD 'verified-download/Lens2Mesh_Update_NeuralGPU_1.0.5.bat'
@@ -190,7 +190,7 @@ jobs:
           Pop-Location
           if ($result) { throw 'Installed offline regressions failed' }
           $env:PYTHONPATH=Join-Path $env:PATCH_TEST_ROOT 'app'
-          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like 'b8b2b9f*' | Select-Object -First 1
+          $receipt=Get-ChildItem -LiteralPath (Join-Path $env:PATCH_TEST_ROOT '.lens2mesh-patches') -Directory | Where-Object Name -Like '31636bc*' | Select-Object -First 1
           Copy-Item -LiteralPath (Join-Path $receipt.FullName 'state.json') verified-download/applied-state.json
           & $env:ComSpec /d /c ('call "'+(Join-Path $receipt.FullName 'ROLLBACK.bat')+'" <NUL')
           if ($LASTEXITCODE) { throw 'Actual BAT rollback failed' }

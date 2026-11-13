@@ -1,8 +1,8 @@
 {
-  "candidate": "b8b2b9f0ab8e691c37e55452606ce5b52032b973",
-  "archive": "Lens2Mesh_TestPatch_b8b2b9f0ab8e.zip",
-  "sha256": "08ab6184a90702e7d142558c0b406ece14c12bec7293ccd5b1083de2f508e8c1",
-  "bytes": 3415812,
+  "candidate": "31636bcc8b874aa4826d65b8bd9f2959dddd2fc0",
+  "archive": "Lens2Mesh_TestPatch_31636bcc8b87.zip",
+  "sha256": "74583407ec709d597ae17610f6f261a10dc89b1c5bb8958a925f118f8fd2dfe8",
+  "bytes": 3416234,
   "files": [
     {
       "path": "python/Lib/site-packages/PySide6/plugins/designer/qwebengineview.dll",
@@ -719,7 +719,7 @@
     },
     {
       "path": "app/photomesh/resources/third-party/index.html",
-      "sha256": "c5609c7e30f5283cb36da5a10314bb6512840aa696d6d3731f9788a34910b888"
+      "sha256": "9f7e9c0dfe00b3717b3703f425286a22d89c7d33090747e4ce8a54db175fa67e"
     },
     {
       "path": "app/photomesh/resources/third-party/neural-cuda12/Boost-1.0.txt",
@@ -735,7 +735,7 @@
     },
     {
       "path": "app/photomesh/resources/third-party/neural-cuda12/README.md",
-      "sha256": "fe6f958ca445090ba71f423898714adbcea203daab0d7b13d8901ec975622ef4"
+      "sha256": "f4ac1ab58ae8ab52b9d546311eb1b9fcf850b15bf84bd9632da65b7908da816c"
     },
     {
       "path": "app/photomesh/resources/third-party/neural-cuda12/cuDNN-9.8.0-Acknowledgements.txt",
@@ -790,16 +790,24 @@
       "sha256": "080c2bb37e9d1fdd585cdd53fdbb23c0478b99610a19f8bba512b596b1e302fe"
     },
     {
+      "path": "app/photomesh/resources/neural-cuda12/nvrtc64_120_0.dll",
+      "sha256": "02d2d7ef4690bf1a55dda1d3ac94c86ce8d16920071c87bcd3e70e94ef346e93"
+    },
+    {
+      "path": "app/photomesh/resources/neural-cuda12/nvrtc-builtins64_128.dll",
+      "sha256": "a7afa2a40cbd3f922a33d8bf71c13cb26ca707c7016a9bc5fcde36759ba668f5"
+    },
+    {
       "path": "app/photomesh/resources/neural-cuda12/runtime.json",
-      "sha256": "554cc664d35af1f5941c5bb29d5d82e289872acde1668e172e892226f49520ae"
+      "sha256": "9741216219bb8776c06e8a58c0c9011c5f17b09d3c68539d87e16c7610ca25fd"
     },
     {
       "path": "app/runtime.id",
-      "sha256": "decb048ceac5ee63ae081a2f28851e11fa9823c13e30cacf416445619e15a5f4"
+      "sha256": "3d41530a439842317b98f6d33aa8f92f96677ab2cc8ee040118c20fb4c3dc043"
     },
     {
       "path": "app/release_manifest.txt",
-      "sha256": "71aa052776565c15472e76b4f86e5ce2c68a31e828a947c518bef490fdb6db2a"
+      "sha256": "1bc58b75764554b762f7f65bdbda71ed30eb495ecadf0921d9a7146897134518"
     }
   ],
   "unchanged_python_and_engines": false,
