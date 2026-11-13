@@ -120,6 +120,21 @@ public RAW readback matches those exact tested bytes. No Setup was built.
 Item4 remains open specifically for the corresponding-source/build packaging
 gates recorded above; these tests do not close those findings.
 
+### User acceptance (2026-11-13)
+
+The user installed candidate63b70e534597e17a54e91a31696ed5d423e1b396
+through the delivered finalization BAT and reports that all six requested manual
+checks work: name/icon/version, an existing project's display/save/reopen,
+offline manual/notices, script-error reporting with continued application use,
+cross-section interaction and persisted appearance/layout.
+
+Record this as acceptance of the tested candidate, not an independent numerical
+accuracy measurement or closure of item4. The accepted app revision remains the
+installer baseline. Complete the two recorded native/split-module source/build
+packaging findings before preparing the final Setup. Candidate acceptance does
+not authorize public publication. Keep the approved PDF unchanged and point
+selection/deletion deferred as instructed.
+
 ## Approved performance, offline manual and dependency iteration (2026-11-13)
 
 User defers direct point selection/deletion to the following version and requests
