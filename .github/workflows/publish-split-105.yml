@@ -1,0 +1,90 @@
+name: Publish verified base and optional GPU packages
+on:
+  push:
+    branches: ["packaging/compact-105"]
+    paths: [".github/workflows/publish-split-105.yml"]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require final split-installer validation before any public change
+        run: |
+          python - <<'PY'
+          import json, os, time, urllib.request
+          url='https://api.github.com/repos/'+os.environ['GH_REPO']+'/actions/runs/43508941599'
+          for _ in range(120):
+              req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req) as response: record=json.load(response)
+              assert record['head_sha']=='65277d01c99e9c3ba5ac52b6061096159592c481'
+              if record['status']=='completed':
+                  assert record['conclusion']=='success',record['conclusion']
+                  print('Exact split build and all installed lifecycle checks passed'); break
+              time.sleep(10)
+          else: raise RuntimeError('Split validation is still running; nothing published')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Split-105-Test-Installers
+          run-id: 43508941599
+          github-token: ${{ github.token }}
+          path: packages
+      - uses: actions/download-artifact@v4
+        with:
+          name: Lens2Mesh-Split-105-Evidence
+          run-id: 43508941599
+          github-token: ${{ github.token }}
+          path: evidence
+      - name: Authenticate all candidate bytes and preserve the current public files
+        run: |
+          test -f evidence/split-validation.txt
+          (cd packages && sha256sum -c Lens2Mesh_Setup_1.0.5.exe.sha256 && sha256sum -c Lens2Mesh_NeuralGPU_Addon_1.0.5.exe.sha256)
+          test "$(stat -c%s packages/Lens2Mesh_Setup_1.0.5.exe)" = 598550777
+          echo '83bcd31c0ddea7277227045311f5f74117164d7bf96b8dac933296cae02f9faf  photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf' | sha256sum -c -
+          gh release download v1.0.5 --pattern 'Lens2Mesh_Setup_1.0.5.exe*' --dir rollback
+          gh release download v1.0.5 --pattern 'Lens2Mesh_1.0.5_Complete_User_Manual.pdf' --dir rollback
+          gh release view v1.0.5 --json body,assets,url > rollback/publication-before.json
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          with Path('rollback/Lens2Mesh_Setup_1.0.5.exe').open('rb') as stream: digest=hashlib.file_digest(stream,'sha256').hexdigest()
+          assert digest in {'e4f2b42f33cfcf53b652d9e16228310b3e9b029091725d6985ff18cf5c57b990','4d50eaf5354713ff79aa88aec06237a861287753999e2cb0c1e36b5db8ad207d'}
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Lens2Mesh-105-Before-Split-Rollback
+          path: rollback/
+          retention-days: 90
+      - name: Publish optional add-on first, then base and approved manual
+        run: |
+          gh release upload v1.0.5 packages/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe packages/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe.sha256 --clobber
+          gh release upload v1.0.5 packages/Lens2Mesh_Setup_1.0.5.exe packages/Lens2Mesh_Setup_1.0.5.exe.sha256 photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf --clobber
+          gh release download v1.0.5 --pattern 'Lens2Mesh_Setup_1.0.5.exe*' --dir public-check
+          gh release download v1.0.5 --pattern 'Lens2Mesh_NeuralGPU_Addon_1.0.5.exe*' --dir public-check
+          gh release download v1.0.5 --pattern 'Lens2Mesh_1.0.5_Complete_User_Manual.pdf' --dir public-check
+          (cd public-check && sha256sum -c Lens2Mesh_Setup_1.0.5.exe.sha256 && sha256sum -c Lens2Mesh_NeuralGPU_Addon_1.0.5.exe.sha256)
+          cmp packages/Lens2Mesh_Setup_1.0.5.exe public-check/Lens2Mesh_Setup_1.0.5.exe
+          cmp packages/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe public-check/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe
+          cmp photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf public-check/Lens2Mesh_1.0.5_Complete_User_Manual.pdf
+          gh release edit v1.0.5 --notes-file docs/releases/1.0.5.md --latest
+          git push origin HEAD:main
+          gh release view v1.0.5 --json url,assets,publishedAt > evidence/split-publication.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-105-Split-Publication-Evidence
+          path: |
+            evidence/split-publication.json
+            evidence/split-sizes.json
+            evidence/split-validation.txt
+            packages/*.sha256
+          retention-days: 90
