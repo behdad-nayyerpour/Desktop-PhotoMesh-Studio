@@ -1,0 +1,8 @@
+{
+  "triangles": 80000,
+  "index_seconds": 0.28684179999982007,
+  "exact_seconds": 0.10597260000213282,
+  "legacy_512_sample_seconds": 0.15253690000099596,
+  "segments": 797,
+  "max_height_error": 7.105427357601002e-15
+}

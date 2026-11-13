@@ -1,0 +1,13 @@
+{
+  "candidate": "a99b2d19ce9330f9e92cc4211a6d7a64a792b08f",
+  "archive": "Lens2Mesh_TestPatch_a99b2d19ce93.zip",
+  "bytes": 90675,
+  "sha256": "07c720b1b08b5a017463487046363bae463b042fa7fd7879d4ce4ac87c203a07",
+  "files": [
+    "app/photomesh/survey_geometry.py",
+    "app/photomesh/survey_gestures.py",
+    "app/photomesh/survey_tools.py",
+    "app/photomesh/survey_widgets.py",
+    "app/photomesh/views.py"
+  ]
+}
