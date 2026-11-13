@@ -26,19 +26,19 @@ Third-party components retain their respective licenses.
 
 ## Screenshots
 
-The public Autzen LiDAR scene is open in Lens2Mesh 1.0.5.
-Both themes show the same automatic ground/non-ground classification from
-10,653,336 points, with a bounded viewer preview. The Project panel is on the left;
-the empty Photos panel is hidden for this LiDAR-only dataset.
-These are actual application captures with Mesa OpenGL. See [image attribution and license](SCREENSHOT-LICENSE.txt).
+Lens2Mesh 1.0.5 displaying the textured 3D model of the Odm_Wietrznia project,
+reconstructed from 225 aerial photographs, in Dark and Light themes.
+The Project panel is on the left and photo thumbnails are on the right.
+These are actual application screenshots supplied by the project owner.
+See [image attribution and license](SCREENSHOT-LICENSE.txt).
 
 **Dark theme**
 
-![Lens2Mesh 1.0.5 Dark theme with public Autzen ground/non-ground colours](screenshot.png)
+![Lens2Mesh 1.0.5 Dark theme displaying the textured Odm_Wietrznia model](screenshot.png)
 
 **Light theme**
 
-![Lens2Mesh 1.0.5 Light theme with the same public terrain classification](screenshot-light.png)
+![Lens2Mesh 1.0.5 Light theme displaying the textured Odm_Wietrznia model](screenshot-light.png)
 
 ## Install
 

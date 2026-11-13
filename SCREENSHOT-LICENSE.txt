@@ -1,17 +1,16 @@
 Lens2Mesh 1.0.5 screenshot attribution
 
-screenshot.png and screenshot-light.png are actual application captures of
-PDAL/data's Autzen LiDAR, revision ce0024257c573526389c4db9ab26e82739b8aaa9.
-LiDAR provided by Aaron Reyna / Watershed Sciences in 2010; manual reference
-classification by Max Sampson / Hobu in 2021. Public dataset content retains
-Creative Commons Attribution 4.0 International (CC-BY-4.0).
-Coordinates were converted to local metres, and Lens2Mesh's automatic
-ground/non-ground classes are displayed with its bounded viewer preview.
+screenshot.png (Dark theme) and screenshot-light.png (Light theme) are actual
+Lens2Mesh 1.0.5 application screenshots supplied by Behdad Nayyerpour on
+2026-11-14 for publication in this repository. They show the textured 3D model
+of the Odm_Wietrznia project reconstructed from 225 aerial photographs.
+The supplied PNGs are retained unchanged at their original resolution.
+
 The original application interface, logo and code keep their existing license;
 no new license is granted over those original application materials.
+Underlying imagery and dataset rights remain with their respective owners;
+this notice does not assign a new license to that material.
 
-Dataset, attribution and source:
-https://github.com/PDAL/data/tree/ce0024257c573526389c4db9ab26e82739b8aaa9/autzen
-https://github.com/PDAL/data/blob/ce0024257c573526389c4db9ab26e82739b8aaa9/LICENSE
-https://creativecommons.org/licenses/by/4.0/
-Capture recipe: tools/capture_public_terrain_ui_105.py and .github/workflows/public-ui-105.yml
+The previous Autzen LiDAR screenshots and their dataset attribution are retained
+in Git history. That dataset's CC-BY-4.0 attribution does not describe these
+replacement screenshots.
