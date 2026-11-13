@@ -42,7 +42,13 @@ Source: "{#StageDir}\tools\*"; DestDir: "{app}\tools"; Flags: recursesubdirs cre
 [InstallDelete]
 Type: files; Name: "{autoprograms}\PhotoMesh Studio.lnk"; Check: not PortableCheck
 Type: files; Name: "{autodesktop}\PhotoMesh Studio.lnk"; Check: not PortableCheck
-Type: filesandordirs; Name: "{app}\app\photomesh"
+; Refresh managed code/resources while retaining the separately installed GPU add-on.
+Type: files; Name: "{app}\app\photomesh\*"
+Type: filesandordirs; Name: "{app}\app\photomesh\__pycache__"
+Type: filesandordirs; Name: "{app}\app\photomesh\_vendor"
+Type: files; Name: "{app}\app\photomesh\resources\*"
+Type: filesandordirs; Name: "{app}\app\photomesh\resources\manual"
+Type: filesandordirs; Name: "{app}\app\photomesh\resources\third-party"
 Type: filesandordirs; Name: "{app}\python"
 Type: filesandordirs; Name: "{app}\tools"
 
@@ -52,6 +58,9 @@ Name: "{autodesktop}\Lens2Mesh"; Filename: "{app}\python\pythonw.exe"; Parameter
 
 [Tasks]
 Name: desktopicon; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\app\photomesh\resources\neural-cuda12"
 
 [Run]
 Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\app\main.py"""; WorkingDir: "{app}\app"; Description: "Launch Lens2Mesh"; Flags: postinstall nowait skipifsilent

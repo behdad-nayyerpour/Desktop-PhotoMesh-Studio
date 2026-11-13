@@ -71,3 +71,24 @@ def test_generated_files_cannot_be_placed_in_stage(tmp_path):
     stage, plan, _ = fixture(tmp_path)
     with pytest.raises(ValueError, match='outside the stage'):
         payload.generate(stage, stage / 'files.iss', tmp_path / 'report.json', plan)
+
+
+def test_base_separates_only_exact_optional_gpu_dlls(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / 'packaging'))
+    import neural_runtime
+    stage, plan, _ = fixture(tmp_path)
+    folder = stage / 'app/photomesh/resources/neural-cuda12'
+    folder.mkdir(parents=True)
+    dll = folder / 'one.dll'
+    dll.write_bytes(b'optional GPU')
+    (folder / 'runtime.json').write_text('descriptor remains')
+    expected = payload.digest(dll)
+    monkeypatch.setattr(neural_runtime, 'runtime_files', lambda: [
+        dict(path='app/photomesh/resources/neural-cuda12/one.dll', sha256=expected)])
+    result = payload.generate(stage, tmp_path / 'base.iss', tmp_path / 'base.json', plan, 'base')
+    assert result['neural_profile'] == 'base'
+    assert any(item['path'].endswith('neural-cuda12/one.dll') for item in result['omitted'])
+    assert any(item['path'].endswith('neural-cuda12/runtime.json') for item in result['installed'])
+    dll.write_bytes(b'corrupted GPU')
+    with pytest.raises(ValueError, match='NVIDIA add-on bytes differ'):
+        payload.generate(stage, tmp_path / 'bad.iss', tmp_path / 'bad.json', plan, 'base')

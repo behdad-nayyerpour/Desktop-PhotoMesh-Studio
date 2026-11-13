@@ -4,7 +4,7 @@
 
 ## Windows installer
 
-Lens2Mesh 1.0.5 is distributed as one complete offline Setup. Existing
+Lens2Mesh 1.0.5 has a complete offline base Setup and an optional GPU add-on. Existing
 installation folders remain supported. Setup offers destination selection on
 fresh installs and upgrades.
 
@@ -18,6 +18,19 @@ The installer includes Python, its packages and COLMAP; compatible legacy
 GLOMAP is optional.
 Installation and processing can run offline after the file is downloaded.
 You do not need to install Git or Python separately.
+
+## Optional NVIDIA acceleration
+
+The base Setup includes the offline ALIKED/LightGlue models. Without the add-on,
+these methods automatically fall back to CPU. Standard COLMAP GPU processing is
+retained in the base package; it still requires compatible hardware and a driver.
+
+For GPU acceleration of ALIKED/LightGlue, close Lens2Mesh and run
+`Lens2Mesh_NeuralGPU_Addon_1.0.5.exe`. Select the existing installation folder.
+It installs only the reviewed private runtime DLLs, verifies hashes and records
+a rollback command in `.lens2mesh-patches`. It does not install an NVIDIA driver,
+CUDA Toolkit, Python environment or models. A normal base upgrade preserves an
+already installed add-on. Both installers can be used offline after downloading.
 
 To install a later version, close the app and run its complete Setup.
 See [Updating](../UPDATING.md).

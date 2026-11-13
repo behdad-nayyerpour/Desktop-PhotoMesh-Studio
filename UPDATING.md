@@ -7,6 +7,12 @@ for new installations and upgrades. Existing installation folders, projects and
 settings remain supported. The complete English manual is bundled and available
 offline from Help > User Manual (PDF).
 
+The smaller base installer preserves the existing optional NVIDIA runtime when
+upgrading. Fresh installations can use ALIKED/LightGlue on CPU immediately;
+install `Lens2Mesh_NeuralGPU_Addon_1.0.5.exe` separately for their GPU acceleration.
+Close the application and select its existing installation folder. Standard
+COLMAP GPU processing remains in the base installer.
+
 ## Published complete installers
 
 1. Download `Lens2Mesh_Setup_<version>.exe` from the

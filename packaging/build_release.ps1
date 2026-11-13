@@ -12,7 +12,10 @@ param(
     [string]$StageDir = (Join-Path $PSScriptRoot "..\release-stage"),
     [string]$EngineCache = (Join-Path $env:LOCALAPPDATA "PhotoMeshStudioBuild\engine-cache"),
     [switch]$OfflineBuild,
-    [switch]$CompactPayload = $true
+    [switch]$CompactPayload = $true,
+    [switch]$IncludeNeuralGPU,
+    [switch]$BuildNeuralAddon = $true,
+    [string]$Revision = ''
 )
 $ErrorActionPreference = "Stop"
 $app = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
@@ -104,9 +107,18 @@ if ($OfflineBuild) { $engineArgs += "--offline" }
 & (Join-Path $pythonStage "python.exe") @engineArgs
 if ($LASTEXITCODE -ne 0) { throw "Offline engine bundle preparation failed" }
 $neuralArgs = @((Join-Path $app "packaging\neural_runtime.py"), "--output", (Join-Path $appStage "photomesh\resources\neural-cuda12"), "--cache", $EngineCache)
+if (-not $IncludeNeuralGPU) { $neuralArgs += '--descriptor-only' }
 if ($OfflineBuild) { $neuralArgs += "--offline" }
 & (Join-Path $pythonStage "python.exe") @neuralArgs
 if ($LASTEXITCODE -ne 0) { throw "Verified neural CUDA runtime preparation failed" }
+$neuralAddonRuntime = Join-Path $appStage 'photomesh/resources/neural-cuda12'
+if ($BuildNeuralAddon -and -not $IncludeNeuralGPU) {
+    $neuralAddonRuntime = $stage + '-neural-addon-runtime'
+    $addonArgs = @((Join-Path $app 'packaging/neural_runtime.py'), '--output', $neuralAddonRuntime, '--cache', $EngineCache)
+    if ($OfflineBuild) { $addonArgs += '--offline' }
+    & (Join-Path $pythonStage 'python.exe') @addonArgs
+    if ($LASTEXITCODE) { throw 'Optional GPU add-on runtime preparation failed' }
+}
 
 if ($sourceMode -eq "venv") {
     $freeze = @(& (Join-Path $pythonStage "python.exe") -m pip freeze --exclude-editable | Sort-Object)
@@ -127,6 +139,7 @@ $runtimeDescription += "runtime-cleanup=independent-ply-codec; removed-plyfile-a
 $runtimeDescription += "modern-engine-manifest=$engineHash"
 $neuralHash = (Get-FileHash -LiteralPath (Join-Path $appStage "photomesh\resources\neural-cuda12\runtime.json") -Algorithm SHA256).Hash.ToLowerInvariant()
 $runtimeDescription += "neural-cuda12-manifest=$neuralHash"
+if (-not $IncludeNeuralGPU) { $runtimeDescription += 'neural-gpu=optional-add-on' }
 $sha = [Security.Cryptography.SHA256]::Create()
 $runtimeId = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($runtimeDescription -join "`n")))) -replace "-", "").ToLowerInvariant()
 $sha.Dispose()
@@ -147,7 +160,8 @@ $iss = Join-Path $PSScriptRoot "release.iss"
 $compilerArgs = @("/Q", "/DAppVersion=$version", "/DStageDir=$stage", "/DOutputDir=$out")
 if ($CompactPayload) {
     $packedFiles = Join-Path $out 'installer-files.iss'
-    & (Join-Path $pythonStage 'python.exe') (Join-Path $PSScriptRoot 'installer_payload.py') --stage $stage --output $packedFiles --report (Join-Path $out 'installer-payload.json')
+    $neuralProfile = if ($IncludeNeuralGPU) {'full'} else {'base'}
+    & (Join-Path $pythonStage 'python.exe') (Join-Path $PSScriptRoot 'installer_payload.py') --stage $stage --output $packedFiles --report (Join-Path $out 'installer-payload.json') --neural-profile $neuralProfile
     if ($LASTEXITCODE -ne 0) { throw 'Compact installer payload validation failed' }
     $compilerArgs += "/DPackedFiles=$packedFiles"
 }
@@ -158,3 +172,8 @@ $hash = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvarian
 "$hash *$installerName" | Set-Content -LiteralPath "$file.sha256" -Encoding ascii
 Write-Host "$installerName  $((Get-Item -LiteralPath $file).Length) bytes  SHA256 $hash"
 Write-Host "Release complete. Staging retained at $stage for verification."
+if ($BuildNeuralAddon) {
+    if (-not $Revision) { $Revision = (& git -C $app rev-parse HEAD).Trim() }
+    & (Join-Path $PSScriptRoot 'build_neural_addon.ps1') -RuntimeFolder $neuralAddonRuntime -ISCC $compiler -OutputDir $out -Revision $Revision -Python (Join-Path $pythonStage 'python.exe')
+    if ($LASTEXITCODE) { throw 'Optional GPU add-on installer build failed' }
+}

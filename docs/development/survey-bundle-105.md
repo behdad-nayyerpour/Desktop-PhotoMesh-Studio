@@ -772,3 +772,40 @@ with an explicit opt-out. The replacement workflow authenticates the exact teste
 EXE, retains the prior public EXE/checksum in a 90-day rollback artifact, checks
 readable installed UI, then replaces only the public Setup/checksum and verifies
 the downloaded bytes. It preserves the existing 1.0.5 tag and full manual.
+
+### User redirects to compact base plus optional NVIDIA package (2026-11-14)
+
+The user says the compact all-in-one is still too large and explicitly requests
+retaining its reduction while separating NVIDIA. Superseded compact publication
+run43497570486 was cancelled. The current scope is the same compact storage and
+non-runtime cleanup plus separation of only the 13 private CUDA12/cuDNN DLLs for
+ALIKED/LightGlue. COLMAP CUDA13, legacy GPU engines, CPU engines and offline model
+weights remain in the base. No application processing code is changed.
+
+Inspected `engine.execution_settings` and all feature-argument/probe callers: a
+failed GPU compatibility probe already retries the same method on CPU and caches
+that decision for the session. Real local probes using the exact pinned modern
+engine and synthetic images on RTX3080Laptop confirmed both ALIKED/LightGlue and
+SIFT/LightGlue return CPU without optional DLLs, and GPU after adding the exact
+13 DLLs. Evidence: `split-neural-local/native-proof.json`; no personal project,
+installation, driver, toolkit or settings were changed. These are functional
+extraction/matching probes, not a new photogrammetric accuracy benchmark.
+
+The optional installer reuses `apply_patch` path, app-close, hashing, OS-lock,
+backup and rollback rules. It accepts only Lens2Mesh1.0.5, adds only missing exact
+DLLs/descriptor, does nothing for identical existing files, and refuses differing
+GPU files. Original NVIDIA notices and the application licence are preserved.
+Base managed deletion rules preserve the private optional directory during
+upgrades; normal base uninstall removes it. The review covers these installer
+callbacks, shared-updater contracts, generated storage entries and documentation.
+
+The user separately approves updating only installation/add-on material in the
+manual. The complete PDF remains119 pages; only page5 content changes, rendered
+and visually verified. Other118 page streams/bookmark pagination remain unchanged.
+New PDF SHA256 `83bcd31c0ddea7277227045311f5f74117164d7bf96b8dac933296cae02f9faf`.
+No screenshots or unrelated chapters are redesigned. Initial two local test
+failures were fixture-only (a dynamically recomputed expected hash and Windows
+newline translation); fixed fixtures then passed. Targeted payload/add-on/native
+engine/runtime/manual tests pass; remote full installer tests will exercise base
+alone, detected Unicode targets, add-on repeat/rollback/reapply, base upgrade
+preservation, invalid-target rejection and normal uninstall before publication.

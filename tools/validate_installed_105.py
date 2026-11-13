@@ -53,7 +53,7 @@ from PySide6.QtGui import QDesktopServices
 opened = []
 QDesktopServices.openUrl = lambda url: opened.append(url.toLocalFile()) or True
 assert documentation.open_manual(None)
-assert digest(Path(opened[-1])) == '8af845b74331ca66cb28b3fd44af752189d3199c699b28a9ddd754eda448c940'
+assert digest(Path(opened[-1])) == '83bcd31c0ddea7277227045311f5f74117164d7bf96b8dac933296cae02f9faf'
 window = MainWindow()
 window.resize(1500, 920)
 window.show()

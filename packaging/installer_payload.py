@@ -27,11 +27,19 @@ def quote(value):
     return '"' + str(value) + '"'
 
 
-def generate(stage, output, report, plan):
+def generate(stage, output, report, plan, neural_profile='full'):
     stage = Path(stage).resolve(strict=True)
     if output.resolve().is_relative_to(stage) or report.resolve().is_relative_to(stage):
         raise ValueError('Write installer metadata outside the stage')
     entries = json.loads(Path(plan).read_text(encoding='utf-8'))['files']
+    if neural_profile not in ('full', 'base'):
+        raise ValueError('Unknown neural runtime profile')
+    neural_omissions = {}
+    if neural_profile == 'base':
+        from neural_runtime import runtime_files
+        for entry in runtime_files():
+            if entry['path'].endswith('.dll'):
+                neural_omissions[entry['path']] = entry['sha256']
     omissions = {}
     for entry in entries:
         name = entry['path']
@@ -60,6 +68,11 @@ def generate(stage, output, report, plan):
     for name, expected in omissions.items():
         if name in present and present[name] != expected:
             raise ValueError('Reviewed omission bytes differ: ' + name)
+    for name, expected in neural_omissions.items():
+        if name in present:
+            if present[name]['sha256'] != expected:
+                raise ValueError('Reviewed NVIDIA add-on bytes differ: ' + name)
+            omissions[name] = present[name]
     # Generate everything in memory; never edit the source runtime.
     canonical = {}
     aliases = []
@@ -85,7 +98,8 @@ def generate(stage, output, report, plan):
                      quote('{app}\\' + destination.parent.as_posix().replace('/', '\\')) +
                      '; DestName: ' + quote(destination.name) + '; Flags: ignoreversion')
         kept.append(item)
-    result = dict(schema=1, scope='installer storage only; installed duplicate files remain separate',
+    result = dict(schema=1, scope='compact storage; optional NVIDIA DLLs are separated in base profile',
+                  neural_profile=neural_profile,
                   original_files=len(files), installed_files=len(kept),
                   original_bytes=sum(item['bytes'] for item in files),
                   omitted_bytes=sum(item['bytes'] for item in removed),
@@ -104,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     parser.add_argument('--plan', type=Path, default=Path(__file__).with_name('reviewed-installer-omissions.json'))
+    parser.add_argument('--neural-profile', choices=['full', 'base'], default='full')
     args = parser.parse_args()
-    result = generate(args.stage, args.output, args.report, args.plan)
+    result = generate(args.stage, args.output, args.report, args.plan, args.neural_profile)
     print(json.dumps({key: result[key] for key in ('original_files', 'installed_files', 'omitted_bytes', 'duplicate_storage_bytes')}, indent=2))

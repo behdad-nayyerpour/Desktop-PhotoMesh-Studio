@@ -16,7 +16,8 @@ candidate. Build from the accepted revision and validate the installer afterward
 Public publication remains a separate authorization. The commands below describe
 the full installer stage after candidate acceptance.
 
-Each new release produces one offline file: `Lens2Mesh_Setup_<version>.exe`.
+Each release produces the offline base file `Lens2Mesh_Setup_<version>.exe` and
+an optional `Lens2Mesh_NeuralGPU_Addon_<version>.exe` for learned-method GPU acceleration.
 It contains the app, Python, Python packages and COLMAP, with optional legacy
 GLOMAP. Users run
 the new Setup on the existing installation; it replaces the managed app,
@@ -103,7 +104,7 @@ The builder defaults to `-CompactPayload` and generates exact `[Files]` entries 
 `installer_payload.py`. Files with identical SHA256, size and compared bytes use
 the same source path for Inno's duplicate-storage merging, while retaining their
 separate installed destinations. No DLL, engine, model, Python module, licence or
-application manual is removed. The non-runtime omission list is pinned by path,
+application manual is removed by deduplication. The non-runtime omission list is pinned by path,
 size and SHA256 in `reviewed-installer-omissions.json`: only Python HTML reference
 files and Qt plugin PDB debug symbols from the two modern COLMAP bundles.
 Unknown bytes fail closed; unknown files are retained. Source stages are read
@@ -118,6 +119,25 @@ the existing public Setup. Compare actual EXE sizes, not uncompressed file sums.
 Use `-CompactPayload:$false` only when explicitly reproducing the previous
 unoptimized storage layout. The exact-byte/size comparison and public replacement
 are recorded in the 1.0.5 release review.
+
+## Separate optional neural GPU runtime
+
+The default base build omits only the 13 pinned CUDA12/cuDNN DLLs declared by
+`neural-runtime-assets.json`; it retains their small descriptor and all offline
+models. The existing real native preflight retries ALIKED/LightGlue on CPU if
+their GPU provider is unavailable. Standard COLMAP CUDA13 and legacy GPU paths
+remain included. No application processing code changes are needed.
+
+`build_release.ps1` defaults to building both the compact base and the optional
+GPU installer. `-BuildNeuralAddon:$false` builds only the base without acquiring
+optional GPU archives. `-IncludeNeuralGPU` explicitly reproduces an all-in-one
+distribution. The add-on builder authenticates exact runtime DLLs and original
+notices. Its installer detects the existing base directory, requires the app
+closed, and uses the shared hash-bound backup/rollback updater to add missing
+libraries only. Already identical libraries are a no-op; different bytes fail
+without replacement. A base reinstall preserves the private add-on directory;
+normal base uninstall explicitly removes it. No driver, toolkit, Python runtime,
+engine, model, project/photo or settings installation is performed by the add-on.
 
 ## Application license
 

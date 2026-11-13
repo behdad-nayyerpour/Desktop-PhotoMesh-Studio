@@ -59,6 +59,13 @@ def test_staging_keeps_only_reviewed_dlls_and_manifest(tmp_path, tiny_archive):
         runtime.prepare(output, tmp_path/'cache')
 
 
+def test_base_descriptor_downloads_no_optional_dll_archive(tmp_path, tiny_archive, monkeypatch):
+    monkeypatch.setattr(runtime, 'acquire', lambda *args: pytest.fail('The base must not acquire optional GPU archives'))
+    output = runtime.prepare(tmp_path/'base-descriptor', tmp_path/'cache', selected={'runtime.json'})
+    assert {p.name for p in output.iterdir()} == {'runtime.json'}
+    assert (output/'runtime.json').read_bytes() == runtime.runtime_manifest()
+
+
 @pytest.mark.parametrize('tamper', ['license', 'dll', 'escape'])
 def test_different_or_unsafe_runtime_is_rejected(tmp_path, tiny_archive, tamper):
     asset, archive = tiny_archive

@@ -91,9 +91,12 @@ if __name__ == '__main__':
     target.add_argument('--payload', type=Path)
     parser.add_argument('--cache', type=Path)
     parser.add_argument('--offline', action='store_true')
+    parser.add_argument('--descriptor-only', action='store_true', help='Write only the small optional-runtime descriptor; download no DLLs')
     args = parser.parse_args()
     cache = args.cache or ((args.payload or args.output).resolve().parent / 'neural-runtime-downloads')
     if args.payload:
+        if args.descriptor_only:
+            parser.error('--descriptor-only requires --output')
         prepare_payload(args.payload, cache, args.offline)
     else:
-        prepare(args.output, cache, args.offline)
+        prepare(args.output, cache, args.offline, {'runtime.json'} if args.descriptor_only else None)

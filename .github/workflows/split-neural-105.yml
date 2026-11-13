@@ -1,0 +1,162 @@
+name: Build and validate compact base and optional GPU installers
+on:
+  push:
+    branches: ["packaging/compact-105"]
+    paths: [".github/workflows/split-neural-105.yml"]
+permissions:
+  contents: read
+jobs:
+  split:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Authenticate the current full offline baseline in a disposable installation
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.5 --repo $env:GITHUB_REPOSITORY --pattern 'Lens2Mesh_Setup_1.0.5.exe' --dir original
+          if ($LASTEXITCODE) { throw 'Public baseline download failed' }
+          $file=(Get-Item original/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $hash=(Get-FileHash $file).Hash.ToLowerInvariant()
+          if ($hash -notin @('e4f2b42f33cfcf53b652d9e16228310b3e9b029091725d6985ff18cf5c57b990','4d50eaf5354713ff79aa88aec06237a861287753999e2cb0c1e36b5db8ad207d')) { throw 'Public baseline is not an authenticated 1.0.5 build' }
+          $root=Join-Path $env:RUNNER_TEMP 'lm-split-original'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/portable=1',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $file -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Baseline install failed' }
+          "SPLIT_ORIGINAL=$root" >> $env:GITHUB_ENV
+      - name: Stage unchanged runtime plus the explicitly approved documentation
+        shell: pwsh
+        run: |
+          $stage=Join-Path $env:RUNNER_TEMP 'lm-split-stage'
+          New-Item -ItemType Directory -Force comparison | Out-Null
+          foreach ($name in @('app','python','tools')) {
+            & robocopy (Join-Path $env:SPLIT_ORIGINAL $name) (Join-Path $stage $name) /E /NFL /NDL /NJH /NJS /NP /R:1 /W:1 | Out-Null
+            if ($LASTEXITCODE -ge 8) { throw 'Isolated source copy failed' }
+          }
+          $global:LASTEXITCODE=0
+          foreach ($name in @('README.md','UPDATING.md','docs/installation.md','photomesh/resources/manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf')) {
+            Copy-Item -LiteralPath (Join-Path $PWD $name) -Destination (Join-Path (Join-Path $stage 'app') $name) -Force
+          }
+          python packaging/installer_payload.py --stage $stage --output comparison/base-files.iss --report comparison/base-payload.json --neural-profile base
+          if ($LASTEXITCODE) { throw 'Base payload generation failed' }
+          "SPLIT_STAGE=$stage" >> $env:GITHUB_ENV
+      - name: Compile the compact base and optional rollback-enabled GPU add-on
+        shell: pwsh
+        run: |
+          $compiler="${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $compiler)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE) { throw 'Compiler preparation failed' }
+          }
+          $out=Join-Path $PWD 'comparison'
+          $packed=(Get-Item comparison/base-files.iss).FullName
+          $baseArgs=@('/Q','/DAppVersion=1.0.5',('/DStageDir='+$env:SPLIT_STAGE),('/DOutputDir='+$out),('/DPackedFiles='+$packed),(Join-Path $PWD 'packaging/release.iss'))
+          $process=Start-Process -FilePath $compiler -ArgumentList $baseArgs -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $out 'base-build.log') -RedirectStandardError (Join-Path $out 'base-build-error.log')
+          & packaging/build_neural_addon.ps1 -RuntimeFolder (Join-Path $env:SPLIT_STAGE 'app/photomesh/resources/neural-cuda12') -ISCC $compiler -OutputDir $out -Revision '${{ github.sha }}' -Python 'python'
+          if ($LASTEXITCODE) { throw 'Optional GPU installer compilation failed' }
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) { Get-Content comparison/base-build-error.log; throw 'Base installer compilation failed' }
+          $file=Join-Path $out 'Lens2Mesh_Setup_1.0.5.exe'
+          $hash=(Get-FileHash $file).Hash.ToLowerInvariant()
+          "$hash *Lens2Mesh_Setup_1.0.5.exe" | Set-Content "$file.sha256" -Encoding ascii
+          $base=(Get-Item $file).Length
+          $addon=(Get-Item comparison/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).Length
+          @{base_bytes=$base;gpu_addon_bytes=$addon;original_full_bytes=1674504611;saved_base_bytes=(1674504611-$base);saved_base_percent=(100.0*(1674504611-$base)/1674504611);source='${{ github.sha }}'} | ConvertTo-Json | Set-Content comparison/split-sizes.json
+          Get-Content comparison/split-sizes.json
+      - name: Install the base alone and verify every retained byte and both CPU methods
+        shell: pwsh
+        run: |
+          $root=Join-Path $env:RUNNER_TEMP 'lm base فارسی'
+          $setup=(Get-Item comparison/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Base installation failed' }
+          python tools/validate_compact_install.py --baseline "$env:SPLIT_ORIGINAL" --installed $root --report comparison/base-payload.json --output comparison/base-byte-verification.json --source $PWD
+          if ($LASTEXITCODE) { throw 'Base runtime changed beyond approved optional omissions/documentation' }
+          $env:PYTHONPATH=Join-Path $root 'app'
+          $python=Join-Path $root 'python/python.exe'
+          & $python tools/validate_installed_105.py "$env:PYTHONPATH" "$PWD" comparison/base-ui
+          if ($LASTEXITCODE) { throw 'Base offline UI/manual/identity failed' }
+          & $python packaging/verify_runtime_lock.py --root $root
+          if ($LASTEXITCODE) { throw 'Base Python versions changed' }
+          & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+          if ($LASTEXITCODE) { throw 'Base native terrain/manual failed' }
+          & $python tools/validate_installed_ply_105.py
+          if ($LASTEXITCODE) { throw 'Base native PLY failed' }
+          & $python tools/validate_split_neural.py --root $root --output comparison/base-cpu
+          if ($LASTEXITCODE) { throw 'Base learned methods failed without add-on' }
+          "SPLIT_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Install add-on using detected Unicode destination, repeat, preserve on base upgrade and roll back
+        shell: pwsh
+        run: |
+          $addon=(Get-Item comparison/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).FullName
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-')
+          $p=Start-Process -FilePath $addon -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Optional add-on install or target detection failed' }
+          $root=$env:SPLIT_ROOT
+          $python=Join-Path $root 'python/python.exe'
+          $env:PYTHONPATH=Join-Path $root 'app'
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Optional DLLs/notices/child lookup failed' }
+          $states=@(Get-ChildItem -LiteralPath (Join-Path $root '.lens2mesh-patches') -Filter state.json -Recurse)
+          if ($states.Count -ne 1) { throw 'Add-on recovery journal missing or unexpected' }
+          $p=Start-Process -FilePath $addon -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Idempotent add-on reinstall failed' }
+          $again=@(Get-ChildItem -LiteralPath (Join-Path $root '.lens2mesh-patches') -Filter state.json -Recurse)
+          if ($again.Count -ne 1) { throw 'Already-installed add-on unexpectedly changed files' }
+          $base=(Get-Item comparison/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $baseArgs=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $base -ArgumentList $baseArgs -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Base upgrade failed' }
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Base upgrade removed or altered the installed optional add-on' }
+          $state=$states[0].DirectoryName
+          & $python (Join-Path $state 'apply_patch.py') --root $root --rollback $state
+          if ($LASTEXITCODE) { throw 'Optional add-on rollback failed' }
+          & $python tools/validate_split_neural.py --root $root --output comparison/rollback-cpu
+          if ($LASTEXITCODE) { throw 'CPU operation failed after add-on rollback' }
+          $p=Start-Process -FilePath $addon -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Add-on reapplication after rollback failed' }
+          & $python tools/validate_installed_neural_105.py
+          if ($LASTEXITCODE) { throw 'Reapplied optional runtime failed' }
+      - name: Reject missing base and clean optional libraries on normal uninstall
+        shell: pwsh
+        run: |
+          $addon=(Get-Item comparison/Lens2Mesh_NeuralGPU_Addon_1.0.5.exe).FullName
+          $wrong=Join-Path $env:RUNNER_TEMP 'not-a-Lens2Mesh-installation'
+          $p=Start-Process -FilePath $addon -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$wrong+'"')) -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode -eq 0) { throw 'Optional installer accepted a missing base' }
+          $root=$env:SPLIT_ROOT
+          $p=Start-Process -FilePath (Join-Path $root 'unins000.exe') -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Base uninstall failed' }
+          if (Test-Path (Join-Path $root 'python/python.exe')) { throw 'Managed Python survived uninstall' }
+          if (Test-Path (Join-Path $root 'app/photomesh/resources/neural-cuda12')) { throw 'Optional runtime survived base uninstall' }
+          'Compact base, independent CPU methods, optional GPU installer, Unicode target detection, exact runtime bytes, repeat/upgrade preservation, rollback/reapply, invalid-target rejection and uninstall passed.' | Set-Content comparison/split-validation.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-Split-105-Test-Installers
+          path: |
+            comparison/*.exe
+            comparison/*.sha256
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-Split-105-Evidence
+          path: |
+            comparison/*.json
+            comparison/*.txt
+            comparison/*.log
+            comparison/base-ui/
+            comparison/base-cpu/
+            comparison/rollback-cpu/
+          retention-days: 30

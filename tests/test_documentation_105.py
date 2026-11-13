@@ -6,7 +6,7 @@ from photomesh import documentation
 
 def test_manual_is_exact_render_reviewed_updated_pdf():
     path = documentation.RESOURCES/'manual/Lens2Mesh_1.0.5_Complete_User_Manual.pdf'
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == '8af845b74331ca66cb28b3fd44af752189d3199c699b28a9ddd754eda448c940'
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == '83bcd31c0ddea7277227045311f5f74117164d7bf96b8dac933296cae02f9faf'
 
 
 def test_help_manual_resolves_installed_resources_offline(window, monkeypatch):

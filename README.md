@@ -48,6 +48,10 @@ The offline installer includes Python, required packages, COLMAP and the
 compatible legacy GLOMAP engine. A separate Python or Git installation is not
 needed. Close the application before installing. Setup supports fresh installs
 and upgrades and offers destination selection.
+The optional `Lens2Mesh_NeuralGPU_Addon_1.0.5.exe` enables NVIDIA acceleration for
+ALIKED/LightGlue; those methods use CPU without it. The base Setup retains standard
+COLMAP GPU processing and all offline models. Install the add-on with Lens2Mesh
+closed, into the same folder. No CUDA Toolkit installation is needed.
 Keep projects, processing results, and original photos outside the installation folder.
 See [installation and requirements](docs/installation.md) and [updating](UPDATING.md).
 
