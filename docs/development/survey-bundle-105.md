@@ -1,5 +1,23 @@
 # Combined survey/terrain tools candidate (2026-11-12)
 
+## Final release authorization (2026-11-13)
+
+The user authorizes completing the remaining source/licensing and hardware
+review, updating the affected parts of the approved full PDF, building and
+validating Setup, performing final integration/maintainability/dead-resource
+review, and publishing version 1.0.5 after those checks succeed. This supersedes
+the earlier no-PDF-edit and no-publication instructions for this release.
+Preserve unaffected manual content and sharp screenshots. Direct point selection
+and deletion are explicitly deferred to 1.0.6. Preserve the accepted application
+behavior and project/settings compatibility. Do not mark unsupported hardware
+paths or missing source provenance verified merely to proceed to publication.
+The user has access only to the existing RTX 3080 Laptop / driver 512.36 system;
+modern CUDA testing therefore needs a separately evidenced compatible runtime
+or a documented, tested supported-engine policy. Do not silently update the
+user's display driver. Source/notice collection, optional Qt dependency closure,
+installer fresh/upgrade/custom-path/uninstall checks, PDF rendering and final
+repository/caller/static review remain work to complete before publication.
+
 ## Finalization items4/5/6/7 (2026-11-13)
 
 User accepts the capacity/manual test iteration and requests closing dependency
