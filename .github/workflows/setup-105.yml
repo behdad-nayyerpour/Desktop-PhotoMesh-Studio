@@ -1,0 +1,100 @@
+name: Build and verify 1.0.5 Setup candidate
+on:
+  push:
+    branches: ["release/lens2mesh-1.0.5-candidate"]
+    paths: [".github/workflows/setup-105.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: setup-105-candidate
+  cancel-in-progress: false
+jobs:
+  setup:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install the exact disposable 1.0.4 upgrade baseline
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0.4 --repo behdad-nayyerpour/Desktop-PhotoMesh-Studio --pattern PhotoMeshStudio_Setup_1.0.4.exe --dir released
+          if ($LASTEXITCODE) { throw 'Baseline acquisition failed' }
+          $baseline=(Get-Item released/PhotoMeshStudio_Setup_1.0.4.exe).FullName
+          if ((Get-FileHash -LiteralPath $baseline).Hash.ToLowerInvariant() -ne '059c81c30479f6c839fcb643f7527a73af94232505aac33840804834fce25b3f') { throw 'Baseline identity differs' }
+          $root=Join-Path $env:RUNNER_TEMP 'Lens2Mesh 105 upgrade baseline'
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS=""')
+          $p=Start-Process -FilePath $baseline -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Baseline installation failed' }
+          "SETUP_BASELINE=$root" >> $env:GITHUB_ENV
+      - name: Build complete review candidate with production packaging
+        shell: pwsh
+        run: |
+          $compiler="${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $compiler)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE) { throw 'Installer compiler preparation failed' }
+          }
+          & packaging/build_release.ps1 -RuntimeSource $env:SETUP_BASELINE -ISCC $compiler -StageDir (Join-Path $env:RUNNER_TEMP 'Lens2Mesh105Stage') -OutputDir (Join-Path $PWD 'preview') -EngineCache (Join-Path $env:RUNNER_TEMP 'engine-cache')
+          if ($LASTEXITCODE) { throw 'Production Setup build failed' }
+          @('REVIEW CANDIDATE ONLY. Not a public release or redistribution clearance.', 'Source: ${{ github.sha }}', 'Publication remains conditional on final source/licensing and installer review.') | Set-Content preview/TEST-BUILD.txt
+      - name: Validate upgrade and a fresh custom Unicode destination
+        shell: pwsh
+        run: |
+          $setup=(Get-Item preview/Lens2Mesh_Setup_1.0.5.exe).FullName
+          $fixture=Join-Path $env:RUNNER_TEMP 'external survey data'
+          New-Item -ItemType Directory -Force $fixture | Out-Null
+          $project=Join-Path $fixture 'preserve.pmsx'
+          '{"format":"photomesh-studio/2","datasets":[]}' | Set-Content -LiteralPath $project
+          $photo=Join-Path $fixture 'original-photo.bin'
+          [IO.File]::WriteAllBytes($photo,[byte[]](1,7,3,9,2,8))
+          $beforeProject=(Get-FileHash -LiteralPath $project).Hash
+          $beforePhoto=(Get-FileHash -LiteralPath $photo).Hash
+          $stale=Join-Path $env:SETUP_BASELINE 'app/photomesh/obsolete_setup_probe.py'
+          'obsolete' | Set-Content -LiteralPath $stale
+          $custom=Join-Path $env:RUNNER_TEMP 'custom install فارسی/Lens2Mesh app'
+          foreach ($root in @($env:SETUP_BASELINE,$custom)) {
+            $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$root+'"'),'/TASKS="desktopicon"')
+            $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+            if ($p.ExitCode) { throw 'Setup installation failed' }
+            if ($root -eq $env:SETUP_BASELINE -and (Test-Path -LiteralPath $stale)) { throw 'Obsolete managed code survived upgrade' }
+            $env:PYTHONPATH=Join-Path $root 'app'
+            $python=Join-Path $root 'python/python.exe'
+            $kind=if ($root -eq $custom) {'fresh-custom'} else {'upgrade'}
+            & $python tools/validate_installed_105.py (Join-Path $root 'app') $PWD (Join-Path $PWD ('preview/'+$kind))
+            if ($LASTEXITCODE) { throw 'Installed application identity/UI/manual failed' }
+            & $python packaging/verify_runtime_lock.py --root $root
+            if ($LASTEXITCODE) { throw 'Installed runtime package versions differ' }
+            & $python tools/validate_installed_capacity_105.py packaging/reviewed-qt-removals.json
+            if ($LASTEXITCODE) { throw 'Installed native terrain/manual validation failed' }
+            & $python tools/validate_installed_ply_105.py
+            if ($LASTEXITCODE) { throw 'Installed native PLY validation failed' }
+            if ((Get-FileHash -LiteralPath $project).Hash -ne $beforeProject -or (Get-FileHash -LiteralPath $photo).Hash -ne $beforePhoto) { throw 'External project/photo changed' }
+          }
+          $shell=New-Object -ComObject WScript.Shell
+          foreach ($link in @((Join-Path ([Environment]::GetFolderPath('Desktop')) 'Lens2Mesh.lnk'),(Join-Path ([Environment]::GetFolderPath('Programs')) 'Lens2Mesh.lnk'))) {
+            if (-not (Test-Path -LiteralPath $link)) { throw 'Installed shortcut missing' }
+            $shortcut=$shell.CreateShortcut($link)
+            if ($shortcut.TargetPath -ne (Join-Path $custom 'python/pythonw.exe')) { throw 'Shortcut target differs' }
+            if ($shortcut.IconLocation -notlike ($custom+'*photomesh.ico*')) { throw 'Shortcut icon differs' }
+          }
+          $uninstaller=Join-Path $custom 'unins000.exe'
+          $p=Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode) { throw 'Uninstall failed' }
+          if (Test-Path -LiteralPath (Join-Path $custom 'python/python.exe')) { throw 'Managed runtime survived uninstall' }
+          if ((Get-FileHash -LiteralPath $project).Hash -ne $beforeProject -or (Get-FileHash -LiteralPath $photo).Hash -ne $beforePhoto) { throw 'External project/photo changed by uninstall' }
+          'Upgrade, fresh custom Unicode path, shortcuts, offline native/manual and uninstall checks passed.' | Set-Content preview/installer-validation.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lens2Mesh-1.0.5-Setup-Candidate
+          path: preview/
+          retention-days: 30
