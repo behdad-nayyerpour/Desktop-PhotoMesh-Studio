@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "inventory_sha256": "94a88c698affdf06e8b2f30650e91f4e1ad51dfddd09a039f6f41fd98d233351",
-  "evidence_sha256": "3c6d729ca61b8b5950bcea892ee735fc65bc7b774a78c77a4aeb5c2946d17a52",
+  "inventory_sha256": "633741149399bcc2f1a07f2ea6bf74cf19830edb09940cda4b67587df8de4110",
+  "evidence_sha256": "249e1f99053a77b574861fb8baa04fdc5ae081bb2416e3f6f78f916c9e722104",
   "packages": [
     {
       "name": "annotated-types",
@@ -2951,9 +2951,8 @@
   "engineering_review_complete": true,
   "redistribution_clearance": false,
   "release_blockers": [
-    "Exact corresponding-source/build metadata for all native engine dependencies is not established by DLL names.",
-    "Qt/PySide split Pdf/WebEngine 6.12.0.140 provenance and version-matched source need confirmation.",
-    "Modern and legacy CUDA runtime terms must be matched to exact redistributed DLL versions."
+    "Exact corresponding source, third-party notices and build/patch recipes for every linked native dependency still require complete retention; release archive identity alone does not establish them.",
+    "Official PySide6 Pdf/WebEngine6.12.0.140 wheel identity is verified; exact matching Chromium/split-module corresponding-source packaging remains to be established."
   ],
   "native_and_weights": [
     {
@@ -6522,6 +6521,51 @@
       "name": "NVIDIA-CUDA-13.2-EULA.html",
       "url": "https://docs.nvidia.com/cuda/archive/13.2.0/eula/index.html",
       "sha256": "a118b9d9065475444cdb84c79d341f56d10a272fe5fe3b8d4570b072432a8ce5"
+    },
+    {
+      "name": "NVIDIA-CUDA-11.8-EULA.html",
+      "url": "https://docs.nvidia.com/cuda/archive/11.8.0/eula/index.html",
+      "sha256": "e60f3475e5447c373d0ecdd960c0195b049052434f93c132b09699a2fc416227"
+    },
+    {
+      "name": "COLMAP-3.8-LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/colmap/colmap/3.8/COPYING.txt",
+      "sha256": "861013cc9865c3dc3be99bf94058dfb8bfc46eeb96202a29fdea398eb08dc39c"
+    },
+    {
+      "name": "COLMAP-3.8-build-dependencies.txt",
+      "url": "https://raw.githubusercontent.com/colmap/colmap/3.8/.azure-pipelines/build-windows-vcpkg.txt",
+      "sha256": "d185388b82d52e5f4920e891de308cc217c645bf33331e8116fece33c209331c"
+    },
+    {
+      "name": "GLOMAP-1.2.0-LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/colmap/glomap/1.2.0/LICENSE",
+      "sha256": "358b9447b62440370a71eea5d3509a32a5f8fd9b3560c731b66efa6ab0b5f1d4"
+    },
+    {
+      "name": "GLOMAP-1.2.0-vcpkg.json",
+      "url": "https://raw.githubusercontent.com/colmap/glomap/1.2.0/vcpkg.json",
+      "sha256": "0a67d3fecb69be5a22ef770e3e3f90c34c48fe1411dc1885f05658898b6e6002"
     }
-  ]
+  ],
+  "primary_identity": {
+    "qt_compared": 1564,
+    "qt_mismatches": 0,
+    "native_groups": [
+      {
+        "group": "colmap-legacy",
+        "matched": 71,
+        "url": "https://github.com/colmap/colmap/releases/download/3.8/COLMAP-3.8-windows-cuda.zip",
+        "sha256": "60910e2d79539ba8825628bd147f900a5cd61646b5a9ad5f62dbec0e9b78e8d0"
+      },
+      {
+        "group": "glomap",
+        "matched": 74,
+        "url": "https://github.com/colmap/glomap/releases/download/1.2.0/glomap-x64-windows-nocuda.zip",
+        "sha256": "f46ea8acbf1b4afc97f2a46329ac9d9decc228e2077330f5117708dc0962c0d0"
+      }
+    ],
+    "python_packages": 76,
+    "binary_identity_is_not_source_clearance": true
+  }
 }

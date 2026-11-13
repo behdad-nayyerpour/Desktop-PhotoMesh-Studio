@@ -1,0 +1,1868 @@
+[
+  {
+    "name": "annotated-types",
+    "version": "0.8.0",
+    "wheel": "annotated_types-0.8.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl",
+    "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0",
+    "bytes": 13427,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/annotated-types/annotated-types/releases",
+      "Homepage": "https://github.com/annotated-types/annotated-types",
+      "Source": "https://github.com/annotated-types/annotated-types"
+    },
+    "requires": null
+  },
+  {
+    "name": "asttokens",
+    "version": "3.0.2",
+    "wheel": "asttokens-3.0.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d4/2b/04b8a15f3a1c77bc79ddf5c73875327f34b4fa75982df2b76e45e402d364/asttokens-3.0.2-py3-none-any.whl",
+    "sha256": "9da13157f5b28becde0bd374fc677dcd3c290614264eff096f167c469cd9f933",
+    "bytes": 28702,
+    "license": "Apache 2.0",
+    "sources": {
+      "Documentation": "https://asttokens.readthedocs.io/en/latest/index.html",
+      "Homepage": "https://github.com/gristlabs/asttokens",
+      "Issue Tracker": "https://github.com/gristlabs/asttokens/issues"
+    },
+    "requires": [
+      "astroid<5,>=2; extra == \"astroid\"",
+      "astroid<5,>=2; extra == \"test\"",
+      "pytest<9.0; extra == \"test\"",
+      "pytest-cov; extra == \"test\"",
+      "pytest-xdist; extra == \"test\""
+    ]
+  },
+  {
+    "name": "attrs",
+    "version": "26.1.0",
+    "wheel": "attrs-26.1.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl",
+    "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+    "bytes": 67548,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://www.attrs.org/en/stable/changelog.html",
+      "Documentation": "https://www.attrs.org/",
+      "Funding": "https://github.com/sponsors/hynek",
+      "GitHub": "https://github.com/python-attrs/attrs",
+      "Tidelift": "https://tidelift.com/subscription/pkg/pypi-attrs?utm_source=pypi-attrs&utm_medium=pypi"
+    },
+    "requires": null
+  },
+  {
+    "name": "blinker",
+    "version": "1.9.0",
+    "wheel": "blinker-1.9.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/10/cb/f2ad4230dc2eb1a74edf38f1a38b9b52277f75bef262d8908e60d957e13c/blinker-1.9.0-py3-none-any.whl",
+    "sha256": "ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc",
+    "bytes": 8458,
+    "license": null,
+    "sources": {
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://blinker.readthedocs.io",
+      "Source": "https://github.com/pallets-eco/blinker/"
+    },
+    "requires": null
+  },
+  {
+    "name": "certifi",
+    "version": "2026.10.19",
+    "wheel": "certifi-2026.10.19-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/c4/51/29046e48f693c54e5b7412216d447a1d8362c9653148d98c02cdf65fa733/certifi-2026.10.19-py3-none-any.whl",
+    "sha256": "42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b",
+    "bytes": 136464,
+    "license": "MPL-2.0",
+    "sources": {
+      "Homepage": "https://github.com/certifi/python-certifi",
+      "Source": "https://github.com/certifi/python-certifi"
+    },
+    "requires": null
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.5.2",
+    "wheel": "charset_normalizer-3.5.2-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/9c/76/b8ec57f4e9ee3253541abf95e4a462c0175fe8032dcd070f1f2421240942/charset_normalizer-3.5.2-cp313-cp313-win_amd64.whl",
+    "sha256": "78456a747de8dc58360ffa581f30a002baf5aa28cb262536545e91f113ed7639",
+    "bytes": 206489,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/jawah/charset_normalizer/blob/master/CHANGELOG.md",
+      "Code": "https://github.com/jawah/charset_normalizer",
+      "Documentation": "https://charset-normalizer.readthedocs.io/",
+      "Issue tracker": "https://github.com/jawah/charset_normalizer/issues"
+    },
+    "requires": null
+  },
+  {
+    "name": "click",
+    "version": "8.5.0",
+    "wheel": "click-8.5.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl",
+    "sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360",
+    "bytes": 125251,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Changes": "https://click.palletsprojects.com/page/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://click.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/click/"
+    },
+    "requires": null
+  },
+  {
+    "name": "colorama",
+    "version": "0.4.6",
+    "wheel": "colorama-0.4.6-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl",
+    "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6",
+    "bytes": 25335,
+    "license": "",
+    "sources": {
+      "Homepage": "https://github.com/tartley/colorama"
+    },
+    "requires": null
+  },
+  {
+    "name": "comm",
+    "version": "0.2.3",
+    "wheel": "comm-0.2.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/60/97/891a0971e1e4a8c5d2b20bbe0e524dc04548d2307fee33cdeba148fd4fc7/comm-0.2.3-py3-none-any.whl",
+    "sha256": "c615d91d75f7f04f095b30d1c1711babd43bdc6419c1be9886a85f2f4e489417",
+    "bytes": 7294,
+    "license": "BSD 3-Clause License\n        \n        Copyright (c) 2022, Jupyter\n        All rights reserved.\n        \n        Redistribution and use in source and binary forms, with or without\n        modification, are permitted provided that the following conditions are met:\n        \n        1. Redistributions of source code must retain the above copyright notice, this\n           list of conditions and the following disclaimer.\n        \n        2. Redistributions in binary form must reproduce the above copyright notice,\n           this list of conditions and the following disclaimer in the documentation\n           and/or other materials provided with the distribution.\n        \n        3. Neither the name of the copyright holder nor the names of its\n           contributors may be used to endorse or promote products derived from\n           this software without specific prior written permission.\n        \n        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\n        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+    "sources": {
+      "Homepage": "https://github.com/ipython/comm"
+    },
+    "requires": [
+      "pytest; extra == \"test\""
+    ]
+  },
+  {
+    "name": "configargparse",
+    "version": "1.8.0",
+    "wheel": "configargparse-1.8.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/b0/74/bd8453e8e20296063f9f431e6f1417f1b62bae0e012821df07fb71ede6c2/configargparse-1.8.0-py3-none-any.whl",
+    "sha256": "bb25b307c3cd46a3e868e7f7aa51487eb8003a9f01cac3ae129b66ec26eb794c",
+    "bytes": 34611,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "https://github.com/bw2/ConfigArgParse"
+    },
+    "requires": [
+      "toml; extra == \"toml\"",
+      "PyYAML; extra == \"yaml\"",
+      "black; extra == \"test\"",
+      "mock; extra == \"test\"",
+      "toml; extra == \"test\"",
+      "PyYAML; extra == \"test\"",
+      "pytest; extra == \"test\"",
+      "pytest-cov; extra == \"test\"",
+      "pytest-subtests; extra == \"test\""
+    ]
+  },
+  {
+    "name": "dash",
+    "version": "4.4.1",
+    "wheel": "dash-4.4.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/9a/29/498125538103a11eab9cfbbde41bacf93e14ab3ac92ae9fb4ac0ac4dd61b/dash-4.4.1-py3-none-any.whl",
+    "sha256": "72120a91b10ee4d73f9446efd5d6a4ec218086feed7b1b479d2259844d1f658f",
+    "bytes": 8945027,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://dash.plotly.com",
+      "Homepage": "https://plotly.com/dash",
+      "Issue Tracker": "https://github.com/plotly/dash/issues",
+      "Source": "https://github.com/plotly/dash"
+    },
+    "requires": [
+      "Flask<3.2,>=1.0.4",
+      "Werkzeug<3.2",
+      "plotly>=5.0.0",
+      "importlib-metadata",
+      "typing_extensions>=4.1.1",
+      "requests",
+      "retrying",
+      "nest-asyncio",
+      "setuptools",
+      "janus>=1.0.0",
+      "pydantic>=2.10",
+      "comm",
+      "flask[async]; extra == \"async\"",
+      "black==22.3.0; extra == \"ci\"",
+      "flake8==7.0.0; extra == \"ci\"",
+      "flaky==3.8.1; extra == \"ci\"",
+      "flask-talisman==1.0.0; extra == \"ci\"",
+      "ipython<9.0.0; extra == \"ci\"",
+      "mimesis<=11.1.0; extra == \"ci\"",
+      "mock==4.0.3; extra == \"ci\"",
+      "numpy<=1.26.3; extra == \"ci\"",
+      "orjson>=3.10.11; extra == \"ci\"",
+      "openpyxl; extra == \"ci\"",
+      "pandas>=1.4.0; extra == \"ci\"",
+      "pyarrow; extra == \"ci\"",
+      "pylint==3.0.3; extra == \"ci\"",
+      "pytest-mock; extra == \"ci\"",
+      "pytest-split; extra == \"ci\"",
+      "pytest-sugar==1.1.1; extra == \"ci\"",
+      "pyzmq>=26.0.0; extra == \"ci\"",
+      "xlrd>=2.0.1; extra == \"ci\"",
+      "pytest-rerunfailures; extra == \"ci\"",
+      "jupyterlab<4.0.0; extra == \"ci\"",
+      "pyright==1.1.398; python_version >= \"3.7\" and extra == \"ci\"",
+      "mypy==1.15.0; python_version >= \"3.12\" and extra == \"ci\"",
+      "coloredlogs>=15.0.1; extra == \"dev\"",
+      "fire>=0.4.0; extra == \"dev\"",
+      "PyYAML>=5.4.1; extra == \"dev\"",
+      "beautifulsoup4>=4.8.2; extra == \"testing\"",
+      "cryptography; extra == \"testing\"",
+      "lxml>=4.6.2; extra == \"testing\"",
+      "percy-python-selenium>=1.0.0; extra == \"testing\"",
+      "pytest>=6.0.2; extra == \"testing\"",
+      "requests[security]>=2.21.0; extra == \"testing\"",
+      "selenium<=4.2.0,>=3.141.0; extra == \"testing\"",
+      "waitress>=1.4.4; extra == \"testing\"",
+      "multiprocess>=0.70.12; extra == \"testing\"",
+      "psutil>=5.8.0; extra == \"testing\"",
+      "dash_testing_stub>=0.0.2; extra == \"testing\"",
+      "redis<=5.0.4,>=3.5.3; extra == \"celery\"",
+      "kombu<5.4.0; extra == \"celery\"",
+      "celery[redis]<5.4.0,>=5.1.2; extra == \"celery\"",
+      "diskcache>=5.2.1; extra == \"diskcache\"",
+      "multiprocess>=0.70.12; extra == \"diskcache\"",
+      "psutil>=5.8.0; extra == \"diskcache\"",
+      "flask-compress; extra == \"compress\"",
+      "fastapi; extra == \"fastapi\"",
+      "uvicorn[standard]; extra == \"fastapi\"",
+      "quart; extra == \"quart\"",
+      "plotly-cloud; extra == \"cloud\"",
+      "dash-ag-grid; extra == \"ag-grid\""
+    ]
+  },
+  {
+    "name": "executing",
+    "version": "2.3.0",
+    "wheel": "executing-2.3.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/4d/dd/8bc67e7d5ffc1d88aa5af511189dfb76dc4e1e5b808fab186146ef2663e5/executing-2.3.0-py3-none-any.whl",
+    "sha256": "736e859c9f8701f11fcf516856f26f562e04776387824b43a35a1dfe21c84122",
+    "bytes": 29393,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "https://github.com/alexmojaki/executing",
+      "Repository": "https://github.com/alexmojaki/executing"
+    },
+    "requires": [
+      "pysource-minimize>=0.10.1; extra == \"tests\"",
+      "asttokens>=2.1.0; extra == \"tests\"",
+      "ipython; extra == \"tests\"",
+      "pytest; extra == \"tests\"",
+      "coverage[toml]; extra == \"tests\"",
+      "coverage-enable-subprocess; extra == \"tests\"",
+      "littleutils; extra == \"tests\"",
+      "rich; python_version >= \"3.11\" and extra == \"tests\""
+    ]
+  },
+  {
+    "name": "fastjsonschema",
+    "version": "2.22.2",
+    "wheel": "fastjsonschema-2.22.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/49/82/2755c7c982086f00d4dab85bc120ec35045a9fc2191893a6ce79afe94443/fastjsonschema-2.22.2-py3-none-any.whl",
+    "sha256": "0fb3915616adac85ccfdd737d26be1089845d2019819505b42d39888458f74d4",
+    "bytes": 27413,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Homepage": "https://github.com/horejsek/python-fastjsonschema"
+    },
+    "requires": [
+      "colorama; extra == \"devel\"",
+      "jsonschema; extra == \"devel\"",
+      "json-spec; extra == \"devel\"",
+      "pylint; extra == \"devel\"",
+      "pytest; extra == \"devel\"",
+      "pytest-benchmark; extra == \"devel\"",
+      "pytest-cache; extra == \"devel\"",
+      "validictory; extra == \"devel\""
+    ]
+  },
+  {
+    "name": "flask",
+    "version": "3.1.3",
+    "wheel": "flask-3.1.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/7f/9c/34f6962f9b9e9c71f6e5ed806e0d0ff03c9d1b0b2340088a0cf4bce09b18/flask-3.1.3-py3-none-any.whl",
+    "sha256": "f4bcbefc124291925f1a26446da31a5178f9483862233b23c0c96a20701f670c",
+    "bytes": 103424,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Changes": "https://flask.palletsprojects.com/page/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://flask.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/flask/"
+    },
+    "requires": [
+      "blinker>=1.9.0",
+      "click>=8.1.3",
+      "importlib-metadata>=3.6.0; python_version < \"3.10\"",
+      "itsdangerous>=2.2.0",
+      "jinja2>=3.1.2",
+      "markupsafe>=2.1.1",
+      "werkzeug>=3.1.0",
+      "asgiref>=3.2; extra == \"async\"",
+      "python-dotenv; extra == \"dotenv\""
+    ]
+  },
+  {
+    "name": "idna",
+    "version": "3.20",
+    "wheel": "idna-3.20-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl",
+    "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c",
+    "bytes": 69583,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Changelog": "https://github.com/kjd/idna/blob/master/HISTORY.md",
+      "Issue tracker": "https://github.com/kjd/idna/issues",
+      "Source": "https://github.com/kjd/idna"
+    },
+    "requires": [
+      "ruff>=0.16.0; extra == \"all\"",
+      "mypy>=1.11.2; extra == \"all\"",
+      "ty>=0.0.37; extra == \"all\"",
+      "pytest>=8.3.2; extra == \"all\"",
+      "hypothesis>=6.141.1; extra == \"all\"",
+      "coverage>=7.10.0; extra == \"all\""
+    ]
+  },
+  {
+    "name": "importlib-metadata",
+    "version": "9.0.1",
+    "wheel": "importlib_metadata-9.0.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/b3/55/ecca97ae19075f1fac62def77731e7f535e6c1fb8f92ff08160c5e6dade8/importlib_metadata-9.0.1-py3-none-any.whl",
+    "sha256": "bba5600596a7e21f3eef53281cf28d6a5195634d2f2b78ff9501a3272c6eaab0",
+    "bytes": 27920,
+    "license": "Apache-2.0",
+    "sources": {
+      "Source": "https://github.com/python/importlib_metadata"
+    },
+    "requires": [
+      "zipp>=3.20",
+      "pytest!=8.1.*,>=6; extra == \"test\"",
+      "packaging; extra == \"test\"",
+      "pyfakefs; extra == \"test\"",
+      "pytest-perf>=0.17; extra == \"test\"",
+      "sphinx>=3.5; extra == \"doc\"",
+      "jaraco.packaging>=9.3; extra == \"doc\"",
+      "rst.linker>=1.9; extra == \"doc\"",
+      "furo; extra == \"doc\"",
+      "sphinx-lint; extra == \"doc\"",
+      "jaraco.tidelift>=1.4; extra == \"doc\"",
+      "ipython; extra == \"perf\"",
+      "pytest-checkdocs>=2.14; extra == \"check\"",
+      "pytest-ruff>=0.2.1; sys_platform != \"cygwin\" and extra == \"check\"",
+      "pytest-cov; extra == \"cover\"",
+      "pytest-enabler>=3.4; extra == \"enabler\"",
+      "pytest-mypy>=1.0.1; platform_python_implementation != \"PyPy\" and extra == \"type\""
+    ]
+  },
+  {
+    "name": "iniconfig",
+    "version": "2.3.1",
+    "wheel": "iniconfig-2.3.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/56/43/4ca9e49d27a1fcf6bece6f6aec0ea46bb9112489b93d4b688fb415457bdb/iniconfig-2.3.1-py3-none-any.whl",
+    "sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+    "bytes": 7552,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "https://github.com/pytest-dev/iniconfig"
+    },
+    "requires": null
+  },
+  {
+    "name": "ipython",
+    "version": "9.17.1",
+    "wheel": "ipython-9.17.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/2d/1e/65b59cf518c106aa755e7f7da3099027738687a862ec785060702a481320/ipython-9.17.1-py3-none-any.whl",
+    "sha256": "6d1645743cfd1a07eb695d85aa2b5fa66721f8cbae9431d4049f7084bbf06509",
+    "bytes": 639038,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Documentation": "https://ipython.readthedocs.io/",
+      "Funding": "https://jupyter.org/about#donate",
+      "Homepage": "https://ipython.org",
+      "Source": "https://github.com/ipython/ipython",
+      "Tracker": "https://github.com/ipython/ipython/issues"
+    },
+    "requires": [
+      "colorama>=0.4.4; sys_platform == \"win32\"",
+      "ipython-pygments-lexers>=1.0.0",
+      "jedi>=0.18.2",
+      "matplotlib-inline>=0.1.6",
+      "pexpect>4.6; sys_platform != \"win32\" and sys_platform != \"emscripten\"",
+      "prompt_toolkit<3.1.0,>=3.0.41",
+      "psutil>=7; sys_platform != \"emscripten\" and sys_platform != \"cygwin\"",
+      "pygments>=2.14.0",
+      "stack_data>=0.6.0",
+      "traitlets>=5.13.0",
+      "typing_extensions>=4.6; python_version < \"3.12\"",
+      "black; extra == \"black\"",
+      "docrepr; extra == \"doc\"",
+      "exceptiongroup; extra == \"doc\"",
+      "intersphinx_registry; extra == \"doc\"",
+      "ipykernel; extra == \"doc\"",
+      "ipython[matplotlib,test]; extra == \"doc\"",
+      "setuptools>=80.0; extra == \"doc\"",
+      "sphinx_toml==0.0.4; extra == \"doc\"",
+      "sphinx-rtd-theme>=0.1.8; extra == \"doc\"",
+      "sphinx>=8.0; extra == \"doc\"",
+      "typing_extensions; extra == \"doc\"",
+      "pytest>=7.0.0; extra == \"test\"",
+      "pytest-asyncio>=1.0.0; extra == \"test\"",
+      "testpath>=0.2; extra == \"test\"",
+      "packaging>=23.0.0; extra == \"test\"",
+      "setuptools>=80.0; extra == \"test\"",
+      "ipython[test]; extra == \"test-extra\"",
+      "curio; extra == \"test-extra\"",
+      "jupyter_ai; extra == \"test-extra\"",
+      "ipython[matplotlib]; extra == \"test-extra\"",
+      "nbformat; extra == \"test-extra\"",
+      "nbclient; extra == \"test-extra\"",
+      "ipykernel>6.30; extra == \"test-extra\"",
+      "numpy>=2.0; extra == \"test-extra\"",
+      "pandas>2.1; extra == \"test-extra\"",
+      "trio>=0.22.0; extra == \"test-extra\"",
+      "matplotlib>3.9; extra == \"matplotlib\"",
+      "ipython[doc,matplotlib,test,test_extra]; extra == \"all\"",
+      "argcomplete>=3.0; extra == \"all\""
+    ]
+  },
+  {
+    "name": "ipython-pygments-lexers",
+    "version": "1.1.1",
+    "wheel": "ipython_pygments_lexers-1.1.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d9/33/1f075bf72b0b747cb3288d011319aaf64083cf2efef8354174e3ed4540e2/ipython_pygments_lexers-1.1.1-py3-none-any.whl",
+    "sha256": "a9462224a505ade19a605f71f8fa63c2048833ce50abc86768a0d81d876dc81c",
+    "bytes": 8074,
+    "license": null,
+    "sources": {
+      "Source": "https://github.com/ipython/ipython-pygments-lexers"
+    },
+    "requires": [
+      "pygments"
+    ]
+  },
+  {
+    "name": "ipywidgets",
+    "version": "8.1.9",
+    "wheel": "ipywidgets-8.1.9-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/c3/55/298e9b3b864a198234997e87a1471c1b17d7f3546ace6d18fb5cf1ce24b2/ipywidgets-8.1.9-py3-none-any.whl",
+    "sha256": "f2b8cbcaae10252b809fbe4d7470db75c09b769a32cbf816d20e5ca6d3c5a79d",
+    "bytes": 140101,
+    "license": "BSD 3-Clause License",
+    "sources": {
+      "Homepage": "http://jupyter.org"
+    },
+    "requires": [
+      "comm>=0.1.3",
+      "ipython>=6.1.0",
+      "traitlets>=4.3.1",
+      "widgetsnbextension~=4.0.16",
+      "jupyterlab_widgets~=3.0.17",
+      "jsonschema; extra == \"test\"",
+      "ipykernel; extra == \"test\"",
+      "pytest>=3.6.0; extra == \"test\"",
+      "pytest-cov; extra == \"test\"",
+      "pytz; extra == \"test\""
+    ]
+  },
+  {
+    "name": "itsdangerous",
+    "version": "2.2.0",
+    "wheel": "itsdangerous-2.2.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/04/96/92447566d16df59b2a776c0fb82dbc4d9e07cd95062562af01e408583fc4/itsdangerous-2.2.0-py3-none-any.whl",
+    "sha256": "c6242fc49e35958c8b15141343aa660db5fc54d4f13a1db01a3f5891b98700ef",
+    "bytes": 16234,
+    "license": null,
+    "sources": {
+      "Changes": "https://itsdangerous.palletsprojects.com/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://itsdangerous.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/itsdangerous/"
+    },
+    "requires": null
+  },
+  {
+    "name": "janus",
+    "version": "2.0.0",
+    "wheel": "janus-2.0.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/68/34/65604740edcb20e1bda6a890348ed7d282e7dd23aa00401cbe36fd0edbd9/janus-2.0.0-py3-none-any.whl",
+    "sha256": "7e6449d34eab04cd016befbd7d8c0d8acaaaab67cb59e076a69149f9031745f9",
+    "bytes": 12161,
+    "license": "Apache 2",
+    "sources": {
+      "CI: GitHub Actions": "https://github.com/aio-libs/janus/actions/workflows/ci.yml",
+      "Chat: Gitter": "https://gitter.im/aio-libs/Lobby",
+      "Coverage: codecov": "https://codecov.io/github/aio-libs/janus",
+      "GitHub: issues": "https://github.com/aio-libs/janus/issues",
+      "GitHub: repo": "https://github.com/aio-libs/janus",
+      "Homepage": "https://github.com/aio-libs/janus"
+    },
+    "requires": null
+  },
+  {
+    "name": "jedi",
+    "version": "0.20.1",
+    "wheel": "jedi-0.20.1-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/be/c7/71eb0d51cdcbb63b857c931aa4e9218b078b5d9f8ecd383b234f28fe7b0f/jedi-0.20.1-py2.py3-none-any.whl",
+    "sha256": "0fb16d86c4a4c73c37ba518c77419975e30fcc620658a8d14fbb5720cdd34142",
+    "bytes": 4885980,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://jedi.readthedocs.io/en/latest/",
+      "Homepage": "https://github.com/davidhalter/jedi"
+    },
+    "requires": [
+      "parso<0.9.0,>=0.8.7",
+      "Django; extra == \"dev\"",
+      "attrs; extra == \"dev\"",
+      "colorama; extra == \"dev\"",
+      "docopt; extra == \"dev\"",
+      "flake8==7.1.2; extra == \"dev\"",
+      "pytest<9.0.0; extra == \"dev\"",
+      "types-setuptools==80.9.0.20250529; extra == \"dev\"",
+      "typing-extensions; extra == \"dev\"",
+      "zuban==0.7.0; extra == \"dev\"",
+      "Jinja2==3.1.6; extra == \"docs\"",
+      "MarkupSafe==3.0.3; extra == \"docs\"",
+      "Pygments==2.20.0; extra == \"docs\"",
+      "Sphinx==9.1.0; extra == \"docs\"",
+      "alabaster==1.0.0; extra == \"docs\"",
+      "babel==2.18.0; extra == \"docs\"",
+      "certifi==2026.4.22; extra == \"docs\"",
+      "charset-normalizer==3.4.7; extra == \"docs\"",
+      "docutils==0.22.4; extra == \"docs\"",
+      "idna==3.13; extra == \"docs\"",
+      "imagesize==2.0.0; extra == \"docs\"",
+      "iniconfig==2.3.0; extra == \"docs\"",
+      "packaging==26.2; extra == \"docs\"",
+      "pluggy==1.6.0; extra == \"docs\"",
+      "pytest==9.0.3; extra == \"docs\"",
+      "requests==2.33.1; extra == \"docs\"",
+      "roman-numerals==4.1.0; extra == \"docs\"",
+      "snowballstemmer==3.0.1; extra == \"docs\"",
+      "sphinx-rtd-theme==3.1.0; extra == \"docs\"",
+      "sphinxcontrib-applehelp==2.0.0; extra == \"docs\"",
+      "sphinxcontrib-devhelp==2.0.0; extra == \"docs\"",
+      "sphinxcontrib-htmlhelp==2.1.0; extra == \"docs\"",
+      "sphinxcontrib-jquery==4.1; extra == \"docs\"",
+      "sphinxcontrib-jsmath==1.0.1; extra == \"docs\"",
+      "sphinxcontrib-qthelp==2.0.0; extra == \"docs\"",
+      "sphinxcontrib-serializinghtml==2.0.0; extra == \"docs\"",
+      "urllib3==2.6.3; extra == \"docs\""
+    ]
+  },
+  {
+    "name": "jinja2",
+    "version": "3.1.6",
+    "wheel": "jinja2-3.1.6-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+    "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+    "bytes": 134899,
+    "license": null,
+    "sources": {
+      "Changes": "https://jinja.palletsprojects.com/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://jinja.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/jinja/"
+    },
+    "requires": [
+      "MarkupSafe>=2.0",
+      "Babel>=2.7; extra == \"i18n\""
+    ]
+  },
+  {
+    "name": "jsonschema",
+    "version": "4.26.0",
+    "wheel": "jsonschema-4.26.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/69/90/f63fb5873511e014207a475e2bb4e8b2e570d655b00ac19a9a0ca0a385ee/jsonschema-4.26.0-py3-none-any.whl",
+    "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+    "bytes": 90630,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/python-jsonschema/jsonschema/blob/main/CHANGELOG.rst",
+      "Documentation": "https://python-jsonschema.readthedocs.io/",
+      "Funding": "https://github.com/sponsors/Julian",
+      "Homepage": "https://github.com/python-jsonschema/jsonschema",
+      "Issues": "https://github.com/python-jsonschema/jsonschema/issues/",
+      "Source": "https://github.com/python-jsonschema/jsonschema",
+      "Tidelift": "https://tidelift.com/subscription/pkg/pypi-jsonschema?utm_source=pypi-jsonschema&utm_medium=referral&utm_campaign=pypi-link"
+    },
+    "requires": [
+      "attrs>=22.2.0",
+      "jsonschema-specifications>=2023.03.6",
+      "referencing>=0.28.4",
+      "rpds-py>=0.25.0",
+      "fqdn; extra == \"format\"",
+      "idna; extra == \"format\"",
+      "isoduration; extra == \"format\"",
+      "jsonpointer>1.13; extra == \"format\"",
+      "rfc3339-validator; extra == \"format\"",
+      "rfc3987; extra == \"format\"",
+      "uri-template; extra == \"format\"",
+      "webcolors>=1.11; extra == \"format\"",
+      "fqdn; extra == \"format-nongpl\"",
+      "idna; extra == \"format-nongpl\"",
+      "isoduration; extra == \"format-nongpl\"",
+      "jsonpointer>1.13; extra == \"format-nongpl\"",
+      "rfc3339-validator; extra == \"format-nongpl\"",
+      "rfc3986-validator>0.1.0; extra == \"format-nongpl\"",
+      "rfc3987-syntax>=1.1.0; extra == \"format-nongpl\"",
+      "uri-template; extra == \"format-nongpl\"",
+      "webcolors>=24.6.0; extra == \"format-nongpl\""
+    ]
+  },
+  {
+    "name": "jsonschema-specifications",
+    "version": "2025.9.1",
+    "wheel": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/41/45/1a4ed80516f02155c51f51e8cedb3c1902296743db0bbc66608a0db2814f/jsonschema_specifications-2025.9.1-py3-none-any.whl",
+    "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+    "bytes": 18437,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://jsonschema-specifications.readthedocs.io/",
+      "Funding": "https://github.com/sponsors/Julian",
+      "Homepage": "https://github.com/python-jsonschema/jsonschema-specifications",
+      "Issues": "https://github.com/python-jsonschema/jsonschema-specifications/issues/",
+      "Source": "https://github.com/python-jsonschema/jsonschema-specifications",
+      "Tidelift": "https://tidelift.com/subscription/pkg/pypi-jsonschema-specifications?utm_source=pypi-jsonschema-specifications&utm_medium=referral&utm_campaign=pypi-link"
+    },
+    "requires": [
+      "referencing>=0.31.0"
+    ]
+  },
+  {
+    "name": "jupyter-core",
+    "version": "5.9.1",
+    "wheel": "jupyter_core-5.9.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/e7/e7/80988e32bf6f73919a113473a604f5a8f09094de312b9d52b79c2df7612b/jupyter_core-5.9.1-py3-none-any.whl",
+    "sha256": "ebf87fdc6073d142e114c72c9e29a9d7ca03fad818c5d300ce2adc1fb0743407",
+    "bytes": 29032,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Documentation": "https://jupyter-core.readthedocs.io/",
+      "Homepage": "https://jupyter.org",
+      "Source": "https://github.com/jupyter/jupyter_core",
+      "Tracker": "https://github.com/jupyter/jupyter_core/issues"
+    },
+    "requires": [
+      "platformdirs>=2.5",
+      "traitlets>=5.3",
+      "intersphinx-registry; extra == \"docs\"",
+      "myst-parser; extra == \"docs\"",
+      "pydata-sphinx-theme; extra == \"docs\"",
+      "sphinx-autodoc-typehints; extra == \"docs\"",
+      "sphinxcontrib-spelling; extra == \"docs\"",
+      "traitlets; extra == \"docs\"",
+      "ipykernel; extra == \"test\"",
+      "pre-commit; extra == \"test\"",
+      "pytest-cov; extra == \"test\"",
+      "pytest-timeout; extra == \"test\"",
+      "pytest<9; extra == \"test\""
+    ]
+  },
+  {
+    "name": "jupyterlab-widgets",
+    "version": "3.0.17",
+    "wheel": "jupyterlab_widgets-3.0.17-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/33/ef/6d27fc118f58cb24886da413545a7efb0853d405fddbfd8b2d9ac09fbed4/jupyterlab_widgets-3.0.17-py3-none-any.whl",
+    "sha256": "40ac1e9955acf116c4d995d9bfa082d86ad9ec6d91c4f134827cf5e0a5eb75e0",
+    "bytes": 217292,
+    "license": "Copyright (c) 2015 Project Jupyter Contributors\n        All rights reserved.\n        \n        Redistribution and use in source and binary forms, with or without\n        modification, are permitted provided that the following conditions are met:\n        \n        1. Redistributions of source code must retain the above copyright notice, this\n           list of conditions and the following disclaimer.\n        \n        2. Redistributions in binary form must reproduce the above copyright notice,\n           this list of conditions and the following disclaimer in the documentation\n           and/or other materials provided with the distribution.\n        \n        3. Neither the name of the copyright holder nor the names of its\n           contributors may be used to endorse or promote products derived from\n           this software without specific prior written permission.\n        \n        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\n        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n        \n        ------------------------------------------------------------------------------\n        \n        This package bundles several JavaScript npm packages in the\n        jupyterlab_widgets/static directory. Their licenses (as packaged in their\n        distributions in the node_modules package installation directory) are copied\n        below.\n        \n        ------------------------------------------------------------------------------\n        From css-loader/LICENSE:\n        \n        Copyright JS Foundation and other contributors\n        \n        Permission is hereby granted, free of charge, to any person obtaining\n        a copy of this software and associated documentation files (the\n        'Software'), to deal in the Software without restriction, including\n        without limitation the rights to use, copy, modify, merge, publish,\n        distribute, sublicense, and/or sell copies of the Software, and to\n        permit persons to whom the Software is furnished to do so, subject to\n        the following conditions:\n        \n        The above copyright notice and this permission notice shall be\n        included in all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\n        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\n        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\n        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\n        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\n        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n        \n        ------------------------------------------------------------------------------\n        From style-loader/LICENSE:\n        \n        Copyright JS Foundation and other contributors\n        \n        Permission is hereby granted, free of charge, to any person obtaining\n        a copy of this software and associated documentation files (the\n        'Software'), to deal in the Software without restriction, including\n        without limitation the rights to use, copy, modify, merge, publish,\n        distribute, sublicense, and/or sell copies of the Software, and to\n        permit persons to whom the Software is furnished to do so, subject to\n        the following conditions:\n        \n        The above copyright notice and this permission notice shall be\n        included in all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\n        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\n        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\n        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\n        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\n        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n        \n        ------------------------------------------------------------------------------\n        From backbone/backbone.js\n        \n        //     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors\n        //     Backbone may be freely distributed under the MIT license.\n        //     For all details and documentation:\n        //     http://backbonejs.org\n        \n        ------------------------------------------------------------------------------\n        From base-64/LICENSE\n        \n        The MIT License (MIT)\n        \n        Copyright (c) 2014 Jameson Little\n        \n        Permission is hereby granted, free of charge, to any person obtaining a copy\n        of this software and associated documentation files (the \"Software\"), to deal\n        in the Software without restriction, including without limitation the rights\n        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n        copies of the Software, and to permit persons to whom the Software is\n        furnished to do so, subject to the following conditions:\n        \n        The above copyright notice and this permission notice shall be included in\n        all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n        THE SOFTWARE.\n        \n        ------------------------------------------------------------------------------\n        From lodash/LICENSE\n        \n        Copyright OpenJS Foundation and other contributors <https://openjsf.org/>\n        \n        Based on Underscore.js, copyright Jeremy Ashkenas,\n        DocumentCloud and Investigative Reporters & Editors <http://underscorejs.org/>\n        \n        This software consists of voluntary contributions made by many\n        individuals. For exact contribution history, see the revision history\n        available at https://github.com/lodash/lodash\n        \n        The following license applies to all parts of this software except as\n        documented below:\n        \n        ====\n        \n        Permission is hereby granted, free of charge, to any person obtaining\n        a copy of this software and associated documentation files (the\n        \"Software\"), to deal in the Software without restriction, including\n        without limitation the rights to use, copy, modify, merge, publish,\n        distribute, sublicense, and/or sell copies of the Software, and to\n        permit persons to whom the Software is furnished to do so, subject to\n        the following conditions:\n        \n        The above copyright notice and this permission notice shall be\n        included in all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\n        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\n        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\n        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n        \n        ====\n        \n        Copyright and related rights for sample code are waived via CC0. Sample\n        code is defined as all source code displayed within the prose of the\n        documentation.\n        \n        CC0: http://creativecommons.org/publicdomain/zero/1.0/\n        \n        ====\n        \n        Files located in the node_modules and vendor directories are externally\n        maintained libraries used by this software which have their own\n        licenses; we recommend you read them, as their terms may differ from the\n        terms above.\n        \n        ------------------------------------------------------------------------------\n        From d3-format/LICENSE:\n        \n        Copyright 2010-2015 Mike Bostock\n        All rights reserved.\n        \n        Redistribution and use in source and binary forms, with or without modification,\n        are permitted provided that the following conditions are met:\n        \n        * Redistributions of source code must retain the above copyright notice, this\n          list of conditions and the following disclaimer.\n        \n        * Redistributions in binary form must reproduce the above copyright notice,\n          this list of conditions and the following disclaimer in the documentation\n          and/or other materials provided with the distribution.\n        \n        * Neither the name of the author nor the names of contributors may be used to\n          endorse or promote products derived from this software without specific prior\n          written permission.\n        \n        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n        ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n        WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n        ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n        (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n        LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON\n        ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n        (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n        SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n        \n        ------------------------------------------------------------------------------\n        From noUISlider/LICENSE.md (https://github.com/leongersen/noUiSlider/blob/eca62f9e56aaf02f0841b36e7993adf8db3721d5/LICENSE.md)\n        \n        MIT License\n        \n        Copyright (c) 2019 L\u00e9on Gersen\n        \n        Permission is hereby granted, free of charge, to any person obtaining a copy\n        of this software and associated documentation files (the \"Software\"), to deal\n        in the Software without restriction, including without limitation the rights\n        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n        copies of the Software, and to permit persons to whom the Software is\n        furnished to do so, subject to the following conditions:\n        \n        The above copyright notice and this permission notice shall be included in all\n        copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n        SOFTWARE.\n        \n        ------------------------------------------------------------------\n        From jquery/LICENSE.txt\n        \n        Copyright JS Foundation and other contributors, https://js.foundation/\n        \n        Permission is hereby granted, free of charge, to any person obtaining\n        a copy of this software and associated documentation files (the\n        \"Software\"), to deal in the Software without restriction, including\n        without limitation the rights to use, copy, modify, merge, publish,\n        distribute, sublicense, and/or sell copies of the Software, and to\n        permit persons to whom the Software is furnished to do so, subject to\n        the following conditions:\n        \n        The above copyright notice and this permission notice shall be\n        included in all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\n        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\n        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\n        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n        \n        ------------------------------------------------------------------\n        From semver/LICENSE:\n        \n        The ISC License\n        \n        Copyright (c) Isaac Z. Schlueter and Contributors\n        \n        Permission to use, copy, modify, and/or distribute this software for any\n        purpose with or without fee is hereby granted, provided that the above\n        copyright notice and this permission notice appear in all copies.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\n        WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\n        MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\n        ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\n        WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\n        ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR\n        IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n        \n        ------------------------------------------------------------------\n        From underscore/LICENSE\n        \n        Copyright (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative\n        Reporters & Editors\n        \n        Permission is hereby granted, free of charge, to any person\n        obtaining a copy of this software and associated documentation\n        files (the \"Software\"), to deal in the Software without\n        restriction, including without limitation the rights to use,\n        copy, modify, merge, publish, distribute, sublicense, and/or sell\n        copies of the Software, and to permit persons to whom the\n        Software is furnished to do so, subject to the following\n        conditions:\n        \n        The above copyright notice and this permission notice shall be\n        included in all copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES\n        OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT\n        HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,\n        WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING\n        FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n        OTHER DEALINGS IN THE SOFTWARE.",
+    "sources": {
+      "Homepage": "https://github.com/jupyter-widgets/ipywidgets"
+    },
+    "requires": null
+  },
+  {
+    "name": "laspy",
+    "version": "2.6.1",
+    "wheel": "laspy-2.6.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/28/d1/c3d09cadb41b6d7381a01e41db70419b21c9ccb3cc8ab1e3a0bd37397d82/laspy-2.6.1-py3-none-any.whl",
+    "sha256": "44c4d3c38fcef81cdb9201a0b98e5e4f09831c98d2ec1335b9ee59da16a37349",
+    "bytes": 86053,
+    "license": "BSD",
+    "sources": {
+      "Homepage": "https://github.com/laspy/laspy"
+    },
+    "requires": [
+      "numpy",
+      "pytest; extra == \"dev\"",
+      "coverage; extra == \"dev\"",
+      "sphinx; extra == \"dev\"",
+      "sphinx-rtd-theme; extra == \"dev\"",
+      "nox; extra == \"dev\"",
+      "attrs>=24.1; extra == \"dev\"",
+      "black==22.3.0; extra == \"dev\"",
+      "pytest-benchmark; extra == \"dev\"",
+      "m2r2; extra == \"dev\"",
+      "rangehttpserver; extra == \"dev\"",
+      "isort==5.11.5; extra == \"dev\"",
+      "lazrs<0.8.0,>=0.7.0; extra == \"lazrs\"",
+      "laszip<0.3.0,>=0.2.1; extra == \"laszip\"",
+      "pyproj; extra == \"pyproj\"",
+      "requests; extra == \"requests\"",
+      "typer[all]>=0.8.0; extra == \"cli\"",
+      "rich>=10.11.0; extra == \"cli\""
+    ]
+  },
+  {
+    "name": "lazrs",
+    "version": "0.7.0",
+    "wheel": "lazrs-0.7.0-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/75/de/213291ae576da46b31f3a29b3626f87f061e97e03b771b58134c1b1e578e/lazrs-0.7.0-cp313-cp313-win_amd64.whl",
+    "sha256": "d2cacb2521a3043698193e40d10289c51063dda11c4c585f81015764369f9a97",
+    "bytes": 420187,
+    "license": "MIT",
+    "sources": null,
+    "requires": null
+  },
+  {
+    "name": "markupsafe",
+    "version": "3.0.4",
+    "wheel": "markupsafe-3.0.4-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/6f/36/163da64de88a13db79214ef75fa041be7fa13bdb42261cf5b7484de14bfb/markupsafe-3.0.4-cp313-cp313-win_amd64.whl",
+    "sha256": "1f1f9477e174582b0a1b583d60b66e1f2cf5d3fe12cee985e4aedf44766600e5",
+    "bytes": 14313,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Changes": "https://markupsafe.palletsprojects.com/page/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://markupsafe.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/markupsafe/"
+    },
+    "requires": null
+  },
+  {
+    "name": "matplotlib-inline",
+    "version": "0.2.2",
+    "wheel": "matplotlib_inline-0.2.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/41/09/5b161152e2d90f7b87f781c2e1267494aef9c32498df793f73ad0a0a494a/matplotlib_inline-0.2.2-py3-none-any.whl",
+    "sha256": "3c821cf1c209f59fb2d2d64abbf5b23b67bcb2210d663f9918dd851c6da1fcf6",
+    "bytes": 9534,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Homepage": "https://github.com/ipython/matplotlib-inline"
+    },
+    "requires": [
+      "traitlets",
+      "flake8; extra == \"test\"",
+      "nbdime; extra == \"test\"",
+      "nbval; extra == \"test\"",
+      "notebook; extra == \"test\"",
+      "pytest; extra == \"test\"",
+      "matplotlib; extra == \"test\""
+    ]
+  },
+  {
+    "name": "narwhals",
+    "version": "2.27.1",
+    "wheel": "narwhals-2.27.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d1/89/5d4c86da1130d9059681e5b6cd7645df5c10279a6a079c5c37dcb2cc6f3f/narwhals-2.27.1-py3-none-any.whl",
+    "sha256": "d057df13f5852b8e157596e82eb5e955fad267425df5e420e0ee9863da483b31",
+    "bytes": 483211,
+    "license": "MIT",
+    "sources": {
+      "Bug Tracker": "https://github.com/narwhals-dev/narwhals/issues",
+      "Documentation": "https://narwhals-dev.github.io/narwhals/",
+      "Homepage": "https://github.com/narwhals-dev/narwhals",
+      "Repository": "https://github.com/narwhals-dev/narwhals"
+    },
+    "requires": [
+      "cudf-cu12>=24.10.0; sys_platform == \"linux\" and extra == \"cudf\"",
+      "dask[dataframe]>=2024.8; extra == \"dask\"",
+      "duckdb>=1.1; extra == \"duckdb\"",
+      "ibis-framework>=6.0.0; extra == \"ibis\"",
+      "packaging>=21.3; extra == \"ibis\"",
+      "pyarrow-hotfix>=0.7; extra == \"ibis\"",
+      "modin>=0.22.0; extra == \"modin\"",
+      "pandas>=1.3.4; extra == \"pandas\"",
+      "polars>=0.20.4; extra == \"polars\"",
+      "pyarrow>=13.0.0; extra == \"pyarrow\"",
+      "pyspark>=3.5.0; extra == \"pyspark\"",
+      "pyspark[connect]>=3.5.0; extra == \"pyspark-connect\"",
+      "narwhals[duckdb]; extra == \"sql\"",
+      "sqlparse>=0.5.5; extra == \"sql\"",
+      "sqlframe!=3.39.3,>=3.22.0; extra == \"sqlframe\""
+    ]
+  },
+  {
+    "name": "nbformat",
+    "version": "5.11.1",
+    "wheel": "nbformat-5.11.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/1a/69/ee613f74085ca7103f79cd08d579c4f3177d1d26e5d3d9528d2d6536a707/nbformat-5.11.1-py3-none-any.whl",
+    "sha256": "cc6698fa75f4fab8755ead786317815f13a6fee3b53311c0abb1a8b51d52f7ec",
+    "bytes": 79849,
+    "license": "BSD 3-Clause License\n        \n        - Copyright (c) 2001-2015, IPython Development Team\n        - Copyright (c) 2015-, Jupyter Development Team\n        \n        All rights reserved.\n        \n        Redistribution and use in source and binary forms, with or without\n        modification, are permitted provided that the following conditions are met:\n        \n        1. Redistributions of source code must retain the above copyright notice, this\n           list of conditions and the following disclaimer.\n        \n        2. Redistributions in binary form must reproduce the above copyright notice,\n           this list of conditions and the following disclaimer in the documentation\n           and/or other materials provided with the distribution.\n        \n        3. Neither the name of the copyright holder nor the names of its\n           contributors may be used to endorse or promote products derived from\n           this software without specific prior written permission.\n        \n        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\n        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+    "sources": {
+      "Changelog": "https://github.com/jupyter/nbformat/blob/main/CHANGELOG.md",
+      "Documentation": "https://nbformat.readthedocs.io/",
+      "Homepage": "https://jupyter.org",
+      "Repository": "https://github.com/jupyter/nbformat.git"
+    },
+    "requires": [
+      "fastjsonschema>=2.15",
+      "jsonschema>=2.6",
+      "jupyter-core!=5.0.*,>=4.12",
+      "traitlets>=5.1",
+      "intersphinx-registry; extra == \"docs\"",
+      "myst-parser; extra == \"docs\"",
+      "pydata-sphinx-theme; extra == \"docs\"",
+      "sphinx; extra == \"docs\"",
+      "sphinxcontrib-github-alt; extra == \"docs\"",
+      "sphinxcontrib-spelling; extra == \"docs\"",
+      "packaging; extra == \"test\"",
+      "pre-commit; extra == \"test\"",
+      "pytest; extra == \"test\"",
+      "testpath; extra == \"test\""
+    ]
+  },
+  {
+    "name": "nest-asyncio",
+    "version": "1.6.0",
+    "wheel": "nest_asyncio-1.6.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/a0/c4/c2971a3ba4c6103a3d10c4b0f24f461ddc027f0f09763220cf35ca1401b3/nest_asyncio-1.6.0-py3-none-any.whl",
+    "sha256": "87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c",
+    "bytes": 5195,
+    "license": "BSD",
+    "sources": {
+      "Homepage": "https://github.com/erdewit/nest_asyncio"
+    },
+    "requires": null
+  },
+  {
+    "name": "numpy",
+    "version": "2.5.4",
+    "wheel": "numpy-2.5.4-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/90/8c/140a40398a66b4471211be1affdb6ed24c486d581bd28d07b7f2fcb69540/numpy-2.5.4-cp313-cp313-win_amd64.whl",
+    "sha256": "8b4d2fd2d34e5f8c9235ee787de5631a37a28402b15cb80814df973d2be54129",
+    "bytes": 12566113,
+    "license": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+    "sources": {
+      "documentation": "https://numpy.org/doc/",
+      "download": "https://pypi.org/project/numpy/#files",
+      "homepage": "https://numpy.org",
+      "release notes": "https://numpy.org/doc/stable/release",
+      "source": "https://github.com/numpy/numpy",
+      "tracker": "https://github.com/numpy/numpy/issues"
+    },
+    "requires": null
+  },
+  {
+    "name": "open3d",
+    "version": "0.20.0",
+    "wheel": "open3d-0.20.0-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/cf/53/829c9a24135fad4576e31bed756eade26b1e904d7e01740b520c4ba739d1/open3d-0.20.0-cp313-cp313-win_amd64.whl",
+    "sha256": "689fd4fb3579b2312439b9bceaf92cbb147586b6afc95bdbf6c16e98f5ea15c5",
+    "bytes": 77497479,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://www.open3d.org/docs",
+      "Homepage": "https://www.open3d.org",
+      "Issues": "https://github.com/isl-org/Open3D/issues",
+      "Source code": "https://github.com/isl-org/Open3D"
+    },
+    "requires": [
+      "numpy>=1.18.0",
+      "dash>=2.6.0",
+      "werkzeug>=3.0.0",
+      "flask>=3.0.0",
+      "nbformat>=5.7.0",
+      "configargparse",
+      "pywinpty==2.0.2; sys_platform == \"win32\" and python_version == \"3.6\"",
+      "ipywidgets>=8.0.4"
+    ]
+  },
+  {
+    "name": "packaging",
+    "version": "26.3",
+    "wheel": "packaging-26.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl",
+    "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+    "bytes": 129956,
+    "license": "Apache-2.0 OR BSD-2-Clause",
+    "sources": {
+      "Documentation": "https://packaging.pypa.io/",
+      "Source": "https://github.com/pypa/packaging"
+    },
+    "requires": null
+  },
+  {
+    "name": "parso",
+    "version": "0.8.7",
+    "wheel": "parso-0.8.7-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/99/5d/8268b644392ee874ee82a635cd0df1773de230bde356c38de28e298392cc/parso-0.8.7-py2.py3-none-any.whl",
+    "sha256": "a8926eb2a1b915486941fdbd31e86a4baf88fe8c210f25f2f35ecec5b574ca1c",
+    "bytes": 107025,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "https://github.com/davidhalter/parso"
+    },
+    "requires": [
+      "flake8==5.0.4; extra == \"qa\"",
+      "types-setuptools==67.2.0.1; extra == \"qa\"",
+      "zuban==0.5.1; extra == \"qa\"",
+      "docopt; extra == \"testing\"",
+      "pytest; extra == \"testing\""
+    ]
+  },
+  {
+    "name": "pillow",
+    "version": "13.0.0",
+    "wheel": "pillow-13.0.0-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/d7/ed/1b16fb66a37e1b9e41370b93b2c614c7da761a5b2a41dc333f7af4639962/pillow-13.0.0-cp313-cp313-win_amd64.whl",
+    "sha256": "9dda0788a9932776a75d8bcc020076edc308ce2508b51f6739a45e3158b3fc42",
+    "bytes": 7284777,
+    "license": "MIT-CMU",
+    "sources": {
+      "Changelog": "https://github.com/python-pillow/Pillow/releases",
+      "Documentation": "https://pillow.readthedocs.io",
+      "Funding": "https://tidelift.com/lifter/search/pypi/pillow",
+      "Homepage": "https://python-pillow.org",
+      "Mastodon": "https://fosstodon.org/@pillow",
+      "Release notes": "https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+      "Security": "https://pillow.readthedocs.io/en/stable/handbook/security.html",
+      "Source": "https://github.com/python-pillow/Pillow"
+    },
+    "requires": [
+      "furo; extra == \"docs\"",
+      "olefile; extra == \"docs\"",
+      "sphinx>=8.2; extra == \"docs\"",
+      "sphinx-autobuild; extra == \"docs\"",
+      "sphinx-copybutton; extra == \"docs\"",
+      "sphinx-inline-tabs; extra == \"docs\"",
+      "sphinxext-opengraph; extra == \"docs\"",
+      "olefile; extra == \"fpx\"",
+      "olefile; extra == \"mic\"",
+      "arro3-compute; extra == \"test-arrow\"",
+      "arro3-core; extra == \"test-arrow\"",
+      "nanoarrow; extra == \"test-arrow\"",
+      "pyarrow; extra == \"test-arrow\"",
+      "coverage>=7.4.2; extra == \"tests\"",
+      "defusedxml; extra == \"tests\"",
+      "markdown2; extra == \"tests\"",
+      "olefile; extra == \"tests\"",
+      "packaging; extra == \"tests\"",
+      "psutil; (sys_platform == \"linux\" or sys_platform == \"darwin\") and extra == \"tests\"",
+      "pytest; extra == \"tests\"",
+      "pytest-cov; extra == \"tests\"",
+      "pytest-timeout; extra == \"tests\"",
+      "pytest-xdist; extra == \"tests\"",
+      "setuptools; extra == \"tests\"",
+      "trove-classifiers>=2024.10.12; extra == \"tests\"",
+      "defusedxml; extra == \"xmp\""
+    ]
+  },
+  {
+    "name": "pip",
+    "version": "26.2.2",
+    "wheel": "pip-26.2.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl",
+    "sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+    "bytes": 1819850,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://pip.pypa.io/en/stable/news/",
+      "Documentation": "https://pip.pypa.io",
+      "Homepage": "https://pip.pypa.io/",
+      "Source": "https://github.com/pypa/pip"
+    },
+    "requires": null
+  },
+  {
+    "name": "platformdirs",
+    "version": "4.13.5",
+    "wheel": "platformdirs-4.13.5-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/6c/8a/1d8cb3842909dc193a73835adedf412e32e18f8ffd59f43983949622fe6f/platformdirs-4.13.5-py3-none-any.whl",
+    "sha256": "53d3ec4280b815c1e0b02edad7f9ee8fda1ba9c0865dd9c2e6e63849ce82fc1e",
+    "bytes": 32779,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://platformdirs.readthedocs.io/en/latest/changelog.html",
+      "Documentation": "https://platformdirs.readthedocs.io",
+      "Homepage": "https://github.com/tox-dev/platformdirs",
+      "Source": "https://github.com/tox-dev/platformdirs",
+      "Tracker": "https://github.com/tox-dev/platformdirs/issues"
+    },
+    "requires": null
+  },
+  {
+    "name": "plotly",
+    "version": "7.1.0",
+    "wheel": "plotly-7.1.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/e5/7d/905a3a3d51087515719058c94cfbda2ff0fc14417c20d557ae3e82d8b250/plotly-7.1.0-py3-none-any.whl",
+    "sha256": "dbb7fa18afce40d0a8e80d1bf162eceb3faa0ce5a77fe741ad09a74cf78f53f3",
+    "bytes": 9692368,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/plotly/plotly.py/blob/main/CHANGELOG.md",
+      "Documentation": "https://plotly.com/python/",
+      "GitHub": "https://github.com/plotly/plotly.py",
+      "Homepage": "https://plotly.com/python/"
+    },
+    "requires": [
+      "narwhals>=1.15.1",
+      "packaging",
+      "anywidget; extra == \"dev\"",
+      "build; extra == \"dev\"",
+      "colorcet; extra == \"dev\"",
+      "fiona<=1.9.6; python_version <= \"3.8\" and extra == \"dev\"",
+      "geopandas; extra == \"dev\"",
+      "inflect; extra == \"dev\"",
+      "jupyter-builder; extra == \"dev\"",
+      "jupyterlab; extra == \"dev\"",
+      "kaleido>=1.3.0; extra == \"dev\"",
+      "numpy>=1.22; extra == \"dev\"",
+      "orjson; extra == \"dev\"",
+      "pandas; extra == \"dev\"",
+      "pdfrw; extra == \"dev\"",
+      "pillow; extra == \"dev\"",
+      "polars[timezone]; extra == \"dev\"",
+      "pyarrow; extra == \"dev\"",
+      "pytest; extra == \"dev\"",
+      "pytz; extra == \"dev\"",
+      "requests; extra == \"dev\"",
+      "ruff==0.11.12; extra == \"dev\"",
+      "scikit-image; extra == \"dev\"",
+      "scipy; extra == \"dev\"",
+      "sphinx-gallery; extra == \"dev\"",
+      "statsmodels; extra == \"dev\"",
+      "vaex; python_version <= \"3.9\" and extra == \"dev\"",
+      "xarray; extra == \"dev\"",
+      "build; extra == \"dev-build\"",
+      "jupyter-builder; extra == \"dev-build\"",
+      "pytest; extra == \"dev-build\"",
+      "requests; extra == \"dev-build\"",
+      "ruff==0.11.12; extra == \"dev-build\"",
+      "inflect; extra == \"dev-codegen\"",
+      "pytest; extra == \"dev-codegen\"",
+      "requests; extra == \"dev-codegen\"",
+      "ruff==0.11.12; extra == \"dev-codegen\"",
+      "pytest; extra == \"dev-core\"",
+      "requests; extra == \"dev-core\"",
+      "ruff==0.11.12; extra == \"dev-core\"",
+      "anywidget; extra == \"dev-optional\"",
+      "build; extra == \"dev-optional\"",
+      "colorcet; extra == \"dev-optional\"",
+      "fiona<=1.9.6; python_version <= \"3.8\" and extra == \"dev-optional\"",
+      "geopandas; extra == \"dev-optional\"",
+      "inflect; extra == \"dev-optional\"",
+      "jupyter-builder; extra == \"dev-optional\"",
+      "jupyterlab; extra == \"dev-optional\"",
+      "kaleido>=1.3.0; extra == \"dev-optional\"",
+      "numpy>=1.22; extra == \"dev-optional\"",
+      "orjson; extra == \"dev-optional\"",
+      "pandas; extra == \"dev-optional\"",
+      "pdfrw; extra == \"dev-optional\"",
+      "pillow; extra == \"dev-optional\"",
+      "polars[timezone]; extra == \"dev-optional\"",
+      "pyarrow; extra == \"dev-optional\"",
+      "pytest; extra == \"dev-optional\"",
+      "pytz; extra == \"dev-optional\"",
+      "requests; extra == \"dev-optional\"",
+      "ruff==0.11.12; extra == \"dev-optional\"",
+      "scikit-image; extra == \"dev-optional\"",
+      "scipy; extra == \"dev-optional\"",
+      "sphinx-gallery; extra == \"dev-optional\"",
+      "statsmodels; extra == \"dev-optional\"",
+      "vaex; python_version <= \"3.9\" and extra == \"dev-optional\"",
+      "xarray; extra == \"dev-optional\"",
+      "numpy<2,>=1; extra == \"dev-pandas1\"",
+      "pandas<2,>=1; extra == \"dev-pandas1\"",
+      "setuptools<82; extra == \"dev-pandas1\"",
+      "pandas<3,>=2; extra == \"dev-pandas2\"",
+      "pandas>=3; python_version >= \"3.11\" and extra == \"dev-pandas3\"",
+      "numpy>=1.22; extra == \"express\"",
+      "kaleido>=1.3.0; extra == \"kaleido\""
+    ]
+  },
+  {
+    "name": "pluggy",
+    "version": "1.7.0",
+    "wheel": "pluggy-1.7.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/40/9e/2b38731e0fc536806f16490e1a12d7f0dc2a1235aa8cc07bcc75416a7daa/pluggy-1.7.0-py3-none-any.whl",
+    "sha256": "7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec",
+    "bytes": 27082,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://pluggy.readthedocs.io/en/latest/changelog.html",
+      "Documentation": "https://pluggy.readthedocs.io/",
+      "Funding": "https://tidelift.com/subscription/pkg/pypi-pluggy",
+      "Homepage": "https://github.com/pytest-dev/pluggy",
+      "Issues": "https://github.com/pytest-dev/pluggy/issues",
+      "Repository": "https://github.com/pytest-dev/pluggy"
+    },
+    "requires": null
+  },
+  {
+    "name": "prompt-toolkit",
+    "version": "3.0.53",
+    "wheel": "prompt_toolkit-3.0.53-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/54/6f/84908cad2d6aa5144abcf7b42709fe4fdb459bc640ec7ac5786e7693dabc/prompt_toolkit-3.0.53-py3-none-any.whl",
+    "sha256": "01c0891d7f9237d5e339f7d3e42cdae80b7534abb1c7c0e3352efba6231492f2",
+    "bytes": 392288,
+    "license": null,
+    "sources": {
+      "Documentation": "https://python-prompt-toolkit.readthedocs.io/en/stable/",
+      "Homepage": "https://github.com/prompt-toolkit/python-prompt-toolkit"
+    },
+    "requires": [
+      "wcwidth>=0.1.4"
+    ]
+  },
+  {
+    "name": "psutil",
+    "version": "7.2.2",
+    "wheel": "psutil-7.2.2-cp37-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl",
+    "sha256": "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988",
+    "bytes": 137737,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Homepage": "https://github.com/giampaolo/psutil"
+    },
+    "requires": [
+      "psleak; extra == \"dev\"",
+      "pytest; extra == \"dev\"",
+      "pytest-instafail; extra == \"dev\"",
+      "pytest-xdist; extra == \"dev\"",
+      "setuptools; extra == \"dev\"",
+      "pywin32; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"dev\"",
+      "wheel; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"dev\"",
+      "wmi; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"dev\"",
+      "abi3audit; extra == \"dev\"",
+      "black; extra == \"dev\"",
+      "check-manifest; extra == \"dev\"",
+      "coverage; extra == \"dev\"",
+      "packaging; extra == \"dev\"",
+      "pylint; extra == \"dev\"",
+      "pyperf; extra == \"dev\"",
+      "pypinfo; extra == \"dev\"",
+      "pytest-cov; extra == \"dev\"",
+      "requests; extra == \"dev\"",
+      "rstcheck; extra == \"dev\"",
+      "ruff; extra == \"dev\"",
+      "sphinx; extra == \"dev\"",
+      "sphinx_rtd_theme; extra == \"dev\"",
+      "toml-sort; extra == \"dev\"",
+      "twine; extra == \"dev\"",
+      "validate-pyproject[all]; extra == \"dev\"",
+      "virtualenv; extra == \"dev\"",
+      "vulture; extra == \"dev\"",
+      "wheel; extra == \"dev\"",
+      "colorama; os_name == \"nt\" and extra == \"dev\"",
+      "pyreadline3; os_name == \"nt\" and extra == \"dev\"",
+      "psleak; extra == \"test\"",
+      "pytest; extra == \"test\"",
+      "pytest-instafail; extra == \"test\"",
+      "pytest-xdist; extra == \"test\"",
+      "setuptools; extra == \"test\"",
+      "pywin32; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"test\"",
+      "wheel; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"test\"",
+      "wmi; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == \"test\""
+    ]
+  },
+  {
+    "name": "pure-eval",
+    "version": "0.2.4",
+    "wheel": "pure_eval-0.2.4-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/6d/18/83376915176eb058cb86470eb7396388a13350b09a8f233a79303bbcbc5b/pure_eval-0.2.4-py3-none-any.whl",
+    "sha256": "96cae060a313cfaad51bb761278bfb0e62dc0248d9315a81173752dc546cd37a",
+    "bytes": 11893,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "http://github.com/alexmojaki/pure_eval"
+    },
+    "requires": [
+      "pytest; extra == \"tests\""
+    ]
+  },
+  {
+    "name": "pydantic",
+    "version": "2.14.1",
+    "wheel": "pydantic-2.14.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/35/ea/a56b9fe5066f3537b7882f77e9c5dfb26d8c2eefdaed9b5fc73d57b4dc22/pydantic-2.14.1-py3-none-any.whl",
+    "sha256": "9195d967ec791692a04438115466764fb8b9a27b31f14a760437694f40d6b454",
+    "bytes": 488106,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://pydantic.dev/docs/validation/latest/get-started/changelog/",
+      "Documentation": "https://pydantic.dev/docs/validation/latest/get-started/",
+      "Funding": "https://github.com/sponsors/samuelcolvin",
+      "Homepage": "https://github.com/pydantic/pydantic",
+      "Source": "https://github.com/pydantic/pydantic"
+    },
+    "requires": [
+      "annotated-types>=0.6.0",
+      "pydantic-core==2.50.1",
+      "typing-extensions>=4.16.0",
+      "typing-inspection>=0.4.4",
+      "email-validator>=2.0.0; extra == \"email\"",
+      "tzdata; platform_system == \"Windows\" and extra == \"timezone\""
+    ]
+  },
+  {
+    "name": "pydantic-core",
+    "version": "2.50.1",
+    "wheel": "pydantic_core-2.50.1-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/2d/1f/323f78ddd9d9938aac420c1abb4e8ba799fc8bdab0acc67c0593b837c979/pydantic_core-2.50.1-cp313-cp313-win_amd64.whl",
+    "sha256": "7816e98acc08119dc0f340ab167048ecc54126316330c1f0caf7c6756c88e28f",
+    "bytes": 2170840,
+    "license": "MIT",
+    "sources": {
+      "Funding": "https://github.com/sponsors/samuelcolvin",
+      "Homepage": "https://github.com/pydantic",
+      "Source": "https://github.com/pydantic/pydantic/tree/main/pydantic-core"
+    },
+    "requires": [
+      "typing-extensions>=4.16.0"
+    ]
+  },
+  {
+    "name": "pygments",
+    "version": "2.21.0",
+    "wheel": "pygments-2.21.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl",
+    "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+    "bytes": 1250147,
+    "license": "BSD-2-Clause",
+    "sources": {
+      "Bug Tracker": "https://github.com/pygments/pygments/issues",
+      "Changelog": "https://github.com/pygments/pygments/blob/master/CHANGES",
+      "Documentation": "https://pygments.org/docs",
+      "Homepage": "https://pygments.org",
+      "Source": "https://github.com/pygments/pygments"
+    },
+    "requires": [
+      "colorama>=0.4.6; extra == \"windows-terminal\""
+    ]
+  },
+  {
+    "name": "pyopengl",
+    "version": "3.1.10",
+    "wheel": "pyopengl-3.1.10-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/de/e4/1ba6f44e491c4eece978685230dde56b14d51a0365bc1b774ddaa94d14cd/pyopengl-3.1.10-py3-none-any.whl",
+    "sha256": "794a943daced39300879e4e47bd94525280685f42dbb5a998d336cfff151d74f",
+    "bytes": 3194996,
+    "license": null,
+    "sources": {
+      "Documentation": "https://mcfletch.github.io/pyopengl/documentation/index.html",
+      "Download": "https://pypi.org/project/PyOpenGL/",
+      "Homepage": "https://mcfletch.github.io/pyopengl/",
+      "Source": "https://github.com/mcfletch/pyopengl"
+    },
+    "requires": null
+  },
+  {
+    "name": "pyproj",
+    "version": "3.8.0",
+    "wheel": "pyproj-3.8.0-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/b7/70/c5477f4bcc1e1dfeb53ba082f8102467a5675f66ffc21fce1f2564c5ce5d/pyproj-3.8.0-cp313-cp313-win_amd64.whl",
+    "sha256": "d7b542e249eb593c1af737b7124648868383b69744ab6a1a0a2ffd0113c997f4",
+    "bytes": 6710283,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "https://github.com/pyproj4/pyproj",
+      "changelog": "https://pyproj4.github.io/pyproj/stable/history.html",
+      "documentation": "https://pyproj4.github.io/pyproj/",
+      "homepage": "https://pyproj4.github.io/pyproj/",
+      "repository": "https://github.com/pyproj4/pyproj"
+    },
+    "requires": [
+      "certifi"
+    ]
+  },
+  {
+    "name": "pyqtgraph",
+    "version": "0.14.0",
+    "wheel": "pyqtgraph-0.14.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/32/36/4c242f81fdcbfa4fb62a5645f6af79191f4097a0577bd5460c24f19cc4ef/pyqtgraph-0.14.0-py3-none-any.whl",
+    "sha256": "7abb7c3e17362add64f8711b474dffac5e7b0e9245abdf992e9a44119b7aa4f5",
+    "bytes": 1924755,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://pyqtgraph.readthedocs.io",
+      "Homepage": "http://www.pyqtgraph.org",
+      "Source": "https://github.com/pyqtgraph/pyqtgraph"
+    },
+    "requires": [
+      "numpy>=1.25.0",
+      "colorama"
+    ]
+  },
+  {
+    "name": "pyside6",
+    "version": "6.12.0",
+    "wheel": "pyside6-6.12.0-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/a1/da/8e8514fc29ea916c3cd71a524480b77409e19ed12d709e8a5d73be089b81/pyside6-6.12.0-cp310-abi3-win_amd64.whl",
+    "sha256": "31a8d2893f2f28ab483b1534dde0438f27af6e234593de30425cb4729052d8f8",
+    "bytes": 578958,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": [
+      "PySide6_Essentials==6.12.0",
+      "PySide6_Addons==6.12.0",
+      "PySide6_WebEngine==6.12.0.140",
+      "PySide6_Pdf==6.12.0.140",
+      "tomli>=2.0.1; python_version < \"3.11\"",
+      "PySide6_Examples==6.12.0; extra == \"full\"",
+      "shiboken6_generator==6.12.0; extra == \"full\""
+    ]
+  },
+  {
+    "name": "pyside6-addons",
+    "version": "6.12.0",
+    "wheel": "pyside6_addons-6.12.0-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/02/41/ba3d52fe2acd942ebf71eb02b3bdf0897f7f6f4ce8f52289cb50228e48d3/pyside6_addons-6.12.0-cp310-abi3-win_amd64.whl",
+    "sha256": "98d8d62010da6605344cee83e5c96fb846170a1f2d924523f10f5d92078b02b0",
+    "bytes": 40522402,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": [
+      "PySide6_Essentials==6.12.0"
+    ]
+  },
+  {
+    "name": "pyside6-essentials",
+    "version": "6.12.0",
+    "wheel": "pyside6_essentials-6.12.0-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/03/61/9a7e32a37b224f68506785bfb0f288d516098ec71681782d72b695a6c95d/pyside6_essentials-6.12.0-cp310-abi3-win_amd64.whl",
+    "sha256": "c9a95102aa23c1f86516a30d5a9be37552d324eee7e567eb7508973f1218cb42",
+    "bytes": 82153795,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": [
+      "shiboken6==6.12.0"
+    ]
+  },
+  {
+    "name": "pyside6-pdf",
+    "version": "6.12.0.140",
+    "wheel": "pyside6_pdf-6.12.0.140-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/0e/8a/3f5eab9eb9e6486f0334b100322bbd0aff432dd90ad7977a3910979a163f/pyside6_pdf-6.12.0.140-cp310-abi3-win_amd64.whl",
+    "sha256": "4971ba1a0ca15e7c29cfd808e9600aeb46b2305dad01456eb09fa3197166268e",
+    "bytes": 2983516,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": [
+      "PySide6_Essentials==6.12.0"
+    ]
+  },
+  {
+    "name": "pyside6-webengine",
+    "version": "6.12.0.140",
+    "wheel": "pyside6_webengine-6.12.0.140-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/21/0d/260c7c286f2d4e8a49c099152a385414a872f022117f937824ca0a3f38e5/pyside6_webengine-6.12.0.140-cp310-abi3-win_amd64.whl",
+    "sha256": "f9b61b1d457a591ee590a6b80515f25a3e61e2576a2a0a70566380f9d9de4ab0",
+    "bytes": 131697708,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": [
+      "PySide6_Addons==6.12.0"
+    ]
+  },
+  {
+    "name": "pytest",
+    "version": "9.1.1",
+    "wheel": "pytest-9.1.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/24/25/1de2678b631f5a49215c6c96fff41ba892b0a34df68d6d80292b1b48aa7f/pytest-9.1.1-py3-none-any.whl",
+    "sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+    "bytes": 386536,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://docs.pytest.org/en/stable/changelog.html",
+      "Contact": "https://docs.pytest.org/en/stable/contact.html",
+      "Funding": "https://docs.pytest.org/en/stable/sponsor.html",
+      "Homepage": "https://docs.pytest.org/en/latest/",
+      "Source": "https://github.com/pytest-dev/pytest",
+      "Tracker": "https://github.com/pytest-dev/pytest/issues"
+    },
+    "requires": [
+      "colorama>=0.4; sys_platform == \"win32\"",
+      "exceptiongroup>=1; python_version < \"3.11\"",
+      "iniconfig>=1.0.1",
+      "packaging>=22",
+      "pluggy<2,>=1.5",
+      "pygments>=2.7.2",
+      "tomli>=1; python_version < \"3.11\"",
+      "argcomplete; extra == \"dev\"",
+      "attrs>=19.2; extra == \"dev\"",
+      "hypothesis>=3.56; extra == \"dev\"",
+      "mock; extra == \"dev\"",
+      "requests; extra == \"dev\"",
+      "setuptools; extra == \"dev\"",
+      "xmlschema; extra == \"dev\""
+    ]
+  },
+  {
+    "name": "pytest-qt",
+    "version": "4.5.0",
+    "wheel": "pytest_qt-4.5.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/cc/d0/8339b888ad64a3d4e508fed8245a402b503846e1972c10ad60955883dcbb/pytest_qt-4.5.0-py3-none-any.whl",
+    "sha256": "ed21ea9b861247f7d18090a26bfbda8fb51d7a8a7b6f776157426ff2ccf26eff",
+    "bytes": 37214,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "http://github.com/pytest-dev/pytest-qt"
+    },
+    "requires": [
+      "pytest",
+      "pluggy>=1.1",
+      "typing_extensions",
+      "sphinx; extra == \"doc\"",
+      "sphinx_rtd_theme; extra == \"doc\"",
+      "pre-commit; extra == \"dev\"",
+      "tox; extra == \"dev\""
+    ]
+  },
+  {
+    "name": "referencing",
+    "version": "0.37.0",
+    "wheel": "referencing-0.37.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/2c/58/ca301544e1fa93ed4f80d724bf5b194f6e4b945841c5bfd555878eea9fcb/referencing-0.37.0-py3-none-any.whl",
+    "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+    "bytes": 26766,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://referencing.readthedocs.io/en/stable/changes/",
+      "Documentation": "https://referencing.readthedocs.io/",
+      "Funding": "https://github.com/sponsors/Julian",
+      "Homepage": "https://github.com/python-jsonschema/referencing",
+      "Issues": "https://github.com/python-jsonschema/referencing/issues/",
+      "Source": "https://github.com/python-jsonschema/referencing",
+      "Tidelift": "https://tidelift.com/subscription/pkg/pypi-referencing?utm_source=pypi-referencing&utm_medium=referral&utm_campaign=pypi-link"
+    },
+    "requires": [
+      "attrs>=22.2.0",
+      "rpds-py>=0.7.0",
+      "typing-extensions>=4.4.0; python_version < \"3.13\""
+    ]
+  },
+  {
+    "name": "requests",
+    "version": "2.34.2",
+    "wheel": "requests-2.34.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl",
+    "sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0",
+    "bytes": 73075,
+    "license": "Apache-2.0",
+    "sources": {
+      "Documentation": "https://requests.readthedocs.io",
+      "Source": "https://github.com/psf/requests"
+    },
+    "requires": [
+      "charset_normalizer<4,>=2",
+      "idna<4,>=2.5",
+      "urllib3<3,>=1.26",
+      "certifi>=2023.5.7",
+      "PySocks!=1.5.7,>=1.5.6; extra == \"socks\"",
+      "chardet<8,>=3.0.2; extra == \"use-chardet-on-py3\""
+    ]
+  },
+  {
+    "name": "retrying",
+    "version": "1.4.2",
+    "wheel": "retrying-1.4.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/67/f3/6cd296376653270ac1b423bb30bd70942d9916b6978c6f40472d6ac038e7/retrying-1.4.2-py3-none-any.whl",
+    "sha256": "bbc004aeb542a74f3569aeddf42a2516efefcdaff90df0eb38fbfbf19f179f59",
+    "bytes": 10859,
+    "license": "Apache-2.0",
+    "sources": {
+      "Homepage": "https://github.com/groodt/retrying",
+      "Repository": "https://github.com/groodt/retrying"
+    },
+    "requires": null
+  },
+  {
+    "name": "rpds-py",
+    "version": "2026.9.1",
+    "wheel": "rpds_py-2026.9.1-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/31/9c/ba5a9569d719bfdd6ce863df4133ac6a1658cf1b07cc3534c31db729fbbc/rpds_py-2026.9.1-cp313-cp313-win_amd64.whl",
+    "sha256": "3e93b2cd69a9830be33e03945cd7cda940a0a8bfcfbff41d6144f0cb0d3d8bd9",
+    "bytes": 222409,
+    "license": "MIT",
+    "sources": {
+      "Documentation": "https://rpds.readthedocs.io/",
+      "Funding": "https://github.com/sponsors/Julian",
+      "Homepage": "https://github.com/crate-py/rpds",
+      "Issues": "https://github.com/crate-py/rpds/issues/",
+      "Source": "https://github.com/crate-py/rpds",
+      "Tidelift": "https://tidelift.com/subscription/pkg/pypi-rpds-py?utm_source=pypi-rpds-py&utm_medium=referral&utm_campaign=pypi-link",
+      "Upstream": "https://github.com/orium/rpds"
+    },
+    "requires": null
+  },
+  {
+    "name": "scipy",
+    "version": "1.18.1",
+    "wheel": "scipy-1.18.1-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/93/0e/e0348fbc0dbab65c114cf78957e7dfeb49f8e8b556b4d930cc12ff195e18/scipy-1.18.1-cp313-cp313-win_amd64.whl",
+    "sha256": "559ed65f60c1af5a03f3912605a1b5114f522c7c32fb23c3376ae8f03219fe28",
+    "bytes": 36622841,
+    "license": "Copyright (c) 2001-2002 Enthought, Inc. 2003, SciPy Developers.\n         All rights reserved.\n         \n         Redistribution and use in source and binary forms, with or without\n         modification, are permitted provided that the following conditions\n         are met:\n         \n         1. Redistributions of source code must retain the above copyright\n            notice, this list of conditions and the following disclaimer.\n         \n         2. Redistributions in binary form must reproduce the above\n            copyright notice, this list of conditions and the following\n            disclaimer in the documentation and/or other materials provided\n            with the distribution.\n         \n         3. Neither the name of the copyright holder nor the names of its\n            contributors may be used to endorse or promote products derived\n            from this software without specific prior written permission.\n         \n         THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n         \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n         LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n         A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n         OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n         SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n         LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n         DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n         THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n         (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n         OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n         \n         ----\n         \n         \n         ----\n         \n         This binary distribution of SciPy can also bundle the following software\n         (depending on the build):\n         \n         \n         Name: OpenBLAS\n         Files: scipy/.dylibs/libscipy_openblas*.so\n         Description: bundled as a dynamically linked library\n         Availability: https://github.com/OpenMathLib/OpenBLAS/\n         License: BSD-3-Clause\n           Copyright (c) 2011-2014, The OpenBLAS Project\n           All rights reserved.\n         \n           Redistribution and use in source and binary forms, with or without\n           modification, are permitted provided that the following conditions are\n           met:\n         \n              1. Redistributions of source code must retain the above copyright\n                 notice, this list of conditions and the following disclaimer.\n         \n              2. Redistributions in binary form must reproduce the above copyright\n                 notice, this list of conditions and the following disclaimer in\n                 the documentation and/or other materials provided with the\n                 distribution.\n              3. Neither the name of the OpenBLAS project nor the names of\n                 its contributors may be used to endorse or promote products\n                 derived from this software without specific prior written\n                 permission.\n         \n           THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n           AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n           IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n           ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE\n           LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n           DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n           SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n           CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n           OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE\n           USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n         \n         \n         Name: LAPACK\n         Files: scipy/.dylibs/libscipy_openblas*.so\n         Description: bundled in OpenBLAS\n         Availability: https://github.com/OpenMathLib/OpenBLAS/\n         License: BSD-3-Clause-Open-MPI\n           Copyright (c) 1992-2013 The University of Tennessee and The University\n                                   of Tennessee Research Foundation.  All rights\n                                   reserved.\n           Copyright (c) 2000-2013 The University of California Berkeley. All\n                                   rights reserved.\n           Copyright (c) 2006-2013 The University of Colorado Denver.  All rights\n                                   reserved.\n         \n           $COPYRIGHT$\n         \n           Additional copyrights may follow\n         \n           $HEADER$\n         \n           Redistribution and use in source and binary forms, with or without\n           modification, are permitted provided that the following conditions are\n           met:\n         \n           - Redistributions of source code must retain the above copyright\n             notice, this list of conditions and the following disclaimer.\n         \n           - Redistributions in binary form must reproduce the above copyright\n             notice, this list of conditions and the following disclaimer listed\n             in this license in the documentation and/or other materials\n             provided with the distribution.\n         \n           - Neither the name of the copyright holders nor the names of its\n             contributors may be used to endorse or promote products derived from\n             this software without specific prior written permission.\n         \n           The copyright holders provide no reassurances that the source code\n           provided does not infringe any patent, copyright, or any other\n           intellectual property rights of third parties.  The copyright holders\n           disclaim any liability to any recipient for claims brought against\n           recipient by any third party for infringement of that parties\n           intellectual property rights.\n         \n           THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n           \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n           LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n           A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n           OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n           SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n           LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n           DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n           THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n           (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n           OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n         \n         \n         Name: GCC runtime library\n         Files: scipy/.dylibs/libgfortran*, scipy/.dylibs/libgcc*\n         Description: dynamically linked to files compiled with gcc\n         Availability: https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libgfortran\n         License: GPL-3.0-or-later WITH GCC-exception-3.1\n           Copyright (C) 2002-2017 Free Software Foundation, Inc.\n           \n           Libgfortran is free software; you can redistribute it and/or modify\n           it under the terms of the GNU General Public License as published by\n           the Free Software Foundation; either version 3, or (at your option)\n           any later version.\n           \n           Libgfortran is distributed in the hope that it will be useful,\n           but WITHOUT ANY WARRANTY; without even the implied warranty of\n           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n           GNU General Public License for more details.\n           \n           Under Section 7 of GPL version 3, you are granted additional\n           permissions described in the GCC Runtime Library Exception, version\n           3.1, as published by the Free Software Foundation.\n           \n           You should have received a copy of the GNU General Public License and\n           a copy of the GCC Runtime Library Exception along with this program;\n           see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see\n           <http://www.gnu.org/licenses/>.\n         \n         ----\n         \n         Full text of license texts referred to above follows (that they are\n         listed below does not necessarily imply the conditions apply to the\n         present binary release):\n         \n         ----\n         \n         GCC RUNTIME LIBRARY EXCEPTION\n         \n         Version 3.1, 31 March 2009\n         \n         Copyright (C) 2009 Free Software Foundation, Inc. <http://fsf.org/>\n         \n         Everyone is permitted to copy and distribute verbatim copies of this\n         license document, but changing it is not allowed.\n         \n         This GCC Runtime Library Exception (\"Exception\") is an additional\n         permission under section 7 of the GNU General Public License, version\n         3 (\"GPLv3\"). It applies to a given file (the \"Runtime Library\") that\n         bears a notice placed by the copyright holder of the file stating that\n         the file is governed by GPLv3 along with this Exception.\n         \n         When you use GCC to compile a program, GCC may combine portions of\n         certain GCC header files and runtime libraries with the compiled\n         program. The purpose of this Exception is to allow compilation of\n         non-GPL (including proprietary) programs to use, in this way, the\n         header files and runtime libraries covered by this Exception.\n         \n         0. Definitions.\n         \n         A file is an \"Independent Module\" if it either requires the Runtime\n         Library for execution after a Compilation Process, or makes use of an\n         interface provided by the Runtime Library, but is not otherwise based\n         on the Runtime Library.\n         \n         \"GCC\" means a version of the GNU Compiler Collection, with or without\n         modifications, governed by version 3 (or a specified later version) of\n         the GNU General Public License (GPL) with the option of using any\n         subsequent versions published by the FSF.\n         \n         \"GPL-compatible Software\" is software whose conditions of propagation,\n         modification and use would permit combination with GCC in accord with\n         the license of GCC.\n         \n         \"Target Code\" refers to output from any compiler for a real or virtual\n         target processor architecture, in executable form or suitable for\n         input to an assembler, loader, linker and/or execution\n         phase. Notwithstanding that, Target Code does not include data in any\n         format that is used as a compiler intermediate representation, or used\n         for producing a compiler intermediate representation.\n         \n         The \"Compilation Process\" transforms code entirely represented in\n         non-intermediate languages designed for human-written code, and/or in\n         Java Virtual Machine byte code, into Target Code. Thus, for example,\n         use of source code generators and preprocessors need not be considered\n         part of the Compilation Process, since the Compilation Process can be\n         understood as starting with the output of the generators or\n         preprocessors.\n         \n         A Compilation Process is \"Eligible\" if it is done using GCC, alone or\n         with other GPL-compatible software, or if it is done without using any\n         work based on GCC. For example, using non-GPL-compatible Software to\n         optimize any GCC intermediate representations would not qualify as an\n         Eligible Compilation Process.\n         \n         1. Grant of Additional Permission.\n         \n         You have permission to propagate a work of Target Code formed by\n         combining the Runtime Library with Independent Modules, even if such\n         propagation would otherwise violate the terms of GPLv3, provided that\n         all Target Code was generated by Eligible Compilation Processes. You\n         may then convey such a combination under terms of your choice,\n         consistent with the licensing of the Independent Modules.\n         \n         2. No Weakening of GCC Copyleft.\n         \n         The availability of this Exception does not imply any general\n         presumption that third-party software is unaffected by the copyleft\n         requirements of the license of GCC.\n         \n         ----\n         \n                             GNU GENERAL PUBLIC LICENSE\n                                Version 3, 29 June 2007\n         \n          Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>\n          Everyone is permitted to copy and distribute verbatim copies\n          of this license document, but changing it is not allowed.\n         \n                                     Preamble\n         \n           The GNU General Public License is a free, copyleft license for\n         software and other kinds of works.\n         \n           The licenses for most software and other practical works are designed\n         to take away your freedom to share and change the works.  By contrast,\n         the GNU General Public License is intended to guarantee your freedom to\n         share and change all versions of a program--to make sure it remains free\n         software for all its users.  We, the Free Software Foundation, use the\n         GNU General Public License for most of our software; it applies also to\n         any other work released this way by its authors.  You can apply it to\n         your programs, too.\n         \n           When we speak of free software, we are referring to freedom, not\n         price.  Our General Public Licenses are designed to make sure that you\n         have the freedom to distribute copies of free software (and charge for\n         them if you wish), that you receive source code or can get it if you\n         want it, that you can change the software or use pieces of it in new\n         free programs, and that you know you can do these things.\n         \n           To protect your rights, we need to prevent others from denying you\n         these rights or asking you to surrender the rights.  Therefore, you have\n         certain responsibilities if you distribute copies of the software, or if\n         you modify it: responsibilities to respect the freedom of others.\n         \n           For example, if you distribute copies of such a program, whether\n         gratis or for a fee, you must pass on to the recipients the same\n         freedoms that you received.  You must make sure that they, too, receive\n         or can get the source code.  And you must show them these terms so they\n         know their rights.\n         \n           Developers that use the GNU GPL protect your rights with two steps:\n         (1) assert copyright on the software, and (2) offer you this License\n         giving you legal permission to copy, distribute and/or modify it.\n         \n           For the developers' and authors' protection, the GPL clearly explains\n         that there is no warranty for this free software.  For both users' and\n         authors' sake, the GPL requires that modified versions be marked as\n         changed, so that their problems will not be attributed erroneously to\n         authors of previous versions.\n         \n           Some devices are designed to deny users access to install or run\n         modified versions of the software inside them, although the manufacturer\n         can do so.  This is fundamentally incompatible with the aim of\n         protecting users' freedom to change the software.  The systematic\n         pattern of such abuse occurs in the area of products for individuals to\n         use, which is precisely where it is most unacceptable.  Therefore, we\n         have designed this version of the GPL to prohibit the practice for those\n         products.  If such problems arise substantially in other domains, we\n         stand ready to extend this provision to those domains in future versions\n         of the GPL, as needed to protect the freedom of users.\n         \n           Finally, every program is threatened constantly by software patents.\n         States should not allow patents to restrict development and use of\n         software on general-purpose computers, but in those that do, we wish to\n         avoid the special danger that patents applied to a free program could\n         make it effectively proprietary.  To prevent this, the GPL assures that\n         patents cannot be used to render the program non-free.\n         \n           The precise terms and conditions for copying, distribution and\n         modification follow.\n         \n                                TERMS AND CONDITIONS\n         \n           0. Definitions.\n         \n           \"This License\" refers to version 3 of the GNU General Public License.\n         \n           \"Copyright\" also means copyright-like laws that apply to other kinds of\n         works, such as semiconductor masks.\n         \n           \"The Program\" refers to any copyrightable work licensed under this\n         License.  Each licensee is addressed as \"you\".  \"Licensees\" and\n         \"recipients\" may be individuals or organizations.\n         \n           To \"modify\" a work means to copy from or adapt all or part of the work\n         in a fashion requiring copyright permission, other than the making of an\n         exact copy.  The resulting work is called a \"modified version\" of the\n         earlier work or a work \"based on\" the earlier work.\n         \n           A \"covered work\" means either the unmodified Program or a work based\n         on the Program.\n         \n           To \"propagate\" a work means to do anything with it that, without\n         permission, would make you directly or secondarily liable for\n         infringement under applicable copyright law, except executing it on a\n         computer or modifying a private copy.  Propagation includes copying,\n         distribution (with or without modification), making available to the\n         public, and in some countries other activities as well.\n         \n           To \"convey\" a work means any kind of propagation that enables other\n         parties to make or receive copies.  Mere interaction with a user through\n         a computer network, with no transfer of a copy, is not conveying.\n         \n           An interactive user interface displays \"Appropriate Legal Notices\"\n         to the extent that it includes a convenient and prominently visible\n         feature that (1) displays an appropriate copyright notice, and (2)\n         tells the user that there is no warranty for the work (except to the\n         extent that warranties are provided), that licensees may convey the\n         work under this License, and how to view a copy of this License.  If\n         the interface presents a list of user commands or options, such as a\n         menu, a prominent item in the list meets this criterion.\n         \n           1. Source Code.\n         \n           The \"source code\" for a work means the preferred form of the work\n         for making modifications to it.  \"Object code\" means any non-source\n         form of a work.\n         \n           A \"Standard Interface\" means an interface that either is an official\n         standard defined by a recognized standards body, or, in the case of\n         interfaces specified for a particular programming language, one that\n         is widely used among developers working in that language.\n         \n           The \"System Libraries\" of an executable work include anything, other\n         than the work as a whole, that (a) is included in the normal form of\n         packaging a Major Component, but which is not part of that Major\n         Component, and (b) serves only to enable use of the work with that\n         Major Component, or to implement a Standard Interface for which an\n         implementation is available to the public in source code form.  A\n         \"Major Component\", in this context, means a major essential component\n         (kernel, window system, and so on) of the specific operating system\n         (if any) on which the executable work runs, or a compiler used to\n         produce the work, or an object code interpreter used to run it.\n         \n           The \"Corresponding Source\" for a work in object code form means all\n         the source code needed to generate, install, and (for an executable\n         work) run the object code and to modify the work, including scripts to\n         control those activities.  However, it does not include the work's\n         System Libraries, or general-purpose tools or generally available free\n         programs which are used unmodified in performing those activities but\n         which are not part of the work.  For example, Corresponding Source\n         includes interface definition files associated with source files for\n         the work, and the source code for shared libraries and dynamically\n         linked subprograms that the work is specifically designed to require,\n         such as by intimate data communication or control flow between those\n         subprograms and other parts of the work.\n         \n           The Corresponding Source need not include anything that users\n         can regenerate automatically from other parts of the Corresponding\n         Source.\n         \n           The Corresponding Source for a work in source code form is that\n         same work.\n         \n           2. Basic Permissions.\n         \n           All rights granted under this License are granted for the term of\n         copyright on the Program, and are irrevocable provided the stated\n         conditions are met.  This License explicitly affirms your unlimited\n         permission to run the unmodified Program.  The output from running a\n         covered work is covered by this License only if the output, given its\n         content, constitutes a covered work.  This License acknowledges your\n         rights of fair use or other equivalent, as provided by copyright law.\n         \n           You may make, run and propagate covered works that you do not\n         convey, without conditions so long as your license otherwise remains\n         in force.  You may convey covered works to others for the sole purpose\n         of having them make modifications exclusively for you, or provide you\n         with facilities for running those works, provided that you comply with\n         the terms of this License in conveying all material for which you do\n         not control copyright.  Those thus making or running the covered works\n         for you must do so exclusively on your behalf, under your direction\n         and control, on terms that prohibit them from making any copies of\n         your copyrighted material outside their relationship with you.\n         \n           Conveying under any other circumstances is permitted solely under\n         the conditions stated below.  Sublicensing is not allowed; section 10\n         makes it unnecessary.\n         \n           3. Protecting Users' Legal Rights From Anti-Circumvention Law.\n         \n           No covered work shall be deemed part of an effective technological\n         measure under any applicable law fulfilling obligations under article\n         11 of the WIPO copyright treaty adopted on 20 December 1996, or\n         similar laws prohibiting or restricting circumvention of such\n         measures.\n         \n           When you convey a covered work, you waive any legal power to forbid\n         circumvention of technological measures to the extent such circumvention\n         is effected by exercising rights under this License with respect to\n         the covered work, and you disclaim any intention to limit operation or\n         modification of the work as a means of enforcing, against the work's\n         users, your or third parties' legal rights to forbid circumvention of\n         technological measures.\n         \n           4. Conveying Verbatim Copies.\n         \n           You may convey verbatim copies of the Program's source code as you\n         receive it, in any medium, provided that you conspicuously and\n         appropriately publish on each copy an appropriate copyright notice;\n         keep intact all notices stating that this License and any\n         non-permissive terms added in accord with section 7 apply to the code;\n         keep intact all notices of the absence of any warranty; and give all\n         recipients a copy of this License along with the Program.\n         \n           You may charge any price or no price for each copy that you convey,\n         and you may offer support or warranty protection for a fee.\n         \n           5. Conveying Modified Source Versions.\n         \n           You may convey a work based on the Program, or the modifications to\n         produce it from the Program, in the form of source code under the\n         terms of section 4, provided that you also meet all of these conditions:\n         \n             a) The work must carry prominent notices stating that you modified\n             it, and giving a relevant date.\n         \n             b) The work must carry prominent notices stating that it is\n             released under this License and any conditions added under section\n             7.  This requirement modifies the requirement in section 4 to\n             \"keep intact all notices\".\n         \n             c) You must license the entire work, as a whole, under this\n             License to anyone who comes into possession of a copy.  This\n             License will therefore apply, along with any applicable section 7\n             additional terms, to the whole of the work, and all its parts,\n             regardless of how they are packaged.  This License gives no\n             permission to license the work in any other way, but it does not\n             invalidate such permission if you have separately received it.\n         \n             d) If the work has interactive user interfaces, each must display\n             Appropriate Legal Notices; however, if the Program has interactive\n             interfaces that do not display Appropriate Legal Notices, your\n             work need not make them do so.\n         \n           A compilation of a covered work with other separate and independent\n         works, which are not by their nature extensions of the covered work,\n         and which are not combined with it such as to form a larger program,\n         in or on a volume of a storage or distribution medium, is called an\n         \"aggregate\" if the compilation and its resulting copyright are not\n         used to limit the access or legal rights of the compilation's users\n         beyond what the individual works permit.  Inclusion of a covered work\n         in an aggregate does not cause this License to apply to the other\n         parts of the aggregate.\n         \n           6. Conveying Non-Source Forms.\n         \n           You may convey a covered work in object code form under the terms\n         of sections 4 and 5, provided that you also convey the\n         machine-readable Corresponding Source under the terms of this License,\n         in one of these ways:\n         \n             a) Convey the object code in, or embodied in, a physical product\n             (including a physical distribution medium), accompanied by the\n             Corresponding Source fixed on a durable physical medium\n             customarily used for software interchange.\n         \n             b) Convey the object code in, or embodied in, a physical product\n             (including a physical distribution medium), accompanied by a\n             written offer, valid for at least three years and valid for as\n             long as you offer spare parts or customer support for that product\n             model, to give anyone who possesses the object code either (1) a\n             copy of the Corresponding Source for all the software in the\n             product that is covered by this License, on a durable physical\n             medium customarily used for software interchange, for a price no\n             more than your reasonable cost of physically performing this\n             conveying of source, or (2) access to copy the\n             Corresponding Source from a network server at no charge.\n         \n             c) Convey individual copies of the object code with a copy of the\n             written offer to provide the Corresponding Source.  This\n             alternative is allowed only occasionally and noncommercially, and\n             only if you received the object code with such an offer, in accord\n             with subsection 6b.\n         \n             d) Convey the object code by offering access from a designated\n             place (gratis or for a charge), and offer equivalent access to the\n             Corresponding Source in the same way through the same place at no\n             further charge.  You need not require recipients to copy the\n             Corresponding Source along with the object code.  If the place to\n             copy the object code is a network server, the Corresponding Source\n             may be on a different server (operated by you or a third party)\n             that supports equivalent copying facilities, provided you maintain\n             clear directions next to the object code saying where to find the\n             Corresponding Source.  Regardless of what server hosts the\n             Corresponding Source, you remain obligated to ensure that it is\n             available for as long as needed to satisfy these requirements.\n         \n             e) Convey the object code using peer-to-peer transmission, provided\n             you inform other peers where the object code and Corresponding\n             Source of the work are being offered to the general public at no\n             charge under subsection 6d.\n         \n           A separable portion of the object code, whose source code is excluded\n         from the Corresponding Source as a System Library, need not be\n         included in conveying the object code work.\n         \n           A \"User Product\" is either (1) a \"consumer product\", which means any\n         tangible personal property which is normally used for personal, family,\n         or household purposes, or (2) anything designed or sold for incorporation\n         into a dwelling.  In determining whether a product is a consumer product,\n         doubtful cases shall be resolved in favor of coverage.  For a particular\n         product received by a particular user, \"normally used\" refers to a\n         typical or common use of that class of product, regardless of the status\n         of the particular user or of the way in which the particular user\n         actually uses, or expects or is expected to use, the product.  A product\n         is a consumer product regardless of whether the product has substantial\n         commercial, industrial or non-consumer uses, unless such uses represent\n         the only significant mode of use of the product.\n         \n           \"Installation Information\" for a User Product means any methods,\n         procedures, authorization keys, or other information required to install\n         and execute modified versions of a covered work in that User Product from\n         a modified version of its Corresponding Source.  The information must\n         suffice to ensure that the continued functioning of the modified object\n         code is in no case prevented or interfered with solely because\n         modification has been made.\n         \n           If you convey an object code work under this section in, or with, or\n         specifically for use in, a User Product, and the conveying occurs as\n         part of a transaction in which the right of possession and use of the\n         User Product is transferred to the recipient in perpetuity or for a\n         fixed term (regardless of how the transaction is characterized), the\n         Corresponding Source conveyed under this section must be accompanied\n         by the Installation Information.  But this requirement does not apply\n         if neither you nor any third party retains the ability to install\n         modified object code on the User Product (for example, the work has\n         been installed in ROM).\n         \n           The requirement to provide Installation Information does not include a\n         requirement to continue to provide support service, warranty, or updates\n         for a work that has been modified or installed by the recipient, or for\n         the User Product in which it has been modified or installed.  Access to a\n         network may be denied when the modification itself materially and\n         adversely affects the operation of the network or violates the rules and\n         protocols for communication across the network.\n         \n           Corresponding Source conveyed, and Installation Information provided,\n         in accord with this section must be in a format that is publicly\n         documented (and with an implementation available to the public in\n         source code form), and must require no special password or key for\n         unpacking, reading or copying.\n         \n           7. Additional Terms.\n         \n           \"Additional permissions\" are terms that supplement the terms of this\n         License by making exceptions from one or more of its conditions.\n         Additional permissions that are applicable to the entire Program shall\n         be treated as though they were included in this License, to the extent\n         that they are valid under applicable law.  If additional permissions\n         apply only to part of the Program, that part may be used separately\n         under those permissions, but the entire Program remains governed by\n         this License without regard to the additional permissions.\n         \n           When you convey a copy of a covered work, you may at your option\n         remove any additional permissions from that copy, or from any part of\n         it.  (Additional permissions may be written to require their own\n         removal in certain cases when you modify the work.)  You may place\n         additional permissions on material, added by you to a covered work,\n         for which you have or can give appropriate copyright permission.\n         \n           Notwithstanding any other provision of this License, for material you\n         add to a covered work, you may (if authorized by the copyright holders of\n         that material) supplement the terms of this License with terms:\n         \n             a) Disclaiming warranty or limiting liability differently from the\n             terms of sections 15 and 16 of this License; or\n         \n             b) Requiring preservation of specified reasonable legal notices or\n             author attributions in that material or in the Appropriate Legal\n             Notices displayed by works containing it; or\n         \n             c) Prohibiting misrepresentation of the origin of that material, or\n             requiring that modified versions of such material be marked in\n             reasonable ways as different from the original version; or\n         \n             d) Limiting the use for publicity purposes of names of licensors or\n             authors of the material; or\n         \n             e) Declining to grant rights under trademark law for use of some\n             trade names, trademarks, or service marks; or\n         \n             f) Requiring indemnification of licensors and authors of that\n             material by anyone who conveys the material (or modified versions of\n             it) with contractual assumptions of liability to the recipient, for\n             any liability that these contractual assumptions directly impose on\n             those licensors and authors.\n         \n           All other non-permissive additional terms are considered \"further\n         restrictions\" within the meaning of section 10.  If the Program as you\n         received it, or any part of it, contains a notice stating that it is\n         governed by this License along with a term that is a further\n         restriction, you may remove that term.  If a license document contains\n         a further restriction but permits relicensing or conveying under this\n         License, you may add to a covered work material governed by the terms\n         of that license document, provided that the further restriction does\n         not survive such relicensing or conveying.\n         \n           If you add terms to a covered work in accord with this section, you\n         must place, in the relevant source files, a statement of the\n         additional terms that apply to those files, or a notice indicating\n         where to find the applicable terms.\n         \n           Additional terms, permissive or non-permissive, may be stated in the\n         form of a separately written license, or stated as exceptions;\n         the above requirements apply either way.\n         \n           8. Termination.\n         \n           You may not propagate or modify a covered work except as expressly\n         provided under this License.  Any attempt otherwise to propagate or\n         modify it is void, and will automatically terminate your rights under\n         this License (including any patent licenses granted under the third\n         paragraph of section 11).\n         \n           However, if you cease all violation of this License, then your\n         license from a particular copyright holder is reinstated (a)\n         provisionally, unless and until the copyright holder explicitly and\n         finally terminates your license, and (b) permanently, if the copyright\n         holder fails to notify you of the violation by some reasonable means\n         prior to 60 days after the cessation.\n         \n           Moreover, your license from a particular copyright holder is\n         reinstated permanently if the copyright holder notifies you of the\n         violation by some reasonable means, this is the first time you have\n         received notice of violation of this License (for any work) from that\n         copyright holder, and you cure the violation prior to 30 days after\n         your receipt of the notice.\n         \n           Termination of your rights under this section does not terminate the\n         licenses of parties who have received copies or rights from you under\n         this License.  If your rights have been terminated and not permanently\n         reinstated, you do not qualify to receive new licenses for the same\n         material under section 10.\n         \n           9. Acceptance Not Required for Having Copies.\n         \n           You are not required to accept this License in order to receive or\n         run a copy of the Program.  Ancillary propagation of a covered work\n         occurring solely as a consequence of using peer-to-peer transmission\n         to receive a copy likewise does not require acceptance.  However,\n         nothing other than this License grants you permission to propagate or\n         modify any covered work.  These actions infringe copyright if you do\n         not accept this License.  Therefore, by modifying or propagating a\n         covered work, you indicate your acceptance of this License to do so.\n         \n           10. Automatic Licensing of Downstream Recipients.\n         \n           Each time you convey a covered work, the recipient automatically\n         receives a license from the original licensors, to run, modify and\n         propagate that work, subject to this License.  You are not responsible\n         for enforcing compliance by third parties with this License.\n         \n           An \"entity transaction\" is a transaction transferring control of an\n         organization, or substantially all assets of one, or subdividing an\n         organization, or merging organizations.  If propagation of a covered\n         work results from an entity transaction, each party to that\n         transaction who receives a copy of the work also receives whatever\n         licenses to the work the party's predecessor in interest had or could\n         give under the previous paragraph, plus a right to possession of the\n         Corresponding Source of the work from the predecessor in interest, if\n         the predecessor has it or can get it with reasonable efforts.\n         \n           You may not impose any further restrictions on the exercise of the\n         rights granted or affirmed under this License.  For example, you may\n         not impose a license fee, royalty, or other charge for exercise of\n         rights granted under this License, and you may not initiate litigation\n         (including a cross-claim or counterclaim in a lawsuit) alleging that\n         any patent claim is infringed by making, using, selling, offering for\n         sale, or importing the Program or any portion of it.\n         \n           11. Patents.\n         \n           A \"contributor\" is a copyright holder who authorizes use under this\n         License of the Program or a work on which the Program is based.  The\n         work thus licensed is called the contributor's \"contributor version\".\n         \n           A contributor's \"essential patent claims\" are all patent claims\n         owned or controlled by the contributor, whether already acquired or\n         hereafter acquired, that would be infringed by some manner, permitted\n         by this License, of making, using, or selling its contributor version,\n         but do not include claims that would be infringed only as a\n         consequence of further modification of the contributor version.  For\n         purposes of this definition, \"control\" includes the right to grant\n         patent sublicenses in a manner consistent with the requirements of\n         this License.\n         \n           Each contributor grants you a non-exclusive, worldwide, royalty-free\n         patent license under the contributor's essential patent claims, to\n         make, use, sell, offer for sale, import and otherwise run, modify and\n         propagate the contents of its contributor version.\n         \n           In the following three paragraphs, a \"patent license\" is any express\n         agreement or commitment, however denominated, not to enforce a patent\n         (such as an express permission to practice a patent or covenant not to\n         sue for patent infringement).  To \"grant\" such a patent license to a\n         party means to make such an agreement or commitment not to enforce a\n         patent against the party.\n         \n           If you convey a covered work, knowingly relying on a patent license,\n         and the Corresponding Source of the work is not available for anyone\n         to copy, free of charge and under the terms of this License, through a\n         publicly available network server or other readily accessible means,\n         then you must either (1) cause the Corresponding Source to be so\n         available, or (2) arrange to deprive yourself of the benefit of the\n         patent license for this particular work, or (3) arrange, in a manner\n         consistent with the requirements of this License, to extend the patent\n         license to downstream recipients.  \"Knowingly relying\" means you have\n         actual knowledge that, but for the patent license, your conveying the\n         covered work in a country, or your recipient's use of the covered work\n         in a country, would infringe one or more identifiable patents in that\n         country that you have reason to believe are valid.\n         \n           If, pursuant to or in connection with a single transaction or\n         arrangement, you convey, or propagate by procuring conveyance of, a\n         covered work, and grant a patent license to some of the parties\n         receiving the covered work authorizing them to use, propagate, modify\n         or convey a specific copy of the covered work, then the patent license\n         you grant is automatically extended to all recipients of the covered\n         work and works based on it.\n         \n           A patent license is \"discriminatory\" if it does not include within\n         the scope of its coverage, prohibits the exercise of, or is\n         conditioned on the non-exercise of one or more of the rights that are\n         specifically granted under this License.  You may not convey a covered\n         work if you are a party to an arrangement with a third party that is\n         in the business of distributing software, under which you make payment\n         to the third party based on the extent of your activity of conveying\n         the work, and under which the third party grants, to any of the\n         parties who would receive the covered work from you, a discriminatory\n         patent license (a) in connection with copies of the covered work\n         conveyed by you (or copies made from those copies), or (b) primarily\n         for and in connection with specific products or compilations that\n         contain the covered work, unless you entered into that arrangement,\n         or that patent license was granted, prior to 28 March 2007.\n         \n           Nothing in this License shall be construed as excluding or limiting\n         any implied license or other defenses to infringement that may\n         otherwise be available to you under applicable patent law.\n         \n           12. No Surrender of Others' Freedom.\n         \n           If conditions are imposed on you (whether by court order, agreement or\n         otherwise) that contradict the conditions of this License, they do not\n         excuse you from the conditions of this License.  If you cannot convey a\n         covered work so as to satisfy simultaneously your obligations under this\n         License and any other pertinent obligations, then as a consequence you may\n         not convey it at all.  For example, if you agree to terms that obligate you\n         to collect a royalty for further conveying from those to whom you convey\n         the Program, the only way you could satisfy both those terms and this\n         License would be to refrain entirely from conveying the Program.\n         \n           13. Use with the GNU Affero General Public License.\n         \n           Notwithstanding any other provision of this License, you have\n         permission to link or combine any covered work with a work licensed\n         under version 3 of the GNU Affero General Public License into a single\n         combined work, and to convey the resulting work.  The terms of this\n         License will continue to apply to the part which is the covered work,\n         but the special requirements of the GNU Affero General Public License,\n         section 13, concerning interaction through a network will apply to the\n         combination as such.\n         \n           14. Revised Versions of this License.\n         \n           The Free Software Foundation may publish revised and/or new versions of\n         the GNU General Public License from time to time.  Such new versions will\n         be similar in spirit to the present version, but may differ in detail to\n         address new problems or concerns.\n         \n           Each version is given a distinguishing version number.  If the\n         Program specifies that a certain numbered version of the GNU General\n         Public License \"or any later version\" applies to it, you have the\n         option of following the terms and conditions either of that numbered\n         version or of any later version published by the Free Software\n         Foundation.  If the Program does not specify a version number of the\n         GNU General Public License, you may choose any version ever published\n         by the Free Software Foundation.\n         \n           If the Program specifies that a proxy can decide which future\n         versions of the GNU General Public License can be used, that proxy's\n         public statement of acceptance of a version permanently authorizes you\n         to choose that version for the Program.\n         \n           Later license versions may give you additional or different\n         permissions.  However, no additional obligations are imposed on any\n         author or copyright holder as a result of your choosing to follow a\n         later version.\n         \n           15. Disclaimer of Warranty.\n         \n           THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n         APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n         HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n         OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n         THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n         PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n         IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n         ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n         \n           16. Limitation of Liability.\n         \n           IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING\n         WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS\n         THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY\n         GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE\n         USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF\n         DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD\n         PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),\n         EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF\n         SUCH DAMAGES.\n         \n           17. Interpretation of Sections 15 and 16.\n         \n           If the disclaimer of warranty and limitation of liability provided\n         above cannot be given local legal effect according to their terms,\n         reviewing courts shall apply local law that most closely approximates\n         an absolute waiver of all civil liability in connection with the\n         Program, unless a warranty or assumption of liability accompanies a\n         copy of the Program in return for a fee.\n         \n                              END OF TERMS AND CONDITIONS\n         \n                     How to Apply These Terms to Your New Programs\n         \n           If you develop a new program, and you want it to be of the greatest\n         possible use to the public, the best way to achieve this is to make it\n         free software which everyone can redistribute and change under these terms.\n         \n           To do so, attach the following notices to the program.  It is safest\n         to attach them to the start of each source file to most effectively\n         state the exclusion of warranty; and each file should have at least\n         the \"copyright\" line and a pointer to where the full notice is found.\n         \n             <one line to give the program's name and a brief idea of what it does.>\n             Copyright (C) <year>  <name of author>\n         \n             This program is free software: you can redistribute it and/or modify\n             it under the terms of the GNU General Public License as published by\n             the Free Software Foundation, either version 3 of the License, or\n             (at your option) any later version.\n         \n             This program is distributed in the hope that it will be useful,\n             but WITHOUT ANY WARRANTY; without even the implied warranty of\n             MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n             GNU General Public License for more details.\n         \n             You should have received a copy of the GNU General Public License\n             along with this program.  If not, see <http://www.gnu.org/licenses/>.\n         \n         Also add information on how to contact you by electronic and paper mail.\n         \n           If the program does terminal interaction, make it output a short\n         notice like this when it starts in an interactive mode:\n         \n             <program>  Copyright (C) <year>  <name of author>\n             This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\n             This is free software, and you are welcome to redistribute it\n             under certain conditions; type `show c' for details.\n         \n         The hypothetical commands `show w' and `show c' should show the appropriate\n         parts of the General Public License.  Of course, your program's commands\n         might be different; for a GUI interface, you would use an \"about box\".\n         \n           You should also get your employer (if you work as a programmer) or school,\n         if any, to sign a \"copyright disclaimer\" for the program, if necessary.\n         For more information on this, and how to apply and follow the GNU GPL, see\n         <http://www.gnu.org/licenses/>.\n         \n           The GNU General Public License does not permit incorporating your program\n         into proprietary programs.  If your program is a subroutine library, you\n         may consider it more useful to permit linking proprietary applications with\n         the library.  If this is what you want to do, use the GNU Lesser General\n         Public License instead of this License.  But first, please read\n         <http://www.gnu.org/philosophy/why-not-lgpl.html>.\n         \n         \n         Name: libquadmath\n         Files: scipy/.dylibs/libquadmath*.so\n         Description: dynamically linked to files compiled with gcc\n         Availability: https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libquadmath\n         License: LGPL-2.1-or-later\n         \n             GCC Quad-Precision Math Library\n             Copyright (C) 2010-2019 Free Software Foundation, Inc.\n             Written by Francois-Xavier Coudert  <fxcoudert@gcc.gnu.org>\n         \n             This file is part of the libquadmath library.\n             Libquadmath is free software; you can redistribute it and/or\n             modify it under the terms of the GNU Library General Public\n             License as published by the Free Software Foundation; either\n             version 2.1 of the License, or (at your option) any later version.\n         \n             Libquadmath is distributed in the hope that it will be useful,\n             but WITHOUT ANY WARRANTY; without even the implied warranty of\n             MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n             Lesser General Public License for more details.\n             https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html\n         ",
+    "sources": {
+      "documentation": "https://docs.scipy.org/doc/scipy/",
+      "download": "https://github.com/scipy/scipy/releases",
+      "homepage": "https://scipy.org/",
+      "source": "https://github.com/scipy/scipy",
+      "tracker": "https://github.com/scipy/scipy/issues"
+    },
+    "requires": [
+      "numpy<2.8,>=2.0.0",
+      "pytest>=8.0.0; extra == \"test\"",
+      "pytest-cov; extra == \"test\"",
+      "pytest-timeout; extra == \"test\"",
+      "pytest-xdist; extra == \"test\"",
+      "asv; extra == \"test\"",
+      "mpmath; extra == \"test\"",
+      "gmpy2; extra == \"test\"",
+      "threadpoolctl; extra == \"test\"",
+      "scikit-umfpack; extra == \"test\"",
+      "pooch; extra == \"test\"",
+      "hypothesis>=6.30; extra == \"test\"",
+      "array-api-strict>=2.3.1; extra == \"test\"",
+      "Cython; extra == \"test\"",
+      "meson; extra == \"test\"",
+      "ninja; sys_platform != \"emscripten\" and extra == \"test\"",
+      "scipy-doctest>=2.0.0; extra == \"test\"",
+      "sphinx<8.2.0,>=5.0.0; extra == \"doc\"",
+      "intersphinx_registry; extra == \"doc\"",
+      "pydata-sphinx-theme>=0.15.2; extra == \"doc\"",
+      "sphinx-copybutton; extra == \"doc\"",
+      "sphinx-design>=0.4.0; extra == \"doc\"",
+      "matplotlib>=3.5; extra == \"doc\"",
+      "numpydoc; extra == \"doc\"",
+      "jupytext; extra == \"doc\"",
+      "myst-nb>=1.2.0; extra == \"doc\"",
+      "pooch; extra == \"doc\"",
+      "jupyterlite-sphinx>=0.19.1; extra == \"doc\"",
+      "jupyterlite-pyodide-kernel; extra == \"doc\"",
+      "linkify-it-py; extra == \"doc\"",
+      "tabulate; extra == \"doc\"",
+      "click<8.3.0; extra == \"dev\"",
+      "spin; extra == \"dev\"",
+      "mypy==1.19.1; extra == \"dev\"",
+      "pyrefly==0.63.0; extra == \"dev\"",
+      "typing_extensions; extra == \"dev\"",
+      "types-psutil; extra == \"dev\"",
+      "pycodestyle; extra == \"dev\"",
+      "ruff>=0.12.0; extra == \"dev\"",
+      "cython-lint>=0.12.2; extra == \"dev\""
+    ]
+  },
+  {
+    "name": "setuptools",
+    "version": "84.2.1",
+    "wheel": "setuptools-84.2.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/ef/55/6dc6d6bb953bdfc52519a0059592c52b6e3b8ad51cf8256dffceb55b0610/setuptools-84.2.1-py3-none-any.whl",
+    "sha256": "ca140b45d5325a9478f880e351484f62fef15f336462e449ca0c03c873d589c2",
+    "bytes": 876263,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://setuptools.pypa.io/en/stable/history.html",
+      "Documentation": "https://setuptools.pypa.io/",
+      "Source": "https://github.com/pypa/setuptools"
+    },
+    "requires": [
+      "pytest!=8.1.*,>=6; extra == \"test\"",
+      "virtualenv>=13.0.0; extra == \"test\"",
+      "wheel>=0.44.0; extra == \"test\"",
+      "pip>=19.1; extra == \"test\"",
+      "packaging>=26.3; extra == \"test\"",
+      "jaraco.envs>=2.2; extra == \"test\"",
+      "pytest-xdist>=3; extra == \"test\"",
+      "jaraco.path>=3.7.2; extra == \"test\"",
+      "build[virtualenv]>=1.0.3; extra == \"test\"",
+      "filelock>=3.4.0; extra == \"test\"",
+      "ini2toml[lite]>=0.14; extra == \"test\"",
+      "tomli-w>=1.0.0; extra == \"test\"",
+      "pytest-timeout; extra == \"test\"",
+      "pytest-perf; sys_platform != \"cygwin\" and extra == \"test\"",
+      "jaraco.develop>=7.21; (python_version >= \"3.9\" and sys_platform != \"cygwin\") and extra == \"test\"",
+      "pytest-home>=0.5; extra == \"test\"",
+      "pytest-subprocess; extra == \"test\"",
+      "pyproject-hooks!=1.1; extra == \"test\"",
+      "jaraco.test>=5.5; extra == \"test\"",
+      "sphinx>=3.5; extra == \"doc\"",
+      "jaraco.packaging>=9.3; extra == \"doc\"",
+      "rst.linker>=1.9; extra == \"doc\"",
+      "furo; extra == \"doc\"",
+      "sphinx-lint; extra == \"doc\"",
+      "jaraco.tidelift>=1.4; extra == \"doc\"",
+      "pygments-github-lexers==0.0.5; extra == \"doc\"",
+      "sphinx-favicon; extra == \"doc\"",
+      "sphinx-inline-tabs; extra == \"doc\"",
+      "sphinx-reredirects; extra == \"doc\"",
+      "sphinxcontrib-towncrier; extra == \"doc\"",
+      "sphinx-notfound-page<2,>=1; extra == \"doc\"",
+      "pyproject-hooks!=1.1; extra == \"doc\"",
+      "towncrier<24.7; extra == \"doc\"",
+      "packaging>=26.3; extra == \"core\"",
+      "more_itertools>=8.8; extra == \"core\"",
+      "jaraco.text>=3.7; extra == \"core\"",
+      "importlib_metadata>=6; python_version < \"3.10\" and extra == \"core\"",
+      "tomli>=2.0.1; python_version < \"3.11\" and extra == \"core\"",
+      "wheel>=0.43.0; extra == \"core\"",
+      "jaraco.functools>=4; extra == \"core\"",
+      "more_itertools; extra == \"core\"",
+      "pytest-checkdocs>=2.14; extra == \"check\"",
+      "pytest-ruff>=0.2.1; sys_platform != \"cygwin\" and extra == \"check\"",
+      "ruff>=0.13.0; sys_platform != \"cygwin\" and extra == \"check\"",
+      "pytest-cov; extra == \"cover\"",
+      "pytest-enabler>=3.4; extra == \"enabler\"",
+      "pytest-mypy>=1.0.1; platform_python_implementation != \"PyPy\" and extra == \"type\"",
+      "mypy==1.18.*; extra == \"type\"",
+      "importlib_metadata>=7.0.2; python_version < \"3.10\" and extra == \"type\"",
+      "jaraco.develop>=7.21; sys_platform != \"cygwin\" and extra == \"type\""
+    ]
+  },
+  {
+    "name": "shiboken6",
+    "version": "6.12.0",
+    "wheel": "shiboken6-6.12.0-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/2a/b6/bee97e7a2edeab72aafabb46ee5adc939790a638d107860b4cad7a20e407/shiboken6-6.12.0-cp310-abi3-win_amd64.whl",
+    "sha256": "a1906cb8116869178c64b6bab52623bbc8b4ceed7b30bfc3c9aa0f6e67f6438e",
+    "bytes": 1265476,
+    "license": "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "sources": {
+      "Changelog": "https://code.qt.io/cgit/pyside/pyside-setup.git/tree/doc/changelogs",
+      "Documentation": "https://doc.qt.io/qtforpython",
+      "Homepage": "https://pyside.org",
+      "Repository": "https://code.qt.io/cgit/pyside/pyside-setup.git/",
+      "Tracker": "https://qt-project.atlassian.net/browse/PYSIDE"
+    },
+    "requires": null
+  },
+  {
+    "name": "stack-data",
+    "version": "0.6.3",
+    "wheel": "stack_data-0.6.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl",
+    "sha256": "d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695",
+    "bytes": 24521,
+    "license": "MIT",
+    "sources": {
+      "Homepage": "http://github.com/alexmojaki/stack_data"
+    },
+    "requires": [
+      "executing >=1.2.0",
+      "asttokens >=2.1.0",
+      "pure-eval",
+      "pytest ; extra == 'tests'",
+      "typeguard ; extra == 'tests'",
+      "pygments ; extra == 'tests'",
+      "littleutils ; extra == 'tests'",
+      "cython ; extra == 'tests'"
+    ]
+  },
+  {
+    "name": "traitlets",
+    "version": "5.16.1",
+    "wheel": "traitlets-5.16.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/ad/66/0d785f0bc5e4315a96c989bb476d0fc07ea4f85132550c7b156ca2035d52/traitlets-5.16.1-py3-none-any.whl",
+    "sha256": "f775618166caa0396c8e337099240f2bd3e5e917d203b2e6fbe21a58d3cb1f6b",
+    "bytes": 86211,
+    "license": "BSD 3-Clause License\n        \n        - Copyright (c) 2001-, IPython Development Team\n        \n        All rights reserved.\n        \n        Redistribution and use in source and binary forms, with or without\n        modification, are permitted provided that the following conditions are met:\n        \n        1. Redistributions of source code must retain the above copyright notice, this\n           list of conditions and the following disclaimer.\n        \n        2. Redistributions in binary form must reproduce the above copyright notice,\n           this list of conditions and the following disclaimer in the documentation\n           and/or other materials provided with the distribution.\n        \n        3. Neither the name of the copyright holder nor the names of its\n           contributors may be used to endorse or promote products derived from\n           this software without specific prior written permission.\n        \n        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\n        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+    "sources": {
+      "Documentation": "https://traitlets.readthedocs.io",
+      "Homepage": "https://github.com/ipython/traitlets",
+      "Source": "https://github.com/ipython/traitlets",
+      "Tracker": "https://github.com/ipython/traitlets/issues"
+    },
+    "requires": [
+      "myst-parser; extra == \"docs\"",
+      "pydata-sphinx-theme; extra == \"docs\"",
+      "sphinx; extra == \"docs\"",
+      "argcomplete>=3.0.3; python_version < \"3.12\" and extra == \"test\"",
+      "argcomplete>=3.5.2; python_version >= \"3.12\" and extra == \"test\"",
+      "mypy>=2.0; implementation_name != \"pypy\" and extra == \"test\"",
+      "pre-commit; extra == \"test\"",
+      "pytest-mock; extra == \"test\"",
+      "pytest-mypy-testing; implementation_name != \"pypy\" and extra == \"test\"",
+      "pytest<10.0,>=7.0; extra == \"test\""
+    ]
+  },
+  {
+    "name": "typing-extensions",
+    "version": "4.16.0",
+    "wheel": "typing_extensions-4.16.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+    "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+    "bytes": 45571,
+    "license": "PSF-2.0",
+    "sources": {
+      "Bug Tracker": "https://github.com/python/typing_extensions/issues",
+      "Changes": "https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+      "Documentation": "https://typing-extensions.readthedocs.io/",
+      "Home": "https://github.com/python/typing_extensions",
+      "Q & A": "https://github.com/python/typing/discussions",
+      "Repository": "https://github.com/python/typing_extensions"
+    },
+    "requires": null
+  },
+  {
+    "name": "typing-inspection",
+    "version": "0.4.4",
+    "wheel": "typing_inspection-0.4.4-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl",
+    "sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147",
+    "bytes": 14750,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/pydantic/typing-inspection/blob/main/HISTORY.md",
+      "Documentation": "https://pydantic.github.io/typing-inspection/dev/",
+      "Homepage": "https://github.com/pydantic/typing-inspection",
+      "Source": "https://github.com/pydantic/typing-inspection"
+    },
+    "requires": [
+      "typing-extensions>=4.15.0"
+    ]
+  },
+  {
+    "name": "urllib3",
+    "version": "2.8.0",
+    "wheel": "urllib3-2.8.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/92/9d/c4e665119135114480843e7ab388fa94d8480650450e6f8e26b70d323a4c/urllib3-2.8.0-py3-none-any.whl",
+    "sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3",
+    "bytes": 135717,
+    "license": "MIT",
+    "sources": {
+      "Changelog": "https://github.com/urllib3/urllib3/blob/main/CHANGES.rst",
+      "Code": "https://github.com/urllib3/urllib3",
+      "Documentation": "https://urllib3.readthedocs.io",
+      "Issue tracker": "https://github.com/urllib3/urllib3/issues",
+      "Security policy": "https://urllib3.readthedocs.io/en/latest/security.html"
+    },
+    "requires": [
+      "brotli>=1.2.0; platform_python_implementation == \"CPython\" and extra == \"brotli\"",
+      "brotlicffi>=1.2.0.0; platform_python_implementation != \"CPython\" and extra == \"brotli\"",
+      "h2<5,>=4; extra == \"h2\"",
+      "pysocks!=1.5.7,<2.0,>=1.5.6; extra == \"socks\"",
+      "backports-zstd>=1.0.0; python_version < \"3.14\" and extra == \"zstd\""
+    ]
+  },
+  {
+    "name": "wcwidth",
+    "version": "0.9.3",
+    "wheel": "wcwidth-0.9.3-cp310-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/5b/6e/46363d972b2b9f002fbfc3bf8e9ab0ff89f139c935a5f21d22016e7a2018/wcwidth-0.9.3-cp310-abi3-win_amd64.whl",
+    "sha256": "569a0cdb826d3097b6dbacfaa45aa0002d72a2ba6fa8a63251ea43ac4dd7b6a4",
+    "bytes": 597685,
+    "license": null,
+    "sources": {
+      "Homepage": "https://github.com/jquast/wcwidth"
+    },
+    "requires": null
+  },
+  {
+    "name": "werkzeug",
+    "version": "3.1.9",
+    "wheel": "werkzeug-3.1.9-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/a1/38/df03f564f43cec2684823f3cccae1a652ee7face1cbaa76fb223096e64d7/werkzeug-3.1.9-py3-none-any.whl",
+    "sha256": "6392e50c78460ba618e5b21f08a71f59c99ce99cdc6cf6e3dd7e6ccca8754fab",
+    "bytes": 228700,
+    "license": "BSD-3-Clause",
+    "sources": {
+      "Changes": "https://werkzeug.palletsprojects.com/page/changes/",
+      "Chat": "https://discord.gg/pallets",
+      "Documentation": "https://werkzeug.palletsprojects.com/",
+      "Donate": "https://palletsprojects.com/donate",
+      "Source": "https://github.com/pallets/werkzeug/"
+    },
+    "requires": [
+      "markupsafe>=2.1.1",
+      "watchdog>=2.3; extra == \"watchdog\""
+    ]
+  },
+  {
+    "name": "widgetsnbextension",
+    "version": "4.0.16",
+    "wheel": "widgetsnbextension-4.0.16-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/34/95/40e17e20046b7bc820d29d09ae84ec157ec8dd6e6f6cd722626292c31b2e/widgetsnbextension-4.0.16-py3-none-any.whl",
+    "sha256": "a31a8774885b96fe825462f5d6496166f0c7cae111195b6465c801d230eb5a4e",
+    "bytes": 2225148,
+    "license": "BSD 3-Clause License",
+    "sources": {
+      "Homepage": "http://jupyter.org"
+    },
+    "requires": null
+  },
+  {
+    "name": "zipp",
+    "version": "4.1.1",
+    "wheel": "zipp-4.1.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/b5/98/df615823cd9419131ce19fba00de53a663794369e198aade064a244b385d/zipp-4.1.1-py3-none-any.whl",
+    "sha256": "8979f52d874162f485ff2981e3891f3a3317b7a3dd43ff1e1775b9304f307a9c",
+    "bytes": 10582,
+    "license": "MIT",
+    "sources": {
+      "Source": "https://github.com/jaraco/zipp"
+    },
+    "requires": [
+      "pytest!=8.1.*,>=6; extra == \"test\"",
+      "jaraco.itertools; extra == \"test\"",
+      "jaraco.functools; extra == \"test\"",
+      "more_itertools; extra == \"test\"",
+      "big-O; extra == \"test\"",
+      "pytest-ignore-flaky; extra == \"test\"",
+      "jaraco.test; extra == \"test\"",
+      "sphinx>=3.5; extra == \"doc\"",
+      "jaraco.packaging>=9.3; extra == \"doc\"",
+      "rst.linker>=1.9; extra == \"doc\"",
+      "furo; extra == \"doc\"",
+      "sphinx-lint; extra == \"doc\"",
+      "jaraco.tidelift>=1.4; extra == \"doc\"",
+      "pytest-checkdocs>=2.14; extra == \"check\"",
+      "pytest-ruff>=0.2.1; sys_platform != \"cygwin\" and extra == \"check\"",
+      "pytest-cov; extra == \"cover\"",
+      "pytest-enabler>=3.4; extra == \"enabler\"",
+      "pytest-mypy>=1.0.1; platform_python_implementation != \"PyPy\" and extra == \"type\""
+    ]
+  }
+]

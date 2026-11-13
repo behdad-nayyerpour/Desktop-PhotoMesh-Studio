@@ -1,0 +1,3565 @@
+[
+  {
+    "path": "tools/glomap/bin/amd.dll",
+    "version": {},
+    "sha256": "a448b99d512b564227af28c5a34f2163b4657c78036f939d1507e84a93664629"
+  },
+  {
+    "path": "tools/glomap/bin/boost_atomic-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "a3da4868bc6aef21e5654b48292829601dae37a141f190ffcc3dce7d1d94729d"
+  },
+  {
+    "path": "tools/glomap/bin/boost_chrono-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "d55238fce7a4ada75361a5e87b228ec9e91ed59279bb7b378d9b9c33f47d051c"
+  },
+  {
+    "path": "tools/glomap/bin/boost_container-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "a8cde8b7b15bd1185635b7b8331ecbdcaed412a57cff6fe300363657db071bcf"
+  },
+  {
+    "path": "tools/glomap/bin/boost_date_time-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "0f8d3a4691fa43b0aaf4f1323b79b822c288a97a1570f6b1d9d8fbc9ee1d0fe7"
+  },
+  {
+    "path": "tools/glomap/bin/boost_filesystem-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "83423f96dab05c7bb57c58d92b881f355f25ef5b9c59cbc4f7e93ab8c3879299"
+  },
+  {
+    "path": "tools/glomap/bin/boost_graph-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "d4ede93ec76252c37f5b3632c5127d45b765b6b7d111f7ecb4f4fa02191a24bf"
+  },
+  {
+    "path": "tools/glomap/bin/boost_program_options-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "82f21a8807281376f1de971e34d587283d9cbf4e4bf923a3ac34d3018668faab"
+  },
+  {
+    "path": "tools/glomap/bin/boost_random-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "998c9f50040ab895a463316934918c583437120689d7bed4e53fd9c195c20a8d"
+  },
+  {
+    "path": "tools/glomap/bin/boost_serialization-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "e5c35ab6367b4912c45b1464a3eeea5bb9add1ed7bbfa3f87aa534f203d94089"
+  },
+  {
+    "path": "tools/glomap/bin/boost_system-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "25e752ad0bcdd284f50375c60acfe90782c205385d7df6b4b220a28bab89e00c"
+  },
+  {
+    "path": "tools/glomap/bin/boost_thread-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "9f7409642bdada984e309a2446482525b6d0ef7a596836c0d7f8b4316c262ce8"
+  },
+  {
+    "path": "tools/glomap/bin/boost_wserialization-vc143-mt-x64-1_88.dll",
+    "version": {},
+    "sha256": "4936e7d1e1e58d57bbd8d7c13cf6c289547bdea2ef4925f3c9a5c7a12646797b"
+  },
+  {
+    "path": "tools/glomap/bin/btf.dll",
+    "version": {},
+    "sha256": "5203db64eef8be344773186a7303f8b0595afc8105d975b791e1aab5e43315a2"
+  },
+  {
+    "path": "tools/glomap/bin/camd.dll",
+    "version": {},
+    "sha256": "34d90760b7855471d4b91c1480de8498bd386b7e1c364ec9665e0284a8c69a22"
+  },
+  {
+    "path": "tools/glomap/bin/ccolamd.dll",
+    "version": {},
+    "sha256": "d41fde851725fae6332b024b4df229a8feb14c00084f1491d7cff31e9baebc7f"
+  },
+  {
+    "path": "tools/glomap/bin/ceres.dll",
+    "version": {},
+    "sha256": "d738534881c7412d45cb7f265f82ff0a66380d697d6b30aaa29a37fbaf00794f"
+  },
+  {
+    "path": "tools/glomap/bin/cholmod.dll",
+    "version": {},
+    "sha256": "27ad04c58ff0a4fe6113104e3d90924308936b462ae44434e27800b4d06a0b85"
+  },
+  {
+    "path": "tools/glomap/bin/colamd.dll",
+    "version": {},
+    "sha256": "c219b7c541239716393148c1a53ff752889db0a7ebd5eddf85e5552060c57c65"
+  },
+  {
+    "path": "tools/glomap/bin/cxsparse.dll",
+    "version": {},
+    "sha256": "5b46cc547ddcbcff3d9447c74b3acecd4059972f7959009f7eb5fef4fb84e9c9"
+  },
+  {
+    "path": "tools/glomap/bin/deflate.dll",
+    "version": {},
+    "sha256": "e1cb167b19cfe28df8b766ae48422889c15c85f835be536fb36dbb129e22b134"
+  },
+  {
+    "path": "tools/glomap/bin/flann.dll",
+    "version": {},
+    "sha256": "424c2d43b58cdd477d4bf9da45251e9dc3cd2e2d141b894702c329e43c5859f1"
+  },
+  {
+    "path": "tools/glomap/bin/flann_cpp.dll",
+    "version": {},
+    "sha256": "9b537738897e4fd5f104a8268080f8cb997edea6945c686538a147971150a98d"
+  },
+  {
+    "path": "tools/glomap/bin/FreeImage.dll",
+    "version": {
+      "Comments": "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications.",
+      "CompanyName": "FreeImage",
+      "FileDescription": "FreeImage library",
+      "FileVersion": "3, 18, 0, 0",
+      "InternalName": "FreeImage",
+      "LegalCopyright": "Copyright \ufffd 2003-2018 by FreeImage",
+      "LegalTrademarks": "See http://freeimage.sourceforge.net",
+      "OriginalFilename": "FreeImage.dll",
+      "PrivateBuild": "",
+      "ProductName": "FreeImage",
+      "ProductVersion": "3, 18, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "d4baa6deab21defb61f1c8e4b68728f1c44b2a069c0436de6084215effad32cb"
+  },
+  {
+    "path": "tools/glomap/bin/FreeImagePlus.dll",
+    "version": {
+      "Comments": "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications.",
+      "CompanyName": "FreeImage",
+      "FileDescription": "FreeImagePlus library",
+      "FileVersion": "3, 18, 0, 0",
+      "InternalName": "FreeImagePlus",
+      "LegalCopyright": "Copyright \ufffd 2003-2018 by FreeImage",
+      "LegalTrademarks": "See http://freeimage.sourceforge.net",
+      "OriginalFilename": "FreeImagePlus.dll",
+      "PrivateBuild": "",
+      "ProductName": "FreeImagePlus",
+      "ProductVersion": "3, 18, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "4bf1b566999de3ba3c9812d5167ada87905546db1c2a33191145e28189caa0a5"
+  },
+  {
+    "path": "tools/glomap/bin/gflags.dll",
+    "version": {},
+    "sha256": "0ff42ec24c81e0b62eb470947d99cb5eefae252a0880c1a542f86f48865fba92"
+  },
+  {
+    "path": "tools/glomap/bin/glog.dll",
+    "version": {},
+    "sha256": "d3395f7871d5e9a4e5fa4108663ad949860ee869c1d54a9ea1465d913e3cccf1"
+  },
+  {
+    "path": "tools/glomap/bin/glomap.exe",
+    "version": {},
+    "sha256": "6f586de5eddc3aec019a173d85ac8a0e722bb9e688c71d7b6bc18e107f899c3e",
+    "help": "GLOMAP -- Global Structure-from-Motion\r\n\r\nThis version was NOT compiled CUDA!\r\n\r\nUsage:\r\n  glomap mapper --database_path DATABASE --output_path MODEL\r\n  glomap mapper_resume --input_path MODEL_INPUT --output_path MODEL_OUTPUT\r\nAvailable commands:\r\n  help\r\n  mapper\r\n  mapper_resume\r\n  rotation_averager\r\n\r\n",
+    "help_exit_code": 0
+  },
+  {
+    "path": "tools/glomap/bin/gmock.dll",
+    "version": {},
+    "sha256": "dc686176da923f4b9ba28251bace8a39ace34b4b534f4de4a496f82389aa591e"
+  },
+  {
+    "path": "tools/glomap/bin/gmock_main.dll",
+    "version": {},
+    "sha256": "40d808fde530a084c87043a5f8f30e7b64fafb34af7908aee5b1f00c320820ac"
+  },
+  {
+    "path": "tools/glomap/bin/gmp-10.dll",
+    "version": {},
+    "sha256": "17ef043dfe5250bc013cb74f5dfa7be9e882962121cc1b6c28437b50b95de8ed"
+  },
+  {
+    "path": "tools/glomap/bin/gmpxx-4.dll",
+    "version": {},
+    "sha256": "40a9b355afd90d9777a35158b0db5846b63c156525e490775433ccf52d5879ee"
+  },
+  {
+    "path": "tools/glomap/bin/graphblas.dll",
+    "version": {},
+    "sha256": "bdae45dcf3ead18b8778e12ba564e55c96cfcff29fa4fb0976b7e21af6d7a034"
+  },
+  {
+    "path": "tools/glomap/bin/gtest.dll",
+    "version": {},
+    "sha256": "3895c53f71fa16ab7d00743a4417e731cc0ed03de92a01e1b2a0435a9a9c3fe3"
+  },
+  {
+    "path": "tools/glomap/bin/gtest_main.dll",
+    "version": {},
+    "sha256": "1124787cfcb9c00be7913cfba7e922766a5b3efcbe21bd87ce381b37834139d9"
+  },
+  {
+    "path": "tools/glomap/bin/Iex-3_3.dll",
+    "version": {},
+    "sha256": "a59e3efdef85f1adfab50895245b47df43b0d64d03deff4fafb9d6df469ad3d7"
+  },
+  {
+    "path": "tools/glomap/bin/IlmThread-3_3.dll",
+    "version": {},
+    "sha256": "f0ddd17c81e6b38299c120aa39bf2fc221f1224750eef41530bfdb56087ebe50"
+  },
+  {
+    "path": "tools/glomap/bin/Imath-3_1.dll",
+    "version": {},
+    "sha256": "4143df3701185d533fa8112afc94a8222024312835a98130294815adf8cf0292"
+  },
+  {
+    "path": "tools/glomap/bin/jasper.dll",
+    "version": {},
+    "sha256": "f64219d181cc1ec6b9daf17ae0cde7a362d281d3a0a0da838218c4c8e817266e"
+  },
+  {
+    "path": "tools/glomap/bin/jpeg62.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "libjpeg API DLL",
+      "FileVersion": "62,4,0,0",
+      "ProductVersion": "3.1.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "jpeg62",
+      "LegalCopyright": "Copyright \u00a9 1991-2024 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "jpeg62.dll"
+    },
+    "sha256": "b33444b9ddc1605bc26cf9da0c02ab59d207e9df094ba029ec485f145112a500"
+  },
+  {
+    "path": "tools/glomap/bin/klu.dll",
+    "version": {},
+    "sha256": "b649a954326f21a158288339d2939d622f748705384153ca4ff3e1ce185a9a42"
+  },
+  {
+    "path": "tools/glomap/bin/lagraph.dll",
+    "version": {},
+    "sha256": "5140b95cb2f2ced93f1daaf918ff952c5c4865ab7d640a08e2a61c79c5966935"
+  },
+  {
+    "path": "tools/glomap/bin/lagraphx.dll",
+    "version": {},
+    "sha256": "8dd254820366e3bfea3d6db31007e0f5018302f630670726501ebfbe9413be6e"
+  },
+  {
+    "path": "tools/glomap/bin/lcms2-2.dll",
+    "version": {
+      "CompanyName": "Marti Maria",
+      "FileDescription": "lcms color engine",
+      "FileVersion": "2.17",
+      "InternalName": "lcms2",
+      "LegalCopyright": "Copyright (C) Marti Maria 2025",
+      "OriginalFilename": "lcms2.dll",
+      "ProductName": "LittleCMS color engine",
+      "ProductVersion": "2.17"
+    },
+    "sha256": "fd220c25b31e3d74c74422ac59f4b5d4672795b78c937e515ec2ec659df707da"
+  },
+  {
+    "path": "tools/glomap/bin/ldl.dll",
+    "version": {},
+    "sha256": "3a233472b15f8caee056d325c9c3a80c4d75f2054fe4ad8da7abb60d81a06558"
+  },
+  {
+    "path": "tools/glomap/bin/libgcc_s_seh-1.dll",
+    "version": {},
+    "sha256": "0e057fccb0e7656bd096bf25a4714e74245ea02b644dafcc2106f8c524fcc535"
+  },
+  {
+    "path": "tools/glomap/bin/libgfortran-5.dll",
+    "version": {},
+    "sha256": "8b70ea396b02ab23933ff4d43cc961465447a1b3b0634910841ba9208e785023"
+  },
+  {
+    "path": "tools/glomap/bin/liblapack.dll",
+    "version": {},
+    "sha256": "8e2da3a9851cc57cff67871d480e477864d206f439ebafbf9da393c482a2975c"
+  },
+  {
+    "path": "tools/glomap/bin/liblzma.dll",
+    "version": {
+      "CompanyName": "The Tukaani Project <https://tukaani.org/>",
+      "FileDescription": "liblzma data compression library",
+      "FileVersion": "5.8.1",
+      "InternalName": "liblzma",
+      "OriginalFilename": "liblzma.dll",
+      "ProductName": "XZ Utils <https://tukaani.org/xz/>",
+      "ProductVersion": "5.8.1"
+    },
+    "sha256": "bce90d1ec88eb04495da6e55a431cc1eb06bcb01962e19822a653ab723554217"
+  },
+  {
+    "path": "tools/glomap/bin/libpng16.dll",
+    "version": {},
+    "sha256": "8b052bb13df09c575c38997d079e30c9f9a0c265df83c6956471768dec6995e0"
+  },
+  {
+    "path": "tools/glomap/bin/libquadmath-0.dll",
+    "version": {},
+    "sha256": "cb9b8e358f8b32cff07c1dc3125da48e8089202f405f92b9f70d144896720056"
+  },
+  {
+    "path": "tools/glomap/bin/libsharpyuv.dll",
+    "version": {},
+    "sha256": "58d6d621439ec11440439352c6e6b6d0e5f1171ce320f5cafe60ca70b1528be4"
+  },
+  {
+    "path": "tools/glomap/bin/libwebp.dll",
+    "version": {},
+    "sha256": "ce910c239e304c7dbda478983da7e3d267763323ea87d967756e8557421b426b"
+  },
+  {
+    "path": "tools/glomap/bin/libwebpdecoder.dll",
+    "version": {},
+    "sha256": "987a887a9529ed122cb94c1a5c7aee4a3f98155435cb20f5a02a7984f9ffb14b"
+  },
+  {
+    "path": "tools/glomap/bin/libwebpdemux.dll",
+    "version": {},
+    "sha256": "dacd12f0bdf911b1e17ebcf5df920a2bff11d4a662394d6fef33a22c23080f92"
+  },
+  {
+    "path": "tools/glomap/bin/libwebpmux.dll",
+    "version": {},
+    "sha256": "09155ada76227bd4787342958abee03220be972db2fe2ce6e2a7cf2e72feee7a"
+  },
+  {
+    "path": "tools/glomap/bin/libwinpthread-1.dll",
+    "version": {
+      "FileDescription": "POSIX WinThreads for Windows",
+      "ProductVersion": "1, 0, 0, 0",
+      "FileVersion": "1, 0, 0, 0",
+      "InternalName": "WinPthreadGC",
+      "OriginalFilename": "WinPthreadGC",
+      "CompanyName": "MinGW-W64 Project. All rights reserved.",
+      "LegalCopyright": "Copyright (C) MinGW-W64 Project Members 2010-2023",
+      "Licence": "MIT AND BSD-3-Clause",
+      "Info": "https://www.mingw-w64.org/",
+      "Comment": "GNU C build -- MinGW-w64 64-bit"
+    },
+    "sha256": "c67464b985a2f6edd541e5824193315640397c7cd60e09d024cfcaa4ad77c949"
+  },
+  {
+    "path": "tools/glomap/bin/lz4.dll",
+    "version": {},
+    "sha256": "ca25641f111491b1663f6974e3894dabb281446eeb7597e4a809d2659f17523b"
+  },
+  {
+    "path": "tools/glomap/bin/mpfr-6.dll",
+    "version": {},
+    "sha256": "2d27e4f87b8eea7a3ac06e3216e8dbac985755b2594526b385aefc83528077a6"
+  },
+  {
+    "path": "tools/glomap/bin/openblas.dll",
+    "version": {},
+    "sha256": "0615b8aa113930f05a442735fad0d5233a8fff7f462c02fe6e4fbefcdee42cfd"
+  },
+  {
+    "path": "tools/glomap/bin/OpenEXR-3_3.dll",
+    "version": {},
+    "sha256": "f76ecfb77770586801bfeae7915bf4c33d4115595e975ba00d31b39f0b481c1f"
+  },
+  {
+    "path": "tools/glomap/bin/OpenEXRCore-3_3.dll",
+    "version": {},
+    "sha256": "aba5dbc21641c19243e4e83675295ea72fb7be256facd1d303635cada696fffb"
+  },
+  {
+    "path": "tools/glomap/bin/OpenEXRUtil-3_3.dll",
+    "version": {},
+    "sha256": "0cab5ce9be617d13d7c30845d7f477593b70106c6010ed5fe0585b250732047e"
+  },
+  {
+    "path": "tools/glomap/bin/openjp2.dll",
+    "version": {},
+    "sha256": "fb70628a524772d09de8cffb88028c8db33a8617cdcf85f7e3631cf97d01835a"
+  },
+  {
+    "path": "tools/glomap/bin/raw.dll",
+    "version": {},
+    "sha256": "d5f3e6f086400177ed751c35f0e75cf5f5798bca19c5962bc1b789364e199d41"
+  },
+  {
+    "path": "tools/glomap/bin/raw_r.dll",
+    "version": {},
+    "sha256": "d06c65a8b098b394be7f9cf8b2f3a3f9a1f0c2da3e8c05de8347712da28f9bd3"
+  },
+  {
+    "path": "tools/glomap/bin/spex.dll",
+    "version": {},
+    "sha256": "2081364d25d0c5bfdd772a2926dcf27e2746acaaaeab1d181a157611f1d4c294"
+  },
+  {
+    "path": "tools/glomap/bin/spexpython.dll",
+    "version": {},
+    "sha256": "f25d0b2177bc37413cfcfb390b55c6dcb84a36c78804a0ca79910b394ff542b7"
+  },
+  {
+    "path": "tools/glomap/bin/spqr.dll",
+    "version": {},
+    "sha256": "2d9a89cb8733b8669d2462d203ef591f90e48ac3232ebbb251e998dda20d165f"
+  },
+  {
+    "path": "tools/glomap/bin/sqlite3.dll",
+    "version": {
+      "CompanyName": "SQLite Development Team",
+      "FileDescription": "SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine.",
+      "FileVersion": "3.49.1",
+      "InternalName": "sqlite3",
+      "LegalCopyright": "http://www.sqlite.org/copyright.html",
+      "ProductName": "SQLite",
+      "ProductVersion": "3.49.1",
+      "SourceId": "2025-02-18 13:38:58 873d4e274b4988d260ba8354a9718324a1c26187a4ab4c1cc0227c03d0f10e70"
+    },
+    "sha256": "f0fbec6ef6fc2bb8e35ae9b7f7cf39f71b6b0727a56c9a0445d9b7359df8b4b4"
+  },
+  {
+    "path": "tools/glomap/bin/suitesparseconfig.dll",
+    "version": {},
+    "sha256": "55144f05062006eb0a8d02263480c146f697f43e87a0c864d6fb5977d5859164"
+  },
+  {
+    "path": "tools/glomap/bin/tiff.dll",
+    "version": {
+      "CompanyName": "libtiff project",
+      "FileDescription": "TIFF Library",
+      "FileVersion": "4.7.0",
+      "InternalName": "tiff.dll",
+      "LegalCopyright": "See LICENCE.md",
+      "OriginalFilename": "tiff.dll",
+      "ProductName": "LibTIFF",
+      "ProductVersion": "4.7.0",
+      "WebPage": "https://libtiff.gitlab.io/libtiff/"
+    },
+    "sha256": "d88634742df145f7c69e0c20902c038e22fc33901751f303510a5f0ca9a56028"
+  },
+  {
+    "path": "tools/glomap/bin/turbojpeg.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "TurboJPEG API DLL",
+      "FileVersion": "0,4,0,0",
+      "ProductVersion": "3.1.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "turbojpeg",
+      "LegalCopyright": "Copyright \u00a9 1991-2024 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "turbojpeg.dll"
+    },
+    "sha256": "469734d36fe559c175e4b58538ae5a90273d5b5342e2f2f32baa428795b565d8"
+  },
+  {
+    "path": "tools/glomap/bin/zlib1.dll",
+    "version": {
+      "FileDescription": "zlib data compression library",
+      "FileVersion": "1.3.1",
+      "InternalName": "zlib1.dll",
+      "LegalCopyright": "(C) 1995-2022 Jean-loup Gailly & Mark Adler",
+      "OriginalFilename": "zlib1.dll",
+      "ProductName": "zlib",
+      "ProductVersion": "1.3.1",
+      "Comments": "For more information visit http://www.zlib.net/"
+    },
+    "sha256": "4282a16055bee177bbb8108bc3b5f07745f99eec7e4d2c0748e676ebea9ab5ca"
+  },
+  {
+    "path": "tools/colmap-legacy/bin/colmap.exe",
+    "version": {},
+    "sha256": "c34cc5d339219848a462593c4f2459e134aff4952a1fe3955ccded82180f2615",
+    "help": "COLMAP 3.8 -- Structure-from-Motion and Multi-View Stereo\r\n              (Commit 45edd3dfde0d945d305de3f299f3c36ae098620c on 2023-02-03 with CUDA)\r\n\r\nUsage:\r\n  colmap [command] [options]\r\n\r\nDocumentation:\r\n  https://colmap.github.io/\r\n\r\nExample usage:\r\n  colmap help [ -h, --help ]\r\n  colmap gui\r\n  colmap gui -h [ --help ]\r\n  colmap automatic_reconstructor -h [ --help ]\r\n  colmap automatic_reconstructor --image_path IMAGES --workspace_path WORKSPACE\r\n  colmap feature_extractor --image_path IMAGES --database_path DATABASE\r\n  colmap exhaustive_matcher --database_path DATABASE\r\n  colmap mapper --image_path IMAGES --database_path DATABASE --output_path MODEL\r\n  ...\r\n\r\nAvailable commands:\r\n  help\r\n  gui\r\n  automatic_reconstructor\r\n  bundle_adjuster\r\n  color_extractor\r\n  database_cleaner\r\n  database_creator\r\n  database_merger\r\n  delaunay_mesher\r\n  exhaustive_matcher\r\n  feature_extractor\r\n  feature_importer\r\n  hierarchical_mapper\r\n  image_deleter\r\n  image_filterer\r\n  image_rectifier\r\n  image_registrator\r\n  image_undistorter\r\n  image_undistorter_standalone\r\n  mapper\r\n  matches_importer\r\n  model_aligner\r\n  model_analyzer\r\n  model_comparer\r\n  model_converter\r\n  model_cropper\r\n  model_merger\r\n  model_orientation_aligner\r\n  model_splitter\r\n  model_transformer\r\n  patch_match_stereo\r\n  point_filtering\r\n  point_triangulator\r\n  poisson_mesher\r\n  project_generator\r\n  rig_bundle_adjuster\r\n  sequential_matcher\r\n  spatial_matcher\r\n  stereo_fusion\r\n  transitive_matcher\r\n  vocab_tree_builder\r\n  vocab_tree_matcher\r\n  vocab_tree_retriever\r\n\r\n",
+    "help_exit_code": 0
+  },
+  {
+    "path": "tools/colmap-legacy/lib/boost_filesystem-vc142-mt-x64-1_81.dll",
+    "version": {},
+    "sha256": "9549f1ea70b15d3adee466d7329b943ed9f9e21887eb76eaccc063a91eb029d2"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/boost_program_options-vc142-mt-x64-1_81.dll",
+    "version": {},
+    "sha256": "5b95f1ccd67cc7d73ed629d8e6bfdf5c9087dd33784acf6d7e8b5d1ed472cd5b"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/brotlicommon.dll",
+    "version": {},
+    "sha256": "57b4e1bed1c5047185d946710ecb0b502cc240259ad9151dd27f2d935a6a5927"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/brotlidec.dll",
+    "version": {},
+    "sha256": "a14a922d079c54ec2e7840d8b82ba2327bb197e3ca4eb91001d73556312c1406"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/bz2.dll",
+    "version": {},
+    "sha256": "6cdde59f1f45e920f36d2a758f68781eb096b43b1c50006c71a04c283b2a538c"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/ceres.dll",
+    "version": {},
+    "sha256": "3fbba668cd465ce04d5295f740daa8a97948d5d09a59dffcbdbc579baa5934be"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/cudart64_110.dll",
+    "version": {
+      "CompanyName": "NVIDIA Corporation",
+      "FileDescription": "NVIDIA CUDA Runtime, Version 11.8.89 ",
+      "FileVersion": "6,14,11,11080",
+      "InternalName": "CUDART",
+      "LegalCopyright": "Copyright \u00a9 NVIDIA Corporation 1993 - 2021",
+      "OriginalFilename": "CUDART64_118_89.DLL",
+      "ProductName": "NVIDIA CUDA 11.8.89 Runtime",
+      "ProductVersion": "6,14,11,11080"
+    },
+    "sha256": "ba5c2fb526c4ee4bb218ceb3fa5e8bfde89ce474f38711fdcce802549bf9fc6f"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/curand64_10.dll",
+    "version": {
+      "CompanyName": "NVIDIA Corporation",
+      "FileDescription": "NVIDIA CUDA RAND Library, Version 10.3.0.86 ",
+      "FileVersion": "6,14,11,1030",
+      "InternalName": "CURAND",
+      "LegalCopyright": "Copyright \u00a9 NVIDIA Corporation 2010 - 2021",
+      "OriginalFilename": "CURAND.DLL",
+      "ProductName": "NVIDIA CUDA RAND Library",
+      "ProductVersion": "6,14,11,1030"
+    },
+    "sha256": "047867bb615b0bfa986d237bf4cc1b78cf24065297863d1f730ae0b5398add2e"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/double-conversion.dll",
+    "version": {},
+    "sha256": "597654a4a16e169514b9794b4a6723fba589eb1d8b55e9d29d5889445847773d"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/FreeImage.dll",
+    "version": {
+      "Comments": "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications.",
+      "CompanyName": "FreeImage",
+      "FileDescription": "FreeImage library",
+      "FileVersion": "3, 18, 0, 0",
+      "InternalName": "FreeImage",
+      "LegalCopyright": "Copyright \ufffd 2003-2018 by FreeImage",
+      "LegalTrademarks": "See http://freeimage.sourceforge.net",
+      "OriginalFilename": "FreeImage.dll",
+      "PrivateBuild": "",
+      "ProductName": "FreeImage",
+      "ProductVersion": "3, 18, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "071f637ee6910c7e709a8346b82016591aecae740c2f42aae4e69e73eb0f4477"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/freetype.dll",
+    "version": {
+      "CompanyName": "The FreeType Project",
+      "FileDescription": "Font Rendering Library",
+      "FileVersion": "2.12.1",
+      "ProductName": "FreeType",
+      "ProductVersion": "2.12.1",
+      "LegalCopyright": "\ufffd 2000-2022 The FreeType Project www.freetype.org. All rights reserved.",
+      "InternalName": "freetype",
+      "OriginalFilename": "freetype.dll"
+    },
+    "sha256": "04ccf83d65b565fb2872ab89e14ea30979adfbd63e381604dbbe178883e561ba"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/gflags.dll",
+    "version": {},
+    "sha256": "fc67925d2f26f122daa870cee3c02c5d91c766583fa3ce90f54177bb988f6a44"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/glew32.dll",
+    "version": {
+      "Comments": "The OpenGL Extension Wrangler Library\r\nCopyright (C) 2008-2019, Nigel Stewart <nigels[]users sourceforge net>\r\nCopyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>\r\nCopyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>\r\nCopyright (C) 2002, Lev Povalahev\r\nAll rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without \r\nmodification, are permitted provided that the following conditions are met:\r\n\r\n* Redistributions of source code must retain the above copyright notice, \r\n  this list of conditions and the following disclaimer.\r\n* Redistributions in binary form must reproduce the above copyright notice, \r\n  this list of conditions and the following disclaimer in the documentation \r\n  and/or other materials provided with the distribution.\r\n* The name of the author may be used to endorse or promote products \r\n  derived from this software without specific prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ''AS IS'' \r\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE \r\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\nARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE \r\nLIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \r\nCONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF \r\nSUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS\r\nINTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN\r\nCONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)\r\nARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\r\nTHE POSSIBILITY OF SUCH DAMAGE.\r\n\r\n\r\nMesa 3-D graphics library\r\n\r\nVersion:  7.0\r\n\r\nCopyright (C) 1999-2007  Brian Paul   All Rights Reserved.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and associated documentation files (the ''Software''),\r\nto deal in the Software without restriction, including without limitation\r\nthe rights to use, copy, modify, merge, publish, distribute, sublicense,\r\nand/or sell copies of the Software, and to permit persons to whom the\r\nSoftware is furnished to do so, subject to the following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS\r\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\r\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\r\nBRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN\r\nAN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\r\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\r\n\r\n\r\nCopyright (c) 2007 The Khronos Group Inc.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and/or associated documentation files (the\r\n''Materials''), to deal in the Materials without restriction, including\r\nwithout limitation the rights to use, copy, modify, merge, publish,\r\ndistribute, sublicense, and/or sell copies of the Materials, and to\r\npermit persons to whom the Materials are furnished to do so, subject to\r\nthe following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Materials.\r\n\r\nTHE MATERIALS ARE PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND,\r\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\r\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\r\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\r\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\r\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\r\nMATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.",
+      "CompanyName": "",
+      "FileDescription": "The OpenGL Extension Wrangler Library",
+      "FileVersion": "2,2,0,0",
+      "InternalName": "GLEW",
+      "LegalCopyright": "\ufffd 2002-2019 Nigel Stewart & Milan Ikits & Marcelo Magallon",
+      "LegalTrademarks": "",
+      "OriginalFilename": "glew32.dll",
+      "PrivateBuild": "",
+      "ProductName": "The OpenGL Extension Wrangler Library",
+      "ProductVersion": "2,2,0,0",
+      "SpecialBuild": ""
+    },
+    "sha256": "d9897f3ef93cb26ba5cf68f6f9fcca79f365c958f0a700e9361b48253584b5b3"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/glog.dll",
+    "version": {},
+    "sha256": "6e174ff925455b60d440aa88000ee48082795dcd1bd8f623848ab8c8072bb1cc"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/gmp-10.dll",
+    "version": {},
+    "sha256": "9f57db14af0fd91a0c6d1d818320240092a0e4d6f84411af9b579168205723c4"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/harfbuzz.dll",
+    "version": {},
+    "sha256": "fa8f866de522c2873486cc3c8735438bcd108a067839fa1bea5f38ac71f35645"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/icudt72.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Data DLL",
+      "FileVersion": "72, 1, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icudt72.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "72, 1, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "fba941efaf9f95b88f7adf63e90e755dccb5a840323f78160115820ae9fbfd61"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/icuin72.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU I18N DLL",
+      "FileVersion": "72, 1, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuin72.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "72, 1, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "be8904fa446bc3fb7c805fc2634451bf121767b024621ec043be54aeb2688b5a"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/icuuc72.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Common DLL",
+      "FileVersion": "72, 1, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuuc72.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "72, 1, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "2e010b17e412c63d1befeeb2479d3dc50232c0f9d1377d81e1fd8982ad5cd2fa"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Iex-3_1.dll",
+    "version": {},
+    "sha256": "428ad2e7264b5fc3c7456fd5479535a3f073901d2e8eac9a4f8f2f92c3b4bee4"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/IlmThread-3_1.dll",
+    "version": {},
+    "sha256": "77688524c7cfcd7c6dbcf93425ae33367f1b9cace72e88f56abb08816487440f"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Imath-3_1.dll",
+    "version": {},
+    "sha256": "c24ce7b2e6e0c51de59aed6b52cb8ff17d8a4ab526d67bb65b9a005dfe4a9d60"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/jasper.dll",
+    "version": {},
+    "sha256": "60968054cd2d00821f9235323a16e576e10bc1682b206a8443c019e9a83a925e"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/jpeg62.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "libjpeg API DLL",
+      "FileVersion": "62,3,0,0",
+      "ProductVersion": "2.1.4",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "jpeg62",
+      "LegalCopyright": "Copyright \ufffd 1991-2022 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "jpeg62.dll"
+    },
+    "sha256": "59d737da74257675ca41fde659be0a521b85f224e5cc732a769bd259730e8b92"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/lcms2.dll",
+    "version": {},
+    "sha256": "6667f2a65aa93ec327f545cbb713a6cfafb733809d4103ab146aa19f6b20c84c"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libamd.dll",
+    "version": {},
+    "sha256": "a6a5c5e6bcfcb27c03d169fc4eeec91bb5351d4056c4fb0d323972352bc55708"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libcamd.dll",
+    "version": {},
+    "sha256": "64570ed414526cbfd001ee1d4168f52c4ff40f9f3634fc852494a67b19aefbc9"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libccolamd.dll",
+    "version": {},
+    "sha256": "670b8c6e763187377dcb853a2cb69374a9ba9b9601e908e065618bb6f42fe62d"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libcholmod.dll",
+    "version": {},
+    "sha256": "8c474538a5bc3691176874584e4fa30f4c7a9253655c2275652da0dae43bce6f"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libcolamd.dll",
+    "version": {},
+    "sha256": "228ef5af4d9f48010780eca49a56fd3881a24b4d775134695ad0882f5c89fb1e"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libgcc_s_seh-1.dll",
+    "version": {},
+    "sha256": "914de4a2e0d55bc6e4d02538dd53fcdc508486bca7face1c6e30c59f01ee3542"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libgfortran-5.dll",
+    "version": {},
+    "sha256": "a05784cd020bf058369409fc518dec61afb5e2cd03d2337cf42a50b24ebeafa6"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/liblapack.dll",
+    "version": {},
+    "sha256": "57e2c74f8a3cfdb178dc5e35360c5a08625b1c74a41a60b5442370529aa733a4"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/liblzma.dll",
+    "version": {
+      "CompanyName": "The Tukaani Project <https://tukaani.org/>",
+      "FileDescription": "liblzma data compression library",
+      "FileVersion": "5.4.1",
+      "InternalName": "liblzma",
+      "OriginalFilename": "liblzma.dll",
+      "ProductName": "XZ Utils <https://tukaani.org/xz/>",
+      "ProductVersion": "5.4.1"
+    },
+    "sha256": "7caf1009ba922140e25d1cf5c3670c0bdf38f94498ffd37e83afa3611ed05467"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libpng16.dll",
+    "version": {},
+    "sha256": "25a1019558af9debaa4f339a76a9c571dca44cb37db3df32152cac5a1932f304"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libquadmath-0.dll",
+    "version": {},
+    "sha256": "03c03b087001ee804de5d376f7a128662b643434aba31421208f64827fefe42a"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libsharpyuv.dll",
+    "version": {},
+    "sha256": "ebb3fe294aa8c0b00ab67413f4c68c244f367908649278dec0f9835cc99f668c"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libspqr.dll",
+    "version": {},
+    "sha256": "7141fd8b2d451f8fde9570fa0817c00047258c757d857e871ad536a21380e489"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libwebp.dll",
+    "version": {},
+    "sha256": "2f83439ffeb60c48f975595025109794f089ee87c4bfde80375cd79643a67c43"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libwebpdecoder.dll",
+    "version": {},
+    "sha256": "c4b7aa5a4155059a4802d76822c80b8f4d9baa9ee4d083b2fbdc8f9cb967cd35"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libwebpdemux.dll",
+    "version": {},
+    "sha256": "4498801ec8a47ade57e48ace0be9d7d991ba18e89b241db6a6de5bb985c9700d"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libwebpmux.dll",
+    "version": {},
+    "sha256": "901607132c62e22cd1c6bf09c01f3f2df9430c27835407268195e8c0e6ccfdba"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/libwinpthread-1.dll",
+    "version": {
+      "FileDescription": "POSIX WinThreads for Windows",
+      "ProductVersion": "1, 0, 0, 0",
+      "FileVersion": "1, 0, 0, 0",
+      "InternalName": "WinPthreadGC",
+      "OriginalFilename": "WinPthreadGC",
+      "CompanyName": "MingW-W64 Project. All rights reserved.",
+      "LegalCopyright": "Copyright (C) MingW-W64 Project Members 2010-2011",
+      "Licence": "ZPL",
+      "Info": "http://mingw-w64.sourceforge.net/",
+      "Comment": "GNU C build -- MinGW-w64 64-bit"
+    },
+    "sha256": "707e0add151c8d7e150a3fe0ba8c0c562505c3859f687b82de8a1af6c2b3bb73"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/lz4.dll",
+    "version": {},
+    "sha256": "95462b19f111887c99928528999ae7a9f2538c6eb43dfa08e6fe00d437e8e60e"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/openblas.dll",
+    "version": {},
+    "sha256": "dbdc02121301d1cda3473f005ac0455dbf9de1ffc00704435b6c0f0cca561745"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/OpenEXR-3_1.dll",
+    "version": {},
+    "sha256": "36113700692b2bb14f31ed49a3adb8f4ddfd1a50f86ae75847d64a391c7419c1"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/openjp2.dll",
+    "version": {},
+    "sha256": "dcc3b8e3c9aa4282e97fb452c6af1e387edf83897888561f04b85841e5479c46"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/pcre2-16.dll",
+    "version": {},
+    "sha256": "90002b4c563d272abfb1a7f71596ca23daae9dd2a635e80903b292f07f2912d9"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Qt5Core.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "Qt5Core.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "add191be4a1a8d9544c22cd42968c0ff8dd5e9a5cf6e279f79647b59804b06b0"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Qt5Gui.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "Qt5Gui.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "ef43cc61caaeaa03090233a3db3919cc657381fdc9d946614a681c3c4e790f8c"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Qt5Svg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "Qt5Svg.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "4025fe80d159fddb8e75e6f3731976575f817a2e5aea78416500a9e3fa72b844"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/Qt5Widgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "Qt5Widgets.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "3106cad9a8b2a960b69beb56754344c71d3b4aa1b5173c6d59384ee5bcdee1e2"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/raw.dll",
+    "version": {},
+    "sha256": "7f4f414967316be4b77338cfb6fd09b272ddf9069bbbcd0014eb4d4b344d22fb"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/sqlite3.dll",
+    "version": {},
+    "sha256": "6cba42f6399440086df4e50860831d6ec9ac00026244a171be4104a6ca37e01f"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/tiff.dll",
+    "version": {},
+    "sha256": "06487792b2cc3d378f8efc3167642760b0e479e323226b2709bcca279a78e97f"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/zlib1.dll",
+    "version": {
+      "FileDescription": "zlib data compression library",
+      "FileVersion": "1.2.13",
+      "InternalName": "zlib1.dll",
+      "LegalCopyright": "(C) 1995-2022 Jean-loup Gailly & Mark Adler",
+      "OriginalFilename": "zlib1.dll",
+      "ProductName": "zlib",
+      "ProductVersion": "1.2.13",
+      "Comments": "For more information visit http://www.zlib.net/"
+    },
+    "sha256": "8ba40a74abcd1cff50bd7c7a7afa7e546bca108bc46d9168f42a99f43993d534"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/zstd.dll",
+    "version": {
+      "CompanyName": "Yann Collet, Facebook, Inc.",
+      "FileDescription": "Zstandard - Fast and efficient compression algorithm",
+      "FileVersion": "1.5.2",
+      "InternalName": "libzstd.dll",
+      "LegalCopyright": "Copyright (c) 2013-present, Yann Collet, Facebook, Inc.",
+      "OriginalFilename": "libzstd.dll",
+      "ProductName": "Zstandard",
+      "ProductVersion": "1.5.2"
+    },
+    "sha256": "581f0a5efd99a2868bb3cbfd9dec8cc7d3d098e017da81a4dbf66428a8f2ab48"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/iconengines/qsvgicon.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qsvgicon.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "627850aea529b076401e4d85badb0adc17d3037c951f7fd5c43623c69fa83cef"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qgif.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qgif.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "7042eb510863d466df77b3dff4aaa1c848b269145abf525ba813e9dbdc3a1356"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qicns.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qicns.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "3a0f1d98d91e08fa3155d299d61ca63a0e9e597156e0a1eca689405c680e94c0"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qico.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qico.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "87c60d249d614c4e0c4497480c32e152cbcd2ef33397d1c9735b77ca20bd0b00"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qjp2.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qjp2.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "9ccb1c3b4d4cd9bbfa0ae71246e78d0d3a2fd7084b325a323b568ebfebc0ae82"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qjpeg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qjpeg.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "5ae13a0d32f7545b1d2517e3b29c0992df1ce668e89bc97ee9c45184b845087c"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qsvg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qsvg.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "39f8a806943d3c5836203c4f4daed2b41e5f55adde31464c3d018ae0df00c5ad"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qtga.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qtga.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "9ed2af8f24724845579ce7808b5f90b5ce11ce904215e572a5dfd16b8b435cd3"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qtiff.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qtiff.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "d69b404ccb5303b87cb04335418ffdf9e33e19925ecabc035e359885c893aa13"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qwbmp.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qwbmp.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "082391587faf716b58e67951804fc423a3e330c3da73872eb5b0681dee760a0d"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/imageformats/qwebp.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qwebp.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "c2958532c7a1921e4f5692afafbc291bd57c04ed41bcad68188d018d3d08eed2"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/platforms/qwindows.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qwindows.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "c6474cecaf37f1588f67ccd820e6784009cb1d97d36cec7ede26978b05dc4a89"
+  },
+  {
+    "path": "tools/colmap-legacy/lib/plugins/styles/qwindowsvistastyle.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "5.15.8.0",
+      "LegalCopyright": "Copyright (C) 2020 The Qt Company Ltd.",
+      "OriginalFilename": "qwindowsvistastyle.dll",
+      "ProductName": "Qt5",
+      "ProductVersion": "5.15.8.0"
+    },
+    "sha256": "1257b7e2dadf1faff14c64e74397b811d2857ec49a2c81be0395692b22d753b7"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/amd.dll",
+    "version": {},
+    "sha256": "15ee215c0583123d3b321c7a1eb65cc73884cd2857f9b5046bcf921c4c9b59ba"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_atomic-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "1a5975df47b16866b5e0ebc8026bd16cb82b7f34d37881f14372a9e8907bfac7"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_chrono-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "0329faeaeda6182b519ead13e6df236b21cfe44b51a38270d2290abf0b55f17a"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_container-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "2d30d93ce496b324c9ce53256459f4d41cddd98587b562868626781de8bb1db0"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_date_time-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "161caa1271a44372af0bce97a744f855df89966a9daab0956cf9f02b3d9d1096"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_filesystem-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "877bd1e058f069ac24aafd58788d931f342774382a9266198be6eba118b2993b"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_graph-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "f0b7cd6b487756b466964564c9ef2f1750be6fea9174edcc59ba03fa54561587"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_iostreams-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "f5496247b78e2234871b254234164e0a46f0cd8a334bc1809acc031fc0b50349"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_program_options-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "c134564fd4a642b7efe26863b46c8b7d26594f8e65033ce5a1c7b9635526a338"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_random-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "5825bc1f0a803d16d4dc274bb322005dfc209441c9078d3204bab753a548a6ef"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_serialization-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "1571a0275485318d23dff9d5677071e714f306b57afea8acbb96bb3f508ba748"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_thread-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "7dc6bd37fb1beb0797614ec75810f38abf94ff57a4a73e48cc2e9fd443c990cb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/boost_wserialization-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "19a2f895222990a3a2e3d0b681c236b14487847258c5a58556f922c8fb2d48ba"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/brotlicommon.dll",
+    "version": {},
+    "sha256": "7b16cd988997316d546844e0a859a6c9d6a5805055f0c7c3ce22e8c1a0c61bd9"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/brotlidec.dll",
+    "version": {},
+    "sha256": "117606fbfc5722747f040a01f9c917eac217dc024290126f81ae0614c3f71763"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/brotlienc.dll",
+    "version": {},
+    "sha256": "3d5fdd11de1d0f4bd49395b889a0f42be351c3e62b87ee91e111323feafc629a"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/bz2.dll",
+    "version": {},
+    "sha256": "a8bee6ad7dfaad3efeee4ccb02121072c59e9bfa15c779c87badcc0b797649e6"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/camd.dll",
+    "version": {},
+    "sha256": "55b1cedf84df2fe8fbb083f24208962cbcfad09786cc0466a2e2309befdf04aa"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/ccolamd.dll",
+    "version": {},
+    "sha256": "bb3262f48c453b03710be62b31fbd684802e27244dbabeb864910cc51fa8906b"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/ceres.dll",
+    "version": {},
+    "sha256": "57f2217c774cbc9f2a7503bc95baa89cb5b4f5dff502864426384452565edffb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/cholmod.dll",
+    "version": {},
+    "sha256": "e3287a728da65a0af02d77f25187f958d2bfbfd3c9b70c906ed88eb998a5adf0"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/colamd.dll",
+    "version": {},
+    "sha256": "8f90895003c75f98c3287e56edd75f4c96f3276066b966168b7a7bbd96de5ead"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/colmap.exe",
+    "version": {},
+    "sha256": "cca7acf7618703b5766e456f1b27940bd4a63ee904960bba78c8ea92a35121dd",
+    "help": "COLMAP 4.2.1 (Commit bd1fcf6 on 2026-09-29 without GPU support, boost hash maps)\r\nUsage:\r\n  colmap [command] [options]\r\nDocumentation:\r\n  https://colmap.github.io/\r\nExample usage:\r\n  colmap help [ -h, --help ]\r\n  colmap gui\r\n  colmap gui -h [ --help ]\r\n  colmap automatic_reconstructor -h [ --help ]\r\n  colmap automatic_reconstructor --image_path IMAGES --workspace_path WORKSPACE\r\n  colmap feature_extractor --image_path IMAGES --database_path DATABASE\r\n  colmap exhaustive_matcher --database_path DATABASE\r\n  colmap mapper --image_path IMAGES --database_path DATABASE --output_path MODEL\r\n  ...\r\nAvailable commands:\r\n  help\r\n  version\r\n  gui\r\n  automatic_reconstructor\r\n  bundle_adjuster\r\n  color_extractor\r\n  database_cleaner\r\n  database_creator\r\n  database_merger\r\n  advancing_front_mesher\r\n  delaunay_mesher\r\n  exhaustive_matcher\r\n  feature_extractor\r\n  feature_importer\r\n  geometric_verifier\r\n  global_mapper\r\n  guided_geometric_verifier\r\n  hierarchical_mapper\r\n  image_deleter\r\n  image_filterer\r\n  image_rectifier\r\n  image_registrator\r\n  image_undistorter\r\n  image_undistorter_standalone\r\n  mapper\r\n  matches_importer\r\n  mesh_simplifier\r\n  mesh_texturer\r\n  model_aligner\r\n  model_analyzer\r\n  model_clusterer\r\n  model_comparer\r\n  model_converter\r\n  model_cropper\r\n  model_merger\r\n  model_orientation_aligner\r\n  model_splitter\r\n  model_transformer\r\n  patch_match_stereo\r\n  point_filtering\r\n  point_triangulator\r\n  pose_prior_mapper\r\n  poisson_mesher\r\n  project_generator\r\n  rig_configurator\r\n  rotation_averager\r\n  sequential_matcher\r\n  spatial_matcher\r\n  stereo_fusion\r\n  transitive_matcher\r\n  view_graph_calibrator\r\n  vocab_tree_builder\r\n  vocab_tree_matcher\r\n  vocab_tree_retriever\r\n\r\n",
+    "help_exit_code": 0
+  },
+  {
+    "path": "tools/colmap-cpu/bin/dbus-1-3.dll",
+    "version": {
+      "Comments": "Provided under the terms of the GNU General Public License >= 2.0 or Academic Free License version 2.1",
+      "CompanyName": "freedesktop.org",
+      "FileDescription": "dbus - FreeDesktop message bus system",
+      "FileVersion": "1.16.2",
+      "InternalName": "dbus-1-3",
+      "LegalCopyright": "Copyright \u00a9 1994-2020 dbus contributors, see dbus source code for details",
+      "LegalTrademarks": "",
+      "OriginalFilename": "dbus-1-3.dll",
+      "ProductName": "dbus",
+      "ProductVersion": "1.16.2",
+      "SpecialBuild": "202609240227"
+    },
+    "sha256": "ddcc9a8bc707b1178c7c815dd60c169d9c6f6cbf717e67ccf58f1a2e659390da"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/deflate.dll",
+    "version": {},
+    "sha256": "cca18173b36f6ba28c91e51822b52ff7642c1232bf328624c4eae63fc1a74b7c"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/double-conversion.dll",
+    "version": {},
+    "sha256": "9d518192305787a890b03ae0f4d5f4e84fc8520d188d673b5eef28a9570c555b"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/fmt.dll",
+    "version": {},
+    "sha256": "d0f6191bd842a6ef0a0c7e3f93ebbd1e021076136e7e9893f44dadfe3971ea34"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/freetype.dll",
+    "version": {
+      "CompanyName": "The FreeType Project",
+      "FileDescription": "Font Rendering Library",
+      "FileVersion": "2.14.3",
+      "ProductName": "FreeType",
+      "ProductVersion": "2.14.3",
+      "LegalCopyright": "\u00a9 2000-2026 The FreeType Project freetype.org. All rights reserved.",
+      "InternalName": "freetype",
+      "OriginalFilename": "freetype.dll"
+    },
+    "sha256": "4cd3292c10db27df626ee1a1ce96c057e97ed969b77b37e89b967631040399a8"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gflags.dll",
+    "version": {},
+    "sha256": "23f92f4a4f46f2b098da295f72d421428c0f50994782b4cc0b7cacc8f119c086"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/glew32.dll",
+    "version": {
+      "Comments": "The OpenGL Extension Wrangler Library\r\nCopyright (C) 2008-2025, Nigel Stewart <nigels[]nigels com>\r\nCopyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>\r\nCopyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>\r\nCopyright (C) 2002, Lev Povalahev\r\nAll rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without \r\nmodification, are permitted provided that the following conditions are met:\r\n\r\n* Redistributions of source code must retain the above copyright notice, \r\n  this list of conditions and the following disclaimer.\r\n* Redistributions in binary form must reproduce the above copyright notice, \r\n  this list of conditions and the following disclaimer in the documentation \r\n  and/or other materials provided with the distribution.\r\n* The name of the author may be used to endorse or promote products \r\n  derived from this software without specific prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ''AS IS'' \r\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE \r\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\nARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE \r\nLIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \r\nCONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF \r\nSUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS\r\nINTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN\r\nCONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)\r\nARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\r\nTHE POSSIBILITY OF SUCH DAMAGE.\r\n\r\n\r\nMesa 3-D graphics library\r\n\r\nVersion:  7.0\r\n\r\nCopyright (C) 1999-2007  Brian Paul   All Rights Reserved.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and associated documentation files (the ''Software''),\r\nto deal in the Software without restriction, including without limitation\r\nthe rights to use, copy, modify, merge, publish, distribute, sublicense,\r\nand/or sell copies of the Software, and to permit persons to whom the\r\nSoftware is furnished to do so, subject to the following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS\r\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\r\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\r\nBRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN\r\nAN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\r\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\r\n\r\n\r\nCopyright (c) 2007 The Khronos Group Inc.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and/or associated documentation files (the\r\n''Materials''), to deal in the Materials without restriction, including\r\nwithout limitation the rights to use, copy, modify, merge, publish,\r\ndistribute, sublicense, and/or sell copies of the Materials, and to\r\npermit persons to whom the Materials are furnished to do so, subject to\r\nthe following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Materials.\r\n\r\nTHE MATERIALS ARE PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND,\r\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\r\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\r\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\r\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\r\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\r\nMATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.",
+      "CompanyName": "",
+      "FileDescription": "The OpenGL Extension Wrangler Library",
+      "FileVersion": "2,3,1,0",
+      "InternalName": "GLEW",
+      "LegalCopyright": "(C) 2002-2019 Nigel Stewart & Milan Ikits & Marcelo Magallon",
+      "LegalTrademarks": "",
+      "OriginalFilename": "glew32.dll",
+      "PrivateBuild": "",
+      "ProductName": "The OpenGL Extension Wrangler Library",
+      "ProductVersion": "2,3,1,0",
+      "SpecialBuild": ""
+    },
+    "sha256": "44bd1c4021b65588824222ffbbac1e6c0d038d65feab1f57174b5951c11ef82d"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/glog.dll",
+    "version": {},
+    "sha256": "8938566a40f9d1fb40cc50bbf8a101da474785bfabad1bb229c177350c1e541d"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gmock.dll",
+    "version": {},
+    "sha256": "bd1f2c76bb36ee7b450095e99e05295e6cf379cced89c87f305b614ca2d6436c"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gmock_main.dll",
+    "version": {},
+    "sha256": "2beb88a977cacb417b89f706d14ba3886c90a04ba2f5de1adc87fc1c1abdb100"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gmp-10.dll",
+    "version": {},
+    "sha256": "a64d9f44ef50c06e92e3422002f4305e48b5f20fa7fb4c2d1f1849e927870ab3"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gmpxx-4.dll",
+    "version": {},
+    "sha256": "b0402ce4dbf9a72bc53d05bb9f3cf82114c8897dd3d8ef00aef352765f1d31ae"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gtest.dll",
+    "version": {},
+    "sha256": "68165d5594a492b75d2e4a9450f0071a7e54dc6fc1bffcc9760d173b3f5970d5"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/gtest_main.dll",
+    "version": {},
+    "sha256": "d81cba6db104e536eaff07a182d837803a724cab92f76bf48932e6be377b27a0"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/harfbuzz-gpu.dll",
+    "version": {},
+    "sha256": "b84066d37d7d5642f4d7b76eb5ea0b924b7bf274753daf32146bd0ee4a9bf594"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/harfbuzz-raster.dll",
+    "version": {},
+    "sha256": "d4fcd0728de289c11c80495d3e195bf120f0c83fcac6e6c81c7f9fec1d68b44e"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/harfbuzz-subset.dll",
+    "version": {},
+    "sha256": "328693f3475939c9de909637c2e1fedf69e941d440218f286fc066e5a8feca0d"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/harfbuzz-vector.dll",
+    "version": {},
+    "sha256": "ef6109295420d44102c92e64521931d2f8a426aa6702ec69566b35725e9a2e74"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/harfbuzz.dll",
+    "version": {},
+    "sha256": "2cd60ebb930a70187717834a7b20d407db551eb0b46427349d241ff44c40b762"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/icudt78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Data DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icudt78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "6deaec9be687f38ba21fbd14048335b259129cb80af7ec212d158dd25f6d46ae"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/icuin78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU I18N DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuin78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "c0c56cb83e450bb6bc8b0801e8c3405dc6aaac27b521bf01baeec7c7a50ca4c3"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/icuio78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU I/O DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuio78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "a8b8e98f92366ff3886ad45ec5b7c22244b8b707b9e4c87a4589835e9d3c4027"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/icutu78.dll",
+    "version": {},
+    "sha256": "ca7e3b2e3aa51088988dba94964446e1aed50e8623e2cef7468925de696859cc"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/icuuc78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Common DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuuc78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "d25050723adfb8ca8ba87c996ed83913d2e826335353e8ac55c39ca6cf3df295"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Iex-3_4.dll",
+    "version": {},
+    "sha256": "be7ff68b98aa033a82bc0d3b19fef81fed4c098fbf814a4314c5f0d1ac32cf28"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/IlmThread-3_4.dll",
+    "version": {},
+    "sha256": "5653d80b618f16867e22e6a4c6653da50f0c96205e2648037113d33a50c05ee5"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Imath-3_2.dll",
+    "version": {},
+    "sha256": "c0c590167ceff962361007742e73ee25b9ab9578437532bb074ad0b7de5c8a9c"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/jasper.dll",
+    "version": {},
+    "sha256": "b28f209da19735b643755e54474a3d0d5871d926c61fcdc1ac173ae0dfb11c01"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/jpeg62.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "libjpeg API DLL",
+      "FileVersion": "62,4,0,0",
+      "ProductVersion": "3.2.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "jpeg62",
+      "LegalCopyright": "Copyright \u00a9 1991-2026 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "jpeg62.dll"
+    },
+    "sha256": "b4452f6cc9d1e858d2f765f1f16a0c3cbe2c05f03d53eae81df0faf13f1e7f48"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/legacy.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "legacy",
+      "OriginalFilename": "legacy",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "4fc1ffe27b5634a897afd0313b23f62144729cd67d78e2a2a5bf3026016ad991"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libcrypto-3-x64.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "libcrypto",
+      "OriginalFilename": "libcrypto",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "fd32c2b5e2fba65ee7161cfffb22631445e7a1e4fa4867483ed2655eeed0b3d3"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libcurl.dll",
+    "version": {
+      "CompanyName": "The curl library, https://curl.se/",
+      "FileDescription": "libcurl Shared Library",
+      "FileVersion": "8.21.0",
+      "InternalName": "libcurl",
+      "OriginalFilename": "libcurl.dll",
+      "ProductName": "The curl library",
+      "ProductVersion": "8.21.0",
+      "LegalCopyright": "Copyright (C) Daniel Stenberg, <daniel@haxx.se>.",
+      "License": "https://curl.se/docs/copyright.html"
+    },
+    "sha256": "df4335de1072e472f3503ba7045487465517f4a5ced5ed6d711474fd9643d325"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libecpg.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "ECPG - embedded SQL in C",
+      "FileVersion": "18.4",
+      "InternalName": "libecpg",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libecpg.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "b5a476b66d114a451380e1b7577c60e7cb1f4963d0ac67f47cd6796e8daa2449"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libecpg_compat.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "ECPG compat - compatibility library for ECPG",
+      "FileVersion": "18.4",
+      "InternalName": "libecpg_compat",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libecpg_compat.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "94cb0dd84298f8446f54218304ae38c04406bf0c064c658b9a833a4d629f46b4"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libexpat.dll",
+    "version": {
+      "FileVersion": "2.8.3.0",
+      "ProductVersion": "2.8.3.0"
+    },
+    "sha256": "f4625f8ed00be63085b1e6897a22a11058276fc102395dbb9e9d3cf0b0fce5bc"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libgcc_s_seh-1.dll",
+    "version": {},
+    "sha256": "2de4355648441db0230a9aba1a149fc829b094f83c14c37ea3f775356d33d8b1"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libgfortran-5.dll",
+    "version": {},
+    "sha256": "780fa163c1f76f75e36171a3da4e80806fd45286fd8bb9eae66cdfcfff5aff4d"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/liblapack.dll",
+    "version": {},
+    "sha256": "0051b9fbcd3aa7c0227f2eaad1d0cd9fbc36af66de87d3a297ad56680e441a8e"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/liblzma.dll",
+    "version": {
+      "CompanyName": "The Tukaani Project <https://tukaani.org/>",
+      "FileDescription": "liblzma data compression library",
+      "FileVersion": "5.8.3",
+      "InternalName": "liblzma",
+      "OriginalFilename": "liblzma.dll",
+      "ProductName": "XZ Utils <https://tukaani.org/xz/>",
+      "ProductVersion": "5.8.3"
+    },
+    "sha256": "ed478fd379b99f0328fa74b0078539f76599159c4593ea1d3cba7d98042c04d9"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libpgtypes.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "pgtypes - library for data type mapping",
+      "FileVersion": "18.4",
+      "InternalName": "pgtypes",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "pgtypes.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "61d84b1741b89acb883bb877591dd9d85c1269819c00a3901684ea01b7e18195"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libpng16.dll",
+    "version": {},
+    "sha256": "402edc49e7f473cafb6eed66d142f8046ffcd15bca78ddca9721fd2dbddecf70"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libpq.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "PostgreSQL Access Library",
+      "FileVersion": "18.4",
+      "InternalName": "libpq",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libpq.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "75b497cdf73a1072e0f7848fb9f733afbf5e7494f69b3d40ae77c65d454d6cbb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libquadmath-0.dll",
+    "version": {},
+    "sha256": "01e0d4de6a6d718968a7e86c4b95972ae1dd00ab35fa43988dae56d1c20d9236"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libssl-3-x64.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "libssl",
+      "OriginalFilename": "libssl",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "d130f133cb4e05026aa91e2acd7d93aed474d4b88925597895040bb550559ff2"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/libwinpthread-1.dll",
+    "version": {
+      "FileDescription": "POSIX WinThreads for Windows",
+      "ProductVersion": "1, 0, 0, 0",
+      "FileVersion": "1, 0, 0, 0",
+      "InternalName": "WinPthreadGC",
+      "OriginalFilename": "WinPthreadGC",
+      "CompanyName": "MinGW-W64 Project. All rights reserved.",
+      "LegalCopyright": "Copyright (C) MinGW-W64 Project Members 2010-2023",
+      "Licence": "MIT AND BSD-3-Clause",
+      "Info": "https://www.mingw-w64.org/",
+      "Comment": "GNU C build -- MinGW-w64 64-bit"
+    },
+    "sha256": "bbbb08e98392ba548f0d9435b69ed79e4a660268f7312b0c684bd11bff774733"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/lz4.dll",
+    "version": {},
+    "sha256": "886167ae025e0a9a8e57e0c23e514c0c94c5bef95c75959cda4257d4a6851bdb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/md4c-html.dll",
+    "version": {},
+    "sha256": "6d48c5aa6f75d958da3626cf4999bd9de90862c78733e88e24fa63ebe65b018b"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/md4c.dll",
+    "version": {},
+    "sha256": "0aca0d640100c6e48a708bc2660a0aadde407de53e55772a65410adc1725af6a"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/mpfr-6.dll",
+    "version": {},
+    "sha256": "4eb62a37b8dba7e81dca262e83a51e0a57c53124494bcce6eaa08edd511f64bc"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/onnxruntime.dll",
+    "version": {
+      "CompanyName": "Microsoft Corporation",
+      "FileDescription": "ONNX Runtime",
+      "FileVersion": "1.30.0.20260909.8.f2c39fe",
+      "InternalName": "ONNX Runtime",
+      "LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "OriginalFilename": "onnxruntime.dll",
+      "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "ProductVersion": "1.30.0.20260909.8.f2c39fe"
+    },
+    "sha256": "86d54e2175d2ec0efb1a7d2568380b41451f8d92416e6aeaf44ba1008d545c32"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/onnxruntime_providers_shared.dll",
+    "version": {
+      "CompanyName": "Microsoft Corporation",
+      "FileDescription": "ONNX Runtime",
+      "FileVersion": "1.30.0.20260909.8.f2c39fe",
+      "InternalName": "ONNX Runtime",
+      "LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "OriginalFilename": "onnxruntime_providers_shared.dll",
+      "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "ProductVersion": "1.30.0.20260909.8.f2c39fe"
+    },
+    "sha256": "acd772935b00446fc98a1fc10b26b0f369444df0878b96714ef32feedf0cba08"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/openblas.dll",
+    "version": {},
+    "sha256": "e26c2300be4a7aef6557988b1b35367d694d95adc2525eb3ebb999d458db1b74"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenColorIO_2_5.dll",
+    "version": {},
+    "sha256": "0693376549c54353150a5634ecfc24ebe9dc8e350e16e919bf9aa4dc99207a39"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenEXR-3_4.dll",
+    "version": {},
+    "sha256": "5eb002c6ba47a52e44a496299ad233e2a6bced22af22dde995b0232f98ca8c56"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenEXRCore-3_4.dll",
+    "version": {},
+    "sha256": "6a3c16e52992efb3a2952c569eaa08c62f773cb85804ac0689f27cf6bdb121a6"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenEXRUtil-3_4.dll",
+    "version": {},
+    "sha256": "011dd3547f242a06c590fde79a0df53f63366d4fc92d237c32251e0896d0bab7"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenImageIO.dll",
+    "version": {
+      "FileDescription": "OpenImageIO",
+      "FileVersion": "3.1.14.0",
+      "InternalName": "OpenImageIO",
+      "ProductName": "OpenImageIO",
+      "ProductVersion": "3.1"
+    },
+    "sha256": "79259fc7b12bae02ed21b6e0e3a9ec4291be8df9e552e4f1b0741e23f57dc6d5"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/OpenImageIO_Util.dll",
+    "version": {
+      "FileDescription": "OpenImageIO",
+      "FileVersion": "3.1.14.0",
+      "InternalName": "OpenImageIO",
+      "ProductName": "OpenImageIO",
+      "ProductVersion": "3.1"
+    },
+    "sha256": "3517eb8398af3d87e8fef0a8be8e1276c1625637d2a91df22d7108574842b9b1"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/openjph.0.31.dll",
+    "version": {},
+    "sha256": "86ec6a69e913a5eada949372e1b4af27873f5a346d9a9074518980ff7b7ff820"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/pcre2-16.dll",
+    "version": {},
+    "sha256": "fdada3d6c83dc979cd2e5874fc424e397902528a82ca33e5dcb8fe209699d112"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/pcre2-32.dll",
+    "version": {},
+    "sha256": "0bc4a9abe7dfeaf4283bd0e333141b7e9322a6f7ea1e3927c71a2905acb493fb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/pcre2-8.dll",
+    "version": {},
+    "sha256": "e1a2540f2c8aa7b04a07d87e2ec30a9d1b7a9a7ec1a0cfa1900da41954373b55"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/pcre2-posix.dll",
+    "version": {},
+    "sha256": "e7b7bdefb266d8c28688597441d0ff93f22bcfe8809c823005db14c4dcb5aadf"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Concurrent.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Concurrent.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "4a6cf5e41a3b9679af68738ee6738965441687a91d83310d0f35ed3d47253afc"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Core.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Core.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "081efd275fa3b6d2c1b0e6b95085b196691245063f55d179b5a4efb7026d4ff0"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6DBus.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6DBus.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "aed5ac554b96f6506cf345a866017153f2de7281186f0594921b996736aa0acb"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Gui.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Gui.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "e00a0ae69e5166f30ea3c90dc553b84e32886ecb665c8ea25dc892e0bf692ef7"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Network.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Network.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "b22c3bc6e0d80df270a228c7737be76a2ca711cc9a07ecfcbaa7d33a32697234"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6OpenGL.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6OpenGL.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "9160563068c600c5558df6b2da3f83e2e6f4cff3160960fcfcef44daecaf878c"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6OpenGLWidgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6OpenGLWidgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c2c889df55bdb9b291de1b9bfd232a99aec8363c884fc14ea5f19c3292eb7135"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6PrintSupport.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6PrintSupport.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "42b98ccc9bb91359a00d07161f6c8fde9f1cd879c38ff547e190709acd0f81a3"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Sql.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Sql.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5a83fb722592909871960ce8255f13876e6c4a76c9aef0d6061e554e2e651419"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Svg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Svg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5a98cbbb6e187ee55a50e9c7f68f83429af3525bfdba6b951732a139118c91c5"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6SvgWidgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6SvgWidgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c9fa759cc833e6b9bf70bb9ec45500b828f472324b4c0cf977587015a5f81acd"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Test.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Test.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "6d7e8d3f2d36a776db6905af9b76145737cf3ea56b2d16ac39ea39117c144867"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Widgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Widgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "dcf3070ecc6032466dada80286f6eeaa297750062a193677fc45196d7f63bbd6"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/Qt6Xml.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Xml.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "67fd14240c41938306000818094992a067c492a6c0f3b1c5f093d27b7e2730aa"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/spqr.dll",
+    "version": {},
+    "sha256": "c1f134c900581ba4bee0bc731e1fc251ac75ea6a49abcdeb13da6e382f433cd7"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/sqlite3.dll",
+    "version": {
+      "CompanyName": "SQLite Development Team",
+      "FileDescription": "SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine.",
+      "FileVersion": "3.53.4",
+      "InternalName": "sqlite3",
+      "LegalCopyright": "http://sqlite.org/copyright.html",
+      "ProductName": "SQLite",
+      "ProductVersion": "3.53.4",
+      "SourceId": "2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc"
+    },
+    "sha256": "19313386e17ad26866be54810329cc045c266d6cc05f72d0c6a312ca98ec71c8"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/suitesparseconfig.dll",
+    "version": {},
+    "sha256": "758c9ce28fd71abbe140de716faf31625b38c2c6897b10fa026fba9c1754f0fe"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/tiff.dll",
+    "version": {
+      "CompanyName": "libtiff project",
+      "FileDescription": "TIFF Library",
+      "FileVersion": "4.7.2",
+      "InternalName": "tiff.dll",
+      "LegalCopyright": "See LICENCE.md",
+      "OriginalFilename": "tiff.dll",
+      "ProductName": "LibTIFF",
+      "ProductVersion": "4.7.2",
+      "WebPage": "https://libtiff.gitlab.io/libtiff/"
+    },
+    "sha256": "0a8d25ee4e56befda7d50eea135ca88bcbde02ea9336accb89437e319c06347c"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/turbojpeg.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "TurboJPEG API DLL",
+      "FileVersion": "0,5,0,0",
+      "ProductVersion": "3.2.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "turbojpeg",
+      "LegalCopyright": "Copyright \u00a9 1991-2026 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "turbojpeg.dll"
+    },
+    "sha256": "3991a0d1359aafa66f2af51ac615115318ff0e9158933120219277eafd306a39"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/yaml-cpp.dll",
+    "version": {},
+    "sha256": "2516a709b2d15ff0a797ed305cc19f12419d71fb67fa7d1ecddcbb77d261cd52"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/z.dll",
+    "version": {
+      "FileDescription": "zlib data compression library",
+      "FileVersion": "1.3.2",
+      "InternalName": "zlib1.dll",
+      "LegalCopyright": "(C) 1995-2026 Jean-loup Gailly & Mark Adler",
+      "OriginalFilename": "zlib1.dll",
+      "ProductName": "zlib",
+      "ProductVersion": "1.3.2",
+      "Comments": "For more information visit https://www.zlib.net/"
+    },
+    "sha256": "159aabdd98a8ab578cbaf3902db2143eae11667dcaf3bc2c0c987518b5687302"
+  },
+  {
+    "path": "tools/colmap-cpu/bin/zstd.dll",
+    "version": {
+      "CompanyName": "Meta Platforms, Inc.",
+      "FileDescription": "Zstandard - Fast and efficient compression algorithm",
+      "FileVersion": "1.5.7",
+      "InternalName": "libzstd.dll",
+      "LegalCopyright": "Copyright (c) Meta Platforms, Inc. and affiliates.",
+      "OriginalFilename": "libzstd.dll",
+      "ProductName": "Zstandard",
+      "ProductVersion": "1.5.7"
+    },
+    "sha256": "0e590fce1ac4c4888b4ba1ff89004bc0c44ceff1c6346b6e7cb76e13091ca05f"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/generic/qtuiotouchplugin.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qtuiotouchplugin.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "fe9365b635394dacc9ae755300f79791a97ed3b335dea63b0a4aa78c19208f55"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/iconengines/qsvgicon.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsvgicon.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d8c226ae46d4125ec30a7bb7613c887cdd233948f625c7b62b1b107cc7a5c6f2"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/imageformats/qgif.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qgif.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "01531d3116364ba231db1243b4584a3425d2ea9124060bdb4d47f52d90cf8897"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/imageformats/qico.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qico.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "14e314cf15c09ede40e313742c5e73ce024d1faacacf735a5febe62e53959cb7"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/imageformats/qjpeg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qjpeg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5cd69d3e579d81feacfefbe1246755c0055a38d8b013fc0cb275264118f0c86f"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/imageformats/qsvg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsvg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c5b8030150c1f0b3058a68c6eed94d729c09c43989a25c586a9ab90cb105da98"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/networkinformation/qnetworklistmanager.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qnetworklistmanager.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "a5429c4ca820f80b33c0ee4e3257ef912bb06b640195f653a9bf5f1c2d18d9e6"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/platforms/qdirect2d.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qdirect2d.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d9cba62bd561336fdbee0df2cda5e6e9a041387ece5599c6bd0bb216ca3374d9"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/platforms/qminimal.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qminimal.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "16c0d6d94d4759e2aca9bd8ee631ea6989a06225cdb7c63f025e59ee90b38678"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/platforms/qoffscreen.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qoffscreen.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7cc36a40a34a777f5c4de061a3fb8a36e8e3306ff343546343ce939171b6eae3"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/platforms/qwindows.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qwindows.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d710eb332fbed2fe92cf66044695efc1c36e3d82009c2429ef23fcaa132c3b83"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/sqldrivers/qsqlite.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsqlite.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "68707f3a05105bcdd8ab307fe5150cc132a464bb918af40f1196d73925dca87f"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/sqldrivers/qsqlpsql.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsqlpsql.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "0e0183ad183961693c403f8038b3fd0addde2269ebd0c9be5809352a429cf7ae"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/styles/qmodernwindowsstyle.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qmodernwindowsstyle.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7fb9ad9e9c069cb66437e1cf50ea4209d198800982558d4f6b9ed2bdb6fe59b8"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/tls/qcertonlybackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qcertonlybackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7ac969abeaa722c35f5918cbaf393cde402223af477e6f96a828cb84d13990fb"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/tls/qopensslbackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qopensslbackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "746d627c9a304c23c2c91f92c7bc24edb62df44e1be4a99b2727586b29e4d0fe"
+  },
+  {
+    "path": "tools/colmap-cpu/plugins/tls/qschannelbackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qschannelbackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "b944a47c14b52c62f17ca846c4121b03b16ce9f9ff1682737eda0cacfeea5663"
+  },
+  {
+    "path": "tools/colmap/bin/amd.dll",
+    "version": {},
+    "sha256": "15ee215c0583123d3b321c7a1eb65cc73884cd2857f9b5046bcf921c4c9b59ba"
+  },
+  {
+    "path": "tools/colmap/bin/boost_atomic-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "1a5975df47b16866b5e0ebc8026bd16cb82b7f34d37881f14372a9e8907bfac7"
+  },
+  {
+    "path": "tools/colmap/bin/boost_chrono-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "0329faeaeda6182b519ead13e6df236b21cfe44b51a38270d2290abf0b55f17a"
+  },
+  {
+    "path": "tools/colmap/bin/boost_container-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "2d30d93ce496b324c9ce53256459f4d41cddd98587b562868626781de8bb1db0"
+  },
+  {
+    "path": "tools/colmap/bin/boost_date_time-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "161caa1271a44372af0bce97a744f855df89966a9daab0956cf9f02b3d9d1096"
+  },
+  {
+    "path": "tools/colmap/bin/boost_filesystem-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "877bd1e058f069ac24aafd58788d931f342774382a9266198be6eba118b2993b"
+  },
+  {
+    "path": "tools/colmap/bin/boost_graph-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "f0b7cd6b487756b466964564c9ef2f1750be6fea9174edcc59ba03fa54561587"
+  },
+  {
+    "path": "tools/colmap/bin/boost_iostreams-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "f5496247b78e2234871b254234164e0a46f0cd8a334bc1809acc031fc0b50349"
+  },
+  {
+    "path": "tools/colmap/bin/boost_program_options-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "c134564fd4a642b7efe26863b46c8b7d26594f8e65033ce5a1c7b9635526a338"
+  },
+  {
+    "path": "tools/colmap/bin/boost_random-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "5825bc1f0a803d16d4dc274bb322005dfc209441c9078d3204bab753a548a6ef"
+  },
+  {
+    "path": "tools/colmap/bin/boost_serialization-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "1571a0275485318d23dff9d5677071e714f306b57afea8acbb96bb3f508ba748"
+  },
+  {
+    "path": "tools/colmap/bin/boost_thread-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "7dc6bd37fb1beb0797614ec75810f38abf94ff57a4a73e48cc2e9fd443c990cb"
+  },
+  {
+    "path": "tools/colmap/bin/boost_wserialization-vc145-mt-x64-1_92.dll",
+    "version": {},
+    "sha256": "19a2f895222990a3a2e3d0b681c236b14487847258c5a58556f922c8fb2d48ba"
+  },
+  {
+    "path": "tools/colmap/bin/brotlicommon.dll",
+    "version": {},
+    "sha256": "7b16cd988997316d546844e0a859a6c9d6a5805055f0c7c3ce22e8c1a0c61bd9"
+  },
+  {
+    "path": "tools/colmap/bin/brotlidec.dll",
+    "version": {},
+    "sha256": "117606fbfc5722747f040a01f9c917eac217dc024290126f81ae0614c3f71763"
+  },
+  {
+    "path": "tools/colmap/bin/brotlienc.dll",
+    "version": {},
+    "sha256": "3d5fdd11de1d0f4bd49395b889a0f42be351c3e62b87ee91e111323feafc629a"
+  },
+  {
+    "path": "tools/colmap/bin/bz2.dll",
+    "version": {},
+    "sha256": "a8bee6ad7dfaad3efeee4ccb02121072c59e9bfa15c779c87badcc0b797649e6"
+  },
+  {
+    "path": "tools/colmap/bin/camd.dll",
+    "version": {},
+    "sha256": "55b1cedf84df2fe8fbb083f24208962cbcfad09786cc0466a2e2309befdf04aa"
+  },
+  {
+    "path": "tools/colmap/bin/ccolamd.dll",
+    "version": {},
+    "sha256": "bb3262f48c453b03710be62b31fbd684802e27244dbabeb864910cc51fa8906b"
+  },
+  {
+    "path": "tools/colmap/bin/ceres.dll",
+    "version": {},
+    "sha256": "57f2217c774cbc9f2a7503bc95baa89cb5b4f5dff502864426384452565edffb"
+  },
+  {
+    "path": "tools/colmap/bin/cholmod.dll",
+    "version": {},
+    "sha256": "e3287a728da65a0af02d77f25187f958d2bfbfd3c9b70c906ed88eb998a5adf0"
+  },
+  {
+    "path": "tools/colmap/bin/colamd.dll",
+    "version": {},
+    "sha256": "8f90895003c75f98c3287e56edd75f4c96f3276066b966168b7a7bbd96de5ead"
+  },
+  {
+    "path": "tools/colmap/bin/colmap.exe",
+    "version": {},
+    "sha256": "9418a14c93d4a5eec5eb33ebf48a917403b5faa7ab5d2232f23e50c206d9e427",
+    "help": "COLMAP 4.2.1 (Commit bd1fcf6 on 2026-09-29 with CUDA, boost hash maps)\r\nUsage:\r\n  colmap [command] [options]\r\nDocumentation:\r\n  https://colmap.github.io/\r\nExample usage:\r\n  colmap help [ -h, --help ]\r\n  colmap gui\r\n  colmap gui -h [ --help ]\r\n  colmap automatic_reconstructor -h [ --help ]\r\n  colmap automatic_reconstructor --image_path IMAGES --workspace_path WORKSPACE\r\n  colmap feature_extractor --image_path IMAGES --database_path DATABASE\r\n  colmap exhaustive_matcher --database_path DATABASE\r\n  colmap mapper --image_path IMAGES --database_path DATABASE --output_path MODEL\r\n  ...\r\nAvailable commands:\r\n  help\r\n  version\r\n  gui\r\n  automatic_reconstructor\r\n  bundle_adjuster\r\n  color_extractor\r\n  database_cleaner\r\n  database_creator\r\n  database_merger\r\n  advancing_front_mesher\r\n  delaunay_mesher\r\n  exhaustive_matcher\r\n  feature_extractor\r\n  feature_importer\r\n  geometric_verifier\r\n  global_mapper\r\n  guided_geometric_verifier\r\n  hierarchical_mapper\r\n  image_deleter\r\n  image_filterer\r\n  image_rectifier\r\n  image_registrator\r\n  image_undistorter\r\n  image_undistorter_standalone\r\n  mapper\r\n  matches_importer\r\n  mesh_simplifier\r\n  mesh_texturer\r\n  model_aligner\r\n  model_analyzer\r\n  model_clusterer\r\n  model_comparer\r\n  model_converter\r\n  model_cropper\r\n  model_merger\r\n  model_orientation_aligner\r\n  model_splitter\r\n  model_transformer\r\n  patch_match_stereo\r\n  point_filtering\r\n  point_triangulator\r\n  pose_prior_mapper\r\n  poisson_mesher\r\n  project_generator\r\n  rig_configurator\r\n  rotation_averager\r\n  sequential_matcher\r\n  spatial_matcher\r\n  stereo_fusion\r\n  transitive_matcher\r\n  view_graph_calibrator\r\n  vocab_tree_builder\r\n  vocab_tree_matcher\r\n  vocab_tree_retriever\r\n\r\n",
+    "help_exit_code": 0
+  },
+  {
+    "path": "tools/colmap/bin/dbus-1-3.dll",
+    "version": {
+      "Comments": "Provided under the terms of the GNU General Public License >= 2.0 or Academic Free License version 2.1",
+      "CompanyName": "freedesktop.org",
+      "FileDescription": "dbus - FreeDesktop message bus system",
+      "FileVersion": "1.16.2",
+      "InternalName": "dbus-1-3",
+      "LegalCopyright": "Copyright \u00a9 1994-2020 dbus contributors, see dbus source code for details",
+      "LegalTrademarks": "",
+      "OriginalFilename": "dbus-1-3.dll",
+      "ProductName": "dbus",
+      "ProductVersion": "1.16.2",
+      "SpecialBuild": "202609240227"
+    },
+    "sha256": "ddcc9a8bc707b1178c7c815dd60c169d9c6f6cbf717e67ccf58f1a2e659390da"
+  },
+  {
+    "path": "tools/colmap/bin/deflate.dll",
+    "version": {},
+    "sha256": "cca18173b36f6ba28c91e51822b52ff7642c1232bf328624c4eae63fc1a74b7c"
+  },
+  {
+    "path": "tools/colmap/bin/double-conversion.dll",
+    "version": {},
+    "sha256": "9d518192305787a890b03ae0f4d5f4e84fc8520d188d673b5eef28a9570c555b"
+  },
+  {
+    "path": "tools/colmap/bin/fmt.dll",
+    "version": {},
+    "sha256": "d0f6191bd842a6ef0a0c7e3f93ebbd1e021076136e7e9893f44dadfe3971ea34"
+  },
+  {
+    "path": "tools/colmap/bin/freetype.dll",
+    "version": {
+      "CompanyName": "The FreeType Project",
+      "FileDescription": "Font Rendering Library",
+      "FileVersion": "2.14.3",
+      "ProductName": "FreeType",
+      "ProductVersion": "2.14.3",
+      "LegalCopyright": "\u00a9 2000-2026 The FreeType Project freetype.org. All rights reserved.",
+      "InternalName": "freetype",
+      "OriginalFilename": "freetype.dll"
+    },
+    "sha256": "4cd3292c10db27df626ee1a1ce96c057e97ed969b77b37e89b967631040399a8"
+  },
+  {
+    "path": "tools/colmap/bin/gflags.dll",
+    "version": {},
+    "sha256": "23f92f4a4f46f2b098da295f72d421428c0f50994782b4cc0b7cacc8f119c086"
+  },
+  {
+    "path": "tools/colmap/bin/glew32.dll",
+    "version": {
+      "Comments": "The OpenGL Extension Wrangler Library\r\nCopyright (C) 2008-2025, Nigel Stewart <nigels[]nigels com>\r\nCopyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>\r\nCopyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>\r\nCopyright (C) 2002, Lev Povalahev\r\nAll rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without \r\nmodification, are permitted provided that the following conditions are met:\r\n\r\n* Redistributions of source code must retain the above copyright notice, \r\n  this list of conditions and the following disclaimer.\r\n* Redistributions in binary form must reproduce the above copyright notice, \r\n  this list of conditions and the following disclaimer in the documentation \r\n  and/or other materials provided with the distribution.\r\n* The name of the author may be used to endorse or promote products \r\n  derived from this software without specific prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ''AS IS'' \r\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE \r\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\nARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE \r\nLIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \r\nCONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF \r\nSUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS\r\nINTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN\r\nCONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)\r\nARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\r\nTHE POSSIBILITY OF SUCH DAMAGE.\r\n\r\n\r\nMesa 3-D graphics library\r\n\r\nVersion:  7.0\r\n\r\nCopyright (C) 1999-2007  Brian Paul   All Rights Reserved.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and associated documentation files (the ''Software''),\r\nto deal in the Software without restriction, including without limitation\r\nthe rights to use, copy, modify, merge, publish, distribute, sublicense,\r\nand/or sell copies of the Software, and to permit persons to whom the\r\nSoftware is furnished to do so, subject to the following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS\r\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\r\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\r\nBRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN\r\nAN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\r\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\r\n\r\n\r\nCopyright (c) 2007 The Khronos Group Inc.\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a\r\ncopy of this software and/or associated documentation files (the\r\n''Materials''), to deal in the Materials without restriction, including\r\nwithout limitation the rights to use, copy, modify, merge, publish,\r\ndistribute, sublicense, and/or sell copies of the Materials, and to\r\npermit persons to whom the Materials are furnished to do so, subject to\r\nthe following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included\r\nin all copies or substantial portions of the Materials.\r\n\r\nTHE MATERIALS ARE PROVIDED ''AS IS'', WITHOUT WARRANTY OF ANY KIND,\r\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\r\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\r\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\r\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\r\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\r\nMATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.",
+      "CompanyName": "",
+      "FileDescription": "The OpenGL Extension Wrangler Library",
+      "FileVersion": "2,3,1,0",
+      "InternalName": "GLEW",
+      "LegalCopyright": "(C) 2002-2019 Nigel Stewart & Milan Ikits & Marcelo Magallon",
+      "LegalTrademarks": "",
+      "OriginalFilename": "glew32.dll",
+      "PrivateBuild": "",
+      "ProductName": "The OpenGL Extension Wrangler Library",
+      "ProductVersion": "2,3,1,0",
+      "SpecialBuild": ""
+    },
+    "sha256": "44bd1c4021b65588824222ffbbac1e6c0d038d65feab1f57174b5951c11ef82d"
+  },
+  {
+    "path": "tools/colmap/bin/glog.dll",
+    "version": {},
+    "sha256": "8938566a40f9d1fb40cc50bbf8a101da474785bfabad1bb229c177350c1e541d"
+  },
+  {
+    "path": "tools/colmap/bin/gmock.dll",
+    "version": {},
+    "sha256": "bd1f2c76bb36ee7b450095e99e05295e6cf379cced89c87f305b614ca2d6436c"
+  },
+  {
+    "path": "tools/colmap/bin/gmock_main.dll",
+    "version": {},
+    "sha256": "2beb88a977cacb417b89f706d14ba3886c90a04ba2f5de1adc87fc1c1abdb100"
+  },
+  {
+    "path": "tools/colmap/bin/gmp-10.dll",
+    "version": {},
+    "sha256": "a64d9f44ef50c06e92e3422002f4305e48b5f20fa7fb4c2d1f1849e927870ab3"
+  },
+  {
+    "path": "tools/colmap/bin/gmpxx-4.dll",
+    "version": {},
+    "sha256": "b0402ce4dbf9a72bc53d05bb9f3cf82114c8897dd3d8ef00aef352765f1d31ae"
+  },
+  {
+    "path": "tools/colmap/bin/gtest.dll",
+    "version": {},
+    "sha256": "68165d5594a492b75d2e4a9450f0071a7e54dc6fc1bffcc9760d173b3f5970d5"
+  },
+  {
+    "path": "tools/colmap/bin/gtest_main.dll",
+    "version": {},
+    "sha256": "d81cba6db104e536eaff07a182d837803a724cab92f76bf48932e6be377b27a0"
+  },
+  {
+    "path": "tools/colmap/bin/harfbuzz-gpu.dll",
+    "version": {},
+    "sha256": "b84066d37d7d5642f4d7b76eb5ea0b924b7bf274753daf32146bd0ee4a9bf594"
+  },
+  {
+    "path": "tools/colmap/bin/harfbuzz-raster.dll",
+    "version": {},
+    "sha256": "d4fcd0728de289c11c80495d3e195bf120f0c83fcac6e6c81c7f9fec1d68b44e"
+  },
+  {
+    "path": "tools/colmap/bin/harfbuzz-subset.dll",
+    "version": {},
+    "sha256": "328693f3475939c9de909637c2e1fedf69e941d440218f286fc066e5a8feca0d"
+  },
+  {
+    "path": "tools/colmap/bin/harfbuzz-vector.dll",
+    "version": {},
+    "sha256": "ef6109295420d44102c92e64521931d2f8a426aa6702ec69566b35725e9a2e74"
+  },
+  {
+    "path": "tools/colmap/bin/harfbuzz.dll",
+    "version": {},
+    "sha256": "2cd60ebb930a70187717834a7b20d407db551eb0b46427349d241ff44c40b762"
+  },
+  {
+    "path": "tools/colmap/bin/icudt78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Data DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icudt78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "6deaec9be687f38ba21fbd14048335b259129cb80af7ec212d158dd25f6d46ae"
+  },
+  {
+    "path": "tools/colmap/bin/icuin78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU I18N DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuin78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "c0c56cb83e450bb6bc8b0801e8c3405dc6aaac27b521bf01baeec7c7a50ca4c3"
+  },
+  {
+    "path": "tools/colmap/bin/icuio78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU I/O DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuio78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "a8b8e98f92366ff3886ad45ec5b7c22244b8b707b9e4c87a4589835e9d3c4027"
+  },
+  {
+    "path": "tools/colmap/bin/icutu78.dll",
+    "version": {},
+    "sha256": "ca7e3b2e3aa51088988dba94964446e1aed50e8623e2cef7468925de696859cc"
+  },
+  {
+    "path": "tools/colmap/bin/icuuc78.dll",
+    "version": {
+      "Comments": "https://icu.unicode.org/",
+      "CompanyName": "The ICU Project",
+      "FileDescription": "ICU Common DLL",
+      "FileVersion": "78, 3, 0, 0",
+      "LegalCopyright": " Copyright (C) 2016 and later: Unicode, Inc. and others. License & terms of use: http://www.unicode.org/copyright.html ",
+      "OriginalFilename": "icuuc78.dll",
+      "PrivateBuild": "",
+      "ProductName": "International Components for Unicode",
+      "ProductVersion": "78, 3, 0, 0",
+      "SpecialBuild": ""
+    },
+    "sha256": "d25050723adfb8ca8ba87c996ed83913d2e826335353e8ac55c39ca6cf3df295"
+  },
+  {
+    "path": "tools/colmap/bin/Iex-3_4.dll",
+    "version": {},
+    "sha256": "be7ff68b98aa033a82bc0d3b19fef81fed4c098fbf814a4314c5f0d1ac32cf28"
+  },
+  {
+    "path": "tools/colmap/bin/IlmThread-3_4.dll",
+    "version": {},
+    "sha256": "5653d80b618f16867e22e6a4c6653da50f0c96205e2648037113d33a50c05ee5"
+  },
+  {
+    "path": "tools/colmap/bin/Imath-3_2.dll",
+    "version": {},
+    "sha256": "c0c590167ceff962361007742e73ee25b9ab9578437532bb074ad0b7de5c8a9c"
+  },
+  {
+    "path": "tools/colmap/bin/jasper.dll",
+    "version": {},
+    "sha256": "b28f209da19735b643755e54474a3d0d5871d926c61fcdc1ac173ae0dfb11c01"
+  },
+  {
+    "path": "tools/colmap/bin/jpeg62.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "libjpeg API DLL",
+      "FileVersion": "62,4,0,0",
+      "ProductVersion": "3.2.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "jpeg62",
+      "LegalCopyright": "Copyright \u00a9 1991-2026 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "jpeg62.dll"
+    },
+    "sha256": "b4452f6cc9d1e858d2f765f1f16a0c3cbe2c05f03d53eae81df0faf13f1e7f48"
+  },
+  {
+    "path": "tools/colmap/bin/legacy.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "legacy",
+      "OriginalFilename": "legacy",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "4fc1ffe27b5634a897afd0313b23f62144729cd67d78e2a2a5bf3026016ad991"
+  },
+  {
+    "path": "tools/colmap/bin/libcrypto-3-x64.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "libcrypto",
+      "OriginalFilename": "libcrypto",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "fd32c2b5e2fba65ee7161cfffb22631445e7a1e4fa4867483ed2655eeed0b3d3"
+  },
+  {
+    "path": "tools/colmap/bin/libcurl.dll",
+    "version": {
+      "CompanyName": "The curl library, https://curl.se/",
+      "FileDescription": "libcurl Shared Library",
+      "FileVersion": "8.21.0",
+      "InternalName": "libcurl",
+      "OriginalFilename": "libcurl.dll",
+      "ProductName": "The curl library",
+      "ProductVersion": "8.21.0",
+      "LegalCopyright": "Copyright (C) Daniel Stenberg, <daniel@haxx.se>.",
+      "License": "https://curl.se/docs/copyright.html"
+    },
+    "sha256": "df4335de1072e472f3503ba7045487465517f4a5ced5ed6d711474fd9643d325"
+  },
+  {
+    "path": "tools/colmap/bin/libecpg.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "ECPG - embedded SQL in C",
+      "FileVersion": "18.4",
+      "InternalName": "libecpg",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libecpg.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "b5a476b66d114a451380e1b7577c60e7cb1f4963d0ac67f47cd6796e8daa2449"
+  },
+  {
+    "path": "tools/colmap/bin/libecpg_compat.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "ECPG compat - compatibility library for ECPG",
+      "FileVersion": "18.4",
+      "InternalName": "libecpg_compat",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libecpg_compat.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "94cb0dd84298f8446f54218304ae38c04406bf0c064c658b9a833a4d629f46b4"
+  },
+  {
+    "path": "tools/colmap/bin/libexpat.dll",
+    "version": {
+      "FileVersion": "2.8.3.0",
+      "ProductVersion": "2.8.3.0"
+    },
+    "sha256": "f4625f8ed00be63085b1e6897a22a11058276fc102395dbb9e9d3cf0b0fce5bc"
+  },
+  {
+    "path": "tools/colmap/bin/libgcc_s_seh-1.dll",
+    "version": {},
+    "sha256": "2de4355648441db0230a9aba1a149fc829b094f83c14c37ea3f775356d33d8b1"
+  },
+  {
+    "path": "tools/colmap/bin/libgfortran-5.dll",
+    "version": {},
+    "sha256": "780fa163c1f76f75e36171a3da4e80806fd45286fd8bb9eae66cdfcfff5aff4d"
+  },
+  {
+    "path": "tools/colmap/bin/liblapack.dll",
+    "version": {},
+    "sha256": "0051b9fbcd3aa7c0227f2eaad1d0cd9fbc36af66de87d3a297ad56680e441a8e"
+  },
+  {
+    "path": "tools/colmap/bin/liblzma.dll",
+    "version": {
+      "CompanyName": "The Tukaani Project <https://tukaani.org/>",
+      "FileDescription": "liblzma data compression library",
+      "FileVersion": "5.8.3",
+      "InternalName": "liblzma",
+      "OriginalFilename": "liblzma.dll",
+      "ProductName": "XZ Utils <https://tukaani.org/xz/>",
+      "ProductVersion": "5.8.3"
+    },
+    "sha256": "ed478fd379b99f0328fa74b0078539f76599159c4593ea1d3cba7d98042c04d9"
+  },
+  {
+    "path": "tools/colmap/bin/libpgtypes.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "pgtypes - library for data type mapping",
+      "FileVersion": "18.4",
+      "InternalName": "pgtypes",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "pgtypes.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "61d84b1741b89acb883bb877591dd9d85c1269819c00a3901684ea01b7e18195"
+  },
+  {
+    "path": "tools/colmap/bin/libpng16.dll",
+    "version": {},
+    "sha256": "402edc49e7f473cafb6eed66d142f8046ffcd15bca78ddca9721fd2dbddecf70"
+  },
+  {
+    "path": "tools/colmap/bin/libpq.dll",
+    "version": {
+      "CompanyName": "PostgreSQL Global Development Group",
+      "FileDescription": "PostgreSQL Access Library",
+      "FileVersion": "18.4",
+      "InternalName": "libpq",
+      "LegalCopyright": "Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group. Portions Copyright (c) 1994, Regents of the University of California.",
+      "OriginalFileName": "libpq.dll",
+      "ProductName": "PostgreSQL",
+      "ProductVersion": "18.4"
+    },
+    "sha256": "75b497cdf73a1072e0f7848fb9f733afbf5e7494f69b3d40ae77c65d454d6cbb"
+  },
+  {
+    "path": "tools/colmap/bin/libquadmath-0.dll",
+    "version": {},
+    "sha256": "01e0d4de6a6d718968a7e86c4b95972ae1dd00ab35fa43988dae56d1c20d9236"
+  },
+  {
+    "path": "tools/colmap/bin/libssl-3-x64.dll",
+    "version": {
+      "CompanyName": "The OpenSSL Project, https://www.openssl.org/",
+      "FileDescription": "OpenSSL library",
+      "FileVersion": "3.6.3",
+      "InternalName": "libssl",
+      "OriginalFilename": "libssl",
+      "ProductName": "The OpenSSL Toolkit",
+      "ProductVersion": "3.6.3",
+      "LegalCopyright": "Copyright 1998-2026 The OpenSSL Authors. All rights reserved."
+    },
+    "sha256": "d130f133cb4e05026aa91e2acd7d93aed474d4b88925597895040bb550559ff2"
+  },
+  {
+    "path": "tools/colmap/bin/libwinpthread-1.dll",
+    "version": {
+      "FileDescription": "POSIX WinThreads for Windows",
+      "ProductVersion": "1, 0, 0, 0",
+      "FileVersion": "1, 0, 0, 0",
+      "InternalName": "WinPthreadGC",
+      "OriginalFilename": "WinPthreadGC",
+      "CompanyName": "MinGW-W64 Project. All rights reserved.",
+      "LegalCopyright": "Copyright (C) MinGW-W64 Project Members 2010-2023",
+      "Licence": "MIT AND BSD-3-Clause",
+      "Info": "https://www.mingw-w64.org/",
+      "Comment": "GNU C build -- MinGW-w64 64-bit"
+    },
+    "sha256": "bbbb08e98392ba548f0d9435b69ed79e4a660268f7312b0c684bd11bff774733"
+  },
+  {
+    "path": "tools/colmap/bin/lz4.dll",
+    "version": {},
+    "sha256": "886167ae025e0a9a8e57e0c23e514c0c94c5bef95c75959cda4257d4a6851bdb"
+  },
+  {
+    "path": "tools/colmap/bin/md4c-html.dll",
+    "version": {},
+    "sha256": "6d48c5aa6f75d958da3626cf4999bd9de90862c78733e88e24fa63ebe65b018b"
+  },
+  {
+    "path": "tools/colmap/bin/md4c.dll",
+    "version": {},
+    "sha256": "0aca0d640100c6e48a708bc2660a0aadde407de53e55772a65410adc1725af6a"
+  },
+  {
+    "path": "tools/colmap/bin/mpfr-6.dll",
+    "version": {},
+    "sha256": "4eb62a37b8dba7e81dca262e83a51e0a57c53124494bcce6eaa08edd511f64bc"
+  },
+  {
+    "path": "tools/colmap/bin/onnxruntime.dll",
+    "version": {
+      "CompanyName": "Microsoft Corporation",
+      "FileDescription": "ONNX Runtime",
+      "FileVersion": "1.30.0.20260909.8.f2c39fe",
+      "InternalName": "ONNX Runtime",
+      "LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "OriginalFilename": "onnxruntime.dll",
+      "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "ProductVersion": "1.30.0.20260909.8.f2c39fe"
+    },
+    "sha256": "86d54e2175d2ec0efb1a7d2568380b41451f8d92416e6aeaf44ba1008d545c32"
+  },
+  {
+    "path": "tools/colmap/bin/onnxruntime_providers_cuda.dll",
+    "version": {
+      "CompanyName": "Microsoft Corporation",
+      "FileDescription": "ONNX Runtime CUDA Provider",
+      "FileVersion": "1.30.0.20260909.8.f2c39fe",
+      "InternalName": "ONNX Runtime CUDA Provider",
+      "LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "OriginalFilename": "onnxruntime_providers_cuda.dll",
+      "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "ProductVersion": "1.30.0.20260909.8.f2c39fe"
+    },
+    "sha256": "7b2912285467f4590ab12c39598f4d8844a68ad024e5b36b036b7a4f184d2463"
+  },
+  {
+    "path": "tools/colmap/bin/onnxruntime_providers_shared.dll",
+    "version": {
+      "CompanyName": "Microsoft Corporation",
+      "FileDescription": "ONNX Runtime",
+      "FileVersion": "1.30.0.20260909.8.f2c39fe",
+      "InternalName": "ONNX Runtime",
+      "LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "OriginalFilename": "onnxruntime_providers_shared.dll",
+      "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "ProductVersion": "1.30.0.20260909.8.f2c39fe"
+    },
+    "sha256": "acd772935b00446fc98a1fc10b26b0f369444df0878b96714ef32feedf0cba08"
+  },
+  {
+    "path": "tools/colmap/bin/openblas.dll",
+    "version": {},
+    "sha256": "e26c2300be4a7aef6557988b1b35367d694d95adc2525eb3ebb999d458db1b74"
+  },
+  {
+    "path": "tools/colmap/bin/OpenColorIO_2_5.dll",
+    "version": {},
+    "sha256": "0693376549c54353150a5634ecfc24ebe9dc8e350e16e919bf9aa4dc99207a39"
+  },
+  {
+    "path": "tools/colmap/bin/OpenEXR-3_4.dll",
+    "version": {},
+    "sha256": "5eb002c6ba47a52e44a496299ad233e2a6bced22af22dde995b0232f98ca8c56"
+  },
+  {
+    "path": "tools/colmap/bin/OpenEXRCore-3_4.dll",
+    "version": {},
+    "sha256": "6a3c16e52992efb3a2952c569eaa08c62f773cb85804ac0689f27cf6bdb121a6"
+  },
+  {
+    "path": "tools/colmap/bin/OpenEXRUtil-3_4.dll",
+    "version": {},
+    "sha256": "011dd3547f242a06c590fde79a0df53f63366d4fc92d237c32251e0896d0bab7"
+  },
+  {
+    "path": "tools/colmap/bin/OpenImageIO.dll",
+    "version": {
+      "FileDescription": "OpenImageIO",
+      "FileVersion": "3.1.14.0",
+      "InternalName": "OpenImageIO",
+      "ProductName": "OpenImageIO",
+      "ProductVersion": "3.1"
+    },
+    "sha256": "79259fc7b12bae02ed21b6e0e3a9ec4291be8df9e552e4f1b0741e23f57dc6d5"
+  },
+  {
+    "path": "tools/colmap/bin/OpenImageIO_Util.dll",
+    "version": {
+      "FileDescription": "OpenImageIO",
+      "FileVersion": "3.1.14.0",
+      "InternalName": "OpenImageIO",
+      "ProductName": "OpenImageIO",
+      "ProductVersion": "3.1"
+    },
+    "sha256": "3517eb8398af3d87e8fef0a8be8e1276c1625637d2a91df22d7108574842b9b1"
+  },
+  {
+    "path": "tools/colmap/bin/openjph.0.31.dll",
+    "version": {},
+    "sha256": "86ec6a69e913a5eada949372e1b4af27873f5a346d9a9074518980ff7b7ff820"
+  },
+  {
+    "path": "tools/colmap/bin/pcre2-16.dll",
+    "version": {},
+    "sha256": "fdada3d6c83dc979cd2e5874fc424e397902528a82ca33e5dcb8fe209699d112"
+  },
+  {
+    "path": "tools/colmap/bin/pcre2-32.dll",
+    "version": {},
+    "sha256": "0bc4a9abe7dfeaf4283bd0e333141b7e9322a6f7ea1e3927c71a2905acb493fb"
+  },
+  {
+    "path": "tools/colmap/bin/pcre2-8.dll",
+    "version": {},
+    "sha256": "e1a2540f2c8aa7b04a07d87e2ec30a9d1b7a9a7ec1a0cfa1900da41954373b55"
+  },
+  {
+    "path": "tools/colmap/bin/pcre2-posix.dll",
+    "version": {},
+    "sha256": "e7b7bdefb266d8c28688597441d0ff93f22bcfe8809c823005db14c4dcb5aadf"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Concurrent.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Concurrent.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "4a6cf5e41a3b9679af68738ee6738965441687a91d83310d0f35ed3d47253afc"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Core.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Core.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "081efd275fa3b6d2c1b0e6b95085b196691245063f55d179b5a4efb7026d4ff0"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6DBus.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6DBus.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "aed5ac554b96f6506cf345a866017153f2de7281186f0594921b996736aa0acb"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Gui.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Gui.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "e00a0ae69e5166f30ea3c90dc553b84e32886ecb665c8ea25dc892e0bf692ef7"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Network.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Network.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "b22c3bc6e0d80df270a228c7737be76a2ca711cc9a07ecfcbaa7d33a32697234"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6OpenGL.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6OpenGL.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "9160563068c600c5558df6b2da3f83e2e6f4cff3160960fcfcef44daecaf878c"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6OpenGLWidgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6OpenGLWidgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c2c889df55bdb9b291de1b9bfd232a99aec8363c884fc14ea5f19c3292eb7135"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6PrintSupport.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6PrintSupport.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "42b98ccc9bb91359a00d07161f6c8fde9f1cd879c38ff547e190709acd0f81a3"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Sql.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Sql.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5a83fb722592909871960ce8255f13876e6c4a76c9aef0d6061e554e2e651419"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Svg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Svg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5a98cbbb6e187ee55a50e9c7f68f83429af3525bfdba6b951732a139118c91c5"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6SvgWidgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6SvgWidgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c9fa759cc833e6b9bf70bb9ec45500b828f472324b4c0cf977587015a5f81acd"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Test.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Test.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "6d7e8d3f2d36a776db6905af9b76145737cf3ea56b2d16ac39ea39117c144867"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Widgets.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Widgets.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "dcf3070ecc6032466dada80286f6eeaa297750062a193677fc45196d7f63bbd6"
+  },
+  {
+    "path": "tools/colmap/bin/Qt6Xml.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "Qt6Xml.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "67fd14240c41938306000818094992a067c492a6c0f3b1c5f093d27b7e2730aa"
+  },
+  {
+    "path": "tools/colmap/bin/spqr.dll",
+    "version": {},
+    "sha256": "c1f134c900581ba4bee0bc731e1fc251ac75ea6a49abcdeb13da6e382f433cd7"
+  },
+  {
+    "path": "tools/colmap/bin/sqlite3.dll",
+    "version": {
+      "CompanyName": "SQLite Development Team",
+      "FileDescription": "SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine.",
+      "FileVersion": "3.53.4",
+      "InternalName": "sqlite3",
+      "LegalCopyright": "http://sqlite.org/copyright.html",
+      "ProductName": "SQLite",
+      "ProductVersion": "3.53.4",
+      "SourceId": "2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc"
+    },
+    "sha256": "19313386e17ad26866be54810329cc045c266d6cc05f72d0c6a312ca98ec71c8"
+  },
+  {
+    "path": "tools/colmap/bin/suitesparseconfig.dll",
+    "version": {},
+    "sha256": "758c9ce28fd71abbe140de716faf31625b38c2c6897b10fa026fba9c1754f0fe"
+  },
+  {
+    "path": "tools/colmap/bin/tiff.dll",
+    "version": {
+      "CompanyName": "libtiff project",
+      "FileDescription": "TIFF Library",
+      "FileVersion": "4.7.2",
+      "InternalName": "tiff.dll",
+      "LegalCopyright": "See LICENCE.md",
+      "OriginalFilename": "tiff.dll",
+      "ProductName": "LibTIFF",
+      "ProductVersion": "4.7.2",
+      "WebPage": "https://libtiff.gitlab.io/libtiff/"
+    },
+    "sha256": "0a8d25ee4e56befda7d50eea135ca88bcbde02ea9336accb89437e319c06347c"
+  },
+  {
+    "path": "tools/colmap/bin/turbojpeg.dll",
+    "version": {
+      "CompanyName": "The libjpeg-turbo Project",
+      "FileDescription": "TurboJPEG API DLL",
+      "FileVersion": "0,5,0,0",
+      "ProductVersion": "3.2.0",
+      "ProductName": "libjpeg-turbo",
+      "InternalName": "turbojpeg",
+      "LegalCopyright": "Copyright \u00a9 1991-2026 The libjpeg-turbo Project and many others",
+      "OriginalFilename": "turbojpeg.dll"
+    },
+    "sha256": "3991a0d1359aafa66f2af51ac615115318ff0e9158933120219277eafd306a39"
+  },
+  {
+    "path": "tools/colmap/bin/yaml-cpp.dll",
+    "version": {},
+    "sha256": "2516a709b2d15ff0a797ed305cc19f12419d71fb67fa7d1ecddcbb77d261cd52"
+  },
+  {
+    "path": "tools/colmap/bin/z.dll",
+    "version": {
+      "FileDescription": "zlib data compression library",
+      "FileVersion": "1.3.2",
+      "InternalName": "zlib1.dll",
+      "LegalCopyright": "(C) 1995-2026 Jean-loup Gailly & Mark Adler",
+      "OriginalFilename": "zlib1.dll",
+      "ProductName": "zlib",
+      "ProductVersion": "1.3.2",
+      "Comments": "For more information visit https://www.zlib.net/"
+    },
+    "sha256": "159aabdd98a8ab578cbaf3902db2143eae11667dcaf3bc2c0c987518b5687302"
+  },
+  {
+    "path": "tools/colmap/bin/zstd.dll",
+    "version": {
+      "CompanyName": "Meta Platforms, Inc.",
+      "FileDescription": "Zstandard - Fast and efficient compression algorithm",
+      "FileVersion": "1.5.7",
+      "InternalName": "libzstd.dll",
+      "LegalCopyright": "Copyright (c) Meta Platforms, Inc. and affiliates.",
+      "OriginalFilename": "libzstd.dll",
+      "ProductName": "Zstandard",
+      "ProductVersion": "1.5.7"
+    },
+    "sha256": "0e590fce1ac4c4888b4ba1ff89004bc0c44ceff1c6346b6e7cb76e13091ca05f"
+  },
+  {
+    "path": "tools/colmap/plugins/generic/qtuiotouchplugin.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qtuiotouchplugin.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "fe9365b635394dacc9ae755300f79791a97ed3b335dea63b0a4aa78c19208f55"
+  },
+  {
+    "path": "tools/colmap/plugins/iconengines/qsvgicon.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsvgicon.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d8c226ae46d4125ec30a7bb7613c887cdd233948f625c7b62b1b107cc7a5c6f2"
+  },
+  {
+    "path": "tools/colmap/plugins/imageformats/qgif.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qgif.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "01531d3116364ba231db1243b4584a3425d2ea9124060bdb4d47f52d90cf8897"
+  },
+  {
+    "path": "tools/colmap/plugins/imageformats/qico.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qico.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "14e314cf15c09ede40e313742c5e73ce024d1faacacf735a5febe62e53959cb7"
+  },
+  {
+    "path": "tools/colmap/plugins/imageformats/qjpeg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qjpeg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "5cd69d3e579d81feacfefbe1246755c0055a38d8b013fc0cb275264118f0c86f"
+  },
+  {
+    "path": "tools/colmap/plugins/imageformats/qsvg.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsvg.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "c5b8030150c1f0b3058a68c6eed94d729c09c43989a25c586a9ab90cb105da98"
+  },
+  {
+    "path": "tools/colmap/plugins/networkinformation/qnetworklistmanager.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qnetworklistmanager.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "a5429c4ca820f80b33c0ee4e3257ef912bb06b640195f653a9bf5f1c2d18d9e6"
+  },
+  {
+    "path": "tools/colmap/plugins/platforms/qdirect2d.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qdirect2d.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d9cba62bd561336fdbee0df2cda5e6e9a041387ece5599c6bd0bb216ca3374d9"
+  },
+  {
+    "path": "tools/colmap/plugins/platforms/qminimal.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qminimal.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "16c0d6d94d4759e2aca9bd8ee631ea6989a06225cdb7c63f025e59ee90b38678"
+  },
+  {
+    "path": "tools/colmap/plugins/platforms/qoffscreen.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qoffscreen.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7cc36a40a34a777f5c4de061a3fb8a36e8e3306ff343546343ce939171b6eae3"
+  },
+  {
+    "path": "tools/colmap/plugins/platforms/qwindows.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qwindows.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "d710eb332fbed2fe92cf66044695efc1c36e3d82009c2429ef23fcaa132c3b83"
+  },
+  {
+    "path": "tools/colmap/plugins/sqldrivers/qsqlite.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsqlite.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "68707f3a05105bcdd8ab307fe5150cc132a464bb918af40f1196d73925dca87f"
+  },
+  {
+    "path": "tools/colmap/plugins/sqldrivers/qsqlpsql.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qsqlpsql.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "0e0183ad183961693c403f8038b3fd0addde2269ebd0c9be5809352a429cf7ae"
+  },
+  {
+    "path": "tools/colmap/plugins/styles/qmodernwindowsstyle.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qmodernwindowsstyle.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7fb9ad9e9c069cb66437e1cf50ea4209d198800982558d4f6b9ed2bdb6fe59b8"
+  },
+  {
+    "path": "tools/colmap/plugins/tls/qcertonlybackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qcertonlybackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "7ac969abeaa722c35f5918cbaf393cde402223af477e6f96a828cb84d13990fb"
+  },
+  {
+    "path": "tools/colmap/plugins/tls/qopensslbackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qopensslbackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "746d627c9a304c23c2c91f92c7bc24edb62df44e1be4a99b2727586b29e4d0fe"
+  },
+  {
+    "path": "tools/colmap/plugins/tls/qschannelbackend.dll",
+    "version": {
+      "CompanyName": "The Qt Company Ltd.",
+      "FileDescription": "C++ Application Development Framework",
+      "FileVersion": "6.11.1.0",
+      "LegalCopyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+      "OriginalFilename": "qschannelbackend.dll",
+      "ProductName": "Qt6",
+      "ProductVersion": "6.11.1.0",
+      "Comments": "",
+      "LegalTrademarks": "",
+      "InternalName": ""
+    },
+    "sha256": "b944a47c14b52c62f17ca846c4121b03b16ce9f9ff1682737eda0cacfeea5663"
+  }
+]

@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 
-def build(inventory, evidence, upstream, output):
+def build(inventory, evidence, upstream, output, primary_proof=None):
     data = json.loads(inventory.read_text(encoding='utf-8'))
     output.mkdir(parents=True, exist_ok=True)
     packages = [p for p in data['packages'] if p['name']]
@@ -23,6 +23,22 @@ def build(inventory, evidence, upstream, output):
     record['native_and_weights'] = [f for f in data['files'] if f['path'].startswith('tools/') and
                                    Path(f['path']).suffix.lower() in ('.dll', '.exe', '.onnx')]
     record['upstream'] = json.loads((upstream/'provenance.json').read_text())
+    proof_links = []
+    if primary_proof:
+        summary = json.loads((primary_proof/'summary.json').read_text())
+        native = json.loads((primary_proof/'native-official-byte-comparison.json').read_text())
+        if summary['qt_mismatches'] or any(r['matched'] != len(r['files']) for r in native):
+            raise ValueError('Primary upstream identity evidence contains mismatches')
+        record['primary_identity'] = dict(qt_compared=summary['qt_compared'], qt_mismatches=0,
+            native_groups=[dict(group=r['group'],matched=r['matched'],url=r['url'],sha256=r['sha256']) for r in native],
+            python_packages=summary['python_packages'], binary_identity_is_not_source_clearance=True)
+        record['release_blockers'] = [
+            'Exact corresponding source, third-party notices and build/patch recipes for every linked native dependency still require complete retention; release archive identity alone does not establish them.',
+            'Official PySide6 Pdf/WebEngine6.12.0.140 wheel identity is verified; exact matching Chromium/split-module corresponding-source packaging remains to be established.',
+        ]
+        for name in ('python-origins.json','qt-official-byte-comparison.json','native-official-byte-comparison.json','native-version-origins.json'):
+            shutil.copyfile(primary_proof/name, output/name)
+            proof_links.append(f'<li><a href="{name}">{name}</a></li>')
     (output/'review.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8')
     sections = []
     with zipfile.ZipFile(evidence) as archive:
@@ -36,6 +52,13 @@ def build(inventory, evidence, upstream, output):
                  'COLMAP-4.2.1.txt', 'GLOMAP-LICENSE.txt', 'LightGlue-ONNX-LICENSE.txt', 'ALIKED-ONNX-LICENSE.txt'):
         shutil.copyfile(upstream/name, output/name)
         sections.append(f'<details><summary>{escape(name)}</summary><pre>{escape((upstream/name).read_text(encoding="utf-8"))}</pre></details>')
+    for name in ('COLMAP-3.8-LICENSE.txt','COLMAP-3.8-build-dependencies.txt','GLOMAP-1.2.0-LICENSE.txt',
+                 'GLOMAP-1.2.0-vcpkg.json','NVIDIA-CUDA-11.8-EULA.html','NVIDIA-CUDA-13.2-EULA.html'):
+        if (upstream/name).is_file():
+            shutil.copyfile(upstream/name, output/name)
+            proof_links.append(f'<li><a href="{name}">{name}</a></li>')
+            if name.endswith('.txt'):
+                sections.append(f'<details><summary>{escape(name)}</summary><pre>{escape((upstream/name).read_text(encoding="utf-8"))}</pre></details>')
     rows = ''.join('<tr><td>'+escape(p['name'])+'</td><td>'+escape(p['version'])+'</td><td>'+
                    escape(p.get('license_expression') or str(p.get('license') or 'See collected notices'))+'</td></tr>' for p in packages)
     html = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -92,6 +115,23 @@ review. Distribution metadata is retained for version attribution; it is not a
 claim that every optional module from those distributions remains installed.</p>
 <table><tr><th>Component</th><th>Version</th><th>Upstream metadata</th></tr>'''+rows+'''</table>
 <h2>Collected license and copyright texts</h2>'''+''.join(sections)+'</html>\n'
+    if primary_proof:
+        addition = '''<h2>Verified primary origins and versioned sources</h2>
+<p>All1564 compared Qt binary/resource files match official PyPI wheels.
+All71 legacy COLMAP3.8 and74 GLOMAP1.2.0 native files match their official
+release archives byte for byte. The split Pdf/WebEngine6.12.0.140 packages
+are official PyPI releases. Retained metadata is available below; byte identity
+does not by itself establish all corresponding-source obligations.</p>
+<p>The legacy CUDA runtime identifies as11.8.89 and its cuRAND as10.3.0.86;
+the versioned CUDA11.8 terms are retained below. The optional modern ONNX CUDA
+provider imports CUDA12 libraries; this is not evidence that those libraries
+are bundled or covered by the CUDA13.2 reference.</p>
+<p>Native engine Qt sources: <a href="https://download.qt.io/archive/qt/5.15/5.15.8/submodules/">Qt5.15.8</a>
+and <a href="https://download.qt.io/official_releases/qt/6.11/6.11.1/submodules/">Qt6.11.1</a>.
+The modern engine's vcpkg baseline is127402f1c75bb3d5ff6bce04b285faa4930a5aca;
+the official build removes its install/share notices, so missing linked-library
+source/build records remain an explicit release gate.</p><ul>'''+''.join(proof_links)+'</ul>'
+        html = html.replace('<h2>Python distributions', addition+'<h2>Python distributions')
     (output/'index.html').write_text(html, encoding='utf-8')
     print(f'Offline notices: {len(packages)} distributions, {len(sections)} collected texts')
 
@@ -102,5 +142,6 @@ if __name__ == '__main__':
     parser.add_argument('--evidence', type=Path, required=True)
     parser.add_argument('--upstream', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--primary-proof', type=Path)
     args = parser.parse_args()
-    build(args.inventory, args.evidence, args.upstream, args.output)
+    build(args.inventory, args.evidence, args.upstream, args.output, args.primary_proof)

@@ -1,7 +1,7 @@
 """Evaluate ground classes against PDAL's public classified Autzen fixture.
 
 Published class labels are independent references, not hand-labelled here.
-This small tile cannot establish general terrain or GPU reconstruction accuracy.
+This public scene cannot establish general terrain or GPU reconstruction accuracy.
 """
 import argparse
 import hashlib
@@ -74,6 +74,25 @@ def evaluate(source, output):
         # Coordinates were converted to a local metric convention; do not stamp
         # the original foot-based CRS onto these metre-valued coordinates.
         assert restored.header.parse_crs() is None
+    from photomesh.dem_engine import build_dem
+    from photomesh.geotiff import TiffReader
+    dtm = build_dem(dict(cloud=str(classified), out_dir=str(output/'dtm'), ground_only=True,
+        georef=dict(offset=origin.tolist(), metric_scale=True), pixel_size=2.,
+        interpolation='Disabled', aggregation='mean'), log=lambda *_:None)
+    with TiffReader(dtm['path']) as reader:
+        terrain = reader.read_level(0)[...,0]
+    with TiffReader(dtm['coverage_path']) as reader:
+        coverage = reader.read_level(0)[...,0]
+    assert dtm['surface_type'] == 'DTM' and dtm['filled_cells'] == 0
+    assert set(np.unique(coverage)) <= {0,1}
+    points = xyz[ground]
+    columns = np.clip(np.floor((points[:,0]-dtm['origin'][0])/2).astype(int),0,dtm['width']-1)
+    rows = np.clip(np.floor((dtm['origin'][1]-points[:,1])/2).astype(int),0,dtm['height']-1)
+    cells = rows*dtm['width']+columns
+    sums = np.bincount(cells, weights=points[:,2], minlength=terrain.size)
+    counts = np.bincount(cells, minlength=terrain.size)
+    np.testing.assert_array_equal(coverage.ravel() == 1, counts > 0)
+    np.testing.assert_allclose(terrain.ravel()[counts>0], sums[counts>0]/counts[counts>0], atol=2e-5,rtol=0)
     record = dict(repository='PDAL/data', commit=COMMIT, path='autzen/autzen-classified.laz',
         sha256=SHA256, points=len(xyz), source_class_counts={str(c):int(n) for c,n in zip(*np.unique(reference_labels,return_counts=True))},
         attribution='Aaron Reyna / Watershed Sciences 2010 LiDAR; Max Sampson / Hobu 2021 manual classes; PDAL/data CC-BY-4.0',
@@ -83,6 +102,8 @@ def evaluate(source, output):
         units=f'Metres converted with source axis factors {scale}; height datum unchanged; absent a vertical axis Z uses the source horizontal unit',
         source_crs=crs.to_wkt(),
         progress=samples, las_laz_roundtrip=True,
+        dtm=dict(independent_mean_match=True, measured_cells=dtm['measured_cells'],
+                 filled_cells=dtm['filled_cells'], pixel_size_m=2.,seconds=dtm['seconds']),
         limitation='One public tile with published class labels; no universal accuracy or target GPU claim')
     (output/'results.json').write_text(json.dumps(record, indent=2), encoding='utf-8')
     print(json.dumps({k:v for k,v in record.items() if k != 'progress'}, indent=2))

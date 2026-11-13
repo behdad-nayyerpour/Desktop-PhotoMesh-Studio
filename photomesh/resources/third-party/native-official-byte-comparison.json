@@ -1,0 +1,1037 @@
+[
+  {
+    "group": "colmap-legacy",
+    "url": "https://github.com/colmap/colmap/releases/download/3.8/COLMAP-3.8-windows-cuda.zip",
+    "sha256": "60910e2d79539ba8825628bd147f900a5cd61646b5a9ad5f62dbec0e9b78e8d0",
+    "bytes": 130494384,
+    "files": [
+      {
+        "path": "tools/colmap-legacy/bin/colmap.exe",
+        "sha256": "c34cc5d339219848a462593c4f2459e134aff4952a1fe3955ccded82180f2615",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/bin/colmap.exe"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/boost_filesystem-vc142-mt-x64-1_81.dll",
+        "sha256": "9549f1ea70b15d3adee466d7329b943ed9f9e21887eb76eaccc063a91eb029d2",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/boost_filesystem-vc142-mt-x64-1_81.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/boost_program_options-vc142-mt-x64-1_81.dll",
+        "sha256": "5b95f1ccd67cc7d73ed629d8e6bfdf5c9087dd33784acf6d7e8b5d1ed472cd5b",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/boost_program_options-vc142-mt-x64-1_81.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/brotlicommon.dll",
+        "sha256": "57b4e1bed1c5047185d946710ecb0b502cc240259ad9151dd27f2d935a6a5927",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/brotlicommon.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/brotlidec.dll",
+        "sha256": "a14a922d079c54ec2e7840d8b82ba2327bb197e3ca4eb91001d73556312c1406",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/brotlidec.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/bz2.dll",
+        "sha256": "6cdde59f1f45e920f36d2a758f68781eb096b43b1c50006c71a04c283b2a538c",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/bz2.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/ceres.dll",
+        "sha256": "3fbba668cd465ce04d5295f740daa8a97948d5d09a59dffcbdbc579baa5934be",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/ceres.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/cudart64_110.dll",
+        "sha256": "ba5c2fb526c4ee4bb218ceb3fa5e8bfde89ce474f38711fdcce802549bf9fc6f",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/cudart64_110.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/curand64_10.dll",
+        "sha256": "047867bb615b0bfa986d237bf4cc1b78cf24065297863d1f730ae0b5398add2e",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/curand64_10.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/double-conversion.dll",
+        "sha256": "597654a4a16e169514b9794b4a6723fba589eb1d8b55e9d29d5889445847773d",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/double-conversion.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/FreeImage.dll",
+        "sha256": "071f637ee6910c7e709a8346b82016591aecae740c2f42aae4e69e73eb0f4477",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/FreeImage.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/freetype.dll",
+        "sha256": "04ccf83d65b565fb2872ab89e14ea30979adfbd63e381604dbbe178883e561ba",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/freetype.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/gflags.dll",
+        "sha256": "fc67925d2f26f122daa870cee3c02c5d91c766583fa3ce90f54177bb988f6a44",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/gflags.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/glew32.dll",
+        "sha256": "d9897f3ef93cb26ba5cf68f6f9fcca79f365c958f0a700e9361b48253584b5b3",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/glew32.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/glog.dll",
+        "sha256": "6e174ff925455b60d440aa88000ee48082795dcd1bd8f623848ab8c8072bb1cc",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/glog.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/gmp-10.dll",
+        "sha256": "9f57db14af0fd91a0c6d1d818320240092a0e4d6f84411af9b579168205723c4",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/gmp-10.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/harfbuzz.dll",
+        "sha256": "fa8f866de522c2873486cc3c8735438bcd108a067839fa1bea5f38ac71f35645",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/harfbuzz.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/icudt72.dll",
+        "sha256": "fba941efaf9f95b88f7adf63e90e755dccb5a840323f78160115820ae9fbfd61",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/icudt72.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/icuin72.dll",
+        "sha256": "be8904fa446bc3fb7c805fc2634451bf121767b024621ec043be54aeb2688b5a",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/icuin72.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/icuuc72.dll",
+        "sha256": "2e010b17e412c63d1befeeb2479d3dc50232c0f9d1377d81e1fd8982ad5cd2fa",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/icuuc72.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Iex-3_1.dll",
+        "sha256": "428ad2e7264b5fc3c7456fd5479535a3f073901d2e8eac9a4f8f2f92c3b4bee4",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Iex-3_1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/IlmThread-3_1.dll",
+        "sha256": "77688524c7cfcd7c6dbcf93425ae33367f1b9cace72e88f56abb08816487440f",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/IlmThread-3_1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Imath-3_1.dll",
+        "sha256": "c24ce7b2e6e0c51de59aed6b52cb8ff17d8a4ab526d67bb65b9a005dfe4a9d60",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Imath-3_1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/jasper.dll",
+        "sha256": "60968054cd2d00821f9235323a16e576e10bc1682b206a8443c019e9a83a925e",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/jasper.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/jpeg62.dll",
+        "sha256": "59d737da74257675ca41fde659be0a521b85f224e5cc732a769bd259730e8b92",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/jpeg62.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/lcms2.dll",
+        "sha256": "6667f2a65aa93ec327f545cbb713a6cfafb733809d4103ab146aa19f6b20c84c",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/lcms2.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libamd.dll",
+        "sha256": "a6a5c5e6bcfcb27c03d169fc4eeec91bb5351d4056c4fb0d323972352bc55708",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libamd.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libcamd.dll",
+        "sha256": "64570ed414526cbfd001ee1d4168f52c4ff40f9f3634fc852494a67b19aefbc9",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libcamd.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libccolamd.dll",
+        "sha256": "670b8c6e763187377dcb853a2cb69374a9ba9b9601e908e065618bb6f42fe62d",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libccolamd.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libcholmod.dll",
+        "sha256": "8c474538a5bc3691176874584e4fa30f4c7a9253655c2275652da0dae43bce6f",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libcholmod.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libcolamd.dll",
+        "sha256": "228ef5af4d9f48010780eca49a56fd3881a24b4d775134695ad0882f5c89fb1e",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libcolamd.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libgcc_s_seh-1.dll",
+        "sha256": "914de4a2e0d55bc6e4d02538dd53fcdc508486bca7face1c6e30c59f01ee3542",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libgcc_s_seh-1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libgfortran-5.dll",
+        "sha256": "a05784cd020bf058369409fc518dec61afb5e2cd03d2337cf42a50b24ebeafa6",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libgfortran-5.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/liblapack.dll",
+        "sha256": "57e2c74f8a3cfdb178dc5e35360c5a08625b1c74a41a60b5442370529aa733a4",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/liblapack.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/liblzma.dll",
+        "sha256": "7caf1009ba922140e25d1cf5c3670c0bdf38f94498ffd37e83afa3611ed05467",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/liblzma.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libpng16.dll",
+        "sha256": "25a1019558af9debaa4f339a76a9c571dca44cb37db3df32152cac5a1932f304",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libpng16.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libquadmath-0.dll",
+        "sha256": "03c03b087001ee804de5d376f7a128662b643434aba31421208f64827fefe42a",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libquadmath-0.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libsharpyuv.dll",
+        "sha256": "ebb3fe294aa8c0b00ab67413f4c68c244f367908649278dec0f9835cc99f668c",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libsharpyuv.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libspqr.dll",
+        "sha256": "7141fd8b2d451f8fde9570fa0817c00047258c757d857e871ad536a21380e489",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libspqr.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libwebp.dll",
+        "sha256": "2f83439ffeb60c48f975595025109794f089ee87c4bfde80375cd79643a67c43",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libwebp.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libwebpdecoder.dll",
+        "sha256": "c4b7aa5a4155059a4802d76822c80b8f4d9baa9ee4d083b2fbdc8f9cb967cd35",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libwebpdecoder.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libwebpdemux.dll",
+        "sha256": "4498801ec8a47ade57e48ace0be9d7d991ba18e89b241db6a6de5bb985c9700d",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libwebpdemux.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libwebpmux.dll",
+        "sha256": "901607132c62e22cd1c6bf09c01f3f2df9430c27835407268195e8c0e6ccfdba",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libwebpmux.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/libwinpthread-1.dll",
+        "sha256": "707e0add151c8d7e150a3fe0ba8c0c562505c3859f687b82de8a1af6c2b3bb73",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/libwinpthread-1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/lz4.dll",
+        "sha256": "95462b19f111887c99928528999ae7a9f2538c6eb43dfa08e6fe00d437e8e60e",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/lz4.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/openblas.dll",
+        "sha256": "dbdc02121301d1cda3473f005ac0455dbf9de1ffc00704435b6c0f0cca561745",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/openblas.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/OpenEXR-3_1.dll",
+        "sha256": "36113700692b2bb14f31ed49a3adb8f4ddfd1a50f86ae75847d64a391c7419c1",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/OpenEXR-3_1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/openjp2.dll",
+        "sha256": "dcc3b8e3c9aa4282e97fb452c6af1e387edf83897888561f04b85841e5479c46",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/openjp2.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/pcre2-16.dll",
+        "sha256": "90002b4c563d272abfb1a7f71596ca23daae9dd2a635e80903b292f07f2912d9",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/pcre2-16.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/iconengines/qsvgicon.dll",
+        "sha256": "627850aea529b076401e4d85badb0adc17d3037c951f7fd5c43623c69fa83cef",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/iconengines/qsvgicon.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qgif.dll",
+        "sha256": "7042eb510863d466df77b3dff4aaa1c848b269145abf525ba813e9dbdc3a1356",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qgif.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qicns.dll",
+        "sha256": "3a0f1d98d91e08fa3155d299d61ca63a0e9e597156e0a1eca689405c680e94c0",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qicns.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qico.dll",
+        "sha256": "87c60d249d614c4e0c4497480c32e152cbcd2ef33397d1c9735b77ca20bd0b00",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qico.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qjp2.dll",
+        "sha256": "9ccb1c3b4d4cd9bbfa0ae71246e78d0d3a2fd7084b325a323b568ebfebc0ae82",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qjp2.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qjpeg.dll",
+        "sha256": "5ae13a0d32f7545b1d2517e3b29c0992df1ce668e89bc97ee9c45184b845087c",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qjpeg.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qsvg.dll",
+        "sha256": "39f8a806943d3c5836203c4f4daed2b41e5f55adde31464c3d018ae0df00c5ad",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qsvg.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qtga.dll",
+        "sha256": "9ed2af8f24724845579ce7808b5f90b5ce11ce904215e572a5dfd16b8b435cd3",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qtga.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qtiff.dll",
+        "sha256": "d69b404ccb5303b87cb04335418ffdf9e33e19925ecabc035e359885c893aa13",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qtiff.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qwbmp.dll",
+        "sha256": "082391587faf716b58e67951804fc423a3e330c3da73872eb5b0681dee760a0d",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qwbmp.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/imageformats/qwebp.dll",
+        "sha256": "c2958532c7a1921e4f5692afafbc291bd57c04ed41bcad68188d018d3d08eed2",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/imageformats/qwebp.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/platforms/qwindows.dll",
+        "sha256": "c6474cecaf37f1588f67ccd820e6784009cb1d97d36cec7ede26978b05dc4a89",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/platforms/qwindows.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/plugins/styles/qwindowsvistastyle.dll",
+        "sha256": "1257b7e2dadf1faff14c64e74397b811d2857ec49a2c81be0395692b22d753b7",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/plugins/styles/qwindowsvistastyle.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Qt5Core.dll",
+        "sha256": "add191be4a1a8d9544c22cd42968c0ff8dd5e9a5cf6e279f79647b59804b06b0",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Qt5Core.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Qt5Gui.dll",
+        "sha256": "ef43cc61caaeaa03090233a3db3919cc657381fdc9d946614a681c3c4e790f8c",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Qt5Gui.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Qt5Svg.dll",
+        "sha256": "4025fe80d159fddb8e75e6f3731976575f817a2e5aea78416500a9e3fa72b844",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Qt5Svg.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/Qt5Widgets.dll",
+        "sha256": "3106cad9a8b2a960b69beb56754344c71d3b4aa1b5173c6d59384ee5bcdee1e2",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/Qt5Widgets.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/raw.dll",
+        "sha256": "7f4f414967316be4b77338cfb6fd09b272ddf9069bbbcd0014eb4d4b344d22fb",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/raw.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/sqlite3.dll",
+        "sha256": "6cba42f6399440086df4e50860831d6ec9ac00026244a171be4104a6ca37e01f",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/sqlite3.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/tiff.dll",
+        "sha256": "06487792b2cc3d378f8efc3167642760b0e479e323226b2709bcca279a78e97f",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/tiff.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/zlib1.dll",
+        "sha256": "8ba40a74abcd1cff50bd7c7a7afa7e546bca108bc46d9168f42a99f43993d534",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/zlib1.dll"
+        ]
+      },
+      {
+        "path": "tools/colmap-legacy/lib/zstd.dll",
+        "sha256": "581f0a5efd99a2868bb3cbfd9dec8cc7d3d098e017da81a4dbf66428a8f2ab48",
+        "official_members": [
+          "COLMAP-3.8-windows-cuda/lib/zstd.dll"
+        ]
+      }
+    ],
+    "matched": 71,
+    "notices": []
+  },
+  {
+    "group": "glomap",
+    "url": "https://github.com/colmap/glomap/releases/download/1.2.0/glomap-x64-windows-nocuda.zip",
+    "sha256": "f46ea8acbf1b4afc97f2a46329ac9d9decc228e2077330f5117708dc0962c0d0",
+    "bytes": 18151227,
+    "files": [
+      {
+        "path": "tools/glomap/bin/amd.dll",
+        "sha256": "a448b99d512b564227af28c5a34f2163b4657c78036f939d1507e84a93664629",
+        "official_members": [
+          "bin/amd.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_atomic-vc143-mt-x64-1_88.dll",
+        "sha256": "a3da4868bc6aef21e5654b48292829601dae37a141f190ffcc3dce7d1d94729d",
+        "official_members": [
+          "bin/boost_atomic-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_chrono-vc143-mt-x64-1_88.dll",
+        "sha256": "d55238fce7a4ada75361a5e87b228ec9e91ed59279bb7b378d9b9c33f47d051c",
+        "official_members": [
+          "bin/boost_chrono-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_container-vc143-mt-x64-1_88.dll",
+        "sha256": "a8cde8b7b15bd1185635b7b8331ecbdcaed412a57cff6fe300363657db071bcf",
+        "official_members": [
+          "bin/boost_container-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_date_time-vc143-mt-x64-1_88.dll",
+        "sha256": "0f8d3a4691fa43b0aaf4f1323b79b822c288a97a1570f6b1d9d8fbc9ee1d0fe7",
+        "official_members": [
+          "bin/boost_date_time-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_filesystem-vc143-mt-x64-1_88.dll",
+        "sha256": "83423f96dab05c7bb57c58d92b881f355f25ef5b9c59cbc4f7e93ab8c3879299",
+        "official_members": [
+          "bin/boost_filesystem-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_graph-vc143-mt-x64-1_88.dll",
+        "sha256": "d4ede93ec76252c37f5b3632c5127d45b765b6b7d111f7ecb4f4fa02191a24bf",
+        "official_members": [
+          "bin/boost_graph-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_program_options-vc143-mt-x64-1_88.dll",
+        "sha256": "82f21a8807281376f1de971e34d587283d9cbf4e4bf923a3ac34d3018668faab",
+        "official_members": [
+          "bin/boost_program_options-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_random-vc143-mt-x64-1_88.dll",
+        "sha256": "998c9f50040ab895a463316934918c583437120689d7bed4e53fd9c195c20a8d",
+        "official_members": [
+          "bin/boost_random-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_serialization-vc143-mt-x64-1_88.dll",
+        "sha256": "e5c35ab6367b4912c45b1464a3eeea5bb9add1ed7bbfa3f87aa534f203d94089",
+        "official_members": [
+          "bin/boost_serialization-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_system-vc143-mt-x64-1_88.dll",
+        "sha256": "25e752ad0bcdd284f50375c60acfe90782c205385d7df6b4b220a28bab89e00c",
+        "official_members": [
+          "bin/boost_system-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_thread-vc143-mt-x64-1_88.dll",
+        "sha256": "9f7409642bdada984e309a2446482525b6d0ef7a596836c0d7f8b4316c262ce8",
+        "official_members": [
+          "bin/boost_thread-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/boost_wserialization-vc143-mt-x64-1_88.dll",
+        "sha256": "4936e7d1e1e58d57bbd8d7c13cf6c289547bdea2ef4925f3c9a5c7a12646797b",
+        "official_members": [
+          "bin/boost_wserialization-vc143-mt-x64-1_88.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/btf.dll",
+        "sha256": "5203db64eef8be344773186a7303f8b0595afc8105d975b791e1aab5e43315a2",
+        "official_members": [
+          "bin/btf.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/camd.dll",
+        "sha256": "34d90760b7855471d4b91c1480de8498bd386b7e1c364ec9665e0284a8c69a22",
+        "official_members": [
+          "bin/camd.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/ccolamd.dll",
+        "sha256": "d41fde851725fae6332b024b4df229a8feb14c00084f1491d7cff31e9baebc7f",
+        "official_members": [
+          "bin/ccolamd.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/ceres.dll",
+        "sha256": "d738534881c7412d45cb7f265f82ff0a66380d697d6b30aaa29a37fbaf00794f",
+        "official_members": [
+          "bin/ceres.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/cholmod.dll",
+        "sha256": "27ad04c58ff0a4fe6113104e3d90924308936b462ae44434e27800b4d06a0b85",
+        "official_members": [
+          "bin/cholmod.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/colamd.dll",
+        "sha256": "c219b7c541239716393148c1a53ff752889db0a7ebd5eddf85e5552060c57c65",
+        "official_members": [
+          "bin/colamd.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/cxsparse.dll",
+        "sha256": "5b46cc547ddcbcff3d9447c74b3acecd4059972f7959009f7eb5fef4fb84e9c9",
+        "official_members": [
+          "bin/cxsparse.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/deflate.dll",
+        "sha256": "e1cb167b19cfe28df8b766ae48422889c15c85f835be536fb36dbb129e22b134",
+        "official_members": [
+          "bin/deflate.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/flann.dll",
+        "sha256": "424c2d43b58cdd477d4bf9da45251e9dc3cd2e2d141b894702c329e43c5859f1",
+        "official_members": [
+          "bin/flann.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/flann_cpp.dll",
+        "sha256": "9b537738897e4fd5f104a8268080f8cb997edea6945c686538a147971150a98d",
+        "official_members": [
+          "bin/flann_cpp.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/FreeImage.dll",
+        "sha256": "d4baa6deab21defb61f1c8e4b68728f1c44b2a069c0436de6084215effad32cb",
+        "official_members": [
+          "bin/FreeImage.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/FreeImagePlus.dll",
+        "sha256": "4bf1b566999de3ba3c9812d5167ada87905546db1c2a33191145e28189caa0a5",
+        "official_members": [
+          "bin/FreeImagePlus.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gflags.dll",
+        "sha256": "0ff42ec24c81e0b62eb470947d99cb5eefae252a0880c1a542f86f48865fba92",
+        "official_members": [
+          "bin/gflags.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/glog.dll",
+        "sha256": "d3395f7871d5e9a4e5fa4108663ad949860ee869c1d54a9ea1465d913e3cccf1",
+        "official_members": [
+          "bin/glog.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/glomap.exe",
+        "sha256": "6f586de5eddc3aec019a173d85ac8a0e722bb9e688c71d7b6bc18e107f899c3e",
+        "official_members": [
+          "bin/glomap.exe"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gmock.dll",
+        "sha256": "dc686176da923f4b9ba28251bace8a39ace34b4b534f4de4a496f82389aa591e",
+        "official_members": [
+          "bin/gmock.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gmock_main.dll",
+        "sha256": "40d808fde530a084c87043a5f8f30e7b64fafb34af7908aee5b1f00c320820ac",
+        "official_members": [
+          "bin/gmock_main.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gmp-10.dll",
+        "sha256": "17ef043dfe5250bc013cb74f5dfa7be9e882962121cc1b6c28437b50b95de8ed",
+        "official_members": [
+          "bin/gmp-10.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gmpxx-4.dll",
+        "sha256": "40a9b355afd90d9777a35158b0db5846b63c156525e490775433ccf52d5879ee",
+        "official_members": [
+          "bin/gmpxx-4.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/graphblas.dll",
+        "sha256": "bdae45dcf3ead18b8778e12ba564e55c96cfcff29fa4fb0976b7e21af6d7a034",
+        "official_members": [
+          "bin/graphblas.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gtest.dll",
+        "sha256": "3895c53f71fa16ab7d00743a4417e731cc0ed03de92a01e1b2a0435a9a9c3fe3",
+        "official_members": [
+          "bin/gtest.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/gtest_main.dll",
+        "sha256": "1124787cfcb9c00be7913cfba7e922766a5b3efcbe21bd87ce381b37834139d9",
+        "official_members": [
+          "bin/gtest_main.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/Iex-3_3.dll",
+        "sha256": "a59e3efdef85f1adfab50895245b47df43b0d64d03deff4fafb9d6df469ad3d7",
+        "official_members": [
+          "bin/Iex-3_3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/IlmThread-3_3.dll",
+        "sha256": "f0ddd17c81e6b38299c120aa39bf2fc221f1224750eef41530bfdb56087ebe50",
+        "official_members": [
+          "bin/IlmThread-3_3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/Imath-3_1.dll",
+        "sha256": "4143df3701185d533fa8112afc94a8222024312835a98130294815adf8cf0292",
+        "official_members": [
+          "bin/Imath-3_1.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/jasper.dll",
+        "sha256": "f64219d181cc1ec6b9daf17ae0cde7a362d281d3a0a0da838218c4c8e817266e",
+        "official_members": [
+          "bin/jasper.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/jpeg62.dll",
+        "sha256": "b33444b9ddc1605bc26cf9da0c02ab59d207e9df094ba029ec485f145112a500",
+        "official_members": [
+          "bin/jpeg62.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/klu.dll",
+        "sha256": "b649a954326f21a158288339d2939d622f748705384153ca4ff3e1ce185a9a42",
+        "official_members": [
+          "bin/klu.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/lagraph.dll",
+        "sha256": "5140b95cb2f2ced93f1daaf918ff952c5c4865ab7d640a08e2a61c79c5966935",
+        "official_members": [
+          "bin/lagraph.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/lagraphx.dll",
+        "sha256": "8dd254820366e3bfea3d6db31007e0f5018302f630670726501ebfbe9413be6e",
+        "official_members": [
+          "bin/lagraphx.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/lcms2-2.dll",
+        "sha256": "fd220c25b31e3d74c74422ac59f4b5d4672795b78c937e515ec2ec659df707da",
+        "official_members": [
+          "bin/lcms2-2.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/ldl.dll",
+        "sha256": "3a233472b15f8caee056d325c9c3a80c4d75f2054fe4ad8da7abb60d81a06558",
+        "official_members": [
+          "bin/ldl.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libgcc_s_seh-1.dll",
+        "sha256": "0e057fccb0e7656bd096bf25a4714e74245ea02b644dafcc2106f8c524fcc535",
+        "official_members": [
+          "bin/libgcc_s_seh-1.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libgfortran-5.dll",
+        "sha256": "8b70ea396b02ab23933ff4d43cc961465447a1b3b0634910841ba9208e785023",
+        "official_members": [
+          "bin/libgfortran-5.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/liblapack.dll",
+        "sha256": "8e2da3a9851cc57cff67871d480e477864d206f439ebafbf9da393c482a2975c",
+        "official_members": [
+          "bin/liblapack.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/liblzma.dll",
+        "sha256": "bce90d1ec88eb04495da6e55a431cc1eb06bcb01962e19822a653ab723554217",
+        "official_members": [
+          "bin/liblzma.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libpng16.dll",
+        "sha256": "8b052bb13df09c575c38997d079e30c9f9a0c265df83c6956471768dec6995e0",
+        "official_members": [
+          "bin/libpng16.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libquadmath-0.dll",
+        "sha256": "cb9b8e358f8b32cff07c1dc3125da48e8089202f405f92b9f70d144896720056",
+        "official_members": [
+          "bin/libquadmath-0.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libsharpyuv.dll",
+        "sha256": "58d6d621439ec11440439352c6e6b6d0e5f1171ce320f5cafe60ca70b1528be4",
+        "official_members": [
+          "bin/libsharpyuv.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libwebp.dll",
+        "sha256": "ce910c239e304c7dbda478983da7e3d267763323ea87d967756e8557421b426b",
+        "official_members": [
+          "bin/libwebp.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libwebpdecoder.dll",
+        "sha256": "987a887a9529ed122cb94c1a5c7aee4a3f98155435cb20f5a02a7984f9ffb14b",
+        "official_members": [
+          "bin/libwebpdecoder.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libwebpdemux.dll",
+        "sha256": "dacd12f0bdf911b1e17ebcf5df920a2bff11d4a662394d6fef33a22c23080f92",
+        "official_members": [
+          "bin/libwebpdemux.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libwebpmux.dll",
+        "sha256": "09155ada76227bd4787342958abee03220be972db2fe2ce6e2a7cf2e72feee7a",
+        "official_members": [
+          "bin/libwebpmux.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/libwinpthread-1.dll",
+        "sha256": "c67464b985a2f6edd541e5824193315640397c7cd60e09d024cfcaa4ad77c949",
+        "official_members": [
+          "bin/libwinpthread-1.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/lz4.dll",
+        "sha256": "ca25641f111491b1663f6974e3894dabb281446eeb7597e4a809d2659f17523b",
+        "official_members": [
+          "bin/lz4.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/mpfr-6.dll",
+        "sha256": "2d27e4f87b8eea7a3ac06e3216e8dbac985755b2594526b385aefc83528077a6",
+        "official_members": [
+          "bin/mpfr-6.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/openblas.dll",
+        "sha256": "0615b8aa113930f05a442735fad0d5233a8fff7f462c02fe6e4fbefcdee42cfd",
+        "official_members": [
+          "bin/openblas.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/OpenEXR-3_3.dll",
+        "sha256": "f76ecfb77770586801bfeae7915bf4c33d4115595e975ba00d31b39f0b481c1f",
+        "official_members": [
+          "bin/OpenEXR-3_3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/OpenEXRCore-3_3.dll",
+        "sha256": "aba5dbc21641c19243e4e83675295ea72fb7be256facd1d303635cada696fffb",
+        "official_members": [
+          "bin/OpenEXRCore-3_3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/OpenEXRUtil-3_3.dll",
+        "sha256": "0cab5ce9be617d13d7c30845d7f477593b70106c6010ed5fe0585b250732047e",
+        "official_members": [
+          "bin/OpenEXRUtil-3_3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/openjp2.dll",
+        "sha256": "fb70628a524772d09de8cffb88028c8db33a8617cdcf85f7e3631cf97d01835a",
+        "official_members": [
+          "bin/openjp2.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/raw.dll",
+        "sha256": "d5f3e6f086400177ed751c35f0e75cf5f5798bca19c5962bc1b789364e199d41",
+        "official_members": [
+          "bin/raw.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/raw_r.dll",
+        "sha256": "d06c65a8b098b394be7f9cf8b2f3a3f9a1f0c2da3e8c05de8347712da28f9bd3",
+        "official_members": [
+          "bin/raw_r.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/spex.dll",
+        "sha256": "2081364d25d0c5bfdd772a2926dcf27e2746acaaaeab1d181a157611f1d4c294",
+        "official_members": [
+          "bin/spex.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/spexpython.dll",
+        "sha256": "f25d0b2177bc37413cfcfb390b55c6dcb84a36c78804a0ca79910b394ff542b7",
+        "official_members": [
+          "bin/spexpython.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/spqr.dll",
+        "sha256": "2d9a89cb8733b8669d2462d203ef591f90e48ac3232ebbb251e998dda20d165f",
+        "official_members": [
+          "bin/spqr.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/sqlite3.dll",
+        "sha256": "f0fbec6ef6fc2bb8e35ae9b7f7cf39f71b6b0727a56c9a0445d9b7359df8b4b4",
+        "official_members": [
+          "bin/sqlite3.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/suitesparseconfig.dll",
+        "sha256": "55144f05062006eb0a8d02263480c146f697f43e87a0c864d6fb5977d5859164",
+        "official_members": [
+          "bin/suitesparseconfig.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/tiff.dll",
+        "sha256": "d88634742df145f7c69e0c20902c038e22fc33901751f303510a5f0ca9a56028",
+        "official_members": [
+          "bin/tiff.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/turbojpeg.dll",
+        "sha256": "469734d36fe559c175e4b58538ae5a90273d5b5342e2f2f32baa428795b565d8",
+        "official_members": [
+          "bin/turbojpeg.dll"
+        ]
+      },
+      {
+        "path": "tools/glomap/bin/zlib1.dll",
+        "sha256": "4282a16055bee177bbb8108bc3b5f07745f99eec7e4d2c0748e676ebea9ab5ca",
+        "official_members": [
+          "bin/zlib1.dll"
+        ]
+      }
+    ],
+    "matched": 74,
+    "notices": []
+  }
+]

@@ -66,7 +66,7 @@ def main(evidence, output):
     QSettings.setPath(QSettings.IniFormat, QSettings.UserScope, tempfile.mkdtemp())
     from photomesh.mainwindow import MainWindow
     from photomesh.theme import apply_theme
-    window = MainWindow(); window.resize(1920, 1160); window.show()
+    window = MainWindow(); window.resize(1920, 1160); window.move(20, 20); window.show()
     window.open_project(project.path)
     deadline = time.monotonic()+60
     while getattr(window, 'view_loading', False) and time.monotonic() < deadline:
@@ -79,7 +79,9 @@ def main(evidence, output):
         apply_theme(app, theme)
         for _ in range(25):
             app.processEvents(); time.sleep(.04)
-        image = window.grab()
+        frame = window.frameGeometry()
+        # Capture the real window-manager title/icon as well as the client UI.
+        image = app.primaryScreen().grabWindow(0, frame.x(), frame.y(), frame.width(), frame.height())
         assert image.width() >= 1800 and image.height() >= 1000
         assert image.save(str(output/name), 'PNG')
     (output/'screenshot-provenance.json').write_text(json.dumps(dict(application='Lens2Mesh1.0.5',
