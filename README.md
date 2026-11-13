@@ -26,18 +26,19 @@ Third-party components retain their respective licenses.
 
 ## Screenshots
 
-The public Helenenschacht survey is open in Lens2Mesh 1.0.5.
-Both themes show the same sparse reconstruction from 35 photographs, with surveyed controls and independent check points.
-The Project panel is on the left and the photo thumbnails are on the right.
+The public Autzen LiDAR scene is open in Lens2Mesh1.0.5.
+Both themes show the same automatic ground/non-ground classification from
+10,653,336 points, with a bounded viewer preview. The Project panel is on the left;
+the empty Photos panel is hidden for this LiDAR-only dataset.
 These are actual application captures with Mesa OpenGL. See [image attribution and license](SCREENSHOT-LICENSE.txt).
 
 **Dark theme**
 
-![Lens2Mesh 1.0.5 Dark theme, public survey tie points and camera positions](screenshot.png)
+![Lens2Mesh1.0.5 Dark theme with public Autzen ground/non-ground colours](screenshot.png)
 
 **Light theme**
 
-![Lens2Mesh 1.0.5 Light theme with the same public survey and Photos panel](screenshot-light.png)
+![Lens2Mesh1.0.5 Light theme with the same public terrain classification](screenshot-light.png)
 
 ## Install
 

@@ -1,15 +1,17 @@
 Lens2Mesh1.0.5 screenshot attribution
 
-screenshot.png and screenshot-light.png are actual application captures of a
-sparse reconstruction from OpenDroneMap/odm_data_helenenschacht, revision
-eece33e9ece2ff358a7bdc02e1db6f67925e00c4. Photos and their calibration pixels
-were reduced together by4 solely for the display fixture. No dense or textured
-model is implied. Public photos, survey observations and their derived visual
-content retain the dataset's GNU General Public License version3 terms.
-The captures are provided under those terms; this does not change the license
-of the application code or other third-party components.
+screenshot.png and screenshot-light.png are actual application captures of
+PDAL/data's Autzen LiDAR, revision ce0024257c573526389c4db9ab26e82739b8aaa9.
+LiDAR provided by Aaron Reyna / Watershed Sciences in2010; manual reference
+classification by Max Sampson / Hobu in2021. Public dataset content retains
+Creative Commons Attribution4.0 International (CC-BY-4.0).
+Coordinates were converted to local metres, and Lens2Mesh's automatic
+ground/non-ground classes are displayed with its bounded viewer preview.
+The original application interface, logo and code keep their existing license;
+no new license is granted over those original application materials.
 
 Dataset, attribution and source:
-https://github.com/OpenDroneMap/odm_data_helenenschacht/tree/eece33e9ece2ff358a7bdc02e1db6f67925e00c4
-License text: photomesh/resources/third-party/GPL-3.0.txt
-Capture recipe: tools/capture_public_ui_105.py and .github/workflows/public-ui-105.yml
+https://github.com/PDAL/data/tree/ce0024257c573526389c4db9ab26e82739b8aaa9/autzen
+https://github.com/PDAL/data/blob/ce0024257c573526389c4db9ab26e82739b8aaa9/LICENSE
+https://creativecommons.org/licenses/by/4.0/
+Capture recipe: tools/capture_public_terrain_ui_105.py and .github/workflows/public-ui-105.yml
