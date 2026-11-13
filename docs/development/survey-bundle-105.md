@@ -828,3 +828,30 @@ code now accompanies helper failure. The retry reuses the exact verified base,
 rebuilds only the corrected add-on, and tests a real active Python job to ensure
 the guard still rejects installation without changing DLLs. Targeted updater,
 add-on, runtime and payload tests:54 passed. No faulty add-on was published.
+
+Final validation run43508941599 at65277d01c99e9c3ba5ac52b6061096159592c481
+passed all installed lifecycle checks: base-only CPU/native/UI/manual behavior,
+automatic Unicode target detection, blocking a real active Python job without
+DLL changes, repeat no-op, base reinstall preservation, rollback/reapply,
+invalid-base rejection and normal uninstall. The exact verified base was reused;
+only the corrected add-on was recompiled. Retained runtime bytes match baseline;
+the four approved documentation overlays are the only retained-file changes.
+
+Publication run43511174532 at59e0352094ea9f8be2eb04f2565cb039f99a9f33
+succeeded. Public files were downloaded and byte-compared with those tested:
+
+- Base Setup:598,550,777 bytes, SHA256
+  `833a0ff0fa845a47d4f89b02b360ed4b94b7844db6acf6688179f3cbafe64352`.
+- Optional GPU add-on:923,121,641 bytes, SHA256
+  `58cb9429da2b69b0cf534151310f464cb3e893730f3680e44b6c7bd992e0cf01`.
+- Approved119-page PDF:3,742,865 bytes, SHA25683bcd31c...f9faf above.
+
+The base is64.255% smaller than the original1,674,504,611-byte all-in-one.
+Both downloads/checksums and the PDF are public on the existing v1.0.5 release;
+short release notes describe the optional package. Main was fast-forwarded to
+the publication source; the original app tag was retained. The former public
+Setup/checksum/manual/metadata were authenticated and retained in90-day artifact
+14079191106 (Lens2Mesh-105-Before-Split-Rollback); final publication evidence is
+artifact14077929800. Local evidence is split-neural-publication/. No personal
+installation, projects, photos or settings were modified. Native OpenGL on CI,
+photogrammetric accuracy re-benchmarking and deferred1.0.6 work are not claimed.
