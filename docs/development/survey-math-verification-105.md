@@ -212,3 +212,63 @@ All files in the user's existing sample project and installed app were unchanged
 Reference-target identification, image measurements, checkpoint XYZ accuracy and
 surface/section comparisons remain outstanding; reprojection alone does not
 certify ground accuracy.
+
+### Measured Building E controls, holdouts and adjustment investigation
+
+Read the user's saved BuildingE_20_Test project without modifying it. Original
+GDB attachment GlobalID joins supplied 36 ground-identification photographs.
+The user measured controls 10/12/15 and checks 9/13/14/2 on three photos each.
+Only controls were included in optimization. Source GDB geometry is a different
+native CRS from the supplied UTM/EGM96 CSV; this audit follows the CSV and matching
+Esri tutorial, not an independently certified datum conversion.
+
+Three-check RMS (XY/Z/3D metres) was .07499/.18787/.20228 for similarity only,
+and .13455/.12518/.18378 after fixed-calibration bundle adjustment. The additional
+previously unused check 2 had Z error +.47063 m; all four checks then yielded
+.12677/.25909/.28844 m. Independently implemented pinhole/radial projection with
+SciPy point optimization reproduced the saved marker estimates (largest tested
+coordinate discrepancy below 1e-7 m). This confirms the arithmetic, not absolute
+survey accuracy. Free image triangulation and constrained optimizer marker XYZ
+are distinct estimates; the existing report displays the former.
+
+Repeated alignment from the 20 retained original images registered 20/20 with
+8828 points. Using the existing manual pixels rescaled to original dimensions,
+four-check 3D RMS was .15131 m for similarity only and .19639 m after adjustment.
+This is an approximate resolution comparison, not fresh full-resolution target
+measurement. Exploratory calibration changes also failed to establish a reliable
+accuracy improvement. Never optimize settings or discard checks to manufacture
+a favourable benchmark.
+
+An independent small noisy bundle oracle uses SciPy's differently parameterized
+least-squares solver and explicit pinhole equations, including vector Huber loss
+on automatic observations. It exposed a separate write-back defect: after the
+accepted LM solution, all tie points were unconditionally replaced by unweighted
+ray intersections. Cameras were unaffected, so this does NOT explain the marker
+holdout errors above. Before the fix, sum-of-squared equivalent robust residuals
+was 123.68169 versus the oracle's 114.03655 in the outlier case (and 1.67715 versus
+1.67465 without the outlier). Preserve jointly optimized selected tie XYZ and
+re-intersect only the remaining ties; refresh error metadata for every point.
+The two oracle cases now agree within 1e-5 objective units and camera positions
+within 2e-4 m. Existing marker/control/check calculations are unchanged.
+
+On the real saved sample, tie observation RMS changes from .6617260 to .6608608
+pixels; marker estimates/camera poses retain the prior values. Do not describe
+this fix as eliminating the 47 cm holdout error. Further reference coverage and
+fresh target measurements are required before a ground-accuracy acceptance.
+
+Maintainability review: inspected gcp_bundle_adjust, retriangulate, their direct
+callers, marker diagnostics, Schur solve and incremental-patch boundaries. Kept
+the existing triangulation implementation and added an optional preservation
+argument; no duplicate adjustment engine, unrelated cleanup or legacy removals.
+No claim of a new repository-wide dead-code audit. No UI, installation workflow
+or manual text changes; the approved manual is unchanged. Application delivery
+is an incremental test candidate only, with exact hashes, close-app guard,
+backup and rollback. No Setup or public release is authorized by this audit.
+
+Validation: 166 tests passed in 12.34 s across the independent oracle, numerical
+reference, survey audit/capacity, reference lifecycle, dense/GCP and patch suites.
+The first patch-suite attempt hit Windows path-length limits in the sandbox's
+deep default temporary directory; rerunning the complete selection with an
+explicit short evidence-workspace temp directory passed. Ruff is not installed
+in the selected development environment; no Ruff-pass claim is made. Python
+syntax and git whitespace checks are separate checks.
