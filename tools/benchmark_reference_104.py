@@ -40,15 +40,20 @@ def main():
         results[label] = {"seconds":statistics.median(timings),
                           "rms_px":float(np.sqrt(np.mean(cio.observation_errors(model)[0]**2)))}
         models[label] = model
-    assert abs(results["current"]["rms_px"]-results["baseline"]["rms_px"]) < 1e-6
-    for iid in models["current"].images:
-        np.testing.assert_allclose(models["current"].images[iid].center(),
-                                   models["baseline"].images[iid].center(),atol=1e-5,rtol=0)
     results["baseline_commit"] = BASE
     results["runtime_ratio"] = results["current"]["seconds"]/results["baseline"]["seconds"]
     text = json.dumps(results,indent=2)
     Path("reference-performance-104.json").write_text(text)
     print(text,flush=True)
+    # Keeping accepted bundle-adjusted tie coordinates can improve reprojection
+    # RMS relative to the baseline's unconditional retriangulation. Reject any
+    # regression or non-finite result, but allow that intentional improvement.
+    assert np.isfinite(results["baseline"]["rms_px"])
+    assert np.isfinite(results["current"]["rms_px"])
+    assert results["current"]["rms_px"] <= results["baseline"]["rms_px"] + 1e-6
+    for iid in models["current"].images:
+        np.testing.assert_allclose(models["current"].images[iid].center(),
+                                   models["baseline"].images[iid].center(),atol=1e-5,rtol=0)
     if results["runtime_ratio"] > 1.5:
         raise SystemExit("Reference optimization runtime increased over 50%; investigate")
 

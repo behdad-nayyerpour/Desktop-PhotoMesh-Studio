@@ -483,3 +483,21 @@ after calibration parameters, native command/log, fold tasks and reports are in
 external real-reference-light/calibration-model-comparison/report.json/html.
 Official command-line source:
 https://agisoft.freshdesk.com/support/solutions/articles/31000133141-how-to-run-the-script-in-headless-mode-from-the-command-line
+
+### GitHub review validation: reference benchmark contract
+
+The first manually dispatched Linux/Windows run for PR #11 (43619164885)
+passed the Windows job and Linux regression tests, Mesa overlay and UI checks.
+The Linux reference benchmark failed its old exact-RMS equality assertion.
+Reproducing the same workload locally gave baseline RMS 0.3575150723 px and
+current RMS 0.3572693678 px: preserving accepted optimized tie coordinates
+intentionally improves this metric. The benchmark now rejects non-finite RMS
+and deterioration beyond 1e-6 px while retaining the unchanged camera-centre
+tolerance and 1.5 runtime-ratio limit. Measurements are emitted before the
+assertions so future failures retain their evidence.
+
+Manual review covered the benchmark, its workflow caller and the independent
+bundle oracle tests. The corrected benchmark passed locally (runtime ratio
+1.309); both independent oracle tests passed. This is a test-contract correction
+and changes no application behavior, installer or user manual. Final GitHub
+validation is recorded in the PR after running the updated revision.
