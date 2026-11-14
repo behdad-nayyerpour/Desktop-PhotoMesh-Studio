@@ -455,5 +455,31 @@ real-reference-light/independent-metashape/: alignment project/log/settings,
 eight independent native comparison projects/results, reference-comparison.json,
 comparison-summary.json and comparison-report.html. Dense mesh/DEM/ortho accuracy
 and other datasets were not assessed by this comparison.
+
+### Controlled follow-up: camera model versus extra final photo adjustment
+
+To investigate the horizontal gap without altering user data or app defaults,
+predeclared two photo-only calibration arms on identical original-image COLMAP
+matches/geometry. Both use native COLMAP 4.2.1 final bundle adjustment with focal,
+principal point and extra parameters enabled, at most 100 iterations. The first
+keeps SIMPLE_RADIAL; the second starts from the same calibration converted
+exactly to OPENCV (fx=fy=f, same principal point/k1, new coefficients zero).
+No survey coordinates or marker observations enter this photo-only stage.
+Both then use the identical seven-fold, fixed-calibration, six-control GCP task.
+
+Held-out RMS XY/Z/3D and maximum observed 3D, metres:
+- Existing baseline: .11649/.11172/.16140; maximum .23499.
+- SIMPLE_RADIAL plus final photo BA: .10397/.13609/.17126; maximum .27332.
+- OPENCV plus the same final photo BA: .07883/.12344/.14646; maximum .24831.
+
+Thus the richer calibration improved horizontal/total RMS in this experiment,
+but did not improve vertical RMS or worst-case 3D versus the existing baseline.
+The common-final-BA control arm separates the extra solve from camera-model
+expansion; photo residual alone is not an external accuracy criterion. This is
+retrospective evidence on the same seven targets, not validation of a universal
+new default. No new production bug, default change or installer is justified by
+this dataset alone. User project SHA256 remained unchanged. Results, before/
+after calibration parameters, native command/log, fold tasks and reports are in
+external real-reference-light/calibration-model-comparison/report.json/html.
 Official command-line source:
 https://agisoft.freshdesk.com/support/solutions/articles/31000133141-how-to-run-the-script-in-headless-mode-from-the-command-line
