@@ -106,3 +106,39 @@ accuracy must be specified first. Broader DEM/DTM, orthomosaic, area/volume,
 export, ground-classification and native-engine numerical comparisons are not
 completed by this focused run. Existing gap/overhang/lifecycle tests passed, but
 no blanket correctness or survey-standard certification is asserted.
+
+## Follow-up without a user-supplied surveyed project
+
+The user has no project with independent surveyed checkpoints. This does not
+block synthetic verification. Reran test_shapes.py, test_ortho.py and
+test_terrain_bundle_105.py:44 passed in23.67 seconds, no skips. These existing
+regressions cover area/perimeter/cut-fill volume, distorted-camera projection,
+shape import/export, synthetic orthomosaic pixel placement and raster exports,
+DEM heights, ground labels, DTM coverage and LAS/LAZ attributes. They are not
+new independent surveyed-project accuracy evidence, and their pre-existing
+tolerances/definitions remain in force.
+
+The first attempt had31 passes,2 skips and11 fixture errors because the old
+development environment's Open3D lacked its Dash dependency. No numerical result
+was produced by the failing fixtures. The successful run used the installed
+runtime's existing site-packages via process-local PYTHONPATH, while conftest
+selected this source checkout and isolated settings/reports. No dependencies or
+application files were installed/replaced. Evidence: products.log and products.xml
+in the same external evidence directory. Required testing then completed; there
+is no pending product-test job.
+
+Public benchmark discovery (metadata only; no dataset downloaded or evaluated):
+
+- https://isprs.org/resources/datasets/benchmarks/ lists the ISPRS/EuroSDR
+  multi-platform calibration/orientation and dense-matching benchmarks. Its
+  detailed MultiPlatformPhoto page failed to load during this review, so data
+  access, completeness and licence have not been confirmed.
+- DLR AerialRefMatch describes51 images, reference true-ortho data and independent
+  checkpoint evaluation for single-image pose estimation. This is not yet selected
+  as a substitute for a complete multi-image reconstruction/checkpoint project:
+  https://www.dlr.de/en/eoc/about-us/remote-sensing-technology-institute/photogrammetry-and-image-analysis/public-datasets/aerialrefmatch-a-benchmark-dataset-for-testing-matching-algorithms
+
+Before a public real-data run, verify access/licence, imagery and observations,
+independent check coordinates, CRS/vertical datum, reference uncertainty and a
+fixed control/check split. Do not infer surveyed accuracy from inter-software
+agreement or from a dataset's title alone. No accuracy certification is claimed.
