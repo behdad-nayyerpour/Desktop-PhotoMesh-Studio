@@ -304,10 +304,13 @@ rendering or physical mouse-picking certification.
 
 Evidence: external section-reference-20261114/{installed,source}/report.json/html,
 regression.xml, installed-ui-result.json and package-verification.json.
-Lens2Mesh_Section_Reference.zip (10682 bytes, SHA256
-60bf32280fd67641664deea064f79b236005e9c9ba57725a2ed5ee12bfc077ec)
+Lens2Mesh_Section_Reference.zip (10711 bytes, SHA256
+1471f2dd94ca619e46d7119ba5c7b00fa0959f178af6257d36a2ff5e78eae8c3)
 contains portable reference meshes/projects, reports and an optional offline
 BAT checker. Relative model paths survive relocation; archive CRC passed. The
-checker writes results beside itself and does not patch the application.
+checker writes results beside itself and does not patch the application. Its
+PowerShell entry point passed against the real installed Python with the install
+root explicitly supplied; sandbox-local AppData/registry discovery did not locate
+the personal installation, and stopped before running the audit.
 No Setup, manual changes, reconstructed-field-accuracy claim, area/volume
 acceptance or whole-application correctness guarantee follows from these tests.
