@@ -171,3 +171,44 @@ Alignment connectivity, target visibility/measurement and actual checkpoint
 accuracy are still unverified. Do not confuse this prepared input with a passed
 real-project benchmark. Data/originals were not published to the repository.
 Source: https://developers.arcgis.com/python/latest/guide/create-trueortho-dsm-from-drone-imagery/
+
+### Superseding input: native alignment failure and corrected connected subset
+
+The user ran the18-image input and obtained5/18 cameras and941 tie points.
+Inspected only the explicitly supplied BuildingE_Test project; queried a copied
+database snapshot in evidence space, never writing the user project/database.
+All18 images had features, but strong matches clustered into weakly connected
+groups. Re-running the installed incremental-mapper policy on the copied DB
+reproduced exactly5 cameras/941 points. The initial subset was not adequately
+validated before delivery and is superseded for the real-project test.
+
+Added11 original bridge-candidate images (95,779,419 compressed bytes) selected
+from short GPS-proximity paths and resized consistently. Native validation of
+the29-image candidate produced two reconstructions,10 and20 images; it did NOT
+pass a29/29 acceptance check and was not delivered as a successful full block.
+The larger coherent component supplied a20-image candidate. The existing
+incremental export path names sparse/0; the29-image test illustrates why first
+output and largest output are not interchangeable. No application selection
+logic was changed in this data-repair task.
+
+Validated that20-image candidate from scratch with the installed app's actual
+colmap.align_steps, calibration sharing, native feature extraction/matching,
+incremental mapping and export, in an owned workspace, without inherited DB:
+20/20 cameras;9496 tie points; median observation reprojection0.2804373814 pixels,
+RMS0.6375670110 pixels. Settings: SIFT/Exhaustive/Incremental/Full, key limit24000,
+compatible calibration sharing on, guided matching off, no camera GPS constraints.
+A temporary CLI harness initially mistook a pipeline log entry for an engine
+command; its dispatch was corrected before the successful fresh run. No app code
+was implicated by that harness error.
+
+Deliverable: Esri_BuildingE_Connected_20.zip,18,853,856 bytes, SHA256
+54aaeab07582d2dbf226e79a63dbf6e0cae1ba90dff75f10ecffbceaa9a269e7.
+Contains only20 selected images, source/terms, exact preserved XYZ references,
+hash manifest and alignment-validation.json. ZIP CRC and image hashes pass.
+Use a new project, not the combined18/29-image inputs. Evidence:
+mapper-reproduction.json/log, bridge-validation.json, connected20-validation.json,
+connected20-*.log and connected20-package.json in real-reference-light/.
+All files in the user's existing sample project and installed app were unchanged.
+Reference-target identification, image measurements, checkpoint XYZ accuracy and
+surface/section comparisons remain outstanding; reprojection alone does not
+certify ground accuracy.
