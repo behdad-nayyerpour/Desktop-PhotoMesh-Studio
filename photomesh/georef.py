@@ -694,7 +694,8 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
     opts: tie_points (40000), tie_accuracy (px), projection_accuracy (px),
           fit_intrinsics (True) / intrinsics (model-specific fit preset),
           max_iterations (30), huber (robust threshold in sigmas)
-    Updates model poses/intrinsics in place and re-triangulates all tie points.
+    Updates poses, calibration and selected tie points in place. Other tie points
+    are re-triangulated with the final cameras.
     Returns {"markers": {label: X}, "tie_rms_px", "iterations"}.
     """
     import scipy.sparse as sp
@@ -907,7 +908,10 @@ def gcp_bundle_adjust(model, markers_model_obs, control, opts=None, log=print, c
         for k, cid in enumerate(cam_ids):
             size = cio.CAMERA_MODELS[model.cameras[cid].model][1]
             model.cameras[cid].params = K[k, :size].copy()
-    retriangulate(model)
+    # Keep the jointly optimized tie points, including their robust weighting.
+    # Re-intersecting those rays would discard the accepted LM solution.
+    P.xyz[sel] = X[:nT]
+    retriangulate(model, preserved_points=sel)
     r, _ = residuals(R, C, K, X)
     final_errors, _, _ = cio.observation_errors(model)
     return {"markers": {l: X[nT + k] for k, l in enumerate(mlabels)},
@@ -924,9 +928,13 @@ def _block_diag_csr(blocks):
     return sp.csr_matrix((blocks.ravel(), (rows.ravel(), cols.ravel())), shape=(3 * n, 3 * n))
 
 
-def retriangulate(model, min_angle_deg=0.5):
+def retriangulate(model, min_angle_deg=0.5, preserved_points=None):
     """Re-triangulate all tie points from their tracks with the current cameras
-    (linear least squares on rays) and update their mean reprojection error."""
+    (linear least squares on rays) and update their mean reprojection error.
+
+    preserved_points are indices whose jointly optimized XYZ must be retained;
+    their reprojection-error metadata is still refreshed.
+    """
     P = model.points
     tl = P.track_len()
     pidx = np.repeat(np.arange(len(P)), tl)
@@ -944,6 +952,8 @@ def retriangulate(model, min_angle_deg=0.5):
     A = np.zeros((len(P), 3, 3)); b = np.zeros((len(P), 3))
     np.add.at(A, pidx, Pm); np.add.at(b, pidx, np.einsum("nij,nj->ni", Pm, Cc))
     ok = np.linalg.det(A) > 1e-12
+    if preserved_points is not None:
+        ok[np.asarray(preserved_points, dtype=np.int64)] = False
     X = P.xyz.copy()
     X[ok] = np.linalg.solve(A[ok], b[ok][..., None])[..., 0]
     P.xyz = X
