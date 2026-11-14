@@ -379,7 +379,9 @@ def load(path):
 
 def _close(r):
     r = np.asarray(r, float).reshape(-1, 3)
-    if len(r) >= 3 and not np.allclose(r[0], r[-1]):
+    # Ring closure is topological, not a relative-coordinate comparison. At a
+    # UTM origin, allclose can mistake metre-separated endpoints for one point.
+    if len(r) >= 3 and not np.array_equal(r[0], r[-1]):
         r = np.vstack([r, r[:1]])
     return r
 
@@ -392,7 +394,13 @@ def _label_of(attrs):
 
 
 def _ring_signed_area(P):
-    x, y = P[:, 0], P[:, 1]
+    P = np.asarray(P, float)
+    if len(P) < 3:
+        return 0.0
+    # Translate before cross products to avoid cancellation of large eastings
+    # and northings when measuring small parcels.
+    local = P[:, :2] - P[0, :2]
+    x, y = local[:, 0], local[:, 1]
     return 0.5 * float(np.sum(x * np.roll(y, -1) - np.roll(x, -1) * y))
 
 
@@ -1268,6 +1276,10 @@ def measure(s, sampler=None, max_cells=4_000_000):
         zs = np.concatenate([p[:, 2] for p in D])
         out["Z min"], out["Z max"] = float(zs.min()), float(zs.max())
         return out
+    # Older files/API callers may supply unclosed rings. Normalize only the
+    # local measurement inputs, preserving the saved/source shape vertices.
+    P = [_close(p) for p in P]
+    D = [_close(p) for p in D]
     holes = s.get("holes") or [False] * len(P)
     out["Area 2D"] = _poly_area2d(P, holes)
     out["Perimeter 2D"] = sum(_len2d(p) for p, h in zip(P, holes) if not h)
@@ -1280,7 +1292,8 @@ def measure(s, sampler=None, max_cells=4_000_000):
     step = max(sampler.px, math.sqrt(area_bb / max_cells))
     xs = np.arange(lo[0] + step / 2, hi[0], step)
     ys = np.arange(lo[1] + step / 2, hi[1], step)
-    if not (len(xs) and len(ys)):
+    if len(xs) < 2 or len(ys) < 2:
+        out["Volume"] = "insufficient surface grid resolution (need at least 2 rows and 2 columns)"
         return out
     GX, GY = np.meshgrid(xs, ys)
     ins = inside_polygon(GX, GY, P)

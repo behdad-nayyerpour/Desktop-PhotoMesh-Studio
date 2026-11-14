@@ -314,3 +314,53 @@ root explicitly supplied; sandbox-local AppData/registry discovery did not locat
 the personal installation, and stopped before running the audit.
 No Setup, manual changes, reconstructed-field-accuracy claim, area/volume
 acceptance or whole-application correctness guarantee follows from these tests.
+
+### Area and height-volume reference audit (2026-11-14)
+
+Added 21 known-answer cases in tests/test_area_volume_reference.py. Supported
+volume semantics are sampled height above/below the least-squares plane fitted
+to the polygon boundary's surface elevations. This is not arbitrary watertight
+solid volume or overhang integration. A boundary on a roof defines a different
+reference plane from a ground apron around that roof.
+
+Analytic cases cover translated small/large parcels, outer-minus-hole area,
+flat/sloping surface area, raised blocks/depressions, triangular height prisms,
+balanced and unbalanced cut/fill, large-origin volume, missing/partial surface
+coverage and boundary-cell error under grid refinement. A real closed 2x2x2 mesh
+with surrounding ground, through HeightSampler.from_mesh/Open3D at an explicit
+0.1 m integration resolution, returned 8.00001144 m3 versus exactly 8. Float32
+ray-height accumulation is bounded explicitly by four height ulps times the
+16 m2 apron area (6.11e-5 m3); the scalar analytic tests use stricter absolute
+tolerances. Grid integration remains approximate; coarse meshes may require a
+finer sampling resolution than their median edge length.
+
+Three defects were reproduced before correction:
+- Cross-products on absolute UTM coordinates changed a 0.01 m2 square to
+  0.009765625 m2. Translate coordinates locally before signed-area products.
+- Relative allclose ring closure treated metre-separated UTM endpoints as
+  identical, losing a polygon edge (1 m square perimeter 3 instead of 4 m).
+  Use exact endpoint equality, and normalize local polygon measurement copies
+  without modifying source/saved vertices. Preserve hole/orientation conventions.
+- A one-row surface grid raised in numpy.gradient. Return an explicit
+  insufficient-resolution result instead of crashing or inventing zero volume.
+
+Validation: 118 passed, one explicitly native-OpenGL style case skipped, in
+27.99 s. Coverage includes the reference cases, shapes import/export/mesh sampling,
+shape styles, photo projection, world exports, PLY codec, metadata and patch
+apply/rollback contracts. No application library installation was changed; the
+test process used existing installed site-packages to exercise Open3D. An initial
+run with a missing temp parent and one collection attempt with nonexistent test
+filenames were harness setup errors, corrected before the recorded final run.
+
+Maintainability review covered _close, signed area, measure, file-reader/writer
+call sites and shape_metrics UI/cache. Existing shape/export/style tests cover
+these interactions; no parallel measurement engine or unrelated cleanup was
+introduced. New reference oracles are independent closed-form answers, not
+copies of the production formulas. No workflow/control change or approved user
+manual edit is needed; the manual remains unchanged. This is a hash-bound
+single-module incremental test candidate with backup/rollback, not a Setup or
+public release. Existing bundle fix must remain installed.
+
+Evidence: external area-volume-reference-20261114/{baseline,candidate}/report.*,
+regression.xml and packaged apply/rollback verification. Installed baseline
+shapes.py SHA256 is 65c24ff08b95344e061164523940db27a6b8c528c417dcb7968a993c455618fa.
