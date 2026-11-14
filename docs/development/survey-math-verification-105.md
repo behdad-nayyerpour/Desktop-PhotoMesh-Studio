@@ -272,3 +272,42 @@ deep default temporary directory; rerunning the complete selection with an
 explicit short evidence-workspace temp directory passed. Ruff is not installed
 in the selected development environment; no Ruff-pass claim is made. Python
 syntax and git whitespace checks are separate checks.
+
+### Known-answer section reference models (2026-11-14)
+
+Added tools/verify_section_reference.py and four focused regression cases in
+tests/test_section_reference_models.py. No application calculation or installed
+component changes were necessary. Generated independent ASCII double-precision
+PLY inputs for a plane, flat/rise/flat ramp, three-metre hole and vertical wall.
+The numerical oracle is explicit closed-form geometry, with absolute tolerances
+and no default relative tolerance. A deliberately inverted height sign is
+detected by the harness mutation test.
+
+Both the actual installed engine and source passed 46 comparisons: horizontal
+and 3D distance, signed height, positive/reversed slope, coincident/vertical
+endpoints, exact section elevations/coverage, surface intersection, submillimetre
+coordinate detail after double PLY load at a large survey origin, disconnected
+holes and vertical segments. Invalid NaN endpoints and zero section span were
+rejected. The 3-4-12 reference returns horizontal 5, height 12 and 3D chord 13.
+The broken ramp has horizontal 10, height 4, endpoint chord sqrt(116), and surface
+profile length 3+5+4=12. The UI 3D length describes the chord, not profile length.
+
+56 related regression tests passed in 16.10 s, without skips: reference models,
+survey geometry, exact sections, section workflow, interaction, UI and metadata.
+Two source Qt cases exercise the actual section worker and numeric labels.
+Separate installed-Python/installed-MainWindow runs opened generated projects,
+used the section controls/workers and confirmed both reference endpoint metrics
+and displayed text in metres. Isolated settings and report directories avoided
+personal application state. Offscreen Qt lacks usable font/OpenGL rendering in
+the captured panels: this is numeric/control-path evidence, not native on-screen
+rendering or physical mouse-picking certification.
+
+Evidence: external section-reference-20261114/{installed,source}/report.json/html,
+regression.xml, installed-ui-result.json and package-verification.json.
+Lens2Mesh_Section_Reference.zip (10682 bytes, SHA256
+60bf32280fd67641664deea064f79b236005e9c9ba57725a2ed5ee12bfc077ec)
+contains portable reference meshes/projects, reports and an optional offline
+BAT checker. Relative model paths survive relocation; archive CRC passed. The
+checker writes results beside itself and does not patch the application.
+No Setup, manual changes, reconstructed-field-accuracy claim, area/volume
+acceptance or whole-application correctness guarantee follows from these tests.
