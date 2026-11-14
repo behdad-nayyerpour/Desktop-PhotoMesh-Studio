@@ -364,3 +364,42 @@ public release. Existing bundle fix must remain installed.
 Evidence: external area-volume-reference-20261114/{baseline,candidate}/report.*,
 regression.xml and packaged apply/rollback verification. Installed baseline
 shapes.py SHA256 is 65c24ff08b95344e061164523940db27a6b8c528c417dcb7968a993c455618fa.
+
+### Retrospective real-reconstruction leave-one-marker-out validation
+
+Executed the actual installed georeferencing task on fresh owned copies of the
+original-image 20-camera sparse model. Seven markers have three image-only
+refined observations each. In each of seven folds, six markers are controls and
+the seventh is wholly excluded (XYZ and image observations) from adjustment.
+Ran the fixed settings both for similarity only and fixed-calibration bundle
+adjustment, with recorded receiver RMS weights, GPS off and no further tuning.
+The user project and reference measurement files were unchanged.
+
+Across the seven held-out residuals, similarity-only RMS XY/Z/3D was
+0.12583579/0.08571885/0.15225757 m; maximum observed 3D residual 0.21331840 m.
+Bundle-adjusted RMS XY/Z/3D was 0.11649262/0.11171687/0.16140381 m; median 3D
+0.14595885 m, maximum observed 3D 0.23498877 m (BldgE-2), maximum absolute Z
+0.16297171 m. One of seven bundle holdouts was within 0.1 m; five within 0.2 m.
+This does not establish sub-10-cm accuracy. Bundle did not improve all accuracy
+components on this dataset; do not automatically equate lower optimization cost
+with lower external ground error.
+
+On an actual fold, changed only the held-out XYZ by (+100,-80,+60) m and its
+image observations by (+5,-4) px, and re-ran adjustment from the original sparse
+model. Camera centres and selected tie XYZ were unchanged exactly (maximum
+coordinate difference zero), confirming real-data holdout exclusion.
+
+The earlier 0.136084 m value describes four checks under one fixed three-control
+model. It is not the same statistic as seven-fold cross-validation with six
+controls per fold. Pairwise lengths from the four-check review model were also
+compared with reference-coordinate lengths; maximum absolute discrepancy was
+0.214310 m over a 92.833583 m line. These are derived from the same check points,
+not six additional independent surveyed distances.
+
+Limitations: one retrospectively inspected dataset; automatic image-only pixel
+refinement and experimentally interpreted GNSS RMS weights; datum/reference
+uncertainty; seven targets do not cover every model region. Tests concern sparse
+camera/marker geometry, not dense mesh/DEM/orthomosaic acceptance or other
+projects. No production changes, Setup or public release. External evidence:
+real-reference-light/reconstruction-cross-validation/report.json/html with
+per-fold task/result/report/log and holdout-isolation copies.
