@@ -1,0 +1,108 @@
+# Survey numerical verification, 2026-11-14
+
+Scope: review and verify marker residuals/RMSE, checkpoint isolation, WGS84
+ECEF/UTM/ENU and mesh sections. This is a follow-up verification of 1.0.5, not
+an application release. Baseline source:9a6e02c50e342dfc28090d1ee2e925800e9d1c64.
+No application, installer, user project, photo, setting or manual was changed.
+No manual update or incremental application updater is necessary for these
+read-only developer/test tools. The user's distributed-processing work remains
+stopped and is unrelated to this verification.
+
+## Existing evidence rerun
+
+135 tests passed in26.37 seconds, with no skips, in these suites:
+
+- test_numerical_reference_104.py (camera equations, adjustment, residuals,
+  reference validation and UI/report lifecycle).
+- test_coordinate_frames_105.py.
+- test_survey_geometry_105.py and test_section_exact_105.py.
+- test_survey_metadata_105.py.
+- test_survey_interaction_105.py, test_section_workflow_105.py and
+  test_reference_lifecycle.py.
+
+The Qt tests used the offscreen platform and temporary settings/reports, with
+outgoing networking blocked. They are not native OpenGL acceptance tests.
+
+## Gaps addressed
+
+Some existing allclose assertions combine an absolute limit with NumPy's default
+relative tolerance; at large map origins this can permit excessive differences.
+New independent checks use absolute error only. The existing ENU test also uses
+the application's origin/basis in its expected result; the new comparison uses
+PROJ's full cartesian/topocentric pipeline instead, independently checking axes,
+origin and scale. Existing tests remain unchanged.
+
+tools/verify_survey_math.py records expected/actual values, maximum absolute
+error, tolerance and units in HTML/JSON, with imported file hashes and runtime
+versions. Wrong module origins are rejected. A missing independent comparator is
+an ERROR, never an implied pass. The CLI rejects reports under the application
+directory, suppresses bytecode writes and disables PROJ network retrieval.
+It runs synthetic inputs in memory and never opens a user project or GUI.
+
+30 comparisons passed both against source and the installed Windows application:
+
+| Contract | Absolute numerical tolerance |
+|---|---|
+| Signed residuals, separate control/check RMSE and counts |1e-12 (metres for residuals) |
+| Known 3-4-12 triangle, reversal, translated origin, unavailable vertical slope |1e-12 for finite metrics; exact boolean checks |
+| Literal WGS84 equator/pole ECEF coordinates |1e-8 m |
+| ECEF forward/inverse vs independent PROJ |2e-7 m;2e-10 degrees |
+| UTM forward/inverse vs independent PROJ, north/south/high latitude |0.001 m;1e-8 degrees |
+| ENU vs independent PROJ topocentric pipeline |2e-7 m |
+| Analytic oblique plane section, reversed direction and large origins |2e-8 m |
+
+These are numerical regression limits for the stated synthetic inputs, not
+accuracy guarantees for surveyed products or arbitrary coordinate domains.
+UTM inputs are deliberately selected within the chosen zone's area of use.
+
+Six additional pytest cases passed in1.42 seconds. They run the independent
+harness, prove an intentionally wrong 3D-RMSE denominator is detected, and test
+actual georeferencing with and without bundle adjustment. Changing only a check
+point's reference, or only its measured image positions, leaves adjusted points,
+camera poses and initial similarity unchanged within1e-10; check residuals change
+to their independently computed expected values. No optimizer is mocked.
+During test development, an assumed minimum change in residual norm was wrong;
+it was replaced by an analytic answer. That answer requires an undistorted
+pinhole fixture, so its radial coefficient was explicitly set to zero. These
+were test-fixture corrections, not evidence of an application defect.
+
+## Maintainability review and limits
+
+Reviewed georef.marker_errors/rmse/run_task and their check/control selection,
+coordinates frame conversion, survey_geometry distance/section contracts, and
+existing numerical and interaction callers/tests. The new tool consumes the
+public calculation functions; it does not duplicate processing implementations
+or modify their behavior. Separate analytic equations/PROJ supply oracle answers.
+Ruff F/E9 passed on the new Python files. No processing hot path was changed;
+no performance improvement or whole-repository dead-code audit is claimed.
+
+Evidence is retained outside source in
+F:/CodexProjects/Lens2Mesh-validation-evidence/numerical-audit-20261114/:
+baseline.log/xml, additional.log/xml, numerical-report.html/json, installed.log,
+installed-report.html/json. Installed application files were read only.
+
+## Repeat and remaining work
+
+For source, run with the existing development Python environment:
+
+```powershell
+python tools/verify_survey_math.py --app-dir . --output F:/Lens2Mesh-QA/math
+python -m pytest -q tests/test_survey_math_audit.py
+```
+
+For installed code, keep Check_Survey_Math.bat and verify_survey_math.py together
+outside the installation. Run the BAT and enter the installation root containing
+app/python/tools. The BAT uses that installation's Python, writes HTML/JSON under
+reports beside the BAT, and exits nonzero on failed/incomplete checks. This is a
+read-only numerical checker, not a patch installer. It needs no download/pytest.
+The delivered BAT was also executed successfully with the installed application's
+Python: all30 checks passed, exit0. The report is under checker/reports/ in the
+external evidence directory. None of the three measured application-module hashes
+changed during verification.
+
+Remaining: independent surveyed checkpoints and known-height surfaces on an
+end-to-end real project; reference-measurement uncertainty and required product
+accuracy must be specified first. Broader DEM/DTM, orthomosaic, area/volume,
+export, ground-classification and native-engine numerical comparisons are not
+completed by this focused run. Existing gap/overhang/lifecycle tests passed, but
+no blanket correctness or survey-standard certification is asserted.
