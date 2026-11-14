@@ -142,3 +142,32 @@ Before a public real-data run, verify access/licence, imagery and observations,
 independent check coordinates, CRS/vertical datum, reference uncertainty and a
 fixed control/check split. Do not infer surveyed accuracy from inter-software
 agreement or from a dataset's title alone. No accuracy certification is claimed.
+
+### Small real-image input prepared
+
+MicMac Gravillons (four images, listed8.3M) was identified but its official HTTP
+and HTTPS endpoints timed out for both agent and user; no test result is claimed.
+The alternative Esri legacy tutorial describes12 images, but its download alias
+now resolves to public item d99cc2563beb4208a3db4e60e9384b43:195 images,1,721,966,073
+bytes. The revised item's actual inventory/metadata were inspected by HTTP ranges.
+
+Prepared a private QA subset from18 original images selected by camera proximity
+to12 supplied reference points. Only156,881,452 compressed image bytes plus small
+metadata were downloaded, not the full archive. Originals, hashes, item metadata
+and scripts are retained under external evidence real-reference-light/.
+Images in Esri_BuildingE_Light_18.zip are resized to at most2048 pixels with
+updated EXIF dimensions; this is explicitly a derived lightweight input.
+The16,516,954-byte ZIP has SHA256
+32576ae1a964b308021f101f37484fb79b485918b6a9aa1fe13f444a27a16b36.
+
+JPEG integrity and ZIP CRC passed. Lens2Mesh parsed the derived reference CSV as
+12 unchanged XYZ positions, with a proposed fixed6-control/6-check split.
+No image observations were invented. Reference heights are EGM96 orthometric;
+the matching Esri developer tutorial explicitly labels the horizontal coordinates
+EPSG:26911. Original accuracy fields and item usage terms are retained verbatim;
+their statistical confidence interpretation is not assumed for adjustment weights.
+
+Alignment connectivity, target visibility/measurement and actual checkpoint
+accuracy are still unverified. Do not confuse this prepared input with a passed
+real-project benchmark. Data/originals were not published to the repository.
+Source: https://developers.arcgis.com/python/latest/guide/create-trueortho-dsm-from-drone-imagery/
