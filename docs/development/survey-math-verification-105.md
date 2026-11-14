@@ -403,3 +403,57 @@ camera/marker geometry, not dense mesh/DEM/orthomosaic acceptance or other
 projects. No production changes, Setup or public release. External evidence:
 real-reference-light/reconstruction-cross-validation/report.json/html with
 per-fold task/result/report/log and holdout-isolation copies.
+
+### Independent Metashape end-to-end comparison
+
+Found installed, activated Metashape Professional 2.4.0 build 23155 and ran its
+native documented Windows -r scripting interface. No installation/license
+changes or purchases. The offscreen Qt plugin was absent; the initial offscreen
+probe was stopped, then the documented Windows command-line path succeeded.
+The sandbox denied native preference saving on exit; processing/project outputs
+were saved only in the owned evidence workspace. The first successful alignment
+save was followed by a calibration.todict metadata error; calibration scalar
+readback recovered metadata without re-running image alignment.
+
+Independently reconstructed the same 20 original photographs in Metashape:
+20/20 registered, one sensor, 28051 valid ties, High/downscale 1, exhaustive
+matching (generic/reference preselection disabled), keypoint limit 24000,
+per-megapixel limit disabled and tiepoint limit disabled. GPS was disabled.
+This is an independent native reconstruction, not another invocation of COLMAP.
+
+Used exactly the same seven refined image observations and recorded receiver
+RMS weights. For the fixed three-control split and every six-control holdout
+fold, only training markers were added to Metashape before optimization: the
+withheld XYZ AND photo observations were absent. All calibration fitting flags
+were disabled during final GCP optimization. Held-out coordinates were then
+estimated from native camera unprojection/projection using independent pixel
+least squares, without using reference XYZ. No fit presets were selected after
+seeing these results.
+
+Metashape rejected the custom local datum during reference update, including
+after removing camera GPS. Those failed attempts supplied no valid results.
+Successful runs used the supplied EPSG:26911 horizontal CRS and the same supplied
+heights, without external geoid/GPS transformations. Lens2Mesh uses projected
+Cartesian fitting. Native alignment calibration/feature detection/tie rejection
+differ: Metashape initially fits more Brown coefficients than the Lens2Mesh
+SIMPLE_RADIAL camera. This is an end-to-end comparison, not isolation of a
+single solver or camera model.
+
+Seven-fold held-out RMS XY/Z/3D (metres):
+- Lens2Mesh: .11649262/.11171687/.16140381; maximum observed 3D .23498877.
+- Metashape: .05312829/.14054278/.15024942; maximum observed 3D .22575129.
+Thus native Metashape improved horizontal RMS here, while Lens2Mesh had lower
+vertical RMS. Both total results remain around 15–16 cm; no new arithmetic bug
+or sub-10-cm accuracy acceptance follows. The separate fixed three-control,
+four-check split gave .13608420 m for Lens2Mesh and .10806944 m for Metashape.
+Neither software is the ground-truth source; the supplied survey coordinates
+remain the reference, with the previously documented datum/uncertainty limits.
+
+Original user project SHA256 still matches the pre-comparison snapshot. No
+production code, Setup or release changed. Private evidence is under external
+real-reference-light/independent-metashape/: alignment project/log/settings,
+eight independent native comparison projects/results, reference-comparison.json,
+comparison-summary.json and comparison-report.html. Dense mesh/DEM/ortho accuracy
+and other datasets were not assessed by this comparison.
+Official command-line source:
+https://agisoft.freshdesk.com/support/solutions/articles/31000133141-how-to-run-the-script-in-headless-mode-from-the-command-line
